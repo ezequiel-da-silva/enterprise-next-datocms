@@ -1,0 +1,282 @@
+query PageBySlug($slug: String!, $locale: SiteLocale!) {
+  page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
+    id
+    title
+    slug
+    heroPage {
+      __typename
+      ... on HeroSectionRecord {
+        id
+        layoutHero
+        titleHero
+        subtitleHero {
+          value
+          blocks
+          links
+          inlineBlocks
+        }
+        showButton
+        buttonHero {
+          __typename
+          id
+          ctaLabel
+          typeContent
+          externalLink
+          openInNewTab
+          ctaLinkAria
+          internalLinkPage {
+            __typename
+            slug
+          }
+          internalLinkPost {
+            __typename
+            postSlug
+          }
+          internalLinkCategory {
+            __typename
+            categorySlug
+          }
+          internalLinkAuthor {
+            __typename
+            authorSlug
+          }
+        }
+        showImageHero
+        imageHero {
+          id
+          asset {
+            url
+            alt
+            width
+            height
+          }
+          assetDesktop {
+            url
+            alt
+            width
+            height
+          }
+        }
+        showImageOverlay
+        imageOverlay {
+          id
+          asset {
+            url
+            alt
+            width
+            height
+          }
+          assetDesktop {
+            url
+            alt
+            width
+            height
+          }
+        }
+      }
+    }
+    structuredText {
+      value
+      links {
+        __typename
+        ... on PageRecord {
+          id
+          title
+          slug
+        }
+      }
+      blocks {
+        __typename
+        ... on RecordInterface {
+          id
+        }
+        ... on ImageBlockRecord {
+          id
+          asset {
+            url
+            alt
+            width
+            height
+          }
+          assetDesktop {
+            url
+            alt
+            width
+            height
+          }
+        }
+        ... on ImageGalleryBlockRecord {
+          id
+          assets {
+            url
+            alt
+            width
+            height
+          }
+        }
+        ... on VideoBlockRecord {
+          id
+          asset {
+            url
+            title
+            width
+            height
+          }
+        }
+        ... on FeatureGridRecord {
+          id
+          titleFeatureGrid
+          itemsFeatureGrid {
+            __typename
+            ... on CardRecord {
+              id
+              iconCard
+              titleCard
+              descriptionCard
+              hasImage
+              imageCard {
+                id
+                asset {
+                  url
+                  alt
+                  width
+                  height
+                }
+                assetDesktop {
+                  url
+                  alt
+                  width
+                  height
+                }
+              }
+              hasLink
+              linkCard {
+                __typename
+                id
+                ctaLabel
+                typeContent
+                externalLink
+                openInNewTab
+                ctaLinkAria
+                internalLinkPage {
+                  __typename
+                  slug
+                }
+                internalLinkPost {
+                  __typename
+                  postSlug
+                }
+                internalLinkCategory {
+                  __typename
+                  categorySlug
+                }
+                internalLinkAuthor {
+                  __typename
+                  authorSlug
+                }
+              }
+            }
+          }
+        }
+        ... on FaqGroupRecord {
+          id
+          title
+          subtitle
+          hasSubtitle
+          advancedOptions
+          accordionMode
+          openFirstItem
+          enableFaqSchema
+          headerAlignment
+          questions {
+            id
+            question {
+              value
+            }
+            answer {
+              value
+            }
+          }
+        }
+        ... on CtaBannerRecord {
+          id
+          title
+          hasEyebrow
+          eyebrow
+          hasDescription
+          description
+          advancedOptions
+          variant
+          bgTheme
+          sectionId
+          hasImage
+          buttons {
+            __typename
+            id
+            ctaLabel
+            typeContent
+            externalLink
+            openInNewTab
+            ctaLinkAria
+            internalLinkPage {
+              __typename
+              slug
+            }
+            internalLinkPost {
+              __typename
+              postSlug
+            }
+            internalLinkCategory {
+              __typename
+              categorySlug
+            }
+            internalLinkAuthor {
+              __typename
+              authorSlug
+            }
+          }
+          imageBanner {
+            id
+            asset {
+              url
+              alt
+              width
+              height
+            }
+            assetDesktop {
+              url
+              alt
+              width
+              height
+            }
+          }
+        }
+      }
+      inlineBlocks
+    }
+    seoSettingsSocial {
+      title
+      description
+      twitterCard
+      noIndex
+      image {
+        url
+        alt
+        width
+        height
+      }
+    }
+    _seoMetaTags {
+      tag
+      attributes
+      content
+    }
+  }
+  _site {
+    faviconMetaTags {
+      tag
+      attributes
+      content
+    }
+  }
+}

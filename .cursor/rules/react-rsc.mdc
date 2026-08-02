@@ -1,0 +1,42 @@
+---
+description: React Server Components, error boundaries, client boundaries (next-dato)
+globs: "src/app/**,src/components/**"
+alwaysApply: false
+---
+
+# React Server Components (next-dato)
+
+## Async Server Components
+
+- `async function` pages/layouts/blocks may `await` data and `getNonce()`.
+- **Sync** Server Component must not render **async** child (e.g. `SeoManager`, `JsonLdScript`) — React error: *"Element type is invalid. Received a promise..."*.
+- Fix: make parent `async`, or use sync [`JsonLdScriptSync`](../../src/components/patterns/seo-manager.tsx) with nonce resolved upstream.
+
+## Client boundaries
+
+- `"use client"` only for: accordion, nav menu, theme toggle, forms with hooks, draft chrome.
+- Pass serializable props from Server → Client; no server-only secrets.
+
+## Error boundaries
+
+| File | Renders |
+|------|---------|
+| `app/error.tsx` | `<div>` UI only — **no** `<html>` / `<body>` |
+| `app/global-error.tsx` | Full document replacement (rare) |
+
+Nested `<html>` inside `<main>` causes hydration loops and repeated reloads.
+
+## Structured Text blocks
+
+- `StructuredTextBlockView` is sync; async block components (`export async function FaqGroupBlock`) are valid as direct return from `case`.
+- Do not wrap Server blocks in `dynamic()` unless they are client components.
+
+## SmartLink + Button
+
+- `Button asChild` + `SmartLink` → always `tone="inherit"` on SmartLink.
+
+## Anti-patterns
+
+- Async component imported into client component without proper boundary
+- JSON-LD async script inside sync ST block without async wrapper
+- Multiple sticky `top-0` chrome layers

@@ -1,0 +1,45 @@
+---
+description: Clean architecture layers, imports, and naming (next-dato)
+alwaysApply: true
+---
+
+# Architecture (next-dato)
+
+Complements `web-excellence.mdc` and `security.mdc`. Full map: [`docs/ARCHITECTURE.md`](../../docs/ARCHITECTURE.md).
+
+## Layers
+
+| Layer | Path | Allowed imports |
+|-------|------|-----------------|
+| Domain | `src/core/` | Other `core/` only — **no React, Next, or fetch** |
+| Infrastructure | `src/infra/` | `core/`, Node APIs, Dato client — **no UI components** |
+| Lib | `src/lib/` | `core/`, pure utilities — prefer no React |
+| UI | `src/components/` | `lib/`, `constants/`, atoms → patterns |
+| App | `src/app/` | All above; orchestrates pages and API |
+
+## Import direction
+
+- `app` → `components` → `lib` → `core`
+- `infra` consumed from Server Components, route handlers, Server Actions — not from client components
+- Never import `infra/` or `app/` from `core/`
+
+## Naming
+
+- CMS blocks: `{Name}Block` in `*-block.tsx` or `sections/`
+- Option resolvers: `resolve{Name}Options()` in `src/lib/datocms/`
+- Image/link fragments: reuse `IMAGE_BLOCK_RESPONSIVE`, `LINK_HERO_CTA_FIELDS` in `queries.ts`
+- Tests: colocated `*.test.ts` next to the module under test
+
+## Change discipline
+
+- Match existing patterns before introducing new abstractions
+- Minimize diff scope — no drive-by refactors
+- Register ST blocks only in `structured-text-block-view.tsx`
+- Document defaults in resolver file header when CMS has `advanced_options` toggles
+
+## Anti-patterns
+
+- Business logic in `app/**/page.tsx` beyond fetch + compose
+- Fetching DatoCMS inside client components
+- Duplicating CMS field reads without `readCdaBool/String/Array`
+- Hand-editing `src/infra/datocms/generated/**`

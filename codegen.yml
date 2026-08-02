@@ -1,0 +1,7 @@
+# Atalho: schema + operações GraphQL.
+# Uso: set -a && . ./.env && set +a && npm run codegen
+#
+# Configs:
+# - codegen-schema.yml  → src/infra/datocms/generated/schema.types.ts
+# - codegen-operations.yml → src/infra/datocms/generated/operations.types.ts
+#   (documentos em src/infra/datocms/graphql/*.graphql)

@@ -1,0 +1,72 @@
+---
+description: SEO, Performance, AEO, ATF, a11y e boas práticas web (next-dato + DatoCMS)
+alwaysApply: true
+---
+
+# Web excellence (next-dato)
+
+Uma rule global; dividir só quando um domínio crescer muito. Ao alterar UI, páginas, metadados ou assets, seguir estes padrões.
+
+## SEO
+
+- Metadados: `buildMetadata()` (`src/lib/seo.ts`) — robots, OG, Twitter, canonical, `metadataBase`.
+- CMS/blog: `buildDatoPageMetadata()` + `generateMetadata` por rota.
+- Páginas estáticas (home, contato): `export const metadata` + `buildStaticPageJsonLd()` (`src/lib/seo/build-static-page-jsonld.ts`).
+- Global: `manifest.ts`, `robots.ts`, `sitemap.ts`; layout com template `%s · {site}`.
+- 404: `noIndex` + `omitCanonical`. Busca com `?q=`: `noIndex` + canonical com query.
+- Config: `getSiteBaseUrl()` / `getSiteName()` — env `NEXT_PUBLIC_SITE_*`.
+
+## AEO
+
+- JSON-LD: `JsonLdScript` / `SeoManager` com nonce CSP.
+- Layout: `buildSiteJsonLdGraph()` — Organization, WebSite, SearchAction (`/busca?q={search_term_string}`).
+- CMS: `buildPageWebPageJsonLd()`; posts: `buildBlogPostJsonLdGraph()`; busca: `buildSearchPageJsonLd()`.
+- Breadcrumbs visíveis (`BreadcrumbNav`) alinhados ao `BreadcrumbList` no schema.
+- Um `<h1>` por página; copy real no Dato (não placeholders em produção).
+
+## Performance
+
+- Imagens Dato: `datocms-image-loader.ts` — `auto=format,compress`, `q=75`.
+- `DatoResponsivePicture`: `priority`/`fetchPriority="high"` só no LCP; senão `loading="lazy"`.
+- `sizes` realistas (evitar `100vw` em caixas ~1280px).
+- Sem `contain: paint` em header sticky.
+- Tema: `buildThemeBootScript()` inline no layout (sem componente cliente só para cookie).
+- Feature grid: Server Component + `feature-grid-card-icon.tsx` (client); `dynamic()` no bloco ST se pesado.
+- Inter `preload: true`; mono `preload: false`. `preconnect` a `www.datocms-assets.com`.
+- Lighthouse: `npm run build && npm run start` (não `next dev`).
+
+## ATF
+
+- `SkipLink` → `<main id="conteudo-principal" tabIndex={-1}>`.
+- Chrome sticky único em `layout.tsx` (Draft + header); header com `flex-wrap`, nav `min-w-0` + `flex-wrap` (evita cortar links).
+- LCP: `priority` em logo/hero conforme layout.
+
+## Acessibilidade (a11y)
+
+- Links nav: `navLinkAriaProps()` (`src/lib/a11y/nav-link.ts`) — sem `aria-label` redundante.
+- Formulários: `Field` + `aria-describedby`; erros `role="alert"`.
+- Landmarks: `<header>`, `<main>`, `<footer>`, `<nav aria-label="…">`.
+- Menu desktop com filhos: botão `aria-expanded` + `aria-haspopup="menu"`; submenu só no DOM quando aberto (offscreen oculto para AT).
+- Menu móvel: `role="dialog"`, `aria-modal`, Escape, focus trap no painel, `inert` em `main`/`footer`, foco volta ao botão ao fechar.
+- Tema: `role="switch"` + `aria-checked` (`ThemeToggle`).
+- Vídeo: `aria-label` + `figcaption`; `<track kind="captions">` quando o CMS tiver VTT.
+- `:focus-visible` e `prefers-reduced-motion` em `globals.css`.
+
+## Boas práticas
+
+- Segurança detalhada: ver `security.mdc` (CSP, secrets, draft, validação).
+- `next.config.ts`: `poweredByHeader: false`, cache `/_next/static`.
+- Client boundary mínimo; `rel="noopener noreferrer"` em `target="_blank"`.
+- **Touch targets** (Lighthouse): classes `touch-target` (48×48px) e `touch-target-text` (`globals.css`) em botões/ícones e links de nav; `gap-2` entre controlos adjacentes no header.
+
+## Anti-padrões
+
+- JSON-LD / canonical sem `getSiteBaseUrl()` ou nonce.
+- `aria-label` igual ao texto visível.
+- Submenu só com `:hover` (sem teclado / `aria-expanded`).
+- Dois `sticky top-0` sobrepostos; imagens hero com `sizes` inflado.
+- Botões `px-1.5 py-1.5` ou ícones `h-10` no header (falham “Touch targets” no Lighthouse).
+
+## Lighthouse manual (checklist rápido)
+
+Ao fechar feature de UI interativa, verificar: foco por Tab, ordem lógica, estado (`aria-expanded`/`aria-checked`), diálogo sem trap acidental, landmarks presentes.

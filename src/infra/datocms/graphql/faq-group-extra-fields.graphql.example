@@ -1,0 +1,7 @@
+# Campos do FaqGroupRecord (activos em queries.ts e page-by-slug.graphql):
+#
+# faqConfiguration
+# accordionMode
+# openFirstItem
+# enableFaqSchema
+# headerAlignment

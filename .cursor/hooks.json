@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "bash .cursor/hooks/post-edit-quality.sh"
+      }
+    ],
+    "stop": [
+      {
+        "command": "bash .cursor/hooks/agent-stop-checklist.sh"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "bash .cursor/hooks/shell-guard.sh",
+        "failClosed": true
+      }
+    ]
+  }
+}

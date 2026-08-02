@@ -3,24 +3,55 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "rm -rf .next && next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "start:prod": "NODE_ENV=production next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "codegen": "dotenv -e .env -- graphql-codegen --config codegen-schema.yml && dotenv -e .env -- graphql-codegen --config codegen-operations.yml",
+    "codegen:check": "node scripts/codegen-check.mjs",
+    "check-all": "npm run typecheck && npm run test && npm run lint && npm run build",
+    "security:audit": "npm audit --audit-level=high",
+    "security:headers": "node scripts/check-security-headers.mjs",
+    "security:check": "npm run security:audit && npm run security:headers"
   },
   "dependencies": {
-    "next": "16.2.3",
+    "@datocms/cda-client": "^0.2.10",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^3.1.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
+    "clsx": "^2.1.1",
+    "next": "16.2.7",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-datocms": "^8.0.2",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.72.1",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^6.3.1",
+    "@graphql-codegen/typescript": "^5.0.10",
+    "@graphql-codegen/typescript-operations": "^4.4.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.7.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.2.3",
+    "eslint-config-next": "16.2.7",
+    "graphql": "^16.13.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }

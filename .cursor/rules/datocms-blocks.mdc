@@ -1,0 +1,39 @@
+---
+description: DatoCMS Structured Text blocks — GraphQL, codegen, registration
+globs: "**/queries.ts,**/*.graphql,**/*-block*.tsx,**/structured-text-block-view.tsx,**/types-page.ts"
+alwaysApply: false
+---
+
+# DatoCMS blocks (next-dato)
+
+Canonical examples: [`faq-group-block.tsx`](../../src/components/patterns/faq-group-block.tsx), [`cta-banner-block.tsx`](../../src/components/sections/cta-banner-block.tsx).
+
+Skill: [`.cursor/skills/add-datocms-block/SKILL.md`](../skills/add-datocms-block/SKILL.md)
+
+## Checklist (new or updated block)
+
+1. Inspect `CtaBannerRecord` / block type in `src/infra/datocms/generated/schema.types.ts` for exact camelCase fields.
+2. Add fragment to **`queries.ts`** (`PAGE_STRUCTURED_TEXT_BLOCKS`) and **`page-by-slug.graphql`** (keep in sync).
+3. Optional fragment file: `src/infra/datocms/graphql/fragments/{block}.graphql`.
+4. Run `npm run codegen`.
+5. Add type in `types-page.ts` if needed (often `Extract` or schema import).
+6. Implement block component — reuse `SmartLink`, `DatoResponsivePicture`, `Button`.
+7. Register `case "{Name}Record":` in `structured-text-block-view.tsx`.
+8. Add `resolve*Options()` + tests when block has `advanced_options` or boolean toggles (`hasImage`, etc.).
+
+## Field reading
+
+- CDA camelCase; API keys snake_case — use `readCdaBool(record, "hasImage", "has_image")` etc.
+- Links: `LINK_HERO_CTA_FIELDS` + `SmartLink` + `resolveLinkBlock`.
+- Images: `IMAGE_BLOCK_RESPONSIVE` + `DatoResponsivePicture`.
+
+## RSC note
+
+Blocks rendered via `react-datocms` `renderBlock` that need `await getNonce()` or async children must be **`async function` blocks**, or inject sync JSON-LD via `JsonLdScriptSync`. See `react-rsc.mdc`.
+
+## Anti-patterns
+
+- Updating only `queries.ts` OR only `.graphql`
+- `next/dynamic()` for Server Component blocks in ST
+- New inline `<img>` instead of `DatoResponsivePicture`
+- Custom link parsing instead of `link-block.ts` / `SmartLink`

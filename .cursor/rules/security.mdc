@@ -1,0 +1,81 @@
+---
+description: Segurança, CSP, secrets, draft mode e validação de entrada (next-dato)
+alwaysApply: true
+---
+
+# Segurança e boas práticas (next-dato)
+
+Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profundidade** sem quebrar preview DatoCMS.
+
+## CSP e headers (`src/proxy.ts`)
+
+- Nonce por request: `crypto.getRandomValues` → header `x-nonce` (`NONCE_HEADER`).
+- Produção: `script-src` com nonce + `'strict-dynamic'`; `style-src` com nonce (sem `'unsafe-inline'`).
+- Dev: `'unsafe-eval'` e `style-src 'unsafe-inline'` só para HMR — não copiar para prod.
+- Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
+- `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
+- Headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva, `COOP: same-origin`, `HSTS` só em produção.
+
+## Nonce em conteúdo dinâmico
+
+- Scripts/JSON-LD: `getNonce()` + prop `nonce` (`JsonLdScript`, `buildThemeBootScript` no layout).
+- CSS de tema inline: `<style nonce={…}>` — única exceção controlada; não adicionar `<style>` sem nonce em prod.
+- Evitar `dangerouslySetInnerHTML` novo; se inevitável, conteúdo estático ou sanitizado + nonce.
+
+## Secrets e env
+
+- **Nunca** commitar `.env` (`.dockerignore` ignora `.env*`).
+- Tokens só no servidor: `DATOCMS_API_TOKEN`, `DATOCMS_DRAFT_CDA_TOKEN`, `DATOCMS_PREVIEW_SECRET`.
+- Preview: comparar segredos com `isSecretEqual()` (`src/lib/security/compare-secret.ts`) — não `===` direto em rotas públicas.
+- `DATOCMS_PREVIEW_SECRET` obrigatório para `/api/draft` e `/api/preview-links`; sem secret → 500/401, nunca draft aberto.
+
+## Draft Mode e preview
+
+- Ativar só via `runEnableDraft()` com `token`/`secret` válidos.
+- Redirect **relativo** apenas (`isRelativeUrl`); rejeitar URLs absolutas (open redirect).
+- Cookie iframe: `makeDraftModeWorkWithinIframes()` — `SameSite=None`, `Secure`, `Partitioned`.
+- UI: `DraftChrome` + link para `/api/disable-draft`.
+- Dados: `includeDrafts: true` só quando `draftMode().isEnabled`; token de rascunho separado do publicado.
+
+## DatoCMS / links do CMS
+
+- Links externos: `isSafeExternalHref()` antes de renderizar (`SmartLink`, `link-block.ts`) — bloqueia `javascript:`, `data:`, `//`.
+- `datocmsFetch`: Bearer no servidor; nunca expor tokens ao cliente.
+- Cache: `no-store` em draft; em dev publicado pode ser `no-store` — não confundir com dados sensíveis em cliente.
+
+## Formulários e Server Actions
+
+- Validação no núcleo: Zod em `src/core/entities/contact.ts` + `validateContactSubmission`.
+- Honeypot `company_website`: preenchido → resposta genérica de sucesso + delay (anti-bot, sem revelar filtro).
+- `"use server"` em actions; integrações (e-mail/CRM) só em `src/infra/`, nunca credenciais no bundle.
+
+## APIs (`src/app/api/`)
+
+- `preview-links`: POST + `token` na query; CORS largo (`*`) **só** para o plugin Dato — não reutilizar padrão em APIs novas.
+- Respostas de erro genéricas em auth (401/422); sem vazar stack em produção.
+
+## Cookies
+
+- Tema (`nd-theme`): valores validados com `isThemeMode()`; cookie com `SameSite=Lax` no cliente.
+- Draft: cookies httpOnly geridos pelo Next — não duplicar lógica manual salvo `makeDraftModeWorkWithinIframes`.
+
+## Anti-padrões
+
+- Token Dato ou preview secret em código, Storybook ou props cliente.
+- `includeDrafts: true` por defeito em páginas públicas.
+- Redirect de draft para URL absoluta externa.
+- `target="_blank"` sem `rel="noopener noreferrer"`.
+- Nova API com `Access-Control-Allow-Origin: *` sem justificativa (plugin Dato).
+
+## Verificação automatizada
+
+- `npm run security:audit` — dependências (high/critical).
+- `npm run security:headers` — headers + smoke `/api/draft` (servidor com `NODE_ENV=production`).
+- `npm run security:check` — ambos; ver [`docs/SECURITY.md`](../../docs/SECURITY.md).
+- CI: [`.github/workflows/security.yml`](../../.github/workflows/security.yml).
+
+## Melhorias futuras (quando necessário)
+
+- Rate limit na action de contacto (IP / edge).
+- Restringir CORS de `preview-links` a origens DatoCMS conhecidas.
+- CAPTCHA ou Turnstile se spam no formulário aumentar.

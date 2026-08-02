@@ -1,0 +1,12 @@
+schema:
+  - https://graphql.datocms.com/:
+      headers:
+        Authorization: Bearer ${DATOCMS_API_TOKEN}
+        X-Environment: ${DATOCMS_ENVIRONMENT}
+generates:
+  src/infra/datocms/generated/schema.types.ts:
+    plugins:
+      - typescript
+    config:
+      enumsAsTypes: true
+      skipTypename: false

@@ -1,0 +1,41 @@
+---
+description: Vitest conventions and what to test (next-dato)
+globs: "**/*.test.ts"
+alwaysApply: false
+---
+
+# Testing (next-dato)
+
+Runner: **Vitest** (`npm test`, `npm run test:watch`).
+
+## What to test
+
+- `resolve*Options()` — defaults, `advanced_options`, PT labels, snake_case aliases
+- `resolve*Image()`, `link-block`, `dast-plain-text`, JSON-LD builders
+- `compare-secret`, validation use-cases in `core/`
+- Pure functions in `lib/` with branching logic
+
+## What to skip unless asked
+
+- Snapshot tests of full components
+- Testing that React renders without asserting behavior
+- Mocking DatoCMS for every page test
+
+## Conventions
+
+- File: `{module}.test.ts` beside `{module}.ts`
+- Use descriptive `it("...")` strings — behavior, not implementation
+- Cover both camelCase and snake_case when reading CMS records
+- No secrets or real tokens in fixtures
+
+## CI
+
+Tests run in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) on every PR.
+
+## Before merge
+
+```bash
+npm run typecheck && npm test
+```
+
+See [docs/QUALITY-GATES.md](../../docs/QUALITY-GATES.md) pillar 7.

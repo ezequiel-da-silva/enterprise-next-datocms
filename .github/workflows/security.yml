@@ -1,0 +1,76 @@
+name: Security
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      NODE_ENV: production
+      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+      SECURITY_BASE_URL: http://127.0.0.1:3000
+      # Smoke tests draft (open redirect 422); override com secret do repositório se definido
+      # Secret fixo no CI para smoke tests; em produção use secret forte no repositório
+      DATOCMS_PREVIEW_SECRET: ci-preview-secret-for-smoke-tests
+      DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
+      DATOCMS_DRAFT_CDA_TOKEN: ${{ secrets.DATOCMS_DRAFT_CDA_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm run security:audit
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
+
+      - name: Start server
+        run: |
+          npm run start:prod -- -p 3000 > /tmp/next-start.log 2>&1 &
+          echo $! > /tmp/next-start.pid
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 60); do
+            if curl -sf --max-time 2 http://127.0.0.1:3000/ -o /dev/null; then
+              echo "Server ready after ${i}s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "--- next start log ---"
+          cat /tmp/next-start.log || true
+          exit 1
+
+      - name: Security headers and API smoke tests
+        run: npm run security:headers
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -f /tmp/next-start.pid ]; then
+            kill "$(cat /tmp/next-start.pid)" 2>/dev/null || true
+          fi
+          pkill -f "next start" 2>/dev/null || true
