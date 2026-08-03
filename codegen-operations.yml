@@ -7,12 +7,22 @@ documents:
 generates:
   src/infra/datocms/generated/operations.types.ts:
     plugins:
-      - typescript
       - typescript-operations
     config:
       enumsAsTypes: true
       skipTypename: false
       preResolveTypes: true
+      importSchemaTypesFrom: "./schema.types"
+      scalars:
+        BooleanType: boolean
+        CustomData: Record<string, unknown>
+        DateTime: string
+        FloatType: number
+        IntType: number
+        ItemId: string
+        JsonField: unknown
+        MetaTagAttributes: Record<string, string>
+        UploadId: string
       avoidOptionals:
         field: true
         object: false

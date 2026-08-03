@@ -10,3 +10,13 @@ generates:
     config:
       enumsAsTypes: true
       skipTypename: false
+      scalars:
+        BooleanType: boolean
+        CustomData: Record<string, unknown>
+        DateTime: string
+        FloatType: number
+        IntType: number
+        ItemId: string
+        JsonField: unknown
+        MetaTagAttributes: Record<string, string>
+        UploadId: string
