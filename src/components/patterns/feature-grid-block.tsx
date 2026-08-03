@@ -14,8 +14,9 @@ import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 function readCardIcon(card: CardRecord): DatoFontAwesomeIconJson | null {
   const raw = card.iconCard ?? readCdaObject<Record<string, unknown>>(card, "iconCard", "icon_card");
   if (!raw || typeof raw !== "object") return null;
-  const prefix = typeof raw.prefix === "string" ? raw.prefix : undefined;
-  const iconName = typeof raw.iconName === "string" ? raw.iconName : undefined;
+  const icon = raw as Record<string, unknown>;
+  const prefix = typeof icon.prefix === "string" ? icon.prefix : undefined;
+  const iconName = typeof icon.iconName === "string" ? icon.iconName : undefined;
   if (!prefix && !iconName) return null;
   return { prefix, iconName };
 }
