@@ -15,16 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
-    env:
-      NODE_ENV: production
-      NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
-      SECURITY_BASE_URL: http://127.0.0.1:3000
-      # Smoke tests draft (open redirect 422); override com secret do repositório se definido
-      # Secret fixo no CI para smoke tests; em produção use secret forte no repositório
-      DATOCMS_PREVIEW_SECRET: ci-preview-secret-for-smoke-tests
-      DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
-      DATOCMS_DRAFT_CDA_TOKEN: ${{ secrets.DATOCMS_DRAFT_CDA_TOKEN }}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +25,7 @@ jobs:
           node-version: "20"
           cache: npm
 
+      # Como NODE_ENV não é 'production' aqui, o npm ci instalará devDependencies (incluindo @tailwindcss/postcss)
       - name: Install dependencies
         run: npm ci
 
@@ -50,6 +41,13 @@ jobs:
         run: |
           npm run start:prod -- -p 3000 > /tmp/next-start.log 2>&1 &
           echo $! > /tmp/next-start.pid
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+          SECURITY_BASE_URL: http://127.0.0.1:3000
+          DATOCMS_PREVIEW_SECRET: ci-preview-secret-for-smoke-tests
+          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
+          DATOCMS_DRAFT_CDA_TOKEN: ${{ secrets.DATOCMS_DRAFT_CDA_TOKEN }}
 
       - name: Wait for server
         run: |
@@ -66,6 +64,8 @@ jobs:
 
       - name: Security headers and API smoke tests
         run: npm run security:headers
+        env:
+          SECURITY_BASE_URL: http://127.0.0.1:3000
 
       - name: Stop server
         if: always()
