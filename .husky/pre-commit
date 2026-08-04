@@ -1,0 +1,6 @@
+#!/bin/sh
+echo "🧹 Executando lint e testes em staging antes do commit..."
+
+npx lint-staged || { echo "❌ O lint-staged encontrou erros nos arquivos em staging. Corrija-os para continuar."; exit 1; }
+
+echo "✨ Arquivos em staging validados com sucesso!"

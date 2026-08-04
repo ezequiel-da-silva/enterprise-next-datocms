@@ -16,7 +16,8 @@
     "check-all": "npm run typecheck && npm run test && npm run lint && npm run build",
     "security:audit": "npm audit --audit-level=high",
     "security:headers": "node scripts/check-security-headers.mjs",
-    "security:check": "npm run security:audit && npm run security:headers"
+    "security:check": "npm run security:audit && npm run security:headers",
+    "prepare": "husky"
   },
   "dependencies": {
     "@datocms/cda-client": "^0.2.10",
@@ -52,6 +53,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "graphql": "^16.13.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.8"
@@ -64,5 +67,11 @@
     "postcss": "^8.5.25",
     "sharp": "^0.35.3",
     "lodash": "^4.17.21"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "vitest related --run"
+    ]
   }
 }
