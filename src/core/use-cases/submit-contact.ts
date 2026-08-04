@@ -1,18 +1,20 @@
-import type { ContactFormInput } from "@/core/entities/contact";
+import type { ContactSender } from "@/core/ports/contact-sender";
 import { validateContactSubmission, type ContactValidationResult } from "@/core/use-cases/validate-contact-submission";
-import { sendContactMessage } from "@/infra/contact/send-contact";
 
 export type SubmitContactResult =
   | { ok: true; message: string }
   | { ok: false; fieldErrors?: Record<string, string>; message?: string };
 
-export async function submitContactUseCase(input: unknown): Promise<SubmitContactResult> {
+export async function submitContactUseCase(
+  input: unknown,
+  sendMessage: ContactSender,
+): Promise<SubmitContactResult> {
   const validated: ContactValidationResult = validateContactSubmission(input);
   if (!validated.ok) {
     return { ok: false, fieldErrors: validated.fieldErrors };
   }
 
-  const sent = await sendContactMessage({
+  const sent = await sendMessage({
     ...validated.data,
     submittedAt: new Date().toISOString(),
   });
@@ -30,4 +32,4 @@ export async function submitContactUseCase(input: unknown): Promise<SubmitContac
   };
 }
 
-export type { ContactFormInput };
+export type { ContactFormInput } from "@/core/entities/contact";

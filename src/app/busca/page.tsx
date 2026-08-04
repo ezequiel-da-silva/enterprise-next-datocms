@@ -3,7 +3,9 @@ import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { SearchResults } from "@/components/patterns/search-results";
 import { SearchSkeleton } from "@/components/patterns/search-skeleton";
 import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
+import { searchSite } from "@/infra/datocms/search";
 import { buildSearchPageJsonLd } from "@/lib/seo/build-search-jsonld";
+import { homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { buildMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -29,7 +31,8 @@ export async function generateMetadata({ searchParams }: BuscaPageProps): Promis
 
 async function SearchShell({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
-  return <SearchResults query={q} />;
+  const { hits, error } = await searchSite(q);
+  return <SearchResults query={q} hits={hits} error={error} />;
 }
 
 export default async function BuscaPage({ searchParams }: BuscaPageProps) {
@@ -38,11 +41,14 @@ export default async function BuscaPage({ searchParams }: BuscaPageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-12">
-      <JsonLdScript graph={buildSearchPageJsonLd(term)} />
+      <JsonLdScript graph={buildSearchPageJsonLd(DEFAULT_APP_LOCALE, term)} />
       <header className="space-y-3">
         <BreadcrumbNav
           locale={DEFAULT_APP_LOCALE}
-          items={[{ label: "Início", href: "/" }, { label: term ? `Busca: ${term}` : "Busca" }]}
+          items={[
+            { label: homeBreadcrumbLabel(DEFAULT_APP_LOCALE), href: "/" },
+            { label: term ? `Busca: ${term}` : "Busca" },
+          ]}
         />
         <h1 className="text-3xl font-semibold tracking-tight text-foreground">Busca</h1>
         <p className="text-sm text-muted-foreground">

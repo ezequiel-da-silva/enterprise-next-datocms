@@ -4,6 +4,7 @@ import { StructuredTextRenderer } from "@/components/patterns/structured-text-re
 import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, appLocaleFromParam, type AppLocale } from "@/constants/i18n";
 import { getGlobalSettings, pickGlobalSetting } from "@/infra/datocms/get-global-settings";
 import { buildMetadata } from "@/lib/seo";
+import { getSiteName } from "@/lib/seo/site-config";
 import type { Metadata } from "next";
 import { draftMode, headers } from "next/headers";
 import Link from "next/link";
@@ -75,7 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
       : null;
   const description = cmsDesc ?? notFoundMetaDescription(locale);
   return buildMetadata({
-    title: `${title} · next-dato`,
+    title: `${title} · ${getSiteName()}`,
     description,
     path: "/",
     noIndex: true,

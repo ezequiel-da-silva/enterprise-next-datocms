@@ -9,6 +9,12 @@ import { getPostBySlug } from "@/infra/datocms/get-blog";
 import { getStaticParamsBlogPosts } from "@/infra/datocms/static-params";
 import { buildBlogPostJsonLdGraph } from "@/lib/seo/build-blog-post-jsonld";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import {
+  blogBreadcrumbLabel,
+  crumbsToNavItems,
+  homeBreadcrumbLabel,
+} from "@/lib/seo/breadcrumb-labels";
+import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
@@ -43,6 +49,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     seoMetaTags: post._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: post.seoSettingsSocial,
+    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog/${postSlug}`),
   });
 }
 
@@ -83,11 +90,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <header className="space-y-4">
         <BreadcrumbNav
           locale={locale}
-          items={[
-            { label: "Início", href: `/${locale}` },
-            { label: "Blog", href: `/${locale}/blog` },
-            { label: post.postTitle },
-          ]}
+          items={crumbsToNavItems([
+            { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
+            { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+            { name: post.postTitle, path: `/${locale}/blog/${postSlug}` },
+          ])}
         />
         <p className="text-sm text-muted-foreground">
           <time dateTime={post._firstPublishedAt}>{dateLabel}</time>

@@ -1,4 +1,6 @@
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
+import type { AppLocale } from "@/constants/i18n";
+import { buildHreflangAlternates } from "@/lib/seo/hreflang";
 import type { Metadata } from "next";
 import { toNextMetadata, type TitleMetaLinkTag } from "react-datocms/seo";
 import type { SeoSettingsSocial } from "@/infra/datocms/types-page";
@@ -8,6 +10,8 @@ type BuildArgs = {
   seoMetaTags: TitleMetaLinkTag[] | null | undefined;
   faviconMetaTags: TitleMetaLinkTag[] | null | undefined;
   seoSettingsSocial?: SeoSettingsSocial;
+  /** Same logical page in other locales (hreflang). */
+  hreflangPaths?: Partial<Record<AppLocale, string>>;
 };
 
 /**
@@ -19,6 +23,7 @@ export function buildDatoPageMetadata({
   seoMetaTags,
   faviconMetaTags,
   seoSettingsSocial,
+  hreflangPaths,
 }: BuildArgs): Metadata {
   const baseUrl = getSiteBaseUrl();
   const canonicalPath = path.startsWith("/") ? path : `/${path}`;
@@ -59,10 +64,15 @@ export function buildDatoPageMetadata({
     };
   }
 
+  const hreflang = hreflangPaths ? buildHreflangAlternates(hreflangPaths) : undefined;
+
   return {
     ...fromTags,
     ...fromField,
     metadataBase: new URL(`${baseUrl}/`),
-    alternates: { canonical },
+    alternates: {
+      canonical,
+      ...hreflang,
+    },
   };
 }

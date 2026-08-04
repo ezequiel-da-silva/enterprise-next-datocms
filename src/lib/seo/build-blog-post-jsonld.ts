@@ -1,5 +1,11 @@
 import type { AppLocale } from "@/constants/i18n";
 import type { PostDetailRecord } from "@/infra/datocms/types-blog";
+import {
+  blogBreadcrumbLabel,
+  buildLocaleBreadcrumbTrail,
+  homeBreadcrumbPath,
+} from "@/lib/seo/breadcrumb-labels";
+import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
 
 function schemaLanguage(locale: AppLocale): string {
@@ -8,10 +14,6 @@ function schemaLanguage(locale: AppLocale): string {
   return "es";
 }
 
-/**
- * JSON-LD para artigos do blog: `BlogPosting` + `BreadcrumbList` (Schema.org).
- * Complementa metadados Open Graph já gerados por `buildDatoPageMetadata`.
- */
 export function buildBlogPostJsonLdGraph(
   locale: AppLocale,
   postSlug: string,
@@ -20,8 +22,7 @@ export function buildBlogPostJsonLdGraph(
   const base = getSiteBaseUrl();
   const path = `/${locale}/blog/${postSlug}`;
   const url = `${base}${path}`;
-  const blogIndexUrl = `${base}/${locale}/blog`;
-  const localeRootUrl = `${base}/${locale}`;
+  const blogIndexPath = `/${locale}/blog`;
 
   const imageUrl = post.coverImage?.asset?.url ?? post.coverImage?.assetDesktop?.url ?? undefined;
   const description = post.seoSettingsSocial?.description?.trim() || undefined;
@@ -60,29 +61,13 @@ export function buildBlogPostJsonLdGraph(
     },
   };
 
-  const breadcrumb: Record<string, unknown> = {
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: localeRootUrl,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: blogIndexUrl,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.postTitle,
-        item: url,
-      },
-    ],
-  };
+  const crumbs = buildLocaleBreadcrumbTrail(
+    locale,
+    { name: post.postTitle, path },
+    [{ name: blogBreadcrumbLabel(), path: blogIndexPath }],
+  );
 
-  return [blogPosting, breadcrumb];
+  return [blogPosting, buildBreadcrumbListJsonLd(crumbs)];
 }
+
+export { homeBreadcrumbPath };

@@ -1,3 +1,5 @@
+#import "./fragments/cta-banner.graphql"
+
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
     id
@@ -199,57 +201,7 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
           }
         }
         ... on CtaBannerRecord {
-          id
-          title
-          hasEyebrow
-          eyebrow
-          hasDescription
-          description
-          advancedOptions
-          variant
-          bgTheme
-          sectionId
-          hasImage
-          buttons {
-            __typename
-            id
-            ctaLabel
-            typeContent
-            externalLink
-            openInNewTab
-            ctaLinkAria
-            internalLinkPage {
-              __typename
-              slug
-            }
-            internalLinkPost {
-              __typename
-              postSlug
-            }
-            internalLinkCategory {
-              __typename
-              categorySlug
-            }
-            internalLinkAuthor {
-              __typename
-              authorSlug
-            }
-          }
-          imageBanner {
-            id
-            asset {
-              url
-              alt
-              width
-              height
-            }
-            assetDesktop {
-              url
-              alt
-              width
-              height
-            }
-          }
+          ...CtaBannerBlockFields
         }
       }
       inlineBlocks

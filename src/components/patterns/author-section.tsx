@@ -2,6 +2,7 @@ import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-pic
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
 import type { AuthorDetailRecord } from "@/infra/datocms/types-blog";
+import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import Link from "next/link";
 
@@ -26,6 +27,7 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
       : null;
 
   const social = author.authorSocialLinks;
+  const socialHref = social?.url && isSafeExternalHref(social.url) ? social.url : null;
 
   return (
     <section className="mt-12 rounded-xl border border-border bg-muted/20 p-6 ring-1 ring-border/40" aria-labelledby={`autor-${author.id}`}>
@@ -55,15 +57,15 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
             </p>
           </div>
           {bioData ? <StructuredTextRenderer data={bioData} contentLinkGroup={contentLinkGroup} locale={locale} /> : null}
-          {social?.url ? (
+          {socialHref ? (
             <p className="text-sm">
               <a
-                href={social.url}
+                href={socialHref}
                 className="font-medium text-primary underline-offset-4 hover:underline"
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                {social.plataforma?.trim() ? social.plataforma : "Perfil"}
+                {social?.plataforma?.trim() ? social.plataforma : "Perfil"}
               </a>
             </p>
           ) : null}

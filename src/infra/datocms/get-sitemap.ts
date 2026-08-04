@@ -1,7 +1,8 @@
-import type { AppLocale } from "@/constants/i18n";
+import { APP_LOCALES, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
 import { SITEMAP_SOURCES } from "@/infra/datocms/queries";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
+import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import { cache } from "react";
 import type { MetadataRoute } from "next";
 
@@ -9,9 +10,14 @@ const SITEMAP_TAG = "datocms:sitemap";
 
 type DatoLocaleKey = "en" | "pt_BR" | "es";
 
-type SlugRow = { slug: string | null; _updatedAt: string };
-type PostRow = { postSlug: string | null; _updatedAt: string };
-type AuthorRow = { authorSlug: string | null; _updatedAt: string };
+type SeoNoIndexRow = {
+  seoSettingsSocial?: { noIndex?: boolean | null } | null;
+};
+
+type SlugRow = SeoNoIndexRow & { slug: string | null; _updatedAt: string };
+type PostRow = SeoNoIndexRow & { postSlug: string | null; _updatedAt: string };
+type AuthorRow = SeoNoIndexRow & { authorSlug: string | null; _updatedAt: string };
+type CategoryRow = SeoNoIndexRow & { categorySlug: string | null; _updatedAt: string };
 
 type SitemapSourcesData = {
   pagesEn: SlugRow[];
@@ -23,7 +29,14 @@ type SitemapSourcesData = {
   authorsEn: AuthorRow[];
   authorsPtBR: AuthorRow[];
   authorsEs: AuthorRow[];
+  categoriesEn: CategoryRow[];
+  categoriesPtBR: CategoryRow[];
+  categoriesEs: CategoryRow[];
 };
+
+function isIndexable(row: SeoNoIndexRow): boolean {
+  return row.seoSettingsSocial?.noIndex !== true;
+}
 
 function maxDate(a: Date, b: Date): Date {
   return a.getTime() >= b.getTime() ? a : b;
@@ -33,6 +46,7 @@ function mergePagesBySlug(rows: SlugRow[][]): Map<string, Date> {
   const map = new Map<string, Date>();
   for (const list of rows) {
     for (const row of list) {
+      if (!isIndexable(row)) continue;
       const slug = row.slug?.trim();
       if (!slug) continue;
       const t = new Date(row._updatedAt);
@@ -66,9 +80,18 @@ function staticRoutes(base: URL): MetadataRoute.Sitemap {
   ];
 }
 
+function blogIndexRoutes(base: URL, pagesMerged: Map<string, Date>): MetadataRoute.Sitemap {
+  const homeUpdated = pagesMerged.get("home") ?? new Date();
+  return APP_LOCALES.map((locale) => ({
+    url: new URL(`/${locale}/blog`, base).toString(),
+    lastModified: homeUpdated,
+    changeFrequency: "daily" as const,
+    priority: 0.8,
+  }));
+}
+
 const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const base = new URL(baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl);
+  const base = new URL(getSiteBaseUrl());
 
   const result = await datocmsFetch<SitemapSourcesData>({
     query: SITEMAP_SOURCES,
@@ -99,6 +122,8 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
     priority: 1,
   });
 
+  entries.push(...blogIndexRoutes(base, pagesMerged));
+
   const pageBuckets: [DatoLocaleKey, SlugRow[]][] = [
     ["en", d.pagesEn],
     ["pt_BR", d.pagesPtBR],
@@ -107,15 +132,25 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   for (const [datoKey, rows] of pageBuckets) {
     const appLocale = appLocaleFromDatoKey(datoKey);
     for (const row of rows) {
+      if (!isIndexable(row)) continue;
       const slug = row.slug?.trim();
-      if (!slug) continue;
+      if (!slug || slug.toLowerCase() === "home") continue;
       entries.push({
         url: new URL(cmsPageCanonicalPath(slug, appLocale), base).toString(),
         lastModified: new Date(row._updatedAt),
-        changeFrequency: slug.toLowerCase() === "home" ? "daily" : "monthly",
-        priority: slug.toLowerCase() === "home" ? 0.9 : 0.5,
+        changeFrequency: "monthly",
+        priority: 0.5,
       });
     }
+  }
+
+  for (const locale of APP_LOCALES) {
+    entries.push({
+      url: new URL(`/${locale}`, base).toString(),
+      lastModified: pagesMerged.get("home") ?? new Date(),
+      changeFrequency: "daily",
+      priority: 0.9,
+    });
   }
 
   const postBuckets: [DatoLocaleKey, PostRow[]][] = [
@@ -126,6 +161,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   for (const [datoKey, rows] of postBuckets) {
     const appLocale = appLocaleFromDatoKey(datoKey);
     for (const row of rows) {
+      if (!isIndexable(row)) continue;
       const slug = row.postSlug?.trim();
       if (!slug) continue;
       entries.push({
@@ -133,6 +169,26 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
         lastModified: new Date(row._updatedAt),
         changeFrequency: "weekly",
         priority: 0.8,
+      });
+    }
+  }
+
+  const categoryBuckets: [DatoLocaleKey, CategoryRow[]][] = [
+    ["en", d.categoriesEn],
+    ["pt_BR", d.categoriesPtBR],
+    ["es", d.categoriesEs],
+  ];
+  for (const [datoKey, rows] of categoryBuckets) {
+    const appLocale = appLocaleFromDatoKey(datoKey);
+    for (const row of rows) {
+      if (!isIndexable(row)) continue;
+      const slug = row.categorySlug?.trim();
+      if (!slug) continue;
+      entries.push({
+        url: new URL(`/${appLocale}/blog/category/${slug}`, base).toString(),
+        lastModified: new Date(row._updatedAt),
+        changeFrequency: "weekly",
+        priority: 0.6,
       });
     }
   }
@@ -146,6 +202,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   for (const [datoKey, rows] of authorBuckets) {
     const appLocale = appLocaleFromDatoKey(datoKey);
     for (const row of rows) {
+      if (!isIndexable(row)) continue;
       const slug = row.authorSlug?.trim();
       if (!slug) continue;
       const key = `${appLocale}:${slug}`;

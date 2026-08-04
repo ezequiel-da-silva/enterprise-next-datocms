@@ -1,40 +1,39 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { ContactSender } from "@/core/ports/contact-sender";
 import { submitContactUseCase } from "@/core/use-cases/submit-contact";
 
-vi.mock("@/infra/contact/send-contact", () => ({
-  sendContactMessage: vi.fn(async () => ({ ok: true as const })),
-}));
-
-import { sendContactMessage } from "@/infra/contact/send-contact";
-
 describe("submitContactUseCase", () => {
-  beforeEach(() => {
-    vi.mocked(sendContactMessage).mockClear();
-  });
-
   it("returns field errors for invalid input", async () => {
-    const result = await submitContactUseCase({ name: "A", email: "bad", message: "x" });
+    const send = vi.fn<ContactSender>();
+    const result = await submitContactUseCase({ name: "A", email: "bad", message: "x" }, send);
     expect(result.ok).toBe(false);
-    expect(sendContactMessage).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
   });
 
   it("sends valid submission", async () => {
-    const result = await submitContactUseCase({
-      name: "João Souza",
-      email: "joao@example.com",
-      message: "Preciso de ajuda com o produto.",
-    });
+    const send = vi.fn<ContactSender>(async () => ({ ok: true }));
+    const result = await submitContactUseCase(
+      {
+        name: "João Souza",
+        email: "joao@example.com",
+        message: "Preciso de ajuda com o produto.",
+      },
+      send,
+    );
     expect(result.ok).toBe(true);
-    expect(sendContactMessage).toHaveBeenCalledOnce();
+    expect(send).toHaveBeenCalledOnce();
   });
 
   it("surfaces transport errors", async () => {
-    vi.mocked(sendContactMessage).mockResolvedValueOnce({ ok: false, reason: "transport_error" });
-    const result = await submitContactUseCase({
-      name: "João Souza",
-      email: "joao@example.com",
-      message: "Preciso de ajuda com o produto.",
-    });
+    const send = vi.fn<ContactSender>(async () => ({ ok: false, reason: "transport_error" }));
+    const result = await submitContactUseCase(
+      {
+        name: "João Souza",
+        email: "joao@example.com",
+        message: "Preciso de ajuda com o produto.",
+      },
+      send,
+    );
     expect(result.ok).toBe(false);
     if (!result.ok) {
       expect(result.message).toContain("Não foi possível");
