@@ -1,7 +1,7 @@
 "use client";
 
-import { submitContact } from "@/app/actions/contact";
 import { HONEYPOT_FIELD } from "@/constants/contact-form";
+import type { ContactActionState } from "@/core/entities/contact";
 import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
@@ -23,8 +23,12 @@ function toFormData(values: ContactFormClientValues): FormData {
   return fd;
 }
 
-export function ContactForm() {
-  const [state, formAction, isPending] = useActionState(submitContact, { status: "idle" });
+export type ContactFormProps = {
+  action: (prev: ContactActionState, formData: FormData) => Promise<ContactActionState>;
+};
+
+export function ContactForm({ action }: ContactFormProps) {
+  const [state, formAction, isPending] = useActionState(action, { status: "idle" });
 
   const {
     register,

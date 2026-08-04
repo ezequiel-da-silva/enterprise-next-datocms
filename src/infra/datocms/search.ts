@@ -2,13 +2,7 @@ import { DEFAULT_APP_LOCALE, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
 import { SEARCH_SITE } from "@/infra/datocms/queries";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-
-export type SearchHit = {
-  id: string;
-  title: string;
-  href: string;
-  kind: "page" | "post" | "author";
-};
+import type { SearchHit } from "@/lib/datocms/search-hit";
 
 type SearchSiteData = {
   pages: { id: string; title: string; slug: string | null }[];

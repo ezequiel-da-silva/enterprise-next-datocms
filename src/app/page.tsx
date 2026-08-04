@@ -1,6 +1,7 @@
 import { HomeCmsSection } from "@/components/patterns/home-cms-section";
 import { HomeCmsSkeleton } from "@/components/patterns/home-cms-skeleton";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
+import { getHomeHighlightLocales } from "@/infra/datocms/get-home-highlight";
 import { buildStaticPageJsonLd } from "@/lib/seo/build-static-page-jsonld";
 import { buildMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
@@ -15,6 +16,11 @@ export const metadata: Metadata = buildMetadata({
   description: homeDescription,
   path: "/",
 });
+
+async function HomeCmsShell() {
+  const { locales, error } = await getHomeHighlightLocales();
+  return <HomeCmsSection locales={locales} error={error} />;
+}
 
 export default function Home() {
   const jsonLd = buildStaticPageJsonLd("WebPage", "Início", "/", homeDescription);
@@ -36,7 +42,7 @@ export default function Home() {
       </header>
 
       <Suspense fallback={<HomeCmsSkeleton />}>
-        <HomeCmsSection />
+        <HomeCmsShell />
       </Suspense>
     </div>
   );

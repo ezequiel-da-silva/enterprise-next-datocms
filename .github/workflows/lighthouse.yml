@@ -1,0 +1,39 @@
+name: Lighthouse
+
+on:
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+concurrency:
+  group: lighthouse-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Production build
+        run: npm run build
+        env:
+          NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
+          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
+
+      - name: Lighthouse CI
+        run: npx lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

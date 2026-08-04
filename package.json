@@ -17,6 +17,7 @@
     "security:audit": "npm audit --audit-level=high",
     "security:headers": "node scripts/check-security-headers.mjs",
     "security:check": "npm run security:audit && npm run security:headers",
+    "lighthouse:ci": "lhci autorun",
     "prepare": "husky"
   },
   "dependencies": {
@@ -44,6 +45,7 @@
     "@graphql-codegen/cli": "^7.2.0",
     "@graphql-codegen/typescript": "^6.1.0",
     "@graphql-codegen/typescript-operations": "^6.1.2",
+    "@lhci/cli": "^0.15.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -74,38 +74,86 @@ export const SITEMAP_SOURCES = /* GraphQL */ `
     pagesEn: allPages(locale: en, first: 200, orderBy: _updatedAt_DESC) {
       slug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     pagesPtBR: allPages(locale: pt_BR, first: 200, orderBy: _updatedAt_DESC) {
       slug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     pagesEs: allPages(locale: es, first: 200, orderBy: _updatedAt_DESC) {
       slug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     postsEn: allPosts(locale: en, first: 200, orderBy: _updatedAt_DESC) {
       postSlug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     postsPtBR: allPosts(locale: pt_BR, first: 200, orderBy: _updatedAt_DESC) {
       postSlug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     postsEs: allPosts(locale: es, first: 200, orderBy: _updatedAt_DESC) {
       postSlug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     authorsEn: allAuthors(locale: en, first: 100, orderBy: _updatedAt_DESC) {
       authorSlug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     authorsPtBR: allAuthors(locale: pt_BR, first: 100, orderBy: _updatedAt_DESC) {
       authorSlug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
     authorsEs: allAuthors(locale: es, first: 100, orderBy: _updatedAt_DESC) {
       authorSlug
       _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
+    }
+    categoriesEn: allCategories(locale: en, first: 200, orderBy: _updatedAt_DESC) {
+      categorySlug
+      _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
+    }
+    categoriesPtBR: allCategories(locale: pt_BR, first: 200, orderBy: _updatedAt_DESC) {
+      categorySlug
+      _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
+    }
+    categoriesEs: allCategories(locale: es, first: 200, orderBy: _updatedAt_DESC) {
+      categorySlug
+      _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
     }
   }
 `;

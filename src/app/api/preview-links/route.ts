@@ -38,7 +38,10 @@ export async function POST(request: NextRequest) {
   const expected = getExpectedSecret();
   const token = request.nextUrl.searchParams.get("token");
 
-  if (!expected || !isSecretEqual(token, expected)) {
+  if (!expected) {
+    return jsonWithCors({ success: false, error: "Preview secret not configured" }, 500);
+  }
+  if (!isSecretEqual(token, expected)) {
     return jsonWithCors({ success: false, error: "Invalid token" }, 401);
   }
 

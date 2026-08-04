@@ -1,4 +1,4 @@
-import { searchSite } from "@/infra/datocms/search";
+import type { SearchHit } from "@/lib/datocms/search-hit";
 import Link from "next/link";
 
 const kindLabel: Record<string, string> = {
@@ -7,9 +7,13 @@ const kindLabel: Record<string, string> = {
   author: "Autor",
 };
 
-export async function SearchResults({ query }: { query: string }) {
-  const { hits, error } = await searchSite(query);
+type SearchResultsProps = {
+  query: string;
+  hits: SearchHit[];
+  error?: string;
+};
 
+export function SearchResults({ query, hits, error }: SearchResultsProps) {
   if (error) {
     return (
       <p className="text-sm text-muted-foreground" role="status">

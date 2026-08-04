@@ -1,3 +1,5 @@
+import type { AppLocale } from "@/constants/i18n";
+import { buildHreflangAlternates } from "@/lib/seo/hreflang";
 import { getOrganizationName, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
 import type { Metadata } from "next";
 
@@ -11,6 +13,8 @@ export type SeoInput = {
   omitCanonical?: boolean;
   /** Sobrescreve o template de título do layout. */
   absoluteTitle?: boolean;
+  /** hreflang para páginas estáticas multilíngues (ex.: `/contato`). */
+  hreflangPaths?: Partial<Record<AppLocale, string>>;
 };
 
 const DEFAULT_ROBOTS: Metadata["robots"] = {
@@ -32,6 +36,8 @@ export function buildMetadata(input: SeoInput): Metadata {
   const title = input.absoluteTitle ? { absolute: input.title } : input.title;
 
   const ogImages = input.openGraphImage ? [{ url: input.openGraphImage, alt: input.title }] : undefined;
+
+  const hreflang = input.hreflangPaths ? buildHreflangAlternates(input.hreflangPaths) : undefined;
 
   return {
     title,
@@ -62,7 +68,8 @@ export function buildMetadata(input: SeoInput): Metadata {
       description: input.description,
       images: input.openGraphImage ? [input.openGraphImage] : undefined,
     },
-    alternates: input.omitCanonical ? undefined : { canonical: url },
-    category: "technology",
+    alternates: input.omitCanonical
+      ? hreflang
+      : { canonical: url, ...hreflang },
   };
 }

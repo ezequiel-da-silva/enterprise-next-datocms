@@ -1,5 +1,6 @@
 import { ContactForm } from "@/components/patterns/contact-form";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
+import { submitContact } from "@/app/actions/contact";
 import { buildMetadata } from "@/lib/seo";
 import { buildStaticPageJsonLd } from "@/lib/seo/build-static-page-jsonld";
 import type { Metadata } from "next";
@@ -26,7 +27,7 @@ export default function ContatoPage() {
           Radix-friendly patterns.
         </p>
       </header>
-      <ContactForm />
+      <ContactForm action={submitContact} />
     </div>
   );
 }

@@ -1,15 +1,24 @@
 import { PostCard } from "@/components/patterns/post-card";
+import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { getAuthorBySlug, getPostsByAuthor } from "@/infra/datocms/get-blog";
 import { getStaticParamsAuthors } from "@/infra/datocms/static-params";
+import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
+import {
+  blogBreadcrumbLabel,
+  crumbsToNavItems,
+  homeBreadcrumbLabel,
+} from "@/lib/seo/breadcrumb-labels";
+import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type AuthorPageProps = {
@@ -39,6 +48,7 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
     seoMetaTags: author._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: author.seoSettingsSocial,
+    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog/author/${authorSlug}`),
   });
 }
 
@@ -80,14 +90,23 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
   const avatarMobile = author.avatarBio?.asset;
   const avatarDesktop = author.avatarBio?.assetDesktop;
   const social = author.authorSocialLinks;
+  const socialHref = social?.url && isSafeExternalHref(social.url) ? social.url : null;
+  const authorPath = `/${locale}/blog/author/${authorSlug}`;
+  const jsonLd = buildListingPageJsonLd(locale, authorPath, author.authorName, [
+    { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
-      <p className="text-sm text-muted-foreground">
-        <Link href={`/${locale}/blog`} className="font-medium text-primary underline-offset-4 hover:underline">
-          Blog
-        </Link>
-      </p>
+      <JsonLdScript graph={jsonLd} />
+      <BreadcrumbNav
+        locale={locale}
+        items={crumbsToNavItems([
+          { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
+          { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+          { name: author.authorName, path: authorPath },
+        ])}
+      />
 
       <header className="mt-4 flex flex-col gap-6 border-b border-border pb-10 sm:flex-row sm:items-start">
         <div className="shrink-0 overflow-hidden rounded-full border border-border bg-background shadow-sm ring-2 ring-border/50">
@@ -105,10 +124,10 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
         <div className="min-w-0 flex-1 space-y-4">
           <div>
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{author.authorName}</h1>
-            {social?.url ? (
+            {socialHref ? (
               <p className="mt-2 text-sm">
-                <a href={social.url} className="font-medium text-primary underline-offset-4 hover:underline" rel="noopener noreferrer" target="_blank">
-                  {social.plataforma?.trim() ? social.plataforma : "Perfil"}
+                <a href={socialHref} className="font-medium text-primary underline-offset-4 hover:underline" rel="noopener noreferrer" target="_blank">
+                {social?.plataforma?.trim() ? social.plataforma : "Perfil"}
                 </a>
               </p>
             ) : null}

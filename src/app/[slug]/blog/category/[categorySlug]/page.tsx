@@ -1,15 +1,23 @@
 import { PostCard } from "@/components/patterns/post-card";
+import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { getCategoryBySlug, getPostsByCategory } from "@/infra/datocms/get-blog";
 import { getStaticParamsCategories } from "@/infra/datocms/static-params";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
+import {
+  blogBreadcrumbLabel,
+  crumbsToNavItems,
+  homeBreadcrumbLabel,
+} from "@/lib/seo/breadcrumb-labels";
+import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type CategoryPageProps = {
@@ -39,6 +47,7 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     seoMetaTags: category._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: category.seoSettingsSocial,
+    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog/category/${categorySlug}`),
   });
 }
 
@@ -79,14 +88,22 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
 
   const icon = category.categoryIcon;
   const colorHex = category.categoryColor?.hex;
+  const categoryPath = `/${locale}/blog/category/${categorySlug}`;
+  const jsonLd = buildListingPageJsonLd(locale, categoryPath, category.categoryName, [
+    { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
-      <p className="text-sm text-muted-foreground">
-        <Link href={`/${locale}/blog`} className="font-medium text-primary underline-offset-4 hover:underline">
-          Blog
-        </Link>
-      </p>
+      <JsonLdScript graph={jsonLd} />
+      <BreadcrumbNav
+        locale={locale}
+        items={crumbsToNavItems([
+          { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
+          { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+          { name: category.categoryName, path: categoryPath },
+        ])}
+      />
 
       <header className="mt-6 space-y-4 border-b border-border pb-8">
         <div className="flex flex-wrap items-center gap-3">

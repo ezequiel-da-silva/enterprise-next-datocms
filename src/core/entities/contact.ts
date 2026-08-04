@@ -18,3 +18,8 @@ export const contactFormClientSchema = contactFormSchema.extend({
 
 export type ContactFormInput = z.infer<typeof contactFormSchema>;
 export type ContactFormClientValues = z.infer<typeof contactFormClientSchema>;
+
+export type ContactActionState =
+  | { status: "idle" }
+  | { status: "success"; message: string }
+  | { status: "error"; fieldErrors?: Record<string, string>; message?: string };

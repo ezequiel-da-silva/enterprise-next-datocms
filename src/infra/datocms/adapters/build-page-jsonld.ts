@@ -1,15 +1,17 @@
+import type { AppLocale } from "@/constants/i18n";
+import {
+  buildLocaleBreadcrumbTrail,
+  homeBreadcrumbLabel,
+  homeBreadcrumbPath,
+} from "@/lib/seo/breadcrumb-labels";
+import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
 
-/**
- * Adaptador: Page DatoCMS → JSON-LD (WebPage + BreadcrumbList) para o SeoManager.
- */
-
 export type PageJsonLdInput = {
-  /** Caminho público absoluto a partir da raiz (ex.: `/en/page-two`). */
   path: string;
   title: string;
   description?: string | null;
-  /** Segmentos intermédios entre Home e a página actual (nome + path). */
+  locale: AppLocale;
   breadcrumbTrail?: { name: string; path: string }[];
 };
 
@@ -33,21 +35,14 @@ export function buildPageWebPageJsonLd(input: PageJsonLdInput): Record<string, u
     },
   };
 
-  const crumbs: { name: string; path: string }[] = [
-    { name: "Home", path: "/" },
-    ...(input.breadcrumbTrail ?? []),
-    { name: input.title, path: pathname },
-  ];
+  const isLocaleHome = pathname === homeBreadcrumbPath(input.locale);
+  const crumbs = isLocaleHome
+    ? [{ name: homeBreadcrumbLabel(input.locale), path: homeBreadcrumbPath(input.locale) }]
+    : buildLocaleBreadcrumbTrail(
+        input.locale,
+        { name: input.title, path: pathname },
+        input.breadcrumbTrail,
+      );
 
-  const breadcrumb: Record<string, unknown> = {
-    "@type": "BreadcrumbList",
-    itemListElement: crumbs.map((c, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: c.name,
-      item: new URL(c.path.startsWith("/") ? c.path : `/${c.path}`, `${base}/`).toString(),
-    })),
-  };
-
-  return [webPage, breadcrumb];
+  return [webPage, buildBreadcrumbListJsonLd(crumbs)];
 }

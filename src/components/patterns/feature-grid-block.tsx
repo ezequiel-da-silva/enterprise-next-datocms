@@ -1,38 +1,20 @@
 import { Button } from "@/components/atoms/button";
 import { FeatureGridCardIcon } from "@/components/patterns/feature-grid-card-icon";
-import type { DatoFontAwesomeIconJson } from "@/components/atoms/dynamic-fa-icon";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { SmartLink } from "@/components/patterns/smart-link";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
-import type { CardRecord, FeatureGridRecord, FileFieldLike, LinkBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaBool, readCdaObject, readCdaString } from "@/lib/datocms/cda-field";
+import type { CardRecord, FeatureGridRecord, FileFieldLike } from "@/infra/datocms/types-page";
+import { readCdaArray, readCdaObject, readCdaString } from "@/lib/datocms/cda-field";
+import {
+  readCardIconJson,
+  resolveCardLinkRecord,
+  resolveCardShowImage,
+  resolveCardShowLink,
+} from "@/lib/datocms/resolve-feature-grid-card";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
 import { cn } from "@/lib/cn";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
-
-function readCardIcon(card: CardRecord): DatoFontAwesomeIconJson | null {
-  const raw = card.iconCard ?? readCdaObject<Record<string, unknown>>(card, "iconCard", "icon_card");
-  if (!raw || typeof raw !== "object") return null;
-  const icon = raw as Record<string, unknown>;
-  const prefix = typeof icon.prefix === "string" ? icon.prefix : undefined;
-  const iconName = typeof icon.iconName === "string" ? icon.iconName : undefined;
-  if (!prefix && !iconName) return null;
-  return { prefix, iconName };
-}
-
-function cardLink(card: CardRecord): LinkBlockRecord | null {
-  if (card.linkCard?.__typename === "LinkRecord") return card.linkCard;
-  const fromLink = readCdaObject<LinkBlockRecord>(card as Record<string, unknown>, "linkCard", "link_card");
-  if (fromLink?.__typename === "LinkRecord") return fromLink;
-  const legacyRaw = (card as Record<string, unknown>).buttonCard ?? (card as Record<string, unknown>).button_card;
-  if (!legacyRaw) return null;
-  if (Array.isArray(legacyRaw)) {
-    return (legacyRaw as LinkBlockRecord[]).find((x) => x?.__typename === "LinkRecord") ?? null;
-  }
-  const legacy = legacyRaw as LinkBlockRecord;
-  return legacy.__typename === "LinkRecord" ? legacy : null;
-}
 
 function cardImageMobile(card: CardRecord): FileFieldLike | null {
   const img = card.imageCard ?? readCdaObject<NonNullable<CardRecord["imageCard"]>>(card as Record<string, unknown>, "imageCard", "image_card");
@@ -47,12 +29,13 @@ export type CardItemProps = {
 export function CardItem({ card, locale }: CardItemProps) {
   const title = readCdaString(card, "titleCard", "title_card");
   const description = readCdaString(card, "descriptionCard", "description_card");
-  const iconJson = readCardIcon(card);
-  const link = cardLink(card);
+  const iconJson = readCardIconJson(card as Record<string, unknown>);
+  const link = resolveCardLinkRecord(card as Record<string, unknown>);
   const label = (link?.ctaLabel ?? "").trim();
   const resolved = link ? resolveLinkBlock(link, locale) : null;
-  const showCta = Boolean(label && resolved);
-  const showImg = readCdaBool(card, "hasImage", "has_image");
+  const showLink = resolveCardShowLink(card as Record<string, unknown>);
+  const showCta = showLink && Boolean(label && resolved);
+  const showImg = resolveCardShowImage(card as Record<string, unknown>);
   const heroMobile = showImg ? cardImageMobile(card) : null;
   const imgBlock = card.imageCard ?? readCdaObject<NonNullable<CardRecord["imageCard"]>>(card as Record<string, unknown>, "imageCard", "image_card");
 
