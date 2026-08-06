@@ -1,19 +1,69 @@
 import { NextResponse } from "next/server";
 
-export function withCors(init?: ResponseInit): ResponseInit {
+const STATIC_ALLOWED_ORIGINS = new Set([
+  "https://plugins-cdn.datocms.com",
+]);
+
+function adminFrameOrigin(): string | null {
+  const raw = process.env.DATOCMS_ADMIN_FRAME_ANCESTOR?.trim();
+  if (!raw) return null;
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Reflect Origin only when it belongs to DatoCMS admin / plugins CDN.
+ * Returns null when Origin is missing or not allowed (no wildcard).
+ */
+export function resolveDatoCorsOrigin(requestOrigin: string | null): string | null {
+  if (!requestOrigin) return null;
+  const trimmed = requestOrigin.trim();
+  if (!trimmed) return null;
+
+  if (STATIC_ALLOWED_ORIGINS.has(trimmed)) return trimmed;
+
+  const admin = adminFrameOrigin();
+  if (admin && trimmed === admin) return trimmed;
+
+  try {
+    const { protocol, hostname } = new URL(trimmed);
+    if (protocol !== "https:" && protocol !== "http:") return null;
+    if (hostname === "plugins-cdn.datocms.com") return trimmed;
+    if (hostname === "admin.datocms.com" || hostname.endsWith(".admin.datocms.com")) {
+      return trimmed;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+export function withCors(init?: ResponseInit, requestOrigin?: string | null): ResponseInit {
+  const allowed = resolveDatoCorsOrigin(requestOrigin ?? null);
+  const headers: Record<string, string> = {
+    "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  };
+  if (allowed) {
+    headers["Access-Control-Allow-Origin"] = allowed;
+    headers.Vary = "Origin";
+  }
+
   return {
     ...init,
     headers: {
       ...init?.headers,
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      ...headers,
     },
   };
 }
 
-export function jsonWithCors(body: unknown, status = 200) {
-  return NextResponse.json(body, withCors({ status }));
+export function jsonWithCors(body: unknown, status = 200, requestOrigin?: string | null) {
+  return NextResponse.json(body, withCors({ status }, requestOrigin));
 }
 
 export function isRelativeUrl(path: string): boolean {

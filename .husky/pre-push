@@ -7,13 +7,16 @@ npm run codegen:check || { echo "❌ Schema do DatoCMS mudou. Rode 'npm run code
 # 2. Verificação de tipos estritos do TypeScript em todo o projeto (Rápido)
 npm run typecheck || { echo "❌ Falha na verificação de tipos (typecheck)."; exit 1; }
 
-# 3. Testes unitários (Rápido)
+# 3. Lint
+npm run lint || { echo "❌ Lint falhou."; exit 1; }
+
+# 4. Testes unitários (Rápido)
 npm run test || { echo "❌ Testes unitários falharam."; exit 1; }
 
-# 4. Auditoria de segurança de dependências (Rápido)
+# 5. Auditoria de segurança de dependências (Rápido)
 npm run security:audit || { echo "❌ Vulnerabilidades de segurança encontradas."; exit 1; }
 
-# 5. Build de produção do Next.js (Garante compilabilidade do Turbopack e Next)
+# 6. Build de produção do Next.js
 npm run build || { echo "❌ Falha ao compilar a build do Next.js."; exit 1; }
 
 echo "🚀 Tudo verificado, testado e buildado com sucesso! Autorizando push."

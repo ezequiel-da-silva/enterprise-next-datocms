@@ -7,6 +7,7 @@ import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { getCategoryBySlug, getPostsByCategory } from "@/infra/datocms/get-blog";
 import { getStaticParamsCategories } from "@/infra/datocms/static-params";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import {
   blogBreadcrumbLabel,
@@ -31,14 +32,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug, categorySlug } = await params;
   if (!isAppLocale(slug)) {
-    return { title: "Categoria" };
+    return buildUnavailableMetadata("Categoria");
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
   const result = await getCategoryBySlug(toDatoSiteLocale(locale), categorySlug, isEnabled);
 
   if ("errors" in result || !result.data.category) {
-    return { title: "Categoria" };
+    return buildUnavailableMetadata("Categoria");
   }
 
   const { category, _site } = result.data;

@@ -9,6 +9,7 @@ import { getAuthorBySlug, getPostsByAuthor } from "@/infra/datocms/get-blog";
 import { getStaticParamsAuthors } from "@/infra/datocms/static-params";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import {
   blogBreadcrumbLabel,
@@ -32,14 +33,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: AuthorPageProps): Promise<Metadata> {
   const { slug, authorSlug } = await params;
   if (!isAppLocale(slug)) {
-    return { title: "Autor" };
+    return buildUnavailableMetadata("Autor");
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
   const result = await getAuthorBySlug(toDatoSiteLocale(locale), authorSlug, isEnabled);
 
   if ("errors" in result || !result.data.author) {
-    return { title: "Autor" };
+    return buildUnavailableMetadata("Autor");
   }
 
   const { author, _site } = result.data;

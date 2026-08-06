@@ -9,6 +9,7 @@ import {
 } from "@/constants/i18n";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { getStaticParamsPages } from "@/infra/datocms/static-params";
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const result = await getPageBySlug(pageSlug, isEnabled, cmsLocale);
 
   if ("errors" in result || !result.data.page) {
-    return { title: "Página" };
+    return buildUnavailableMetadata("Página");
   }
 
   const { page, _site } = result.data;

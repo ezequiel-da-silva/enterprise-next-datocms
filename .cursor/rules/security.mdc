@@ -47,11 +47,12 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 - Validação no núcleo: Zod em `src/core/entities/contact.ts` + `validateContactSubmission`.
 - Honeypot `company_website`: preenchido → resposta genérica de sucesso + delay (anti-bot, sem revelar filtro).
+- Rate limit in-memory por IP (`checkRateLimit` + `getClientIpKey`) na action de contacto — 5 req/min.
 - `"use server"` em actions; integrações (e-mail/CRM) só em `src/infra/`, nunca credenciais no bundle.
 
 ## APIs (`src/app/api/`)
 
-- `preview-links`: POST + `token` na query; CORS largo (`*`) **só** para o plugin Dato — não reutilizar padrão em APIs novas.
+- `preview-links`: POST + `token` na query; CORS **só** origens DatoCMS (`resolveDatoCorsOrigin`) — sem `*`.
 - Respostas de erro genéricas em auth (401/422); sem vazar stack em produção.
 
 ## Cookies
@@ -76,6 +77,5 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 ## Melhorias futuras (quando necessário)
 
-- Rate limit na action de contacto (IP / edge).
-- Restringir CORS de `preview-links` a origens DatoCMS conhecidas.
 - CAPTCHA ou Turnstile se spam no formulário aumentar.
+- Rate limit distribuído (Redis/Upstash) se a app escalar para várias instâncias.
