@@ -22,7 +22,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "npm run start:prod",
+        command: "npm run start:standalone",
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

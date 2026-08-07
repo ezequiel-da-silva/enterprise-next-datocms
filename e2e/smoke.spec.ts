@@ -27,11 +27,17 @@ test.describe("smoke", () => {
     expect(res.status()).toBe(422);
   });
 
-  test("contact page exposes honeypot field off-screen", async ({ page }) => {
+  test("contact page keeps honeypot out of reach of users", async ({ page }) => {
     await page.goto("/contato");
-    await expect(page.getByRole("heading", { name: /contato/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /contato/i, level: 1 })).toBeVisible();
+
     const honeypot = page.locator('input[name="company_website"]');
     await expect(honeypot).toHaveCount(1);
-    await expect(honeypot).toBeHidden();
+    await expect(honeypot).toHaveAttribute("aria-hidden", "true");
+    await expect(honeypot).toHaveAttribute("tabindex", "-1");
+    await expect(honeypot).toHaveCSS("opacity", "0");
+
+    // aria-hidden keeps it out of the accessibility tree, so no role match.
+    await expect(page.getByRole("textbox", { name: /não preencha/i })).toHaveCount(0);
   });
 });

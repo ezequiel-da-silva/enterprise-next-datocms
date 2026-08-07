@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
+    "start:standalone": "node scripts/serve-standalone.mjs",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
