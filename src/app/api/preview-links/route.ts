@@ -26,36 +26,42 @@ function getExpectedSecret(): string | undefined {
   return process.env.DATOCMS_PREVIEW_SECRET?.trim();
 }
 
-export async function OPTIONS() {
-  return new Response("OK", withCors());
+function originFrom(request: NextRequest): string | null {
+  return request.headers.get("origin");
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return new Response("OK", withCors({}, originFrom(request)));
 }
 
 /**
  * POST esperado pelo plugin Web Previews.
  * Configurar no Dato: `http://localhost:3000/api/preview-links?token=<DATOCMS_PREVIEW_SECRET>`
+ * CORS: apenas origens DatoCMS (admin / plugins CDN).
  */
 export async function POST(request: NextRequest) {
+  const origin = originFrom(request);
   const expected = getExpectedSecret();
   const token = request.nextUrl.searchParams.get("token");
 
   if (!expected) {
-    return jsonWithCors({ success: false, error: "Preview secret not configured" }, 500);
+    return jsonWithCors({ success: false, error: "Preview secret not configured" }, 500, origin);
   }
   if (!isSecretEqual(token, expected)) {
-    return jsonWithCors({ success: false, error: "Invalid token" }, 401);
+    return jsonWithCors({ success: false, error: "Invalid token" }, 401, origin);
   }
 
   let body: PluginBody;
   try {
     body = (await request.json()) as PluginBody;
   } catch {
-    return jsonWithCors({ success: false, error: "Invalid JSON" }, 400);
+    return jsonWithCors({ success: false, error: "Invalid JSON" }, 400, origin);
   }
 
   const item = body.item;
   const itemType = body.itemType;
   if (!item || !itemType) {
-    return jsonWithCors({ success: false, error: "Missing item or itemType" }, 422);
+    return jsonWithCors({ success: false, error: "Missing item or itemType" }, 422, origin);
   }
 
   const path = recordToWebsitePath(item, itemType, { locale: body.locale });
@@ -85,5 +91,5 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return jsonWithCors({ previewLinks });
+  return jsonWithCors({ previewLinks }, 200, origin);
 }

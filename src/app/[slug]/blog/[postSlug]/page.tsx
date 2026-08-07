@@ -9,6 +9,7 @@ import { getPostBySlug } from "@/infra/datocms/get-blog";
 import { getStaticParamsBlogPosts } from "@/infra/datocms/static-params";
 import { buildBlogPostJsonLdGraph } from "@/lib/seo/build-blog-post-jsonld";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import {
   blogBreadcrumbLabel,
   crumbsToNavItems,
@@ -33,14 +34,14 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug, postSlug } = await params;
   if (!isAppLocale(slug)) {
-    return { title: "Artigo" };
+    return buildUnavailableMetadata("Artigo");
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
   const result = await getPostBySlug(toDatoSiteLocale(locale), postSlug, isEnabled);
 
   if ("errors" in result || !result.data.post) {
-    return { title: "Artigo" };
+    return buildUnavailableMetadata("Artigo");
   }
 
   const { post, _site } = result.data;

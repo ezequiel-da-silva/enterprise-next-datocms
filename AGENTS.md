@@ -36,6 +36,7 @@ Full diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 | GraphQL or Dato schema changed | `npm run codegen` |
 | Proxy / API / auth changed | `npm run security:check` |
 | Full local gate | `npm run check-all` |
+| E2E smoke (needs build + Chromium) | `npm run build && npm run test:e2e` |
 
 Copy [`.env.example`](.env.example) to `.env` for CMS and codegen.
 

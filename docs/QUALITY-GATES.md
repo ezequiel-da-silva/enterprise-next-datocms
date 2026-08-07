@@ -123,11 +123,13 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - Vitest covers parsers, resolvers, link-block, JSON-LD builders
 - Tests cover snake_case and camelCase CMS field aliases where relevant
 - `npm test` passes in CI
+- Playwright smoke (`npm run test:e2e`) on PRs — home, blog, draft auth, contact honeypot
 - No trivial snapshot tests unless explicitly requested
 
 **Anti-patterns:** Testing implementation details; skipping tests for new `resolve-*` helpers.
 
 **Rule:** [`.cursor/rules/testing.mdc`](../.cursor/rules/testing.mdc)
+**E2E:** [`.github/workflows/e2e.yml`](../.github/workflows/e2e.yml)
 
 ---
 

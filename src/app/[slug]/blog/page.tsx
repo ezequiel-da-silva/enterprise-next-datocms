@@ -5,6 +5,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { APP_LOCALES, isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { getAllPosts } from "@/infra/datocms/get-blog";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { blogBreadcrumbLabel, crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
@@ -23,14 +24,14 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: BlogIndexProps): Promise<Metadata> {
   const { slug } = await params;
   if (!isAppLocale(slug)) {
-    return { title: "Blog" };
+    return buildUnavailableMetadata("Blog");
   }
   const locale = slug;
   const { isEnabled } = await draftMode();
   const result = await getAllPosts(toDatoSiteLocale(locale), isEnabled);
 
   if ("errors" in result) {
-    return { title: "Blog" };
+    return buildUnavailableMetadata("Blog");
   }
 
   const meta = buildDatoPageMetadata({

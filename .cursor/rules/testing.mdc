@@ -30,7 +30,8 @@ Runner: **Vitest** (`npm test`, `npm run test:watch`).
 
 ## CI
 
-Tests run in [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) on every PR.
+- Unit: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — typecheck, lint, test, security:audit, build, codegen:check
+- E2E smoke: [`.github/workflows/e2e.yml`](../../.github/workflows/e2e.yml) — `npm run test:e2e` (Playwright)
 
 ## Before merge
 

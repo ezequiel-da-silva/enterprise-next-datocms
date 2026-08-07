@@ -7,6 +7,7 @@ import {
   type FaqGroupItem,
 } from "@/lib/datocms/resolve-faq-group-options";
 import { buildFaqPageJsonLd } from "@/lib/seo/build-faq-jsonld";
+import { claimFaqSchemaEmission } from "@/lib/seo/faq-schema-slot";
 import { cn } from "@/lib/cn";
 import { getNonce } from "@/lib/nonce";
 
@@ -35,7 +36,8 @@ export async function FaqGroupBlock({ record }: FaqGroupBlockProps) {
   if (items.length === 0 && !title) return null;
 
   const headingId = `faq-${record.id}`;
-  const faqJsonLd = options.enableFaqSchema ? buildFaqPageJsonLd(items) : null;
+  const faqJsonLd =
+    options.enableFaqSchema && claimFaqSchemaEmission() ? buildFaqPageJsonLd(items) : null;
   const nonce = faqJsonLd ? await getNonce() : undefined;
   const headerAlign =
     options.headerAlignment === "center"
