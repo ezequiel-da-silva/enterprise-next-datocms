@@ -26,6 +26,7 @@ Skill: [`.cursor/skills/add-datocms-block/SKILL.md`](../skills/add-datocms-block
 - CDA camelCase; API keys snake_case — use `readCdaBool(record, "hasImage", "has_image")` etc.
 - Links: `LINK_HERO_CTA_FIELDS` + `SmartLink` + `resolveLinkBlock`.
 - Images: `IMAGE_BLOCK_RESPONSIVE` + `DatoResponsivePicture`.
+- Vídeo: nunca usar `asset.url` (o Dato responde "Serving raw videos is disabled by admin"). Pedir `asset { video { streamingUrl mp4Url(res: high) thumbnailUrl … } }` e resolver com `resolveVideoSources()` — HLS para Safari, MP4 para os restantes, poster do Mux.
 - Video captions: model `video_block` precisa de file field `captions` (VTT); até existir, o `<track>` não é emitido.
 
 ## RSC note

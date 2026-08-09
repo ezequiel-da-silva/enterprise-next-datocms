@@ -207,6 +207,16 @@ const ST_BLOCKS_MEDIA_ONLY = `
       title
       width
       height
+      # O Dato bloqueia a URL bruta ("Serving raw videos is disabled"): usar Mux.
+      video {
+        muxPlaybackId
+        streamingUrl
+        mp4Url(res: high)
+        thumbnailUrl
+        width
+        height
+        duration
+      }
     }
     # CMS follow-up: add file field "captions" on video_block, then query captions { url title }
   }
