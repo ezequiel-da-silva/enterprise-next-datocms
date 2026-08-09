@@ -13,6 +13,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Produção: `script-src` com nonce + `'strict-dynamic'`; `style-src` / `style-src-elem` com nonce; `style-src-attr 'unsafe-inline'` (necessário para `next/image`; preferir classes em vez de `style={{}}` na app).
 - Dev: `'unsafe-eval'` e `style-src`/`style-src-elem`/`style-src-attr` com `'unsafe-inline'` só para HMR — não copiar para prod.
 - Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
+- Media do Dato: `img-src` inclui `www.datocms-assets.com` + `image.mux.com` (posters de vídeo); `media-src` inclui `www.datocms-assets.com` + `*.mux.com` — wildcard recomendado pelo Mux, que entrega por vários CDNs (`stream.mux.com` redireciona para `*.fastly.mux.com`).
 - `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
 - Headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva, `COOP: same-origin`, `HSTS` só em produção.
 

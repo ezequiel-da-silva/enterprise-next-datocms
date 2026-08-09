@@ -123,6 +123,16 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
             title
             width
             height
+            # Dato blocks the raw asset URL ("Serving raw videos is disabled"): use Mux.
+            video {
+              muxPlaybackId
+              streamingUrl
+              mp4Url(res: high)
+              thumbnailUrl
+              width
+              height
+              duration
+            }
           }
           # CMS: add file field `captions` on video_block, then:
           # captions { url title }

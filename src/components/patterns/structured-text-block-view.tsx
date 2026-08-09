@@ -10,6 +10,7 @@ import type {
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
+import { resolveVideoSources } from "@/lib/datocms/resolve-video-sources";
 import Image from "next/image";
 
 type StructuredTextBlockViewProps = {
@@ -81,20 +82,25 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
     }
     case "VideoBlockRecord": {
       const v = record.asset;
-      if (!v?.url) return null;
-      const label = v.title?.trim() || "Vídeo";
+      const resolved = resolveVideoSources(v);
+      if (!resolved) return null;
+      const label = v?.title?.trim() || "Vídeo";
       const captions = readVideoCaptions(record);
       return (
         <figure data-datocms-content-link-boundary="" className="my-6">
           <video
             controls
             className="h-auto max-w-full rounded-md"
-            width={v.width ?? undefined}
-            height={v.height ?? undefined}
+            width={resolved.width}
+            height={resolved.height}
+            poster={resolved.poster}
             preload="metadata"
+            playsInline
             aria-label={label}
           >
-            <source src={v.url} />
+            {resolved.sources.map((source) => (
+              <source key={source.src} src={source.src} type={source.type} />
+            ))}
             {captions ? (
               <track
                 kind="captions"
@@ -105,7 +111,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
               />
             ) : null}
           </video>
-          {v.title ? <figcaption className="mt-2 text-sm text-muted-foreground">{v.title}</figcaption> : null}
+          {v?.title ? <figcaption className="mt-2 text-sm text-muted-foreground">{v.title}</figcaption> : null}
         </figure>
       );
     }

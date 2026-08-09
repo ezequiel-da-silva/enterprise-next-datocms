@@ -37,9 +37,11 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
     `script-src 'self' 'nonce-${nonce}'${scriptExtra}`,
     /* Fontes via next/font: ficheiros em /_next/static — cobertos por font-src 'self'. Sem fonts.googleapis.com / gstatic. */
     ...styleDirectives,
-    "img-src 'self' data: blob: https://www.datocms-assets.com",
+    /* image.mux.com: posters de vídeo (thumbnailUrl). */
+    "img-src 'self' data: blob: https://www.datocms-assets.com https://image.mux.com",
     "font-src 'self' data:",
-    `media-src 'self' https://www.datocms-assets.com https://stream.mux.com`,
+    /* *.mux.com: o Mux entrega por vários CDNs (stream.mux.com → *.fastly.mux.com) e os hosts mudam sem aviso. */
+    `media-src 'self' https://www.datocms-assets.com https://*.mux.com`,
     "manifest-src 'self'",
     `connect-src 'self' https://graphql.datocms.com ${DATO_ADMIN_FRAME}`,
     `frame-ancestors 'self' https://plugins-cdn.datocms.com ${DATO_ADMIN_FRAME}`,
