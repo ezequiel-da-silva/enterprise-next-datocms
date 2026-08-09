@@ -12,6 +12,11 @@ type BuildArgs = {
   seoSettingsSocial?: SeoSettingsSocial;
   /** Same logical page in other locales (hreflang). */
   hreflangPaths?: Partial<Record<AppLocale, string>>;
+  /**
+   * Título do próprio registo (ex. `page.title`). Usado quando o campo SEO está vazio —
+   * sem isto o Dato devolve o fallback global e todas as páginas ficam com o mesmo `<title>`.
+   */
+  fallbackTitle?: string | null;
 };
 
 /**
@@ -24,6 +29,7 @@ export function buildDatoPageMetadata({
   faviconMetaTags,
   seoSettingsSocial,
   hreflangPaths,
+  fallbackTitle,
 }: BuildArgs): Metadata {
   const baseUrl = getSiteBaseUrl();
   const canonicalPath = path.startsWith("/") ? path : `/${path}`;
@@ -35,33 +41,45 @@ export function buildDatoPageMetadata({
   const s = seoSettingsSocial;
   const fromField: Metadata = {};
 
+  const resolvedTitle = s?.title?.trim() || fallbackTitle?.trim() || "";
+
+  const openGraph: NonNullable<Metadata["openGraph"]> = { ...fromTags.openGraph };
+  const twitterBase = typeof fromTags.twitter === "object" && fromTags.twitter ? fromTags.twitter : {};
+  const twitterTitle = resolvedTitle ? { title: resolvedTitle } : {};
+  const twitterCard = s?.twitterCard as "summary" | "summary_large_image" | "player" | "app" | undefined;
+  let hasOpenGraph = false;
+
   if (s?.noIndex) {
     fromField.robots = { index: false, follow: true };
   }
-  if (s?.title) {
-    fromField.title = s.title;
+  if (resolvedTitle) {
+    fromField.title = resolvedTitle;
+    openGraph.title = resolvedTitle;
+    hasOpenGraph = true;
   }
   if (s?.description) {
     fromField.description = s.description;
   }
-  if (s?.twitterCard) {
-    fromField.twitter = {
-      ...(typeof fromTags.twitter === "object" && fromTags.twitter ? fromTags.twitter : {}),
-      card: s.twitterCard as "summary" | "summary_large_image" | "player" | "app",
-    };
-  }
   if (s?.image?.url) {
-    fromField.openGraph = {
-      ...fromTags.openGraph,
-      images: [
-        {
-          url: s.image.url,
-          alt: s.image.alt ?? undefined,
-          width: s.image.width ?? undefined,
-          height: s.image.height ?? undefined,
-        },
-      ],
-    };
+    openGraph.images = [
+      {
+        url: s.image.url,
+        alt: s.image.alt ?? undefined,
+        width: s.image.width ?? undefined,
+        height: s.image.height ?? undefined,
+      },
+    ];
+    hasOpenGraph = true;
+  }
+
+  if (hasOpenGraph) {
+    fromField.openGraph = openGraph;
+  }
+  /* `card` discrimina a união Twitter do Next — precisa de ser um literal na criação do objeto. */
+  if (twitterCard) {
+    fromField.twitter = { ...twitterBase, ...twitterTitle, card: twitterCard };
+  } else if (resolvedTitle) {
+    fromField.twitter = { ...twitterBase, ...twitterTitle };
   }
 
   const hreflang = hreflangPaths ? buildHreflangAlternates(hreflangPaths) : undefined;

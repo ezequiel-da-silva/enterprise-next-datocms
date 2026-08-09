@@ -18,14 +18,25 @@ function createNonce(): string {
 
 function buildCspHeader(nonce: string, isDev: boolean): string {
   const scriptExtra = isDev ? " 'unsafe-eval'" : " 'strict-dynamic'";
-  /* Com nonce em style-src o browser ignora 'unsafe-inline' → estilos inline do dev/HMR falham. */
-  const styleSrc = isDev ? "style-src 'self' 'unsafe-inline'" : `style-src 'self' 'nonce-${nonce}'`;
+  /*
+   * Dev: unsafe-inline para HMR.
+   * Prod: nonce em <style> (style-src / style-src-elem).
+   * style-src-attr: 'unsafe-inline' — next/image injeta style="color:transparent";
+   * elementos <style> continuam nonce-only (bloqueia inject FA/runtime sem nonce).
+   */
+  const styleDirectives = isDev
+    ? ["style-src 'self' 'unsafe-inline'", "style-src-elem 'self' 'unsafe-inline'", "style-src-attr 'unsafe-inline'"]
+    : [
+        `style-src 'self' 'nonce-${nonce}'`,
+        `style-src-elem 'self' 'nonce-${nonce}'`,
+        "style-src-attr 'unsafe-inline'",
+      ];
 
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}'${scriptExtra}`,
     /* Fontes via next/font: ficheiros em /_next/static — cobertos por font-src 'self'. Sem fonts.googleapis.com / gstatic. */
-    styleSrc,
+    ...styleDirectives,
     "img-src 'self' data: blob: https://www.datocms-assets.com",
     "font-src 'self' data:",
     `media-src 'self' https://www.datocms-assets.com https://stream.mux.com`,

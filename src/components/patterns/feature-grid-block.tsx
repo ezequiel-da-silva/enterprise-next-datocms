@@ -49,11 +49,11 @@ export function CardItem({ card, locale }: CardItemProps) {
     >
       <FeatureGridCardIcon icon={iconJson} title={title || undefined} />
       {heroMobile?.url ? (
-        <figure className="mb-4 overflow-hidden rounded-xl border border-border/50 bg-background/50">
+        <figure className="mb-4 aspect-[4/3] overflow-hidden rounded-xl border border-border/50 bg-background/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
           <DatoResponsivePicture
             mobile={heroMobile}
             desktop={imgBlock?.assetDesktop}
-            className="h-auto w-full object-cover"
+            className="h-full w-full object-cover"
             sizes="(max-width: 768px) 100vw, 360px"
           />
         </figure>

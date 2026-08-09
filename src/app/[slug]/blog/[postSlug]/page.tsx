@@ -15,7 +15,7 @@ import {
   crumbsToNavItems,
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
-import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
+import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
@@ -50,7 +50,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     seoMetaTags: post._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: post.seoSettingsSocial,
-    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog/${postSlug}`),
+    fallbackTitle: post.postTitle,
+    hreflangPaths: buildHreflangPathsFromSlugLocales(post.slugLocales, (l, s) => `/${l}/blog/${s}`),
   });
 }
 

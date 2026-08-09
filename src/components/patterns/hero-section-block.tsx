@@ -208,7 +208,7 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
                 desktop={imageBlockDesktopAsset(heroImg)}
                 className="h-auto w-full object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
-                priority
+                priority={!hasOverlayBg}
               />
             </figure>
           ) : null}

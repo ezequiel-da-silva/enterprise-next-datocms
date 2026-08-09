@@ -80,13 +80,15 @@ export function SocialNavLink({ link }: { link: SocialLinkNav }) {
     "touch-target rounded-full border border-border bg-muted/60 text-foreground transition hover:border-primary/40 hover:bg-muted";
 
   const platform = link.plataforma?.trim() || "Social";
+  const accessibleName = link.linkAria?.trim() || platformGlyph(platform).label || platform;
   const inner =
     img?.url ? (
       <Image
         src={img.url}
-        alt={img.alt ?? link.linkAria ?? platform}
+        alt=""
         width={40}
         height={40}
+        sizes="40px"
         className="size-7 object-contain"
       />
     ) : (
@@ -97,11 +99,13 @@ export function SocialNavLink({ link }: { link: SocialLinkNav }) {
     <Link
       href={url}
       className={className}
-      aria-label={link.linkAria?.trim() || platform}
-      title={platform}
+      title={accessibleName}
       {...(link.openInNewTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
-      {inner}
+      <span className="sr-only">{accessibleName}</span>
+      <span aria-hidden className="inline-flex items-center justify-center">
+        {inner}
+      </span>
     </Link>
   );
 }

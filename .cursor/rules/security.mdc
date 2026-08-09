@@ -10,8 +10,8 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 ## CSP e headers (`src/proxy.ts`)
 
 - Nonce por request: `crypto.getRandomValues` → header `x-nonce` (`NONCE_HEADER`).
-- Produção: `script-src` com nonce + `'strict-dynamic'`; `style-src` com nonce (sem `'unsafe-inline'`).
-- Dev: `'unsafe-eval'` e `style-src 'unsafe-inline'` só para HMR — não copiar para prod.
+- Produção: `script-src` com nonce + `'strict-dynamic'`; `style-src` / `style-src-elem` com nonce; `style-src-attr 'unsafe-inline'` (necessário para `next/image`; preferir classes em vez de `style={{}}` na app).
+- Dev: `'unsafe-eval'` e `style-src`/`style-src-elem`/`style-src-attr` com `'unsafe-inline'` só para HMR — não copiar para prod.
 - Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
 - `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
 - Headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva, `COOP: same-origin`, `HSTS` só em produção.
@@ -20,6 +20,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 - Scripts/JSON-LD: `getNonce()` + prop `nonce` (`JsonLdScript`, `buildThemeBootScript` no layout).
 - CSS de tema inline: `<style nonce={…}>` — única exceção controlada; não adicionar `<style>` sem nonce em prod.
+- Preferir classes CSS a `style={{}}` na app; FontAwesome com `autoAddCss = false` + CSS estático em `globals.css` (evita `<style>` injectado sem nonce).
 - Evitar `dangerouslySetInnerHTML` novo; se inevitável, conteúdo estático ou sanitizado + nonce.
 
 ## Secrets e env

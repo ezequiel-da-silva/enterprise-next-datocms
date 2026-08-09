@@ -4,7 +4,7 @@ import { getPageBySlug } from "@/infra/datocms/get-page";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
+import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { getStaticParamsLocaleCmsPages } from "@/infra/datocms/static-params";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -37,7 +37,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: page.seoSettingsSocial,
-    hreflangPaths: buildLocaleAlternatePaths((l) => cmsPageCanonicalPath(pageSlug, l)),
+    fallbackTitle: page.title,
+    hreflangPaths: buildHreflangPathsFromSlugLocales(page.slugLocales, (l, s) =>
+      cmsPageCanonicalPath(s, l),
+    ),
   });
 }
 
