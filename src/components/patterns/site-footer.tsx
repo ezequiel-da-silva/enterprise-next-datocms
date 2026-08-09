@@ -100,6 +100,7 @@ export function SiteFooter({ data, locale }: SiteFooterProps) {
                 alt={footerLogo.alt ?? ""}
                 width={footerLogo.width ?? 140}
                 height={footerLogo.height ?? 40}
+                sizes="140px"
                 className="h-10 w-auto max-w-[12rem] object-contain object-left"
               />
             </div>

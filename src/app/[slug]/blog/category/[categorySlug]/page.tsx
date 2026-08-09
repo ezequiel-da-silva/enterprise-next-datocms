@@ -14,7 +14,7 @@ import {
   crumbsToNavItems,
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
-import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
+import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -48,7 +48,8 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
     seoMetaTags: category._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: category.seoSettingsSocial,
-    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog/category/${categorySlug}`),
+    fallbackTitle: category.categoryName,
+    hreflangPaths: buildHreflangPathsFromSlugLocales(category.slugLocales, (l, s) => `/${l}/blog/category/${s}`),
   });
 }
 
@@ -114,6 +115,7 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
               alt={icon.alt ?? ""}
               width={icon.width ?? 48}
               height={icon.height ?? 48}
+              sizes="48px"
               className="size-12 rounded-lg border border-border bg-muted object-cover"
             />
           ) : null}

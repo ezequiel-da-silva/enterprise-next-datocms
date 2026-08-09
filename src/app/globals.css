@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @config "../../tailwind.config.ts";
 
+/* Font Awesome SVG core — estático (autoAddCss=false em dynamic-fa-icon). */
+@import "@fortawesome/fontawesome-svg-core/styles.css";
+
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Channel vars from theme.config (`--palette-*`) feed Tailwind color tokens */

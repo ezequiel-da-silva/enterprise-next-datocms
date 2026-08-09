@@ -16,7 +16,7 @@ import {
   crumbsToNavItems,
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
-import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
+import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -49,7 +49,8 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
     seoMetaTags: author._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: author.seoSettingsSocial,
-    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog/author/${authorSlug}`),
+    fallbackTitle: author.authorName,
+    hreflangPaths: buildHreflangPathsFromSlugLocales(author.slugLocales, (l, s) => `/${l}/blog/author/${s}`),
   });
 }
 

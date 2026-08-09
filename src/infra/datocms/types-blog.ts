@@ -37,6 +37,8 @@ export type SocialLinkRecord = {
 
 export type AuthorBioField = Pick<CdaStructuredTextValue, "value" | "blocks" | "links" | "inlineBlocks">;
 
+export type SlugLocaleRow = { locale?: string | null; value?: string | null };
+
 export type AuthorDetailRecord = {
   id: string;
   authorName: string;
@@ -46,6 +48,8 @@ export type AuthorDetailRecord = {
   authorSocialLinks: SocialLinkRecord | null;
   seoSettingsSocial: SeoSettingsSocial;
   _seoMetaTags: TitleMetaLinkTag[] | null;
+  /** Presente no fetch de autor; omitido no nested `postAuthor`. */
+  slugLocales?: SlugLocaleRow[];
 };
 
 export type PostDetailRecord = {
@@ -59,6 +63,7 @@ export type PostDetailRecord = {
   postAuthor: AuthorDetailRecord | null;
   seoSettingsSocial: SeoSettingsSocial;
   _seoMetaTags: TitleMetaLinkTag[] | null;
+  slugLocales: SlugLocaleRow[];
 };
 
 export type CategoryDetailRecord = {
@@ -70,6 +75,7 @@ export type CategoryDetailRecord = {
   categoryIcon: FileFieldLike;
   seoSettingsSocial: SeoSettingsSocial;
   _seoMetaTags: TitleMetaLinkTag[] | null;
+  slugLocales: SlugLocaleRow[];
 };
 
 export type GetAllPostsQueryResult = {
@@ -99,3 +105,54 @@ export type GetCategoryBySlugQueryResult = {
 export type GetPostsByCategoryQueryResult = {
   allPosts: PostCardRecord[];
 };
+
+function readSlugLocales(record: Record<string, unknown>, key: string): SlugLocaleRow[] {
+  const raw = record[key];
+  return Array.isArray(raw) ? (raw as SlugLocaleRow[]) : [];
+}
+
+/** Normaliza `_allPostSlugLocales` do CDA para `slugLocales`. */
+export function normalizePostBySlugResult(data: {
+  post: Record<string, unknown> | null;
+  _site: GetPostBySlugQueryResult["_site"];
+}): GetPostBySlugQueryResult {
+  const post = data.post;
+  if (!post) return { post: null, _site: data._site };
+  return {
+    post: {
+      ...(post as unknown as Omit<PostDetailRecord, "slugLocales">),
+      slugLocales: readSlugLocales(post, "_allPostSlugLocales"),
+    },
+    _site: data._site,
+  };
+}
+
+export function normalizeAuthorBySlugResult(data: {
+  author: Record<string, unknown> | null;
+  _site: GetAuthorBySlugQueryResult["_site"];
+}): GetAuthorBySlugQueryResult {
+  const author = data.author;
+  if (!author) return { author: null, _site: data._site };
+  return {
+    author: {
+      ...(author as unknown as Omit<AuthorDetailRecord, "slugLocales">),
+      slugLocales: readSlugLocales(author, "_allAuthorSlugLocales"),
+    },
+    _site: data._site,
+  };
+}
+
+export function normalizeCategoryBySlugResult(data: {
+  category: Record<string, unknown> | null;
+  _site: GetCategoryBySlugQueryResult["_site"];
+}): GetCategoryBySlugQueryResult {
+  const category = data.category;
+  if (!category) return { category: null, _site: data._site };
+  return {
+    category: {
+      ...(category as unknown as Omit<CategoryDetailRecord, "slugLocales">),
+      slugLocales: readSlugLocales(category, "_allCategorySlugLocales"),
+    },
+    _site: data._site,
+  };
+}

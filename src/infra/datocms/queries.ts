@@ -208,6 +208,7 @@ const ST_BLOCKS_MEDIA_ONLY = `
       width
       height
     }
+    # CMS follow-up: add file field "captions" on video_block, then query captions { url title }
   }
 `;
 
@@ -413,6 +414,10 @@ export const PAGE_BY_SLUG = /* GraphQL */ `
         attributes
         content
       }
+      _allSlugLocales {
+        locale
+        value
+      }
     }
     _site {
       faviconMetaTags {
@@ -529,6 +534,10 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
       _seoMetaTags {
         ${SEO_META_TAGS}
       }
+      _allPostSlugLocales {
+        locale
+        value
+      }
     }
     _site {
       faviconMetaTags {
@@ -561,6 +570,10 @@ export const GET_AUTHOR_BY_SLUG = /* GraphQL */ `
       }
       _seoMetaTags {
         ${SEO_META_TAGS}
+      }
+      _allAuthorSlugLocales {
+        locale
+        value
       }
     }
     _site {
@@ -608,6 +621,10 @@ export const GET_CATEGORY_BY_SLUG = /* GraphQL */ `
       }
       _seoMetaTags {
         ${SEO_META_TAGS}
+      }
+      _allCategorySlugLocales {
+        locale
+        value
       }
     }
     _site {

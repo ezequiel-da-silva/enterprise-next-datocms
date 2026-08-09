@@ -1,4 +1,4 @@
-import { datoAssetUrlWithParams } from "@/lib/datocms-image-loader";
+import { buildDatoSrcSet, DATO_DESKTOP_SRCSET_WIDTHS } from "@/lib/datocms-image-loader";
 import type { FileFieldLike } from "@/infra/datocms/types-page";
 import Image from "next/image";
 
@@ -43,11 +43,16 @@ export function DatoResponsivePicture({
   const desktopW = Math.min(desktop?.width ?? 1280, 1280);
 
   if (desktopUrl) {
+    const desktopWidths = [
+      ...DATO_DESKTOP_SRCSET_WIDTHS.filter((w) => w <= desktopW),
+      desktopW,
+    ];
     return (
       <picture>
         <source
           media="(min-width: 768px)"
-          srcSet={datoAssetUrlWithParams(desktopUrl, desktopW)}
+          srcSet={buildDatoSrcSet(desktopUrl, desktopWidths, quality)}
+          sizes={sizes}
         />
         <Image
           src={mobile.url}

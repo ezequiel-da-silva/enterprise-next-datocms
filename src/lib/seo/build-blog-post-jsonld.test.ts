@@ -23,6 +23,7 @@ describe("buildBlogPostJsonLdGraph", () => {
       postAuthor: null,
       seoSettingsSocial: { description: "Summary", title: null, twitterCard: null, noIndex: null, image: null },
       _seoMetaTags: null,
+      slugLocales: [{ locale: "en", value: "hello" }],
     } satisfies PostDetailRecord;
 
     const graph = buildBlogPostJsonLdGraph("en", "my-post", post);

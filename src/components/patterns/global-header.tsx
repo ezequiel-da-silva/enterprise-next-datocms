@@ -3,6 +3,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { NavigationData } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import type { ThemeMode } from "@/constants/theme";
+import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,26 +29,31 @@ export function GlobalHeader({ data, locale, initialThemeMode }: GlobalHeaderPro
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
   const showTheme = data?.showThemeToggle === true;
   const themeToggle = showTheme ? <ThemeToggle initialMode={initialThemeMode} /> : null;
+  const homeHref = homeBreadcrumbPath(locale);
+  const homeLabel = homeAriaLabel(locale);
 
   return (
     <header className="overflow-visible border-b border-border bg-background shadow-sm supports-[backdrop-filter]:bg-background/95 supports-[backdrop-filter]:backdrop-blur">
       <div className="mx-auto flex min-h-14 max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top,0px))]">
         <Link
-          href="/"
-          aria-label={homeAriaLabel(locale)}
+          href={homeHref}
           className="relative z-10 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
+          <span className="sr-only">{homeLabel}</span>
           {logo?.url ? (
             <Image
               src={logo.url}
-              alt={logo.alt ?? SITE_WORDMARK}
+              alt=""
               width={logo.width ?? 160}
               height={logo.height ?? 40}
               priority
+              sizes="160px"
               className="h-9 w-auto max-w-[10rem] object-contain object-left"
             />
           ) : (
-            <span className="text-sm font-semibold tracking-tight text-foreground">{SITE_WORDMARK}</span>
+            <span aria-hidden className="text-sm font-semibold tracking-tight text-foreground">
+              {SITE_WORDMARK}
+            </span>
           )}
         </Link>
 

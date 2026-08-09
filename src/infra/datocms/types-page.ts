@@ -41,7 +41,12 @@ export type HeroSectionRecord = NonNullable<PageQueryData["heroPage"]>;
 /** @deprecated Use `HeroSectionRecord` */
 export type HeroSectionBlockRecord = HeroSectionRecord;
 
-/** VTT opcional quando o campo existir no schema Dato. */
+/**
+ * VTT opcional no bloco vídeo.
+ * CMS (follow-up): no model `video_block`, adicionar campo file `captions` (`.vtt`),
+ * depois incluir em `queries.ts` / `page-by-slug.graphql` e correr `npm run codegen`.
+ * Até lá o renderer só emite `<track>` se o CDA devolver um destes campos.
+ */
 export type VideoBlockWithCaptions = Extract<PageStructuredTextBlock, { __typename: "VideoBlockRecord" }> & {
   captions?: FileFieldLike;
   captionsFile?: FileFieldLike;
@@ -56,6 +61,8 @@ export type PageRecord = {
   structuredText: CdaStructuredTextValue | null;
   seoSettingsSocial: SeoSettingsSocial;
   _seoMetaTags: TitleMetaLinkTag[] | null;
+  /** Locales com slug preenchido — base do hreflang (evita links para 404). */
+  slugLocales: { locale?: string | null; value?: string | null }[];
 };
 
 export type PageBySlugQueryResult = {
@@ -82,6 +89,7 @@ export function normalizePageBySlugResult(data: PageBySlugQuery): PageBySlugQuer
       structuredText: page.structuredText as CdaStructuredTextValue | null,
       seoSettingsSocial: page.seoSettingsSocial,
       _seoMetaTags: page._seoMetaTags as TitleMetaLinkTag[] | null,
+      slugLocales: page._allSlugLocales ?? [],
     },
     _site: data._site,
   };

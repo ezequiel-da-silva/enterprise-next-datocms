@@ -16,6 +16,11 @@ import type {
   GetPostsByAuthorQueryResult,
   GetPostsByCategoryQueryResult,
 } from "@/infra/datocms/types-blog";
+import {
+  normalizeAuthorBySlugResult,
+  normalizeCategoryBySlugResult,
+  normalizePostBySlugResult,
+} from "@/infra/datocms/types-blog";
 import { cache } from "react";
 
 function baseEditingOptions(includeDrafts: boolean) {
@@ -57,7 +62,10 @@ const loadPostBySlug = cache(
   ): Promise<DatocmsResponse<GetPostBySlugQueryResult>> => {
     const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
-    return datocmsFetch<GetPostBySlugQueryResult>({
+    const response = await datocmsFetch<{
+      post: Record<string, unknown> | null;
+      _site: GetPostBySlugQueryResult["_site"];
+    }>({
       query: GET_POST_BY_SLUG,
       variables: { locale, slug },
       tags: noStore ? undefined : ["datocms:blog", "datocms:posts", `post:${locale}:${slug}`],
@@ -66,6 +74,8 @@ const loadPostBySlug = cache(
       ...editing,
       cache: noStore ? "no-store" : undefined,
     });
+    if ("errors" in response) return response;
+    return { data: normalizePostBySlugResult(response.data) };
   },
 );
 
@@ -77,7 +87,10 @@ const loadAuthorBySlug = cache(
   ): Promise<DatocmsResponse<GetAuthorBySlugQueryResult>> => {
     const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
-    return datocmsFetch<GetAuthorBySlugQueryResult>({
+    const response = await datocmsFetch<{
+      author: Record<string, unknown> | null;
+      _site: GetAuthorBySlugQueryResult["_site"];
+    }>({
       query: GET_AUTHOR_BY_SLUG,
       variables: { locale, slug },
       tags: noStore ? undefined : ["datocms:blog", "datocms:authors", `author:${locale}:${slug}`],
@@ -86,6 +99,8 @@ const loadAuthorBySlug = cache(
       ...editing,
       cache: noStore ? "no-store" : undefined,
     });
+    if ("errors" in response) return response;
+    return { data: normalizeAuthorBySlugResult(response.data) };
   },
 );
 
@@ -117,7 +132,10 @@ const loadCategoryBySlug = cache(
   ): Promise<DatocmsResponse<GetCategoryBySlugQueryResult>> => {
     const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
-    return datocmsFetch<GetCategoryBySlugQueryResult>({
+    const response = await datocmsFetch<{
+      category: Record<string, unknown> | null;
+      _site: GetCategoryBySlugQueryResult["_site"];
+    }>({
       query: GET_CATEGORY_BY_SLUG,
       variables: { locale, slug },
       tags: noStore ? undefined : ["datocms:blog", "datocms:categories", `category:${locale}:${slug}`],
@@ -126,6 +144,8 @@ const loadCategoryBySlug = cache(
       ...editing,
       cache: noStore ? "no-store" : undefined,
     });
+    if ("errors" in response) return response;
+    return { data: normalizeCategoryBySlugResult(response.data) };
   },
 );
 

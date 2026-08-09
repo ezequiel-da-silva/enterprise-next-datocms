@@ -26,6 +26,7 @@ Skill: [`.cursor/skills/add-datocms-block/SKILL.md`](../skills/add-datocms-block
 - CDA camelCase; API keys snake_case — use `readCdaBool(record, "hasImage", "has_image")` etc.
 - Links: `LINK_HERO_CTA_FIELDS` + `SmartLink` + `resolveLinkBlock`.
 - Images: `IMAGE_BLOCK_RESPONSIVE` + `DatoResponsivePicture`.
+- Video captions: model `video_block` precisa de file field `captions` (VTT); até existir, o `<track>` não é emitido.
 
 ## RSC note
 

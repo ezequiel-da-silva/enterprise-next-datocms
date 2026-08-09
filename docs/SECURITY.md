@@ -73,7 +73,8 @@ Com HTTPS e domínio público:
 ## Checklist manual
 
 - [ ] Lighthouse **Best Practices** e **Security** em `npm run build && npm run start` (não em `next dev`)
-- [ ] Console sem violações de CSP em páginas principais
+- [ ] Console sem violações de CSP em páginas principais (FA com CSS estático; sem `<style>` injectado sem nonce)
+- [ ] Produção: `style-src-elem` com nonce; `style-src-attr` permite atributos (next/image)
 - [ ] `/api/draft` sem secret → 401 ou 500 (nunca preview aberto)
 - [ ] `/api/draft?secret=wrong` → 401 quando secret configurado
 - [ ] `/api/draft?secret=…&redirect=https://evil.com` → 422

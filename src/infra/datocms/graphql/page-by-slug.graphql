@@ -124,6 +124,8 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
             width
             height
           }
+          # CMS: add file field `captions` on video_block, then:
+          # captions { url title }
         }
         ... on FeatureGridRecord {
           id
@@ -222,6 +224,10 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
       tag
       attributes
       content
+    }
+    _allSlugLocales {
+      locale
+      value
     }
   }
   _site {

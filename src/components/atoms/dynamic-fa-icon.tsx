@@ -1,10 +1,12 @@
 "use client";
 
-import { FontAwesomeIcon, type FontAwesomeIconProps } from "@fortawesome/react-fontawesome";
-import type { IconDefinition, SizeProp } from "@fortawesome/fontawesome-svg-core";
+import { config, type IconDefinition, type SizeProp } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { startTransition, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import type { CSSProperties } from "react";
 import { cn } from "@/lib/cn";
+
+/* CSS estático em globals.css — evita <style> injectado sem nonce (CSP). */
+config.autoAddCss = false;
 
 /** Payload típico do plugin Font Awesome no DatoCMS. */
 export type DatoFontAwesomeIconJson = {
@@ -19,9 +21,9 @@ export type DynamicFaIconProps = {
   /** Sobrescreve `icon.iconName` quando ambos existem. */
   iconName?: string;
   className?: string;
-  style?: CSSProperties;
   size?: SizeProp;
-  color?: string;
+  /** Classes de cor Tailwind (ex. `text-primary`). Preferir `className`. */
+  colorClassName?: string;
   /** Quando definido, o ícone deixa de ser puramente decorativo (`aria-label`). */
   title?: string;
 };
@@ -89,35 +91,38 @@ async function resolveIconDefinition(family: FaFamily, exportKey: string): Promi
   }
 }
 
-function sizeToBoxLength(size: SizeProp | undefined): string {
-  if (size == null) return "1em";
+/** Dimensões via classes Tailwind — evita `style={{}}` desnecessário (preferir CSP-friendly). */
+function sizeBoxClass(size: SizeProp | undefined): string {
+  if (size == null) return "size-[1em]";
   const map: Partial<Record<SizeProp, string>> = {
-    "2xs": "0.625rem",
-    xs: "0.75rem",
-    sm: "0.875rem",
-    lg: "1.125rem",
-    xl: "1.25rem",
-    "2xl": "1.5rem",
-    "1x": "1rem",
-    "2x": "2rem",
-    "3x": "3rem",
-    "4x": "4rem",
-    "5x": "5rem",
-    "6x": "6rem",
-    "7x": "7rem",
-    "8x": "8rem",
-    "9x": "9rem",
-    "10x": "10rem",
+    "2xs": "size-[0.625rem]",
+    xs: "size-3",
+    sm: "size-[0.875rem]",
+    lg: "size-[1.125rem]",
+    xl: "size-5",
+    "2xl": "size-6",
+    "1x": "size-4",
+    "2x": "size-8",
+    "3x": "size-12",
+    "4x": "size-16",
+    "5x": "size-20",
+    "6x": "size-24",
+    "7x": "size-28",
+    "8x": "size-32",
+    "9x": "size-36",
+    "10x": "size-40",
   };
-  return map[size] ?? "1em";
+  return map[size] ?? "size-[1em]";
 }
 
-function LoadingPlaceholder({ className, style, size }: { className?: string; style?: CSSProperties; size?: SizeProp }) {
-  const dim = sizeToBoxLength(size);
+function LoadingPlaceholder({ className, size }: { className?: string; size?: SizeProp }) {
   return (
     <span
-      className={cn("inline-block shrink-0 animate-pulse rounded-sm bg-muted align-middle", className)}
-      style={{ ...style, width: dim, height: dim, minWidth: dim, minHeight: dim }}
+      className={cn(
+        "inline-block shrink-0 animate-pulse rounded-sm bg-muted align-middle",
+        sizeBoxClass(size),
+        className,
+      )}
       aria-hidden
     />
   );
@@ -125,24 +130,20 @@ function LoadingPlaceholder({ className, style, size }: { className?: string; st
 
 function FallbackIcon({
   className,
-  style,
   size,
   label,
   decorative,
 }: {
   className?: string;
-  style?: CSSProperties;
   size?: SizeProp;
   label: string;
   decorative: boolean;
 }) {
-  const dim = sizeToBoxLength(size);
   const svg = (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 512 512"
-      className={cn("inline-block shrink-0 fill-current", className)}
-      style={{ ...style, width: dim, height: dim }}
+      className={cn("inline-block shrink-0 fill-current", sizeBoxClass(size), className)}
     >
       <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 217.3c0 17 12.1 30.1 30.1 30.1h.1c17 0 30.1-12.1 30.1-30.1v-3.2c0-34.3 23.6-64 57.7-71.9v24.6c0 17 12.1 30.1 30.1 30.1h.1c17 0 30.1-12.1 30.1-30.1V168.6c0-22.5-18.3-40.8-40.8-40.8H200.3c-22.5 0-40.8 18.3-40.8 40.8v48.7zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z" />
     </svg>
@@ -168,9 +169,8 @@ export function DynamicFaIcon({
   prefix: prefixProp,
   iconName: iconNameProp,
   className,
-  style,
   size,
-  color,
+  colorClassName,
   title,
 }: DynamicFaIconProps) {
   const prefix = prefixProp ?? icon?.prefix;
@@ -184,8 +184,8 @@ export function DynamicFaIcon({
   const [definition, setDefinition] = useState<IconDefinition | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const mergedStyle: CSSProperties = { ...style, ...(color ? { color } : {}) };
   const decorative = !title;
+  const mergedClassName = cn(colorClassName, className);
 
   /* Sincronizar estado com nova chave (prefix/iconName) antes do paint; o fetch assíncrono fica no `useEffect`. */
   /* eslint-disable react-hooks/set-state-in-effect -- reset explícito ao mudar família/export */
@@ -221,8 +221,7 @@ export function DynamicFaIcon({
   if (invalid) {
     return (
       <FallbackIcon
-        className={className}
-        style={mergedStyle}
+        className={mergedClassName}
         size={size}
         label={title ?? "Ícone inválido"}
         decorative={decorative}
@@ -231,14 +230,13 @@ export function DynamicFaIcon({
   }
 
   if (loading) {
-    return <LoadingPlaceholder className={className} style={mergedStyle} size={size} />;
+    return <LoadingPlaceholder className={mergedClassName} size={size} />;
   }
 
   if (!definition) {
     return (
       <FallbackIcon
-        className={className}
-        style={mergedStyle}
+        className={mergedClassName}
         size={size}
         label={title ?? "Ícone indisponível"}
         decorative={decorative}
@@ -249,8 +247,7 @@ export function DynamicFaIcon({
   return (
     <FontAwesomeIcon
       icon={definition}
-      className={className}
-      style={mergedStyle as FontAwesomeIconProps["style"]}
+      className={mergedClassName}
       size={size}
       title={title}
       aria-hidden={decorative ? true : undefined}

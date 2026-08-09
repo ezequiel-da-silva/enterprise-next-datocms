@@ -96,7 +96,13 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
           >
             <source src={v.url} />
             {captions ? (
-              <track kind="captions" src={captions.url} label={captions.label} srcLang="pt" default />
+              <track
+                kind="captions"
+                src={captions.url}
+                label={captions.label}
+                srcLang={locale}
+                default
+              />
             ) : null}
           </video>
           {v.title ? <figcaption className="mt-2 text-sm text-muted-foreground">{v.title}</figcaption> : null}

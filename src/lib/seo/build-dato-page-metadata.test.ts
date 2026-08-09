@@ -1,0 +1,67 @@
+import { describe, expect, it } from "vitest";
+import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import type { TitleMetaLinkTag } from "react-datocms/seo";
+
+/** Simula o fallback global do Dato: título genérico igual para todas as páginas. */
+const GLOBAL_FALLBACK_TAGS: TitleMetaLinkTag[] = [
+  { tag: "title", content: "Homepage", attributes: null },
+  { tag: "meta", content: null, attributes: { property: "og:title", content: "Homepage" } },
+];
+
+const EMPTY_SEO = {
+  title: null,
+  description: null,
+  twitterCard: null,
+  noIndex: null,
+  image: null,
+};
+
+describe("buildDatoPageMetadata title resolution", () => {
+  it("prefers the record title over the Dato global fallback", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+      fallbackTitle: "The page that exists just to be linked",
+    });
+
+    expect(meta.title).toBe("The page that exists just to be linked");
+    expect(meta.openGraph?.title).toBe("The page that exists just to be linked");
+  });
+
+  it("keeps an explicit SEO field title over the record title", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: { ...EMPTY_SEO, title: "Curated SEO title" },
+      fallbackTitle: "The page that exists just to be linked",
+    });
+
+    expect(meta.title).toBe("Curated SEO title");
+  });
+
+  it("falls back to Dato tags when no record title is available", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+    });
+
+    expect(meta.title).toBe("Homepage");
+  });
+
+  it("ignores whitespace-only titles", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: { ...EMPTY_SEO, title: "   " },
+      fallbackTitle: "Record title",
+    });
+
+    expect(meta.title).toBe("Record title");
+  });
+});

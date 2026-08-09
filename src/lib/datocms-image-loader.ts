@@ -18,3 +18,17 @@ export function datoAssetUrlWithParams(src: string, width: number, quality: numb
   const sep = src.includes("?") ? "&" : "?";
   return `${src}${sep}auto=format,compress&fit=max&w=${width}&q=${quality}`;
 }
+
+/** `srcSet` multi-width para `<source>` em `<picture>` (desktop). */
+export function buildDatoSrcSet(
+  src: string,
+  widths: readonly number[],
+  quality: number = DEFAULT_QUALITY,
+): string {
+  const unique = [...new Set(widths.filter((w) => w > 0))].sort((a, b) => a - b);
+  return unique.map((w) => `${datoAssetUrlWithParams(src, w, quality)} ${w}w`).join(", ");
+}
+
+/** Larguras típicas para hero/desktop ≥768px. */
+export const DATO_DESKTOP_SRCSET_WIDTHS = [640, 960, 1280] as const;
+
