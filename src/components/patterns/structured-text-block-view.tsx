@@ -86,13 +86,20 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       if (!resolved) return null;
       const label = v?.title?.trim() || "Vídeo";
       const captions = readVideoCaptions(record);
+      /* aspectRatio reserva a altura antes do poster carregar → evita CLS.
+       * style-attr inline é permitido pela CSP (mesmo caso do next/image). */
+      const aspectStyle =
+        resolved.width && resolved.height
+          ? { aspectRatio: `${resolved.width} / ${resolved.height}` }
+          : undefined;
       return (
         <figure data-datocms-content-link-boundary="" className="my-6">
           <video
             controls
-            className="h-auto max-w-full rounded-md"
+            className="h-auto w-full max-w-full rounded-md"
             width={resolved.width}
             height={resolved.height}
+            style={aspectStyle}
             poster={resolved.poster}
             preload="metadata"
             playsInline
