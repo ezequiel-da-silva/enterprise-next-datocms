@@ -1,6 +1,7 @@
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
+import { appLocaleFromPath, openGraphLocale } from "@/lib/seo/locale-tags";
 import type { Metadata } from "next";
 import { toNextMetadata, type TitleMetaLinkTag } from "react-datocms/seo";
 import type { SeoSettingsSocial } from "@/infra/datocms/types-page";
@@ -43,11 +44,14 @@ export function buildDatoPageMetadata({
 
   const resolvedTitle = s?.title?.trim() || fallbackTitle?.trim() || "";
 
-  const openGraph: NonNullable<Metadata["openGraph"]> = { ...fromTags.openGraph };
+  const openGraph: NonNullable<Metadata["openGraph"]> = {
+    ...fromTags.openGraph,
+    locale: openGraphLocale(appLocaleFromPath(canonicalPath)),
+  };
   const twitterBase = typeof fromTags.twitter === "object" && fromTags.twitter ? fromTags.twitter : {};
   const twitterTitle = resolvedTitle ? { title: resolvedTitle } : {};
   const twitterCard = s?.twitterCard as "summary" | "summary_large_image" | "player" | "app" | undefined;
-  let hasOpenGraph = false;
+  let hasOpenGraph = true;
 
   if (s?.noIndex) {
     fromField.robots = { index: false, follow: true };
@@ -59,6 +63,8 @@ export function buildDatoPageMetadata({
   }
   if (s?.description) {
     fromField.description = s.description;
+    openGraph.description = s.description;
+    hasOpenGraph = true;
   }
   if (s?.image?.url) {
     openGraph.images = [
@@ -75,11 +81,25 @@ export function buildDatoPageMetadata({
   if (hasOpenGraph) {
     fromField.openGraph = openGraph;
   }
+
+  const twitterDescription = s?.description ? { description: s.description } : {};
+  const twitterImages = s?.image?.url ? { images: [s.image.url] } : {};
   /* `card` discrimina a união Twitter do Next — precisa de ser um literal na criação do objeto. */
   if (twitterCard) {
-    fromField.twitter = { ...twitterBase, ...twitterTitle, card: twitterCard };
-  } else if (resolvedTitle) {
-    fromField.twitter = { ...twitterBase, ...twitterTitle };
+    fromField.twitter = {
+      ...twitterBase,
+      ...twitterTitle,
+      ...twitterDescription,
+      ...twitterImages,
+      card: twitterCard,
+    };
+  } else if (resolvedTitle || s?.description || s?.image?.url) {
+    fromField.twitter = {
+      ...twitterBase,
+      ...twitterTitle,
+      ...twitterDescription,
+      ...twitterImages,
+    };
   }
 
   const hreflang = hreflangPaths ? buildHreflangAlternates(hreflangPaths) : undefined;

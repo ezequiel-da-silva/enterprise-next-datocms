@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
+import { appLocaleFromPath, openGraphLocale } from "@/lib/seo/locale-tags";
 import { getOrganizationName, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
 import type { Metadata } from "next";
 
@@ -15,6 +16,8 @@ export type SeoInput = {
   absoluteTitle?: boolean;
   /** hreflang para páginas estáticas multilíngues (ex.: `/contato`). */
   hreflangPaths?: Partial<Record<AppLocale, string>>;
+  /** Locale da página; se omitido, deriva do `path` ou usa o default da app. */
+  locale?: AppLocale;
 };
 
 const DEFAULT_ROBOTS: Metadata["robots"] = {
@@ -34,6 +37,7 @@ export function buildMetadata(input: SeoInput): Metadata {
   const siteName = getSiteName();
   const url = new URL(input.path ?? "/", `${base}/`).toString();
   const title = input.absoluteTitle ? { absolute: input.title } : input.title;
+  const locale = input.locale ?? appLocaleFromPath(input.path);
 
   const ogImages = input.openGraphImage ? [{ url: input.openGraphImage, alt: input.title }] : undefined;
 
@@ -59,7 +63,7 @@ export function buildMetadata(input: SeoInput): Metadata {
       url,
       type: "website",
       siteName,
-      locale: "pt_BR",
+      locale: openGraphLocale(locale),
       images: ogImages,
     },
     twitter: {

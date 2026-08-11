@@ -6,13 +6,8 @@ import {
   homeBreadcrumbPath,
 } from "@/lib/seo/breadcrumb-labels";
 import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
+import { schemaLanguage } from "@/lib/seo/locale-tags";
 import { getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
-
-function schemaLanguage(locale: AppLocale): string {
-  if (locale === "en") return "en";
-  if (locale === "pt") return "pt-BR";
-  return "es";
-}
 
 export function buildBlogPostJsonLdGraph(
   locale: AppLocale,
@@ -43,6 +38,7 @@ export function buildBlogPostJsonLdGraph(
     "@id": `${url}#article`,
     headline: post.postTitle,
     datePublished: post._firstPublishedAt,
+    dateModified: post._updatedAt || post._firstPublishedAt,
     inLanguage: schemaLanguage(locale),
     isPartOf: { "@id": `${base}/#website` },
     mainEntityOfPage: {

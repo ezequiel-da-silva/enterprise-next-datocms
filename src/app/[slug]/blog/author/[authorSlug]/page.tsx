@@ -118,6 +118,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
               desktop={avatarDesktop}
               className="size-28 object-cover sm:size-32"
               sizes="128px"
+              fallbackAlt={author.authorName}
             />
           ) : (
             <div className="flex size-28 items-center justify-center text-xs text-muted-foreground sm:size-32">Sem foto</div>

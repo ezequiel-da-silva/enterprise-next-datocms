@@ -1,11 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { getOrganizationName, getSearchPath, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
-
-function schemaLanguage(locale: AppLocale): string {
-  if (locale === "en") return "en";
-  if (locale === "pt") return "pt-BR";
-  return "es";
-}
+import { schemaLanguage } from "@/lib/seo/locale-tags";
 
 /**
  * Organization + WebSite (SearchAction) para layout — crawlers e motores de resposta (AEO).

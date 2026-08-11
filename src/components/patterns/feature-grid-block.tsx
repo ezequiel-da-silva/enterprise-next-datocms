@@ -54,7 +54,8 @@ export function CardItem({ card, locale }: CardItemProps) {
             mobile={heroMobile}
             desktop={imgBlock?.assetDesktop}
             className="h-full w-full object-cover"
-            sizes="(max-width: 768px) 100vw, 360px"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 320px"
+            fallbackAlt={title || undefined}
           />
         </figure>
       ) : null}

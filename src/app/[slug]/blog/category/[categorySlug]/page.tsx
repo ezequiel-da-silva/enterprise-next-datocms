@@ -112,7 +112,7 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
           {icon?.url ? (
             <Image
               src={icon.url}
-              alt={icon.alt ?? ""}
+              alt={icon.alt?.trim() || category.categoryName}
               width={icon.width ?? 48}
               height={icon.height ?? 48}
               sizes="48px"

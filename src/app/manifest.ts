@@ -1,4 +1,5 @@
 import { getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
+import { manifestLang } from "@/lib/seo/locale-tags";
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -15,7 +16,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#0f172a",
-    lang: "pt-BR",
+    lang: manifestLang(),
     icons: [
       {
         src: `${base}/favicon.ico`,

@@ -213,7 +213,7 @@ const ST_BLOCKS_MEDIA_ONLY = `
         streamingUrl
         mp4Url(res: high)
         # width limitado: o poster nativo (ex. 2732px) desperdiça bytes e atrasa o CLS.
-        thumbnailUrl(width: 960)
+        thumbnailUrl(width: 640)
         width
         height
         duration
@@ -500,6 +500,7 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
     post(locale: $locale, filter: { postSlug: { eq: $slug } }) {
       id
       _firstPublishedAt
+      _updatedAt
       postTitle
       postSlug
       postCategory {
