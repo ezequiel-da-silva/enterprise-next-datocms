@@ -55,6 +55,7 @@ export type AuthorDetailRecord = {
 export type PostDetailRecord = {
   id: string;
   _firstPublishedAt: string;
+  _updatedAt: string;
   postTitle: string;
   postSlug: string;
   postCategory: PostCategorySummary[];

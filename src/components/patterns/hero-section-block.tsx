@@ -134,7 +134,8 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
               mobile={heroMobile}
               desktop={imageBlockDesktopAsset(heroImg)}
               className="h-auto w-full object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 496px"
+              fallbackAlt={title || undefined}
               priority
             />
           </figure>
@@ -164,7 +165,8 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
               mobile={overlayMobile!}
               desktop={imageBlockDesktopAsset(overlayImg)}
               className="h-full w-full object-cover"
-              sizes="(max-width: 1280px) 100vw, 1280px"
+              sizes="(max-width: 1024px) 100vw, 992px"
+              fallbackAlt={title || undefined}
               priority
             />
             <div className="absolute inset-0 bg-black/25 dark:bg-black/30" aria-hidden />
@@ -207,7 +209,8 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
                 mobile={heroMobile!}
                 desktop={imageBlockDesktopAsset(heroImg)}
                 className="h-auto w-full object-cover"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 496px"
+                fallbackAlt={title || undefined}
                 priority={!hasOverlayBg}
               />
             </figure>

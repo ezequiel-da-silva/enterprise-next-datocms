@@ -98,6 +98,8 @@ export default async function RootLayout({
       <head>
         <link rel="preconnect" href="https://www.datocms-assets.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://www.datocms-assets.com" />
+        <link rel="preconnect" href="https://image.mux.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://image.mux.com" />
       </head>
       <body className="relative flex min-h-dvh flex-col bg-background text-foreground">
         <script

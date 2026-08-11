@@ -64,4 +64,39 @@ describe("buildDatoPageMetadata title resolution", () => {
 
     expect(meta.title).toBe("Record title");
   });
+
+  it("syncs seoSettingsSocial description and image to OG and Twitter", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: {
+        ...EMPTY_SEO,
+        title: "Share title",
+        description: "Share description",
+        image: {
+          url: "https://www.datocms-assets.com/og.jpg",
+          alt: "OG",
+          width: 1200,
+          height: 630,
+        },
+      },
+    });
+
+    expect(meta.description).toBe("Share description");
+    expect(meta.openGraph?.description).toBe("Share description");
+    expect(meta.openGraph?.images).toEqual([
+      {
+        url: "https://www.datocms-assets.com/og.jpg",
+        alt: "OG",
+        width: 1200,
+        height: 630,
+      },
+    ]);
+    expect(meta.twitter).toMatchObject({
+      title: "Share title",
+      description: "Share description",
+      images: ["https://www.datocms-assets.com/og.jpg"],
+    });
+  });
 });

@@ -115,7 +115,7 @@ function CtaBannerButtons({
   );
 }
 
-function CtaBannerImage({ block }: { block: CtaImageBlock }) {
+function CtaBannerImage({ block, fallbackAlt }: { block: CtaImageBlock; fallbackAlt?: string }) {
   const mobile = imageMobileAsset(block);
   if (!mobile?.url) return null;
 
@@ -125,8 +125,8 @@ function CtaBannerImage({ block }: { block: CtaImageBlock }) {
         mobile={mobile}
         desktop={block.assetDesktop}
         className="h-auto w-full object-cover"
-        sizes="(max-width: 1024px) 100vw, 540px"
-        fallbackAlt="Banner image"
+        sizes="(max-width: 1024px) 100vw, 496px"
+        fallbackAlt={fallbackAlt || "Banner image"}
       />
     </figure>
   );
@@ -240,8 +240,8 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
                   mobile={mobileAsset}
                   desktop={imageBlock.assetDesktop}
                   className="absolute inset-0 h-full w-full object-cover"
-                  sizes="(max-width: 1024px) 100vw, 1200px"
-                  fallbackAlt="Background image"
+                  sizes="(max-width: 1024px) 100vw, 992px"
+                  fallbackAlt={title}
                 />
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
               </>
@@ -282,7 +282,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
 
         {options.variant === "split" && image.hasValidAsset && imageBlock ? (
           <div className="min-w-0">
-            <CtaBannerImage block={imageBlock} />
+            <CtaBannerImage block={imageBlock} fallbackAlt={title} />
           </div>
         ) : null}
       </div>

@@ -15,6 +15,7 @@ describe("buildBlogPostJsonLdGraph", () => {
     const post = {
       id: "1",
       _firstPublishedAt: "2024-01-01T00:00:00Z",
+      _updatedAt: "2024-06-15T12:00:00Z",
       postTitle: "My Post",
       postSlug: "my-post",
       postCategory: [{ id: "c1", categoryName: "News", categorySlug: "news", categoryColor: null }],
@@ -31,6 +32,9 @@ describe("buildBlogPostJsonLdGraph", () => {
     expect(graph).toHaveLength(2);
     expect(graph[0]["@type"]).toBe("BlogPosting");
     expect(graph[0].headline).toBe("My Post");
+    expect(graph[0].datePublished).toBe("2024-01-01T00:00:00Z");
+    expect(graph[0].dateModified).toBe("2024-06-15T12:00:00Z");
+    expect(graph[0].inLanguage).toBe("en");
     expect(graph[1]["@type"]).toBe("BreadcrumbList");
   });
 });

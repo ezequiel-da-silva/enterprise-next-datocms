@@ -52,7 +52,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
             mobile={mobile}
             desktop={record.assetDesktop}
             className="h-auto max-w-full rounded-md"
-            sizes="(max-width: 768px) 100vw, 720px"
+            sizes="(max-width: 768px) 100vw, 992px"
             fallbackAlt="Embedded image"
           />
         </figure>
@@ -67,13 +67,13 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
             <figure key={`${record.id}-${i}`} className="overflow-hidden rounded-md border border-border">
               <Image
                 src={img.url}
-                alt={img.alt ?? ""}
+                alt={img.alt?.trim() || "Gallery image"}
                 width={img.width ?? 800}
                 height={img.height ?? 600}
                 quality={75}
                 loading="lazy"
                 className="h-auto w-full object-cover"
-                sizes="(max-width: 768px) 100vw, 360px"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 480px"
               />
             </figure>
           ))}
@@ -101,7 +101,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
             height={resolved.height}
             style={aspectStyle}
             poster={resolved.poster}
-            preload="metadata"
+            preload="none"
             playsInline
             aria-label={label}
           >

@@ -129,7 +129,7 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
               streamingUrl
               mp4Url(res: high)
               # width limitado: o poster nativo (ex. 2732px) desperdiça bytes e atrasa o CLS.
-              thumbnailUrl(width: 960)
+              thumbnailUrl(width: 640)
               width
               height
               duration

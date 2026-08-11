@@ -5,6 +5,7 @@ import {
   homeBreadcrumbPath,
 } from "@/lib/seo/breadcrumb-labels";
 import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
+import { schemaLanguage } from "@/lib/seo/locale-tags";
 import { getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
 
 export type PageJsonLdInput = {
@@ -26,6 +27,7 @@ export function buildPageWebPageJsonLd(input: PageJsonLdInput): Record<string, u
     "@id": `${url}#webpage`,
     url,
     name: input.title,
+    inLanguage: schemaLanguage(input.locale),
     isPartOf: { "@id": `${base}/#website` },
     ...(input.description ? { description: input.description } : {}),
     publisher: {

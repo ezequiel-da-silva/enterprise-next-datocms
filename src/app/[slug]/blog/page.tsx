@@ -9,9 +9,17 @@ import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { blogBreadcrumbLabel, crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
+import { openGraphLocale } from "@/lib/seo/locale-tags";
+import { buildMetadata } from "@/lib/seo";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+
+const BLOG_INDEX_DESCRIPTION: Record<AppLocale, string> = {
+  en: "Articles, guides and updates from the team.",
+  pt: "Artigos, guias e novidades da equipa.",
+  es: "Artículos, guías y novedades del equipo.",
+};
 
 type BlogIndexProps = {
   params: Promise<{ slug: string }>;
@@ -34,13 +42,33 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
     return buildUnavailableMetadata("Blog");
   }
 
-  const meta = buildDatoPageMetadata({
-    path: `/${locale}/blog`,
+  const path = `/${locale}/blog`;
+  const hreflangPaths = buildLocaleAlternatePaths((l) => `/${l}/blog`);
+  const description = BLOG_INDEX_DESCRIPTION[locale];
+  const fromDato = buildDatoPageMetadata({
+    path,
     seoMetaTags: [],
     faviconMetaTags: result.data._site.faviconMetaTags,
-    hreflangPaths: buildLocaleAlternatePaths((l) => `/${l}/blog`),
+    fallbackTitle: "Blog",
+    hreflangPaths,
   });
-  return { ...meta, title: "Blog" };
+  const base = buildMetadata({
+    title: "Blog",
+    description,
+    path,
+    locale,
+    hreflangPaths,
+  });
+  return {
+    ...fromDato,
+    ...base,
+    icons: fromDato.icons,
+    openGraph: {
+      ...fromDato.openGraph,
+      ...base.openGraph,
+      locale: openGraphLocale(locale),
+    },
+  };
 }
 
 export default async function BlogIndexPage({ params }: BlogIndexProps) {
