@@ -212,7 +212,8 @@ const ST_BLOCKS_MEDIA_ONLY = `
         muxPlaybackId
         streamingUrl
         mp4Url(res: high)
-        thumbnailUrl
+        # width limitado: o poster nativo (ex. 2732px) desperdiça bytes e atrasa o CLS.
+        thumbnailUrl(width: 960)
         width
         height
         duration
