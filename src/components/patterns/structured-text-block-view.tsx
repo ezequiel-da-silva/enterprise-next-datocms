@@ -10,6 +10,7 @@ import type {
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
+import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveVideoSources } from "@/lib/datocms/resolve-video-sources";
 import Image from "next/image";
 
@@ -47,7 +48,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       const mobile = record.asset;
       if (!mobile?.url) return null;
       return (
-        <figure data-datocms-content-link-boundary="" className="my-6">
+        <figure {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6">
           <DatoResponsivePicture
             mobile={mobile}
             desktop={record.assetDesktop}
@@ -62,7 +63,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       const items = record.assets?.filter((a) => a?.url) ?? [];
       if (items.length === 0) return null;
       return (
-        <div data-datocms-content-link-boundary="" className="my-6 grid gap-3 sm:grid-cols-2">
+        <div {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6 grid gap-3 sm:grid-cols-2">
           {items.map((img, i) => (
             <figure key={`${record.id}-${i}`} className="overflow-hidden rounded-md border border-border">
               <Image
@@ -93,7 +94,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
           ? { aspectRatio: `${resolved.width} / ${resolved.height}` }
           : undefined;
       return (
-        <figure data-datocms-content-link-boundary="" className="my-6">
+        <figure {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6">
           <video
             controls
             className="h-auto w-full max-w-full rounded-md"

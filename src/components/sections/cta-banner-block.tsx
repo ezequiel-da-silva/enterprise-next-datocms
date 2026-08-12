@@ -11,6 +11,7 @@ import {
   type CtaBannerBgTheme,
   type CtaBannerVariant,
 } from "@/lib/datocms/resolve-cta-banner-options";
+import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 
 type CtaBannerBlockProps = {
@@ -223,6 +224,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
     return (
       <section
         id={options.sectionId}
+        {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
         className={cn("not-prose my-12 w-full", bgThemeClasses(options.bgTheme))}
       >
@@ -264,6 +266,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
   return (
     <section
       id={options.sectionId}
+      {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className={cn("not-prose my-12 w-full", bgThemeClasses(options.bgTheme))}
     >
