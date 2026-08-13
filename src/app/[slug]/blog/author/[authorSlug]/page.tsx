@@ -11,6 +11,7 @@ import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
+import { buildAuthorPersonJsonLd } from "@/lib/seo/build-author-person-jsonld";
 import {
   blogBreadcrumbLabel,
   crumbsToNavItems,
@@ -94,9 +95,17 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
   const social = author.authorSocialLinks;
   const socialHref = social?.url && isSafeExternalHref(social.url) ? social.url : null;
   const authorPath = `/${locale}/blog/author/${authorSlug}`;
-  const jsonLd = buildListingPageJsonLd(locale, authorPath, author.authorName, [
-    { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
-  ]);
+  const listingLd = buildListingPageJsonLd(
+    locale,
+    authorPath,
+    author.authorName,
+    [{ name: blogBreadcrumbLabel(), path: `/${locale}/blog` }],
+    posts.map((post) => ({
+      name: post.postTitle,
+      path: `/${locale}/blog/${post.postSlug}`,
+    })),
+  );
+  const jsonLd = [...listingLd, buildAuthorPersonJsonLd(locale, authorSlug, author)];
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">

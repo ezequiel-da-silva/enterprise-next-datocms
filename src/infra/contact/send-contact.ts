@@ -10,7 +10,9 @@ export type SendContactResult =
 
 /**
  * Adaptador de envio do formulário de contacto.
- * Usa `CONTACT_WEBHOOK_URL` quando definido; caso contrário regista em dev e simula sucesso.
+ * Usa `CONTACT_WEBHOOK_URL` quando definido.
+ * Em desenvolvimento, sem webhook, simula sucesso (log).
+ * Em produção, sem webhook, falha — nunca fingir entrega.
  */
 export async function sendContactMessage(payload: SendContactPayload): Promise<SendContactResult> {
   const webhook = process.env.CONTACT_WEBHOOK_URL?.trim();
@@ -22,8 +24,9 @@ export async function sendContactMessage(payload: SendContactPayload): Promise<S
         email: payload.email,
         messageLength: payload.message.length,
       });
+      return { ok: true };
     }
-    return { ok: true };
+    return { ok: false, reason: "not_configured" };
   }
 
   try {

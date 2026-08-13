@@ -1,10 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("smoke", () => {
-  test("home page renders primary heading", async ({ page }) => {
+  test("root redirects to default locale home", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("h1").first()).toBeVisible();
+    await expect(page).toHaveURL(/\/en\/?$/);
     await expect(page.locator("main#conteudo-principal")).toBeVisible();
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("blog index renders for default locale", async ({ page }) => {
@@ -37,7 +38,15 @@ test.describe("smoke", () => {
     await expect(honeypot).toHaveAttribute("tabindex", "-1");
     await expect(honeypot).toHaveCSS("opacity", "0");
 
-    // aria-hidden keeps it out of the accessibility tree, so no role match.
     await expect(page.getByRole("textbox", { name: /não preencha/i })).toHaveCount(0);
+  });
+
+  test("mobile menu closes with Escape", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/en");
+    await page.getByRole("button", { name: /open menu/i }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 });

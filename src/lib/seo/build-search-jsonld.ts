@@ -1,6 +1,7 @@
 import type { AppLocale } from "@/constants/i18n";
 import { buildLocaleBreadcrumbTrail } from "@/lib/seo/breadcrumb-labels";
 import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
+import { schemaLanguage } from "@/lib/seo/locale-tags";
 import { getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
 
 /** WebPage + BreadcrumbList for search (AEO). */
@@ -18,6 +19,7 @@ export function buildSearchPageJsonLd(locale: AppLocale, query?: string): Record
     "@id": `${url.toString()}#webpage`,
     url: url.toString(),
     name: pageName,
+    inLanguage: schemaLanguage(locale),
     isPartOf: { "@id": `${base}/#website` },
     about: {
       "@type": "WebSite",

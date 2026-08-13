@@ -91,9 +91,16 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
   const icon = category.categoryIcon;
   const colorHex = category.categoryColor?.hex;
   const categoryPath = `/${locale}/blog/category/${categorySlug}`;
-  const jsonLd = buildListingPageJsonLd(locale, categoryPath, category.categoryName, [
-    { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
-  ]);
+  const jsonLd = buildListingPageJsonLd(
+    locale,
+    categoryPath,
+    category.categoryName,
+    [{ name: blogBreadcrumbLabel(), path: `/${locale}/blog` }],
+    posts.map((post) => ({
+      name: post.postTitle,
+      path: `/${locale}/blog/${post.postSlug}`,
+    })),
+  );
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">

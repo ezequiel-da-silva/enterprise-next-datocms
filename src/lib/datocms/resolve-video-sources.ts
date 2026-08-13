@@ -34,6 +34,8 @@ export type ResolvedVideo = {
   poster?: string;
   width?: number;
   height?: number;
+  /** Segundos (Mux); para VideoObject ISO 8601. */
+  durationSeconds?: number;
   /** true quando só existe HLS — Chrome/Firefox precisam das renditions MP4 no Dato. */
   hlsOnly: boolean;
 };
@@ -79,6 +81,7 @@ export function resolveVideoSources(asset: DatoVideoAsset | null | undefined): R
     poster: trimmed(mux?.thumbnailUrl),
     width: positive(mux?.width) ?? positive(asset.width),
     height: positive(mux?.height) ?? positive(asset.height),
+    durationSeconds: positive(mux?.duration),
     hlsOnly: Boolean(streamingUrl) && !mp4Url,
   };
 }

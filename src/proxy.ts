@@ -59,12 +59,19 @@ function readThemeCookie(request: NextRequest): ThemeMode | null {
 }
 
 export function proxy(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  if (pathname === "/" || pathname === "") {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${DEFAULT_APP_LOCALE}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   const nonce = createNonce();
   const isDev = process.env.NODE_ENV === "development";
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(NONCE_HEADER, nonce);
 
-  const firstSegment = request.nextUrl.pathname.split("/").filter(Boolean)[0];
+  const firstSegment = pathname.split("/").filter(Boolean)[0];
   const requestLocale = firstSegment && isAppLocale(firstSegment) ? firstSegment : DEFAULT_APP_LOCALE;
   requestHeaders.set(REQUEST_LOCALE_HEADER, requestLocale);
 

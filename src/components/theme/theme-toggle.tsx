@@ -63,14 +63,15 @@ export function ThemeToggle({ initialMode }: ThemeToggleProps) {
   const [mode, setMode] = useState<ThemeMode>(initialMode ?? "light");
   const [mounted, setMounted] = useState(Boolean(initialMode));
 
+  // O DOM é a fonte de verdade: `initialMode` vem do cookie no SSR e fica desatualizado
+  // se o componente remontar noutro sítio (ex. entrar no painel do menu móvel) após um toggle.
   useEffect(() => {
-    if (initialMode !== undefined) return;
     const frame = requestAnimationFrame(() => {
       setMounted(true);
       setMode(readDomTheme());
     });
     return () => cancelAnimationFrame(frame);
-  }, [initialMode]);
+  }, []);
 
   const toggle = useCallback(() => {
     const next: ThemeMode = mode === "dark" ? "light" : "dark";
@@ -100,12 +101,9 @@ export function ThemeToggle({ initialMode }: ThemeToggleProps) {
       onClick={toggle}
       className="border-border bg-muted hover:bg-muted/80"
     >
-      <span className="sr-only">
-        {isDark
-          ? "Tema escuro ativo. Ativar tema claro."
-          : "Tema claro ativo. Ativar tema escuro."}
+      <span aria-hidden>
+        {isDark ? <SunIcon /> : <MoonIcon />}
       </span>
-      {isDark ? <SunIcon /> : <MoonIcon />}
     </IconButton>
   );
 }

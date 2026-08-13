@@ -67,7 +67,7 @@ export function FaqGroupAccordion({ groupId, items, options }: FaqGroupAccordion
                 type="button"
                 id={triggerId}
                 className={cn(
-                  "flex w-full cursor-pointer items-center justify-between gap-4",
+                  "flex min-h-12 w-full cursor-pointer items-center justify-between gap-4",
                   "text-left font-medium text-foreground",
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                 )}

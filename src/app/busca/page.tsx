@@ -2,13 +2,15 @@ import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { SearchResults } from "@/components/patterns/search-results";
 import { SearchSkeleton } from "@/components/patterns/search-skeleton";
-import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
 import { searchSite } from "@/infra/datocms/search";
 import { buildSearchPageJsonLd } from "@/lib/seo/build-search-jsonld";
-import { homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
+import { homeBreadcrumbLabel, homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import { buildMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+
+/** Rotas estáticas `/busca` e `/contato` usam copy PT; alinhar metadata/JSON-LD. */
+const STATIC_CONTENT_LOCALE = "pt" as const;
 
 type BuscaPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -25,7 +27,8 @@ export async function generateMetadata({ searchParams }: BuscaPageProps): Promis
       ? `Resultados de busca para «${term}» no site.`
       : "Busca full-text via GraphQL no DatoCMS com tags de revalidação.",
     path: hasQuery ? `/busca?q=${encodeURIComponent(term!)}` : "/busca",
-    noIndex: hasQuery,
+    noIndex: true,
+    locale: STATIC_CONTENT_LOCALE,
   });
 }
 
@@ -41,12 +44,15 @@ export default async function BuscaPage({ searchParams }: BuscaPageProps) {
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-12">
-      <JsonLdScript graph={buildSearchPageJsonLd(DEFAULT_APP_LOCALE, term)} />
+      <JsonLdScript graph={buildSearchPageJsonLd(STATIC_CONTENT_LOCALE, term)} />
       <header className="space-y-3">
         <BreadcrumbNav
-          locale={DEFAULT_APP_LOCALE}
+          locale={STATIC_CONTENT_LOCALE}
           items={[
-            { label: homeBreadcrumbLabel(DEFAULT_APP_LOCALE), href: "/" },
+            {
+              label: homeBreadcrumbLabel(STATIC_CONTENT_LOCALE),
+              href: homeBreadcrumbPath(STATIC_CONTENT_LOCALE),
+            },
             { label: term ? `Busca: ${term}` : "Busca" },
           ]}
         />
@@ -69,11 +75,11 @@ export default async function BuscaPage({ searchParams }: BuscaPageProps) {
           placeholder="Buscar páginas, artigos ou autores…"
           autoComplete="off"
           enterKeyHint="search"
-          className="h-11 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="min-h-12 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         />
         <button
           type="submit"
-          className="h-11 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="min-h-12 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           Buscar
         </button>

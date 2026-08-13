@@ -4,15 +4,12 @@ import { config, type IconDefinition, type SizeProp } from "@fortawesome/fontawe
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { startTransition, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
+import type { DatoFontAwesomeIconJson } from "@/lib/datocms/fa-icon-types";
+
+export type { DatoFontAwesomeIconJson };
 
 /* CSS estático em globals.css — evita <style> injectado sem nonce (CSP). */
 config.autoAddCss = false;
-
-/** Payload típico do plugin Font Awesome no DatoCMS. */
-export type DatoFontAwesomeIconJson = {
-  prefix?: string;
-  iconName?: string;
-};
 
 export type DynamicFaIconProps = {
   icon?: DatoFontAwesomeIconJson | null;
