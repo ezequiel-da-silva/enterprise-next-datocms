@@ -114,14 +114,13 @@ export default async function NotFound() {
             desktop={image?.assetDesktop}
             className="mx-auto h-auto w-full max-w-full rounded-md object-contain"
             sizes="(max-width: 768px) 100vw, 448px"
-            priority
           />
         </figure>
       ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
         <Button asChild variant="primary">
-          <Link href="/">{homeLinkLabel(locale)}</Link>
+          <Link href={`/${locale}`}>{homeLinkLabel(locale)}</Link>
         </Button>
         <Button asChild variant="outline">
           <Link href={`/${locale}/blog`}>{blogLinkLabel(locale)}</Link>

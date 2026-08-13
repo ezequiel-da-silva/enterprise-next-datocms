@@ -2,8 +2,11 @@
 module.exports = {
   ci: {
     collect: {
-      url: ["http://127.0.0.1:3000/"],
-      startServerCommand: "npm run start:prod",
+      url: [
+        "http://127.0.0.1:3000/en",
+        "http://127.0.0.1:3000/en/page-two",
+      ],
+      startServerCommand: "npm run start:standalone",
       startServerReadyPattern: "Ready",
       numberOfRuns: 1,
     },

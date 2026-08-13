@@ -32,7 +32,7 @@ Special cases:
 
 ## JSON-LD builders
 
-- Location: `src/lib/seo/` or `src/infra/datocms/adapters/`
+- Location: `src/lib/seo/`
 - Add unit test in `*.test.ts` beside builder
 - Shape: `{ "@context": "https://schema.org", "@graph": [...] }`
 

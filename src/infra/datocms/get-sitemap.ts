@@ -71,12 +71,6 @@ function staticRoutes(base: URL): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.5,
     },
-    {
-      url: new URL("/busca", base).toString(),
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
   ];
 }
 
@@ -100,13 +94,14 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   });
 
   if ("errors" in result) {
+    const now = new Date();
     return [
-      {
-        url: base.toString(),
-        lastModified: new Date(),
-        changeFrequency: "daily",
+      ...APP_LOCALES.map((locale) => ({
+        url: new URL(`/${locale}`, base).toString(),
+        lastModified: now,
+        changeFrequency: "daily" as const,
         priority: 1,
-      },
+      })),
       ...staticRoutes(base),
     ];
   }
@@ -115,12 +110,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   const pagesMerged = mergePagesBySlug([d.pagesEn, d.pagesPtBR, d.pagesEs]);
   const entries: MetadataRoute.Sitemap = [];
 
-  entries.push({
-    url: base.toString(),
-    lastModified: pagesMerged.get("home") ?? new Date(),
-    changeFrequency: "daily",
-    priority: 1,
-  });
+  /* Homes canónicas: só /{locale}, nunca `/` (redirect). */
 
   entries.push(...blogIndexRoutes(base, pagesMerged));
 
@@ -149,7 +139,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
       url: new URL(`/${locale}`, base).toString(),
       lastModified: pagesMerged.get("home") ?? new Date(),
       changeFrequency: "daily",
-      priority: 0.9,
+      priority: 1,
     });
   }
 

@@ -58,20 +58,12 @@ function readThemeCookie(request: NextRequest): ThemeMode | null {
   return isThemeMode(raw) ? raw : null;
 }
 
-export function proxy(request: NextRequest) {
-  const nonce = createNonce();
-  const isDev = process.env.NODE_ENV === "development";
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set(NONCE_HEADER, nonce);
-
-  const firstSegment = request.nextUrl.pathname.split("/").filter(Boolean)[0];
-  const requestLocale = firstSegment && isAppLocale(firstSegment) ? firstSegment : DEFAULT_APP_LOCALE;
-  requestHeaders.set(REQUEST_LOCALE_HEADER, requestLocale);
-
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  });
-
+/**
+ * Aplica os headers de segurança a qualquer resposta — inclusive redirects.
+ * Um 308 sem CSP/HSTS deixa a resposta exposta e falha o smoke de headers,
+ * por isso o redirect raiz `/ → /{locale}` também tem de os carregar.
+ */
+function applySecurityHeaders(response: NextResponse, nonce: string, isDev: boolean): NextResponse {
   response.headers.set("Content-Security-Policy", buildCspHeader(nonce, isDev));
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -80,6 +72,32 @@ export function proxy(request: NextRequest) {
   if (!isDev) {
     response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   }
+  return response;
+}
+
+export function proxy(request: NextRequest) {
+  const nonce = createNonce();
+  const isDev = process.env.NODE_ENV === "development";
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname === "/" || pathname === "") {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${DEFAULT_APP_LOCALE}`;
+    return applySecurityHeaders(NextResponse.redirect(url, 308), nonce, isDev);
+  }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(NONCE_HEADER, nonce);
+
+  const firstSegment = pathname.split("/").filter(Boolean)[0];
+  const requestLocale = firstSegment && isAppLocale(firstSegment) ? firstSegment : DEFAULT_APP_LOCALE;
+  requestHeaders.set(REQUEST_LOCALE_HEADER, requestLocale);
+
+  const response = applySecurityHeaders(
+    NextResponse.next({ request: { headers: requestHeaders } }),
+    nonce,
+    isDev,
+  );
 
   const theme = readThemeCookie(request);
   if (theme) {

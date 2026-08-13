@@ -1,4 +1,4 @@
-/** Definido no middleware a partir do primeiro segmento da URL (fallback: default). */
+/** Definido no proxy (`src/proxy.ts`) a partir do primeiro segmento da URL (fallback: default). */
 export const REQUEST_LOCALE_HEADER = "x-nd-locale";
 
 /** Locales expostos na URL como primeiro segmento (`/en/...`, `/pt/...` — partilha `[slug]` com páginas CMS). */

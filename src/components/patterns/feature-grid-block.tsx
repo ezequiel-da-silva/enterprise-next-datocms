@@ -13,6 +13,7 @@ import {
   resolveCardShowLink,
 } from "@/lib/datocms/resolve-feature-grid-card";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
+import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 
@@ -41,6 +42,7 @@ export function CardItem({ card, locale }: CardItemProps) {
 
   return (
     <article
+      {...cmsBlockAttrs(card)}
       data-datocms-content-link-boundary=""
       className={cn(
         "flex h-full flex-col rounded-2xl border border-border/60 bg-muted/30 p-6 shadow-sm ring-1 ring-border/40",
@@ -96,7 +98,11 @@ export function FeatureGridBlock({ record, locale, contentLinkGroup = false }: F
   const headingId = `feature-grid-${record.id}`;
 
   return (
-    <section className="not-prose my-12 w-full" aria-labelledby={title ? headingId : undefined}>
+    <section
+      {...cmsBlockAttrs(record)}
+      className="not-prose my-12 w-full"
+      aria-labelledby={title ? headingId : undefined}
+    >
       <header className="mx-auto mb-10 max-w-3xl text-center">
         {title ? (
           <h2 id={headingId} className="text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl">

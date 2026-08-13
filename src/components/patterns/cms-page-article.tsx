@@ -3,7 +3,7 @@ import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { PageStructuredText } from "@/components/patterns/page-structured-text";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
-import { buildPageWebPageJsonLd } from "@/infra/datocms/adapters/build-page-jsonld";
+import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1 } from "@/lib/datocms/hero-first-block";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
@@ -40,8 +40,8 @@ export async function CmsPageArticle({ page, locale, canonicalPath, contentLinkG
     <>
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
       <article className={wideLayout ? "mx-auto w-full max-w-5xl px-4 py-12" : "mx-auto w-full max-w-3xl px-4 py-12"}>
-        <BreadcrumbNav locale={locale} items={breadcrumbItems} />
-        <div className="mt-4">
+        {isHome ? null : <BreadcrumbNav locale={locale} items={breadcrumbItems} />}
+        <div className={isHome ? undefined : "mt-4"}>
           {page.heroPage ? <HeroSectionBlock record={page.heroPage} locale={locale} /> : null}
           {!heroH1 ? (
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{page.title}</h1>

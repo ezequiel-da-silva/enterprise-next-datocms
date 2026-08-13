@@ -12,10 +12,11 @@ export const metadata: Metadata = buildMetadata({
   title: "Contato",
   description: contactDescription,
   path: "/contato",
+  locale: "pt",
 });
 
 export default function ContatoPage() {
-  const contactLd = buildStaticPageJsonLd("ContactPage", "Contato", "/contato", contactDescription);
+  const contactLd = buildStaticPageJsonLd("ContactPage", "Contato", "/contato", contactDescription, "pt");
 
   return (
     <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-12">

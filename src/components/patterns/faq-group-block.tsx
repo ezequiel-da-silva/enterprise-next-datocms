@@ -8,6 +8,7 @@ import {
 } from "@/lib/datocms/resolve-faq-group-options";
 import { buildFaqPageJsonLd } from "@/lib/seo/build-faq-jsonld";
 import { claimFaqSchemaEmission } from "@/lib/seo/faq-schema-slot";
+import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 import { getNonce } from "@/lib/nonce";
 
@@ -47,7 +48,11 @@ export async function FaqGroupBlock({ record }: FaqGroupBlockProps) {
         : "text-left";
 
   return (
-    <section className="not-prose my-12 w-full" aria-labelledby={title ? headingId : undefined}>
+    <section
+      {...cmsBlockAttrs(record)}
+      className="not-prose my-12 w-full"
+      aria-labelledby={title ? headingId : undefined}
+    >
       {faqJsonLd ? <JsonLdScriptSync graph={faqJsonLd} nonce={nonce} /> : null}
       {title ? (
         <header className={cn("mb-6", headerAlign)}>

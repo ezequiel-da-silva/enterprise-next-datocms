@@ -72,7 +72,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 ## Verificação automatizada
 
-- `npm run security:audit` — dependências (high/critical).
+- `npm run security:audit` — dependências de **produção** (high/critical); `--omit=dev` (devDeps de CI como Lighthouse/puppeteer não são enviadas e não têm fix a montante). Rever árvore completa com `npm run security:audit:all`.
 - `npm run security:headers` — headers + smoke `/api/draft` (servidor com `NODE_ENV=production`).
 - `npm run security:check` — ambos; ver [`docs/SECURITY.md`](../../docs/SECURITY.md).
 - CI: [`.github/workflows/security.yml`](../../.github/workflows/security.yml).

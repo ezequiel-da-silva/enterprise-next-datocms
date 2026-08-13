@@ -5,6 +5,7 @@ import { SmartLink } from "@/components/patterns/smart-link";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { FileFieldLike, HeroSectionRecord, LinkBlockRecord } from "@/infra/datocms/types-page";
 import { readCdaArray, readCdaBool, readCdaObject, readCdaString } from "@/lib/datocms/cda-field";
+import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
 import { cn } from "@/lib/cn";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
@@ -124,6 +125,7 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
   if (layout === "image_side") {
     return (
       <section
+        {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
         className="not-prose mb-12 grid gap-10 md:grid-cols-2 md:items-center md:gap-12"
       >
@@ -153,6 +155,7 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
 
     return (
       <section
+        {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
         className={cn(
           "not-prose relative mb-12 min-h-[280px] overflow-hidden rounded-2xl border border-border",
@@ -221,7 +224,7 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
   }
 
   return (
-    <section data-datocms-content-link-boundary="" className="not-prose mb-12 max-w-3xl">
+    <section {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="not-prose mb-12 max-w-3xl">
       {textColumn}
     </section>
   );

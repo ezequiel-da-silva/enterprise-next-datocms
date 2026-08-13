@@ -2,10 +2,16 @@ import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const base = getSiteBaseUrl();
+  const base = getSiteBaseUrl().replace(/\/$/, "");
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/api/"] }],
-    sitemap: `${base.replace(/\/$/, "")}/sitemap.xml`,
-    host: base.replace(/\/$/, ""),
+    rules: [
+      {
+        userAgent: "*",
+        allow: ["/", "/llms.txt"],
+        disallow: ["/api/"],
+      },
+    ],
+    sitemap: `${base}/sitemap.xml`,
+    host: base,
   };
 }

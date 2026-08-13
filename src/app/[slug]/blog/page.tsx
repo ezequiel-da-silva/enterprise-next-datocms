@@ -86,7 +86,16 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
 
   const posts = result.data.allPosts;
   const blogPath = `/${locale}/blog`;
-  const jsonLd = buildListingPageJsonLd(locale, blogPath, blogBreadcrumbLabel());
+  const jsonLd = buildListingPageJsonLd(
+    locale,
+    blogPath,
+    blogBreadcrumbLabel(),
+    undefined,
+    posts.map((post) => ({
+      name: post.postTitle,
+      path: `/${locale}/blog/${post.postSlug}`,
+    })),
+  );
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
@@ -100,7 +109,7 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
           ])}
         />
         <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">Blog</h1>
-        <p className="max-w-2xl text-muted-foreground">Artigos, autores e categorias — conteúdo servido pelo DatoCMS com i18n.</p>
+        <p className="max-w-2xl text-muted-foreground">{BLOG_INDEX_DESCRIPTION[locale]}</p>
       </header>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (

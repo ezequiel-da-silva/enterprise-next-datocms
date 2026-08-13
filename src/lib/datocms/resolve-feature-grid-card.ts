@@ -1,4 +1,4 @@
-import type { DatoFontAwesomeIconJson } from "@/components/atoms/dynamic-fa-icon";
+import type { DatoFontAwesomeIconJson } from "@/lib/datocms/fa-icon-types";
 import type { LinkBlockRecord } from "@/infra/datocms/types-page";
 import { readCdaBool, readCdaObject } from "@/lib/datocms/cda-field";
 

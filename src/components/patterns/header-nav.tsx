@@ -4,8 +4,10 @@ import type { NavItemRecord } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
+import { homeBreadcrumbLabel, homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import { cn } from "@/lib/cn";
 import Link from "next/link";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
 function resolveHref(raw: string, locale: AppLocale): string {
@@ -59,6 +61,21 @@ function submenuToggleLabel(locale: AppLocale, label: string): string {
   if (locale === "pt") return `Submenu de ${label}`;
   if (locale === "es") return `Submenú de ${label}`;
   return `${label} submenu`;
+}
+
+function mobileMenuLabels(locale: AppLocale): {
+  open: string;
+  close: string;
+  title: string;
+  dismiss: string;
+} {
+  if (locale === "pt") {
+    return { open: "Abrir menu", close: "Fechar menu", title: "Menu", dismiss: "Fechar" };
+  }
+  if (locale === "es") {
+    return { open: "Abrir menú", close: "Cerrar menú", title: "Menú", dismiss: "Cerrar" };
+  }
+  return { open: "Open menu", close: "Close menu", title: "Menu", dismiss: "Close" };
 }
 
 function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; locale: AppLocale; level: number }) {
@@ -157,6 +174,7 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const close = useCallback(() => setOpen(false), []);
+  const labels = mobileMenuLabels(locale);
 
   useEffect(() => {
     if (!open) return;
@@ -167,12 +185,24 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, close]);
 
+  // `lg:hidden` esconde o painel no desktop; sem isto o `inert` e o scroll lock ficavam presos.
+  useEffect(() => {
+    if (!open) return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = (e: MediaQueryListEvent) => {
+      if (e.matches) close();
+    };
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [open, close]);
+
   useEffect(() => {
     const main = document.getElementById("conteudo-principal");
     const footer = document.querySelector("footer");
     if (open) {
       main?.setAttribute("inert", "");
       footer?.setAttribute("inert", "");
+      document.body.style.overflow = "hidden";
       requestAnimationFrame(() => {
         const first = panelRef.current?.querySelector<HTMLElement>("button, a[href]");
         first?.focus();
@@ -180,10 +210,12 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
     } else {
       main?.removeAttribute("inert");
       footer?.removeAttribute("inert");
+      document.body.style.overflow = "";
     }
     return () => {
       main?.removeAttribute("inert");
       footer?.removeAttribute("inert");
+      document.body.style.overflow = "";
     };
   }, [open]);
 
@@ -231,62 +263,86 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
       </div>
 
       <div className="flex shrink-0 items-center gap-2 lg:hidden">
-        {themeToggle}
+        {/* Enquanto o painel está aberto o toggle vive lá dentro — evita duplicar o switch na árvore de acessibilidade. */}
+        {open ? null : themeToggle}
         <button
           ref={menuButtonRef}
           type="button"
-          className="touch-target rounded-md border border-border bg-background text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="touch-target cursor-pointer rounded-md border border-border bg-background text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="sr-only">{open ? "Fechar menu" : "Abrir menu"}</span>
+          <span className="sr-only">{open ? labels.close : labels.open}</span>
           <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
             {open ? <path d="M6 18L18 6M6 6l12 12" /> : <path d="M4 6h16M4 12h16M4 18h16" />}
           </svg>
         </button>
       </div>
 
-      {open ? (
-        <div
-          className="fixed inset-0 z-50 lg:hidden"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={dialogTitleId}
-        >
-          <button type="button" className="absolute inset-0 bg-background/80 backdrop-blur-sm" aria-label="Fechar" onClick={handleClose} />
-          <div
-            ref={panelRef}
-            id={panelId}
-            className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col border-l border-border bg-background shadow-xl"
-          >
-            <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <span id={dialogTitleId} className="text-sm font-semibold text-foreground">
-                Menu
-              </span>
+      {/*
+        Portal para o `body`: o `<header>` aplica `backdrop-filter`, que cria um containing
+        block e prendia este `fixed inset-0` à altura do header (~56px), esmagando o painel
+        e deixando o backdrop invisível por cima do logo e do theme toggle.
+      */}
+      {/* `open` só fica true depois de um clique no cliente, por isso `document` existe sempre aqui. */}
+      {open
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[60] lg:hidden"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={dialogTitleId}
+            >
               <button
                 type="button"
-                className="touch-target rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                className="absolute inset-0 cursor-pointer bg-foreground/40 backdrop-blur-sm"
+                aria-label={labels.dismiss}
                 onClick={handleClose}
+              />
+              <div
+                ref={panelRef}
+                id={panelId}
+                className="absolute right-0 top-0 flex h-full w-[min(100%,20rem)] flex-col border-l border-border bg-background shadow-xl"
               >
-                <span className="sr-only">Fechar</span>
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                  <path d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <nav
-              className="flex-1 overflow-y-auto px-4 py-4"
-              aria-label="Principal móvel"
-              onClick={(e) => {
-                if (e.target instanceof HTMLAnchorElement) handleClose();
-              }}
-            >
-              <MobileNavList items={menuLinks} locale={locale} depth={0} />
-            </nav>
-          </div>
-        </div>
-      ) : null}
+                <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
+                  <span id={dialogTitleId} className="text-sm font-semibold text-foreground">
+                    {labels.title}
+                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    {themeToggle}
+                    <button
+                      type="button"
+                      className="touch-target cursor-pointer rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                      onClick={handleClose}
+                    >
+                      <span className="sr-only">{labels.dismiss}</span>
+                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                        <path d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <nav
+                  className="flex-1 overflow-y-auto px-4 py-4"
+                  aria-label="Principal móvel"
+                  onClick={(e) => {
+                    if (e.target instanceof HTMLAnchorElement) handleClose();
+                  }}
+                >
+                  <Link
+                    href={homeBreadcrumbPath(locale)}
+                    className="touch-target-text mb-2 block rounded-md text-sm font-medium text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  >
+                    {homeBreadcrumbLabel(locale)}
+                  </Link>
+                  <MobileNavList items={menuLinks} locale={locale} depth={0} />
+                </nav>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </>
   );
 }

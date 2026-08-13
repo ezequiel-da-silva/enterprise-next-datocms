@@ -1,6 +1,5 @@
 import type { AppLocale } from "@/constants/i18n";
-import { CtaBannerBlock } from "@/components/sections/cta-banner-block";
-import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
+import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import type {
   CtaBannerBlockRecord,
@@ -9,8 +8,13 @@ import type {
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
+import { CtaBannerBlock } from "@/components/sections/cta-banner-block";
+import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
+import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveVideoSources } from "@/lib/datocms/resolve-video-sources";
+import { buildVideoObjectJsonLd } from "@/lib/seo/build-video-object-jsonld";
+import { getNonce } from "@/lib/nonce";
 import Image from "next/image";
 
 type StructuredTextBlockViewProps = {
@@ -38,6 +42,68 @@ function readVideoCaptions(record: VideoBlockWithCaptions): { url: string; label
   return { url, label: file?.title?.trim() || "Legendas" };
 }
 
+async function VideoBlockView({
+  record,
+  locale,
+}: {
+  record: Extract<PageStructuredTextBlock, { __typename: "VideoBlockRecord" }>;
+  locale: AppLocale;
+}) {
+  const v = record.asset;
+  const resolved = resolveVideoSources(v);
+  if (!resolved) return null;
+  const label = v?.title?.trim() || "Vídeo";
+  const captions = readVideoCaptions(record);
+  const aspectStyle =
+    resolved.width && resolved.height
+      ? { aspectRatio: `${resolved.width} / ${resolved.height}` }
+      : undefined;
+  const contentUrl = resolved.sources[0]?.src;
+  const videoLd =
+    contentUrl &&
+    buildVideoObjectJsonLd({
+      id: String(record.id),
+      name: label,
+      contentUrl,
+      thumbnailUrl: resolved.poster,
+      durationSeconds: resolved.durationSeconds,
+      width: resolved.width,
+      height: resolved.height,
+    });
+  const nonce = videoLd ? await getNonce() : undefined;
+
+  return (
+    <figure {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6">
+      {videoLd ? <JsonLdScriptSync graph={videoLd} nonce={nonce} /> : null}
+      <video
+        controls
+        className="h-auto w-full max-w-full rounded-md"
+        width={resolved.width}
+        height={resolved.height}
+        style={aspectStyle}
+        poster={resolved.poster}
+        preload="none"
+        playsInline
+        aria-label={label}
+      >
+        {resolved.sources.map((source) => (
+          <source key={source.src} src={source.src} type={source.type} />
+        ))}
+        {captions ? (
+          <track
+            kind="captions"
+            src={captions.url}
+            label={captions.label}
+            srcLang={locale}
+            default
+          />
+        ) : null}
+      </video>
+      {v?.title ? <figcaption className="mt-2 text-sm text-muted-foreground">{v.title}</figcaption> : null}
+    </figure>
+  );
+}
+
 /**
  * Blocos modulares partilhados entre `PageStructuredText` e `StructuredTextRenderer`.
  */
@@ -47,7 +113,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       const mobile = record.asset;
       if (!mobile?.url) return null;
       return (
-        <figure data-datocms-content-link-boundary="" className="my-6">
+        <figure {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6">
           <DatoResponsivePicture
             mobile={mobile}
             desktop={record.assetDesktop}
@@ -62,7 +128,7 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       const items = record.assets?.filter((a) => a?.url) ?? [];
       if (items.length === 0) return null;
       return (
-        <div data-datocms-content-link-boundary="" className="my-6 grid gap-3 sm:grid-cols-2">
+        <div {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6 grid gap-3 sm:grid-cols-2">
           {items.map((img, i) => (
             <figure key={`${record.id}-${i}`} className="overflow-hidden rounded-md border border-border">
               <Image
@@ -80,48 +146,8 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
         </div>
       );
     }
-    case "VideoBlockRecord": {
-      const v = record.asset;
-      const resolved = resolveVideoSources(v);
-      if (!resolved) return null;
-      const label = v?.title?.trim() || "Vídeo";
-      const captions = readVideoCaptions(record);
-      /* aspectRatio reserva a altura antes do poster carregar → evita CLS.
-       * style-attr inline é permitido pela CSP (mesmo caso do next/image). */
-      const aspectStyle =
-        resolved.width && resolved.height
-          ? { aspectRatio: `${resolved.width} / ${resolved.height}` }
-          : undefined;
-      return (
-        <figure data-datocms-content-link-boundary="" className="my-6">
-          <video
-            controls
-            className="h-auto w-full max-w-full rounded-md"
-            width={resolved.width}
-            height={resolved.height}
-            style={aspectStyle}
-            poster={resolved.poster}
-            preload="none"
-            playsInline
-            aria-label={label}
-          >
-            {resolved.sources.map((source) => (
-              <source key={source.src} src={source.src} type={source.type} />
-            ))}
-            {captions ? (
-              <track
-                kind="captions"
-                src={captions.url}
-                label={captions.label}
-                srcLang={locale}
-                default
-              />
-            ) : null}
-          </video>
-          {v?.title ? <figcaption className="mt-2 text-sm text-muted-foreground">{v.title}</figcaption> : null}
-        </figure>
-      );
-    }
+    case "VideoBlockRecord":
+      return <VideoBlockView record={record} locale={locale} />;
     case "FeatureGridRecord":
       return (
         <FeatureGridBlock
