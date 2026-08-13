@@ -6,9 +6,18 @@ Guia operacional para validar CSP, headers HTTP, dependências e rotas sensívei
 
 | Script | O que faz |
 |--------|-----------|
-| `npm run security:audit` | `npm audit` — falha em vulnerabilidades **high** ou **critical** |
+| `npm run security:audit` | `npm audit --omit=dev` — falha em vulnerabilidades **high**/**critical** no código **enviado para produção** |
+| `npm run security:audit:all` | `npm audit` na árvore completa (inclui devDependencies) — informativo |
 | `npm run security:headers` | Valida headers em `GET /` e smoke tests em `/api/draft` |
 | `npm run security:check` | Audit + headers (headers exigem servidor a correr) |
+
+### Por que o audit é `--omit=dev`
+
+O gate ([`security:audit`](../package.json)) cobre apenas dependências de produção — é o que corre no browser/servidor. As `devDependencies` (Lighthouse CI, Playwright, codegen) não são enviadas para produção e geram ruído sem correção a montante.
+
+Caso concreto: `@lhci/cli` → `lighthouse` → `puppeteer-core` → `@puppeteer/browsers` → `extract-zip` ([GHSA-jmr9-qjv8-65gv](https://github.com/advisories/GHSA-jmr9-qjv8-65gv), symlink path traversal). O `extract-zip@2.0.1` é a **última versão publicada** e ainda é a afetada — não há upgrade que resolva, e `npm audit fix --force` só faria downgrade do `@lhci/cli` (breaking). Na prática, o `extract-zip` só descompacta o download oficial do Chrome for Testing (Google) durante a instalação do browser no CI — origem confiável, sem input de terceiros.
+
+Corre `npm run security:audit:all` periodicamente para reavaliar; quando houver `extract-zip` corrigido (ou `@puppeteer/browsers`/`@lhci/cli` que o adote), promover para o gate ou adicionar `override`.
 
 ### Headers e API (local)
 
@@ -86,5 +95,6 @@ Com HTTPS e domínio público:
 ## Limitações
 
 - `npm audit` não cobre SAST nem lógica de negócio (rate limit, abuse de Server Actions).
+- O gate (`security:audit`) usa `--omit=dev`: não vigia devDependencies. Rever com `security:audit:all` antes de releases.
 - HSTS em localhost não implica TLS real — validar SSL no deploy.
 - CORS `*` em `/api/preview-links` é intencional para o plugin DatoCMS — não replicar em APIs novas.
