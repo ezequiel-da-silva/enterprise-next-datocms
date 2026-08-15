@@ -1,3 +1,5 @@
+const device = process.env.LHCI_DEVICE || "mobile";
+
 /** @type {import('@lhci/cli').LighthouseCIConfig} */
 module.exports = {
   ci: {
@@ -8,14 +10,18 @@ module.exports = {
       ],
       startServerCommand: "npm run start:standalone",
       startServerReadyPattern: "Ready",
-      numberOfRuns: 1,
+      numberOfRuns: 3,
+      settings: device === "desktop" ? { preset: "desktop" } : {},
     },
     assert: {
       assertions: {
-        "categories:accessibility": ["warn", { minScore: 0.9 }],
-        "categories:seo": ["warn", { minScore: 0.9 }],
-        "categories:performance": ["warn", { minScore: 0.75 }],
+        "categories:accessibility": ["error", { minScore: 0.9 }],
+        "categories:seo": ["error", { minScore: 0.9 }],
         "categories:best-practices": ["warn", { minScore: 0.9 }],
+        "categories:performance": [
+          "warn",
+          { minScore: device === "desktop" ? 0.85 : 0.65 },
+        ],
       },
     },
     upload: {

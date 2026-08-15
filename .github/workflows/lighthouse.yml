@@ -13,6 +13,10 @@ jobs:
   lighthouse:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        device: [mobile, desktop]
 
     steps:
       - name: Checkout
@@ -37,3 +41,17 @@ jobs:
         run: npx lhci autorun
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_DEVICE: ${{ matrix.device }}
+
+      - name: Upload Lighthouse Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports-${{ matrix.device }}
+          path: .lighthouseci/
+
+      - name: Add Job Summary
+        if: always()
+        run: |
+          echo "### 🚀 Lighthouse CI Results (${{ matrix.device }})" >> $GITHUB_STEP_SUMMARY
+          echo "Os relatórios em HTML/JSON desta rodada estão disponíveis no artefato **lighthouse-reports-${{ matrix.device }}**." >> $GITHUB_STEP_SUMMARY
