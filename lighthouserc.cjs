@@ -1,21 +1,26 @@
+const device = process.env.LHCI_DEVICE || "mobile";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { urls } = require("./lighthouse-paths.cjs");
+
 /** @type {import('@lhci/cli').LighthouseCIConfig} */
 module.exports = {
   ci: {
     collect: {
-      url: [
-        "http://127.0.0.1:3000/en",
-        "http://127.0.0.1:3000/en/page-two",
-      ],
+      url: urls,
       startServerCommand: "npm run start:standalone",
       startServerReadyPattern: "Ready",
-      numberOfRuns: 1,
+      numberOfRuns: 3,
+      settings: device === "desktop" ? { preset: "desktop" } : {},
     },
     assert: {
       assertions: {
-        "categories:accessibility": ["warn", { minScore: 0.9 }],
-        "categories:seo": ["warn", { minScore: 0.9 }],
-        "categories:performance": ["warn", { minScore: 0.75 }],
+        "categories:accessibility": ["error", { minScore: 0.9 }],
+        "categories:seo": ["error", { minScore: 0.9 }],
         "categories:best-practices": ["warn", { minScore: 0.9 }],
+        "categories:performance": [
+          "warn",
+          { minScore: device === "desktop" ? 0.85 : 0.65 },
+        ],
       },
     },
     upload: {

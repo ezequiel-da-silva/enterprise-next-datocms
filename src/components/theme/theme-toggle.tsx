@@ -1,13 +1,22 @@
 "use client";
 
 import { IconButton } from "@/components/atoms/icon-button";
-import { THEME_COOKIE_NAME, type ThemeMode } from "@/constants/theme";
+import { THEME_COOKIE_NAME, isThemeMode, type ThemeMode } from "@/constants/theme";
 import { cn } from "@/lib/cn";
 import { useCallback, useEffect, useId, useState } from "react";
 
+/**
+ * Espelha `buildThemeCssVariables()`: `data-theme` (cookie) ganha; sem cookie a
+ * primeira pintura segue `prefers-color-scheme`, por isso a classe `dark` pode
+ * estar ausente num ecrã visualmente escuro.
+ */
 function readDomTheme(): ThemeMode {
   if (typeof document === "undefined") return "light";
-  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  const root = document.documentElement;
+  const attr = root.getAttribute("data-theme");
+  if (isThemeMode(attr)) return attr;
+  if (root.classList.contains("dark")) return "dark";
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function applyTheme(mode: ThemeMode) {
@@ -54,40 +63,48 @@ function MoonIcon({ className }: { className?: string }) {
 }
 
 type ThemeToggleProps = {
-  /** Quando definido (cookie no SSR), evita skeleton até hidratar. */
+  /** Cookie lido no SSR: alinha o ARIA do primeiro render com o HTML do servidor. */
   initialMode?: ThemeMode;
 };
 
 export function ThemeToggle({ initialMode }: ThemeToggleProps) {
   const baseId = useId();
+  /*
+   * Derivado só da prop: servidor e primeiro render do cliente produzem markup
+   * idêntico, logo não há mismatch de hidratação nem troca de <span> por <button>.
+   */
   const [mode, setMode] = useState<ThemeMode>(initialMode ?? "light");
-  const [mounted, setMounted] = useState(Boolean(initialMode));
 
-  // O DOM é a fonte de verdade: `initialMode` vem do cookie no SSR e fica desatualizado
-  // se o componente remontar noutro sítio (ex. entrar no painel do menu móvel) após um toggle.
+  /*
+   * Depois de hidratar o DOM passa a ser a fonte de verdade. Só afeta ARIA — o ícone
+   * visível é resolvido por CSS em `globals.css`. O observer mantém coerentes as duas
+   * instâncias que coexistem no header (desktop e móvel): só uma recebe o clique.
+   */
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setMounted(true);
-      setMode(readDomTheme());
+    const sync = () => setMode(readDomTheme());
+    const frame = requestAnimationFrame(sync);
+
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class", "data-theme"],
     });
-    return () => cancelAnimationFrame(frame);
+
+    const media = window.matchMedia?.("(prefers-color-scheme: dark)");
+    media?.addEventListener("change", sync);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      media?.removeEventListener("change", sync);
+    };
   }, []);
 
   const toggle = useCallback(() => {
-    const next: ThemeMode = mode === "dark" ? "light" : "dark";
-    setMode(next);
+    const next: ThemeMode = readDomTheme() === "dark" ? "light" : "dark";
     applyTheme(next);
-  }, [mode]);
-
-  if (!mounted) {
-    return (
-      <span
-        suppressHydrationWarning
-        className="inline-block h-12 w-12 shrink-0 animate-pulse rounded-md bg-muted"
-        aria-hidden
-      />
-    );
-  }
+    setMode(next);
+  }, []);
 
   const isDark = mode === "dark";
 
@@ -101,8 +118,11 @@ export function ThemeToggle({ initialMode }: ThemeToggleProps) {
       onClick={toggle}
       className="border-border bg-muted hover:bg-muted/80"
     >
-      <span aria-hidden>
-        {isDark ? <SunIcon /> : <MoonIcon />}
+      <span aria-hidden data-theme-icon="light">
+        <MoonIcon />
+      </span>
+      <span aria-hidden data-theme-icon="dark">
+        <SunIcon />
       </span>
     </IconButton>
   );

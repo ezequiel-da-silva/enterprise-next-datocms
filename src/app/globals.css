@@ -81,6 +81,34 @@
     @apply inline-flex min-h-12 items-center px-3 py-2;
   }
 
+  /*
+   * Ícone do ThemeToggle por CSS: a primeira pintura fica correta sem JS, por isso o
+   * componente pode emitir markup idêntico no servidor e no cliente (sem skeleton nem
+   * mismatch de hidratação). Espelha buildThemeCssVariables(): `data-theme` (cookie)
+   * ganha; sem cookie segue `prefers-color-scheme`.
+   */
+  [data-theme-icon="dark"] {
+    display: none;
+  }
+
+  .dark [data-theme-icon="light"] {
+    display: none;
+  }
+
+  .dark [data-theme-icon="dark"] {
+    display: block;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme]) [data-theme-icon="light"] {
+      display: none;
+    }
+
+    html:not([data-theme]) [data-theme-icon="dark"] {
+      display: block;
+    }
+  }
+
   .skip-link:focus-visible {
     position: fixed;
     left: 1rem;

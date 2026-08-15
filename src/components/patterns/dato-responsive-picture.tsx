@@ -1,4 +1,4 @@
-import { buildDatoSrcSet, DATO_DESKTOP_SRCSET_WIDTHS } from "@/lib/datocms-image-loader";
+import { buildDatoSrcSet, clampLayoutDimensions, DATO_DESKTOP_SRCSET_WIDTHS } from "@/lib/datocms-image-loader";
 import type { FileFieldLike } from "@/infra/datocms/types-page";
 import Image from "next/image";
 
@@ -37,8 +37,9 @@ export function DatoResponsivePicture({
   const resolvedAlt = decorative
     ? ""
     : (alt ?? "").trim() || (mobile.alt ?? "").trim() || (fallbackAlt ?? "").trim();
-  const width = mobile.width ?? 1200;
-  const height = mobile.height ?? Math.max(1, Math.round((width * 9) / 16));
+  const intrinsicW = mobile.width ?? 1200;
+  const intrinsicH = mobile.height ?? Math.max(1, Math.round((intrinsicW * 9) / 16));
+  const { width, height } = clampLayoutDimensions(intrinsicW, intrinsicH);
   const desktopUrl = desktop?.url;
   const desktopW = Math.min(desktop?.width ?? 1280, 1280);
 

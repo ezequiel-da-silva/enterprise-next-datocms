@@ -29,6 +29,29 @@ export function buildDatoSrcSet(
   return unique.map((w) => `${datoAssetUrlWithParams(src, w, quality)} ${w}w`).join(", ");
 }
 
-/** Larguras típicas para hero/desktop ≥768px. */
-export const DATO_DESKTOP_SRCSET_WIDTHS = [640, 960, 1280] as const;
+/** Larguras para `<picture>` / `srcSet` desktop — inclui passos de card (~320) e split (~480). */
+export const DATO_DESKTOP_SRCSET_WIDTHS = [320, 480, 640, 960, 1280] as const;
+
+/** Limite do eixo maior passado a `next/image` (aspect ratio CMS mantém-se). */
+export const DATO_LAYOUT_MAX_EDGE = 1280;
+
+/**
+ * Escala `width`/`height` do CMS para um eixo máximo, preservando a razão.
+ * Evita atributos HTML gigantes (ex. 4896×3264) sem alterar o aspect-ratio.
+ */
+export function clampLayoutDimensions(
+  width: number,
+  height: number,
+  maxEdge: number = DATO_LAYOUT_MAX_EDGE,
+): { width: number; height: number } {
+  const w = Math.max(1, width);
+  const h = Math.max(1, height);
+  const edge = Math.max(w, h);
+  if (edge <= maxEdge) return { width: w, height: h };
+  const scale = maxEdge / edge;
+  return {
+    width: Math.max(1, Math.round(w * scale)),
+    height: Math.max(1, Math.round(h * scale)),
+  };
+}
 

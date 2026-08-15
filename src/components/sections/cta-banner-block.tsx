@@ -121,11 +121,11 @@ function CtaBannerImage({ block, fallbackAlt }: { block: CtaImageBlock; fallback
   if (!mobile?.url) return null;
 
   return (
-    <figure className="overflow-hidden rounded-2xl border border-border/50 bg-background/50 shadow-sm">
+    <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border/50 bg-background/50 shadow-sm [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
       <DatoResponsivePicture
         mobile={mobile}
         desktop={block.assetDesktop}
-        className="h-auto w-full object-cover"
+        className="h-full w-full object-cover"
         sizes="(max-width: 1024px) 100vw, 496px"
         fallbackAlt={fallbackAlt || "Banner image"}
       />
