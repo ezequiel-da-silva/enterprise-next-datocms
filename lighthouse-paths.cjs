@@ -5,6 +5,7 @@
  * Override opcional: LHCI_PATHS="/en,/en/about" (lista separada por vírgulas).
  * Base: LHCI_BASE_URL (default http://127.0.0.1:3000).
  */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const DEFAULT_PATHS = ["/en", "/en/page-two"];
 
 function parsePathsFromEnv(raw) {

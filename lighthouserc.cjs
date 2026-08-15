@@ -1,4 +1,5 @@
 const device = process.env.LHCI_DEVICE || "mobile";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { urls } = require("./lighthouse-paths.cjs");
 
 /** @type {import('@lhci/cli').LighthouseCIConfig} */
