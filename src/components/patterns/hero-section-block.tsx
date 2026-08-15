@@ -131,11 +131,11 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
       >
         {textColumn}
         {showHeroImg && heroMobile ? (
-          <figure className="overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50">
+          <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
             <DatoResponsivePicture
               mobile={heroMobile}
               desktop={imageBlockDesktopAsset(heroImg)}
-              className="h-auto w-full object-cover"
+              className="h-full w-full object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 496px"
               fallbackAlt={title || undefined}
               priority
@@ -207,11 +207,11 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
           </div>
 
           {showHeroColumn ? (
-            <figure className="overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50">
+            <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
               <DatoResponsivePicture
                 mobile={heroMobile!}
                 desktop={imageBlockDesktopAsset(heroImg)}
-                className="h-auto w-full object-cover"
+                className="h-full w-full object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 496px"
                 fallbackAlt={title || undefined}
                 priority={!hasOverlayBg}
