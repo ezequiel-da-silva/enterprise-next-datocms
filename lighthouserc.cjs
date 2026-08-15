@@ -1,13 +1,11 @@
 const device = process.env.LHCI_DEVICE || "mobile";
+const { urls } = require("./lighthouse-paths.cjs");
 
 /** @type {import('@lhci/cli').LighthouseCIConfig} */
 module.exports = {
   ci: {
     collect: {
-      url: [
-        "http://127.0.0.1:3000/en",
-        "http://127.0.0.1:3000/en/page-two",
-      ],
+      url: urls,
       startServerCommand: "npm run start:standalone",
       startServerReadyPattern: "Ready",
       numberOfRuns: 3,

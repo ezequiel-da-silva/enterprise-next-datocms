@@ -37,11 +37,45 @@ jobs:
           NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
+      # O servidor standalone precisa do token em runtime (rotas dinâmicas).
+      # O LHCI reutiliza este processo — sem segundo boot.
+      - name: Start standalone server
+        run: npm run start:standalone &
+        env:
+          NODE_ENV: production
+          PORT: "3000"
+          NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
+          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
+
+      - name: Smoke URLs return 200
+        run: |
+          set -euo pipefail
+          # Paths partilhadas com lighthouserc (lighthouse-paths.cjs)
+          mapfile -t PATHS < <(node -p "require('./lighthouse-paths.cjs').paths.join('\\n')")
+          BASE=$(node -p "require('./lighthouse-paths.cjs').baseUrl")
+          FIRST="${PATHS[0]}"
+          for i in $(seq 1 90); do
+            if curl -sf --max-time 2 "${BASE}${FIRST}" -o /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          for path in "${PATHS[@]}"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${BASE}${path}")
+            echo "GET ${path} → ${code}"
+            if [ "${code}" != "200" ]; then
+              echo "::error::Expected HTTP 200 for ${path} (got ${code}). Check DATOCMS_API_TOKEN and CMS content for this slug."
+              exit 1
+            fi
+          done
+
       - name: Lighthouse CI
-        run: npx lhci autorun
+        run: npx lhci autorun --collect.startServerCommand=
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_DEVICE: ${{ matrix.device }}
+          NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
+          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
       - name: Upload Lighthouse Artifacts
         if: always()
