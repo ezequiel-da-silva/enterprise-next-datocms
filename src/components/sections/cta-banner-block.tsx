@@ -1,4 +1,5 @@
 import { Button } from "@/components/atoms/button";
+import { Container } from "@/components/atoms/container";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { SmartLink } from "@/components/patterns/smart-link";
 import type { AppLocale } from "@/constants/i18n";
@@ -228,7 +229,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         data-datocms-content-link-boundary=""
         className={cn("not-prose my-12 w-full", bgThemeClasses(options.bgTheme))}
       >
-        <div className="mx-auto max-w-6xl">
+        <Container size="lg" padded={false} name="CtaBanner">
           <div
             className={cn(
               "relative overflow-hidden rounded-3xl border border-border p-8 shadow-xl lg:p-16",
@@ -258,7 +259,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
               />
             </div>
           </div>
-        </div>
+        </Container>
       </section>
     );
   }
@@ -270,9 +271,11 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
       data-datocms-content-link-boundary=""
       className={cn("not-prose my-12 w-full", bgThemeClasses(options.bgTheme))}
     >
-      <div
+      <Container
+        size="lg"
+        padded={false}
+        name="CtaBanner"
         className={cn(
-          "mx-auto max-w-6xl",
           options.variant === "split" &&
           image.hasValidAsset &&
           "grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12",
@@ -288,7 +291,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
             <CtaBannerImage block={imageBlock} fallbackAlt={title} />
           </div>
         ) : null}
-      </div>
+      </Container>
     </section>
   );
 }

@@ -30,6 +30,14 @@ Complements `web-excellence.mdc` and `security.mdc`. Full map: [`docs/ARCHITECTU
 - Image/link fragments: reuse `IMAGE_BLOCK_RESPONSIVE`, `LINK_HERO_CTA_FIELDS` in `queries.ts`
 - Tests: colocated `*.test.ts` next to the module under test
 
+## Layout (`Container`)
+
+- Largura + gutter: [`Container`](../../src/components/atoms/container.tsx) — não repetir `mx-auto max-w-* px-4` à mão em páginas, chrome ou blocos novos.
+- Tamanhos: `xs` (2xl) · `sm` (3xl, artigo) · `md` (5xl, default) · `lg` (6xl, header/footer/secções wide).
+- Identificação no DOM: `data-container` (default `"Container"`) + `data-container-size`; opcional `name="GlobalHeader"` etc. — paralelo a `data-cms-block` nos blocos CMS.
+- Secção full-bleed: `<section className="w-full …">` + `<Container size="lg">` no interior; `padded={false}` só se o pai já tiver gutter ou o bloco for nested.
+- `as="article"|"section"|…` quando o landmark/semântica importar.
+
 ## Change discipline
 
 - Match existing patterns before introducing new abstractions
@@ -43,3 +51,4 @@ Complements `web-excellence.mdc` and `security.mdc`. Full map: [`docs/ARCHITECTU
 - Fetching DatoCMS inside client components
 - Duplicating CMS field reads without `readCdaBool/String/Array`
 - Hand-editing `src/infra/datocms/generated/**`
+- Novos wrappers `mx-auto w-full max-w-{3,5,6}xl px-4` em vez de `Container`

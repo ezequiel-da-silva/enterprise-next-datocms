@@ -1,3 +1,4 @@
+import { Container } from "@/components/atoms/container";
 import { SocialNavLink } from "@/components/patterns/social-nav-link";
 import { structuredTextDatoNodeRules } from "@/components/patterns/structured-text-dato-rules";
 import type { NavigationData, NavItemRecord } from "@/infra/datocms/types-navigation";
@@ -91,7 +92,7 @@ export function SiteFooter({ data, locale }: SiteFooterProps) {
 
   return (
     <footer className="mt-auto border-t border-border bg-muted/20">
-      <div className="mx-auto max-w-6xl space-y-10 px-4 py-12">
+      <Container size="lg" name="SiteFooter" className="space-y-10 py-12">
         <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
           {footerLogo?.url ? (
             <div className="shrink-0">
@@ -136,7 +137,7 @@ export function SiteFooter({ data, locale }: SiteFooterProps) {
             ))}
           </nav>
         ) : null}
-      </div>
+      </Container>
     </footer>
   );
 }

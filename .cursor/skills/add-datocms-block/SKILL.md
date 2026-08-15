@@ -61,14 +61,15 @@ For image toggles: see `resolve-cta-banner-image.ts`.
 
 - Location: `src/components/patterns/{name}-block.tsx` or `src/components/sections/` for full-width sections
 - Export `{Name}Block`
-- Wrap in `<section className="not-prose my-12 ..." data-datocms-content-link-boundary="">`
-- Reuse: `SmartLink`, `Button`, `DatoResponsivePicture`, `readCda*`
+- Wrap in `<section className="not-prose my-12 w-full ..." data-datocms-content-link-boundary="">`
+- Conteúdo alinhado: `<Container size="lg">` (ou `md`/`sm` se for bloco estreito) — não inventar `mx-auto max-w-* px-4`
+- Reuse: `Container`, `SmartLink`, `Button`, `DatoResponsivePicture`, `readCda*`
 - Async if you need `await getNonce()` — use `JsonLdScriptSync` for JSON-LD
 
 **Reference implementations:**
 
 - FAQ: `src/components/patterns/faq-group-block.tsx` + `faq-group-accordion.tsx` (client)
-- CTA: `src/components/sections/cta-banner-block.tsx` + `resolve-cta-banner-options.ts`
+- CTA: `src/components/sections/cta-banner-block.tsx` + `resolve-cta-banner-options.ts` (usa `Container size="lg"`)
 
 ## 7. Register block
 

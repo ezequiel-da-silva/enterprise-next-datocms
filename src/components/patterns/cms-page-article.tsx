@@ -1,3 +1,4 @@
+import { Container } from "@/components/atoms/container";
 import { HeroSectionBlock } from "@/components/patterns/hero-section-block";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { PageStructuredText } from "@/components/patterns/page-structured-text";
@@ -39,7 +40,7 @@ export async function CmsPageArticle({ page, locale, canonicalPath, contentLinkG
   return (
     <>
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
-      <article className={wideLayout ? "mx-auto w-full max-w-5xl px-4 py-12" : "mx-auto w-full max-w-3xl px-4 py-12"}>
+      <Container as="article" size={wideLayout ? "md" : "sm"} name="CmsPageArticle" className="py-12">
         {isHome ? null : <BreadcrumbNav locale={locale} items={breadcrumbItems} />}
         <div className={isHome ? undefined : "mt-4"}>
           {page.heroPage ? <HeroSectionBlock record={page.heroPage} locale={locale} /> : null}
@@ -48,7 +49,7 @@ export async function CmsPageArticle({ page, locale, canonicalPath, contentLinkG
           ) : null}
           <PageStructuredText data={page.structuredText} contentLinkGroup={contentLinkGroup} locale={locale} />
         </div>
-      </article>
+      </Container>
     </>
   );
 }

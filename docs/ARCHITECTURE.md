@@ -51,7 +51,7 @@ flowchart TB
 | Path | Responsibility |
 |------|----------------|
 | `src/app/` | Routes, layouts, `generateMetadata`, error boundaries, Server Actions entry |
-| `src/components/atoms/` | Primitives (Button, Input) — minimal logic |
+| `src/components/atoms/` | Primitives (`Button`, `Input`, `Container`) — minimal logic |
 | `src/components/molecules/` | Composed UI (Field) |
 | `src/components/patterns/` | Reusable CMS-aware UI (header, ST renderer, blocks shared across pages) |
 | `src/components/sections/` | Full-width page sections (e.g. CTA Banner) when distinct from patterns |

@@ -20,7 +20,7 @@ Single entry point for AI agents working in this repository.
 | Layer | Path | Notes |
 |-------|------|--------|
 | Routes | `src/app/` | RSC pages, API routes, Server Actions |
-| UI | `src/components/` | atoms → molecules → patterns → sections |
+| UI | `src/components/` | atoms → molecules → patterns → sections; layout via `Container` |
 | Pure helpers | `src/lib/` | SEO, Dato field parsers, a11y, security utils |
 | Domain | `src/core/` | entities + use-cases — **no React/Next** |
 | I/O | `src/infra/` | Dato fetch, GraphQL, external integrations |

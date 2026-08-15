@@ -17,7 +17,7 @@ Skill: [`.cursor/skills/add-datocms-block/SKILL.md`](../skills/add-datocms-block
 3. Optional fragment file: `src/infra/datocms/graphql/fragments/{block}.graphql`.
 4. Run `npm run codegen`.
 5. Add type in `types-page.ts` if needed (often `Extract` or schema import).
-6. Implement block component — reuse `SmartLink`, `DatoResponsivePicture`, `Button`.
+6. Implement block component — reuse `SmartLink`, `DatoResponsivePicture`, `Button`, `Container` (largura; ver `architecture.mdc`).
 7. Register `case "{Name}Record":` in `structured-text-block-view.tsx`.
 8. Add `resolve*Options()` + tests when block has `advanced_options` or boolean toggles (`hasImage`, etc.).
 
@@ -34,9 +34,15 @@ Skill: [`.cursor/skills/add-datocms-block/SKILL.md`](../skills/add-datocms-block
 
 Blocks rendered via `react-datocms` `renderBlock` that need `await getNonce()` or async children must be **`async function` blocks**, or inject sync JSON-LD via `JsonLdScriptSync`. See `react-rsc.mdc`.
 
+## Layout
+
+- Secções wide: `<section className="not-prose my-12 w-full …">` + `<Container size="lg" …>` (ex.: CTA banner).
+- Conteúdo de página/artigo: o shell (`CmsPageArticle`) já usa `Container`; blocos internos não precisam de outro `max-w-*` de página salvo variantes específicas.
+
 ## Anti-patterns
 
 - Updating only `queries.ts` OR only `.graphql`
 - `next/dynamic()` for Server Component blocks in ST
 - New inline `<img>` instead of `DatoResponsivePicture`
 - Custom link parsing instead of `link-block.ts` / `SmartLink`
+- `mx-auto max-w-6xl` manual em blocos novos — usar `Container`
