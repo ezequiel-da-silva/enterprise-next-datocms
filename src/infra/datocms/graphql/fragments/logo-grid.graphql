@@ -1,0 +1,32 @@
+# Fragmento do bloco Logo GRID (`logo_grid`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Logo GRID**.
+# Depois: descomentar o `#import` e o `... on LogoGridRecord` em `page-by-slug.graphql`,
+# acrescentar `${LOGO_GRID_BLOCK}` em `queries.ts` (`PAGE_STRUCTURED_TEXT_BLOCKS`),
+# e correr `npm run codegen`.
+fragment LogoGridBlockFragment on LogoGridRecord {
+  id
+  title
+  subtitle
+  grayscale
+  layoutStyle
+  logos {
+    __typename
+    ... on ImageBlockRecord {
+      id
+      asset {
+        url
+        alt
+        width
+        height
+      }
+      assetDesktop {
+        url
+        alt
+        width
+        height
+      }
+    }
+  }
+}

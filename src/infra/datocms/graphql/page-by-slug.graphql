@@ -1,4 +1,5 @@
 #import "./fragments/cta-banner.graphql"
+#import "./fragments/logo-grid.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -215,6 +216,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         ... on CtaBannerRecord {
           ...CtaBannerBlockFields
+        }
+        ... on LogoGridRecord {
+          ...LogoGridBlockFragment
         }
       }
       inlineBlocks

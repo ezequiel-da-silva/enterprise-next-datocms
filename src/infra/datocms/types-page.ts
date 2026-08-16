@@ -34,6 +34,8 @@ export type FaqGroupBlockRecord = Extract<PageStructuredTextBlock, { __typename:
 
 export type CtaBannerBlockRecord = CtaBannerRecord;
 
+export type LogoGridBlockRecord = Extract<PageStructuredTextBlock, { __typename: "LogoGridRecord" }>;
+
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];
 
 export type HeroSectionRecord = NonNullable<PageQueryData["heroPage"]>;
