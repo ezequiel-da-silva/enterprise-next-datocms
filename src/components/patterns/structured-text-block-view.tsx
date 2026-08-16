@@ -9,6 +9,7 @@ import type {
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
 import { CtaBannerBlock } from "@/components/sections/cta-banner-block";
+import { LogoGridBlock } from "@/components/sections/logo-grid-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -176,6 +177,8 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       return <FaqGroupBlock record={record} />;
     case "CtaBannerRecord":
       return <CtaBannerBlock record={record as CtaBannerBlockRecord} locale={locale} />;
+    case "LogoGridRecord":
+      return <LogoGridBlock record={record} locale={locale} />;
     default:
       return unknownBlockFallback(record);
   }

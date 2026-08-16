@@ -2782,6 +2782,36 @@ export type LocalesFilter = {
   notIn?: InputMaybe<Array<SiteLocale>>;
 };
 
+/** Block of type 🎆 Logo GRID (logo_grid) */
+export type LogoGridRecord = RecordInterface & {
+  __typename?: 'LogoGridRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  grayscale: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  layoutStyle?: Maybe<Scalars['String']['output']>;
+  logos: Array<ImageBlockRecord>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 🎆 Logo GRID (logo_grid) */
+export type LogoGridRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
 export type MuxThumbnailFitMode =
   | 'crop'
   | 'pad'
@@ -3043,7 +3073,7 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
-export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord;
+export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | VideoBlockRecord;
 
 export type PageModelStructuredTextField = {
   __typename?: 'PageModelStructuredTextField';

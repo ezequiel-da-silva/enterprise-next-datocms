@@ -320,14 +320,32 @@ const STRUCTURED_TEXT_SCALAR_FIELDS = `
   inlineBlocks
 `;
 
+/** Logo GRID — grelha / marquee de logos (`LogoGridRecord`). @see fragments/logo-grid.graphql */
+const LOGO_GRID_BLOCK = `
+  ... on LogoGridRecord {
+    id
+    title
+    subtitle
+    grayscale
+    layoutStyle
+    logos {
+      __typename
+      ... on ImageBlockRecord {
+        ${IMAGE_BLOCK_RESPONSIVE}
+      }
+    }
+  }
+`;
+
 /**
- * ST da **Page**: média + FAQ + Feature GRID.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${ST_BLOCKS_MEDIA_ONLY}
   ${FAQ_GROUP_BLOCK}
   ${CTA_BANNER_BLOCK}
+  ${LOGO_GRID_BLOCK}
   ... on FeatureGridRecord {
     id
     titleFeatureGrid
