@@ -151,15 +151,18 @@
   }
 
   /*
-   * Logo GRID marquee: track duplicado (50% = um ciclo).
+   * Logo GRID marquee: duas séries idênticas num track `w-max`, com o
+   * espaçamento no próprio item (ver MARQUEE_SLOT) — 50% da largura do track
+   * é exatamente uma série, por isso o loop não salta.
    * Com prefers-reduced-motion o @layer base acima corta a animação;
-   * aqui escondemos o clone e permitimos wrap estático.
+   * aqui escondemos os clones e permitimos wrap estático.
    */
   .logo-marquee__track {
     animation: logo-marquee 40s linear infinite;
   }
 
-  .logo-marquee:hover .logo-marquee__track {
+  .logo-marquee:hover .logo-marquee__track,
+  .logo-marquee:focus-within .logo-marquee__track {
     animation-play-state: paused;
   }
 
@@ -179,11 +182,10 @@
       max-width: 100%;
       flex-wrap: wrap;
       justify-content: center;
-      padding-inline-end: 0;
       row-gap: 1.5rem;
     }
 
-    .logo-marquee__track [data-marquee-clone] {
+    .logo-marquee__track > [data-marquee-clone] {
       display: none;
     }
   }
