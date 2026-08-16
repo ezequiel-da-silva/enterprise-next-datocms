@@ -18,23 +18,41 @@ function logoMobile(item: LogoItem): FileFieldLike | null {
   return item.asset?.url ? item.asset : null;
 }
 
+/**
+ * Espaçamento do marquee vive no item (não em `gap`): cada slot mede
+ * `largura + padding`, logo `translateX(-50%)` cai exatamente no início da
+ * segunda série, independentemente do número de logos.
+ */
+const MARQUEE_SLOT = "shrink-0 pe-10 sm:pe-14";
+
+/**
+ * Multiplica o array de logos até atingir um limite mínimo (ex: 10)
+ * para garantir que o Marquee cubra telas grandes sem buracos,
+ * mesmo quando o editor cadastra apenas 2 ou 3 logos.
+ */
+function getMarqueeList<T>(items: T[], targetMin = 10): T[] {
+  if (items.length === 0) return [];
+  let result = [...items];
+  while (result.length < targetMin) {
+    result = result.concat(items);
+  }
+  return result;
+}
+
 type LogoCellProps = {
   item: LogoItem;
   grayscale: boolean;
   className?: string;
-  marqueeClone?: boolean;
 };
 
-function LogoCell({ item, grayscale, className, marqueeClone = false }: LogoCellProps) {
+function LogoCell({ item, grayscale, className }: LogoCellProps) {
   const mobile = logoMobile(item);
   if (!mobile?.url) return null;
 
-  // Garante um texto alternativo útil caso o alt do DatoCMS esteja em branco
   const alt = mobile.alt?.trim() || "Logo do parceiro";
 
   return (
     <figure
-      {...(marqueeClone ? { "data-marquee-clone": "", "aria-hidden": "true" } : {})}
       className={cn(
         "flex h-16 w-32 items-center justify-center p-1 sm:h-20 sm:w-40",
         "transition-transform duration-300 hover:scale-105",
@@ -69,6 +87,9 @@ export function LogoGridBlock({ record }: LogoGridBlockProps) {
 
   if (logos.length === 0) return null;
 
+  // Garante uma lista pré-preenchida para o Marquee não quebrar com poucos itens
+  const marqueeLogos = getMarqueeList(logos, 10);
+
   return (
     <section
       {...cmsBlockAttrs(record)}
@@ -102,22 +123,28 @@ export function LogoGridBlock({ record }: LogoGridBlockProps) {
             role="region"
             aria-label="Carrossel de parceiros"
           >
-            <ul className="logo-marquee__track m-0 flex list-none items-center gap-10 p-0 pe-10 hover:[animation-play-state:paused] sm:gap-14 sm:pe-14">
-              {logos.map((item) => (
-                <li key={item.id} className="shrink-0">
+            <ul className="logo-marquee__track m-0 flex w-max list-none items-center p-0">
+              {/* Trilha A (Suficiente para telas ultrawide) */}
+              {marqueeLogos.map((item, idx) => (
+                <li key={`${item.id}-m1-${idx}`} className={MARQUEE_SLOT}>
                   <LogoCell item={item} grayscale={grayscale} />
                 </li>
               ))}
-              {/* Clones com aria-hidden="true" ativado no LogoCell para prevenir leitura duplicada */}
-              {logos.map((item) => (
-                <li key={`${item.id}-clone`} className="shrink-0" aria-hidden="true">
-                  <LogoCell item={item} grayscale={grayscale} marqueeClone />
+              {/* Trilha B (Clone para efeito loop infinito perfeito) */}
+              {marqueeLogos.map((item, idx) => (
+                <li
+                  key={`${item.id}-m2-${idx}`}
+                  data-marquee-clone=""
+                  aria-hidden="true"
+                  className={MARQUEE_SLOT}
+                >
+                  <LogoCell item={item} grayscale={grayscale} />
                 </li>
               ))}
             </ul>
           </div>
         ) : (
-          <ul className="m-0 grid list-none grid-cols-2 gap-6 p-0 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-8">
+          <ul className="m-0 flex flex-wrap items-center justify-center gap-6 p-0 sm:gap-8 list-none">
             {logos.map((item) => (
               <li key={item.id} className="flex items-center justify-center min-w-0">
                 <LogoCell item={item} grayscale={grayscale} />
