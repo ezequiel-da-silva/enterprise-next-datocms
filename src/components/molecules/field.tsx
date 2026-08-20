@@ -11,11 +11,16 @@ type FieldProps = {
   className?: string;
 };
 
-function attachDescribedBy(children: ReactNode, describedBy: string): ReactNode {
+/**
+ * Corre sempre por `Children.map`, mesmo sem `describedBy`: alternar entre o array
+ * mapeado e os `children` crus muda a forma da árvore e faz o React remontar o
+ * campo — o que rouba o foco a meio da escrita quando o erro aparece/desaparece.
+ */
+function attachDescribedBy(children: ReactNode, describedBy?: string): ReactNode {
   return Children.map(children, (child) => {
     if (!isValidElement(child)) return child;
     const prev = (child.props as { "aria-describedby"?: string })["aria-describedby"];
-    const merged = prev ? `${prev} ${describedBy}` : describedBy;
+    const merged = [prev, describedBy].filter(Boolean).join(" ") || undefined;
     return cloneElement(child as ReactElement<{ "aria-describedby"?: string }>, {
       "aria-describedby": merged,
     });
@@ -32,7 +37,7 @@ export function Field({ id, label, hint, error, children, className }: FieldProp
       <Label htmlFor={id} className="text-sm font-medium text-foreground">
         {label}
       </Label>
-      {describedBy ? attachDescribedBy(children, describedBy) : children}
+      {attachDescribedBy(children, describedBy || undefined)}
       {hint && !error ? (
         <p id={`${id}-hint`} className="text-xs text-muted-foreground">
           {hint}

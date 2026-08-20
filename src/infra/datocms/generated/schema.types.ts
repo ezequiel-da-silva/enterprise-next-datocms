@@ -2681,6 +2681,24 @@ export type InUseFilter = {
   eq?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+/** Specifies how to filter Integer fields */
+export type IntegerFilter = {
+  /** Search for records with an exact match */
+  eq?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
+  exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with a value that's strictly greater than the one specified */
+  gt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with a value that's greater than or equal to the one specified */
+  gte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with a value that's less than the one specified */
+  lt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with a value that's less or equal than the one specified */
+  lte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Exclude records with an exact match */
+  neq?: InputMaybe<Scalars['IntType']['input']>;
+};
+
 /** Specifies how to filter by ID */
 export type ItemIdFilter = {
   /** Search the record with the specified ID */
@@ -3073,7 +3091,7 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
-export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | VideoBlockRecord;
+export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | ReviewsSectionRecord | VideoBlockRecord;
 
 export type PageModelStructuredTextField = {
   __typename?: 'PageModelStructuredTextField';
@@ -3386,6 +3404,8 @@ export type Query = {
   _allPostsMeta: CollectionMetadata;
   /** Returns meta information regarding an assets collection */
   _allUploadsMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
+  _allUserReviewsMeta: CollectionMetadata;
   /** Returns the single instance record */
   _site: Site;
   /** Returns a collection of records */
@@ -3398,6 +3418,8 @@ export type Query = {
   allPosts: Array<PostRecord>;
   /** Returns a collection of assets */
   allUploads: Array<FileField>;
+  /** Returns a collection of records */
+  allUserReviews: Array<UserReviewRecord>;
   /** Returns a specific record */
   author?: Maybe<AuthorRecord>;
   /** Returns a specific record */
@@ -3412,6 +3434,8 @@ export type Query = {
   post?: Maybe<PostRecord>;
   /** Returns a specific asset */
   upload?: Maybe<FileField>;
+  /** Returns a specific record */
+  userReview?: Maybe<UserReviewRecord>;
 };
 
 
@@ -3446,6 +3470,13 @@ export type Query_AllPostsMetaArgs = {
 /** The query root for this schema */
 export type Query_AllUploadsMetaArgs = {
   filter?: InputMaybe<UploadFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
+export type Query_AllUserReviewsMetaArgs = {
+  filter?: InputMaybe<UserReviewModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3513,6 +3544,17 @@ export type QueryAllUploadsArgs = {
 
 
 /** The query root for this schema */
+export type QueryAllUserReviewsArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<UserReviewModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<UserReviewModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+/** The query root for this schema */
 export type QueryAuthorArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<AuthorModelFilter>;
@@ -3570,6 +3612,15 @@ export type QueryUploadArgs = {
   orderBy?: InputMaybe<Array<InputMaybe<UploadOrderBy>>>;
 };
 
+
+/** The query root for this schema */
+export type QueryUserReviewArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<UserReviewModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<UserReviewModelOrderBy>>>;
+};
+
 export type RecordInterface = {
   _createdAt: Scalars['DateTime']['output'];
   /** Editing URL */
@@ -3623,6 +3674,35 @@ export type ResponsiveImage = {
   title?: Maybe<Scalars['String']['output']>;
   webpSrcSet: Scalars['String']['output'];
   width: Scalars['IntType']['output'];
+};
+
+/** Block of type 💭 Reviews Section (reviews_section) */
+export type ReviewsSectionRecord = RecordInterface & {
+  __typename?: 'ReviewsSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  allowSubmissions: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  reviews: Array<UserReviewRecord>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 💭 Reviews Section (reviews_section) */
+export type ReviewsSectionRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
 };
 
 export type SeoField = {
@@ -3784,6 +3864,20 @@ export type Tag = {
   attributes?: Maybe<Scalars['MetaTagAttributes']['output']>;
   content?: Maybe<Scalars['String']['output']>;
   tag: Scalars['String']['output'];
+};
+
+/** Specifies how to filter text fields */
+export type TextFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not [DEPRECATED] */
+  exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field set as blank (null or empty string) */
+  isBlank?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field present (neither null, nor empty string) */
+  isPresent?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records based on a regular expression */
+  matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude records based on a regular expression */
+  notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
 /** Specifies how to filter by upload type */
@@ -4190,6 +4284,113 @@ export type UploadWidthFilter = {
   lte?: InputMaybe<Scalars['IntType']['input']>;
   /** Search assets that do not have the specified width */
   neq?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+export type UserReviewModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<UserReviewModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<UserReviewModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _locales?: InputMaybe<LocalesFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  authorAvatar?: InputMaybe<FileFilter>;
+  authorEmail?: InputMaybe<StringFilter>;
+  authorName?: InputMaybe<StringFilter>;
+  comment?: InputMaybe<TextFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  rating?: InputMaybe<IntegerFilter>;
+};
+
+export type UserReviewModelOrderBy =
+  | '_createdAt_ASC'
+  | '_createdAt_DESC'
+  | '_firstPublishedAt_ASC'
+  | '_firstPublishedAt_DESC'
+  | '_isValid_ASC'
+  | '_isValid_DESC'
+  | '_publicationScheduledAt_ASC'
+  | '_publicationScheduledAt_DESC'
+  | '_publishedAt_ASC'
+  | '_publishedAt_DESC'
+  | '_status_ASC'
+  | '_status_DESC'
+  | '_unpublishingScheduledAt_ASC'
+  | '_unpublishingScheduledAt_DESC'
+  | '_updatedAt_ASC'
+  | '_updatedAt_DESC'
+  | 'authorEmail_ASC'
+  | 'authorEmail_DESC'
+  | 'authorName_ASC'
+  | 'authorName_DESC'
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'rating_ASC'
+  | 'rating_DESC';
+
+/** Record of type 💬 User Review (user_review) */
+export type UserReviewRecord = RecordInterface & {
+  __typename?: 'UserReviewRecord';
+  _allAuthorNameLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCommentLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _locales: Array<SiteLocale>;
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  authorAvatar?: Maybe<FileField>;
+  authorEmail?: Maybe<Scalars['String']['output']>;
+  authorName?: Maybe<Scalars['String']['output']>;
+  comment?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  rating?: Maybe<Scalars['IntType']['output']>;
+};
+
+
+/** Record of type 💬 User Review (user_review) */
+export type UserReviewRecord_AllAuthorNameLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 💬 User Review (user_review) */
+export type UserReviewRecord_AllCommentLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 💬 User Review (user_review) */
+export type UserReviewRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 💬 User Review (user_review) */
+export type UserReviewRecordAuthorNameArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 💬 User Review (user_review) */
+export type UserReviewRecordCommentArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** Block of type 📺 Video (video_block) */

@@ -1,0 +1,26 @@
+# Fragmento do bloco Reviews Section (`reviews_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Reviews Section**.
+# Depois: `#import` + `... on ReviewsSectionRecord` em `page-by-slug.graphql`,
+# `${REVIEWS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#
+# Privacidade: `authorEmail` NÃO é pedido no CDA público — só entra na CMA na submissão.
+fragment ReviewsSectionBlockFragment on ReviewsSectionRecord {
+  id
+  title
+  subtitle
+  allowSubmissions
+  reviews {
+    id
+    authorName
+    rating
+    comment
+    authorAvatar {
+      url
+      alt
+      width
+      height
+    }
+  }
+}

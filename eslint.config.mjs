@@ -52,6 +52,26 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // Client forms / CMS blocks that bind Server Actions directly (Next.js pattern).
+    files: [
+      "src/components/molecules/review-form.tsx",
+      "src/components/sections/reviews-section-block.tsx",
+    ],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              group: ["@/infra/datocms/client", "@/infra/datocms/get-*", "@/infra/datocms/search"],
+              message: "components/ must not fetch — load data in app/ and pass props.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

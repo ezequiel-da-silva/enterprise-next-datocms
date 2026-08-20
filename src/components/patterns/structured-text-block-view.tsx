@@ -5,11 +5,13 @@ import type {
   CtaBannerBlockRecord,
   FeatureGridRecord,
   PageStructuredTextBlock,
+  ReviewsSectionBlockRecord,
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
 import { CtaBannerBlock } from "@/components/sections/cta-banner-block";
 import { LogoGridBlock } from "@/components/sections/logo-grid-block";
+import { ReviewsSectionBlock } from "@/components/sections/reviews-section-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -179,6 +181,8 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
       return <CtaBannerBlock record={record as CtaBannerBlockRecord} locale={locale} />;
     case "LogoGridRecord":
       return <LogoGridBlock record={record} locale={locale} />;
+    case "ReviewsSectionRecord":
+      return <ReviewsSectionBlock record={record as ReviewsSectionBlockRecord} locale={locale} />;
     default:
       return unknownBlockFallback(record);
   }

@@ -337,8 +337,30 @@ const LOGO_GRID_BLOCK = `
   }
 `;
 
+/** Reviews Section — depoimentos (`ReviewsSectionRecord`). @see fragments/reviews-section.graphql */
+const REVIEWS_SECTION_BLOCK = `
+  ... on ReviewsSectionRecord {
+    id
+    title
+    subtitle
+    allowSubmissions
+    reviews {
+      id
+      authorName
+      rating
+      comment
+      authorAvatar {
+        url
+        alt
+        width
+        height
+      }
+    }
+  }
+`;
+
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
@@ -346,6 +368,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${FAQ_GROUP_BLOCK}
   ${CTA_BANNER_BLOCK}
   ${LOGO_GRID_BLOCK}
+  ${REVIEWS_SECTION_BLOCK}
   ... on FeatureGridRecord {
     id
     titleFeatureGrid
