@@ -50,12 +50,37 @@ function bgThemeClasses(theme: CtaBannerBgTheme): string {
   }
 }
 
+/**
+ * Em `card_inset` o tema pinta o próprio cartão: pintar também a secção deixava um
+ * retângulo de cor por trás do cartão arredondado (visível sobretudo com foto de fundo).
+ */
+function cardSurfaceClasses(theme: CtaBannerBgTheme): string {
+  switch (theme) {
+    case "muted":
+      return "bg-muted text-foreground";
+    case "transparent":
+      return "border border-border bg-background text-foreground";
+    default:
+      return "bg-primary text-primary-foreground";
+  }
+}
+
+/**
+ * Superfície escura (`bg-primary` ou foto + scrim): texto e bordas a 100%.
+ * `color-mix` (`/80`) falhava WCAG AA; a classe `dark` no overlay invertia
+ * `primary-foreground` para navy e deixava o botão ilegível.
+ */
+const OVERLAY_OUTLINE_BUTTON =
+  "border-white bg-transparent text-white hover:bg-white/15 hover:text-white";
+const OVERLAY_SOLID_BUTTON = "border-transparent bg-white text-slate-900 shadow-md hover:bg-white/90";
+const ON_PRIMARY_OUTLINE_BUTTON =
+  "border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground";
+
 function buttonVariantForTheme(
   theme: CtaBannerBgTheme,
   isOverlay = false,
-  isSecondary = false
+  isSecondary = false,
 ): "primary" | "outline" {
-  // Se for o 2º botão no overlay, podemos manter 'primary' sólido ou 'outline'
   if (isOverlay) {
     return isSecondary ? "primary" : "outline";
   }
@@ -65,19 +90,13 @@ function buttonVariantForTheme(
 function buttonClassesForTheme(
   theme: CtaBannerBgTheme,
   isOverlay = false,
-  isSecondary = false
+  isSecondary = false,
 ): string | undefined {
   if (isOverlay) {
-    if (isSecondary) {
-      // Botão secundário no overlay (Sólido branco com texto escuro para destacar do 1º botão)
-      return "bg-white text-slate-900 hover:bg-white/90 border-transparent shadow-md font-medium";
-    }
-    // 💡 Botão principal no overlay: Outline refinado com borda e texto em branco translúcido
-    return "border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 backdrop-blur-xs";
+    return isSecondary ? OVERLAY_SOLID_BUTTON : OVERLAY_OUTLINE_BUTTON;
   }
-
   if (theme !== "primary") return undefined;
-  return "border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10";
+  return ON_PRIMARY_OUTLINE_BUTTON;
 }
 
 function contentAlignment(variant: CtaBannerVariant): string {
@@ -159,11 +178,7 @@ function CtaBannerContent({
         <p
           className={cn(
             "text-xs font-semibold uppercase tracking-[0.2em]",
-            isOverlay
-              ? "text-white/90 drop-shadow-sm"
-              : isPrimary
-                ? "text-primary-foreground/80"
-                : "text-muted-foreground",
+            isOverlay ? "text-white drop-shadow-sm" : isPrimary ? "text-primary-foreground" : "text-muted-foreground",
           )}
         >
           {eyebrow}
@@ -186,11 +201,7 @@ function CtaBannerContent({
         <p
           className={cn(
             "mt-4 max-w-2xl text-pretty text-base leading-relaxed md:text-lg",
-            isOverlay
-              ? "text-white/90 drop-shadow-sm"
-              : isPrimary
-                ? "text-primary-foreground/90"
-                : "text-muted-foreground",
+            isOverlay ? "text-white drop-shadow-sm" : isPrimary ? "text-primary-foreground" : "text-muted-foreground",
             options.variant !== "split" && "mx-auto",
           )}
         >
@@ -227,14 +238,14 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         id={options.sectionId}
         {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
-        className={cn("not-prose my-12 w-full", bgThemeClasses(options.bgTheme))}
+        className="not-prose my-12 w-full"
       >
         <Container size="lg" padded={false} name="CtaBanner">
           <div
             className={cn(
-              "relative overflow-hidden rounded-3xl border border-border p-8 shadow-xl lg:p-16",
+              "relative overflow-hidden rounded-3xl p-8 shadow-xl lg:p-16",
               "flex flex-col items-center text-center",
-              hasOverlayImage ? "dark text-white" : "bg-background text-foreground",
+              hasOverlayImage ? "text-white ring-1 ring-black/10" : cardSurfaceClasses(options.bgTheme),
             )}
           >
             {hasOverlayImage && imageBlock && mobileAsset ? (
@@ -244,9 +255,10 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
                   desktop={imageBlock.assetDesktop}
                   className="absolute inset-0 h-full w-full object-cover"
                   sizes="(max-width: 1024px) 100vw, 992px"
-                  fallbackAlt={title}
+                  decorative
                 />
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
+                {/* Nunca abaixo de 60%: texto branco mantém AA mesmo sobre a zona mais clara da foto. */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/65 to-black/60" aria-hidden />
               </>
             ) : null}
 
@@ -269,16 +281,23 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
       id={options.sectionId}
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
-      className={cn("not-prose my-12 w-full", bgThemeClasses(options.bgTheme))}
+      className={cn(
+        "not-prose my-12 w-full",
+        /* A faixa já está dentro da largura do artigo: arredondar evita o bloco retangular duro. */
+        options.bgTheme !== "transparent" && "rounded-2xl",
+        bgThemeClasses(options.bgTheme),
+      )}
     >
       <Container
         size="lg"
         padded={false}
         name="CtaBanner"
         className={cn(
+          /* Sem cor de fundo o bloco alinha com o texto à volta; com cor precisa de respirar da margem. */
+          options.bgTheme !== "transparent" && "px-6 py-10 md:px-10 md:py-14",
           options.variant === "split" &&
-          image.hasValidAsset &&
-          "grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12",
+            image.hasValidAsset &&
+            "grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12",
           options.variant === "centered" && "flex flex-col items-center text-center",
         )}
       >

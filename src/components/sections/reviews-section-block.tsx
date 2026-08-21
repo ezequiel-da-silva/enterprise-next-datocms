@@ -1,5 +1,5 @@
 import { Container } from "@/components/atoms/container";
-import { ReviewForm } from "@/components/molecules/review-form";
+import { ReviewFormLazy } from "@/components/molecules/review-form-lazy";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DEFAULT_APP_LOCALE, type AppLocale } from "@/constants/i18n";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
@@ -179,7 +179,7 @@ export async function ReviewsSectionBlock({
           </ul>
         ) : null}
 
-        {allowSubmissions && action ? <ReviewForm locale={locale} action={action} /> : null}
+        {allowSubmissions && action ? <ReviewFormLazy locale={locale} action={action} /> : null}
       </Container>
     </section>
   );

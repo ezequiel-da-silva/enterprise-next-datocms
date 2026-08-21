@@ -125,7 +125,7 @@ export function SiteFooter({ data, locale }: SiteFooterProps) {
         ) : null}
 
         {copyData ? (
-          <div className="structured-text max-w-3xl text-sm text-muted-foreground [&_a]:text-primary [&_a]:underline-offset-4 [&_p]:leading-relaxed">
+          <div className="structured-text max-w-3xl text-sm text-muted-foreground [&_p]:mt-0 [&_p]:leading-relaxed">
             <StructuredText data={copyData} customNodeRules={structuredTextDatoNodeRules} />
           </div>
         ) : null}

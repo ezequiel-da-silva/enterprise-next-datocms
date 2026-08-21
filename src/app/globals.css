@@ -132,6 +132,32 @@
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
   }
 
+  /*
+   * Tipografia dos nós DAST. Fica em `base` (utilities dos blocos ganham sempre) e
+   * `:not(:where([data-cms-block] *))` isola o interior dos blocos CMS: como variantes
+   * `[&_p]` / `[&_a]` / `[&_h2]` no wrapper, estas regras venciam as classes do próprio
+   * bloco e pintavam o CTA com cor de texto muted, links primary e título a `text-2xl`.
+   */
+  .structured-text :where(a):not(:where([data-cms-block] *)) {
+    @apply text-primary underline-offset-4;
+  }
+
+  .structured-text :where(h1):not(:where([data-cms-block] *)) {
+    @apply mt-8 text-3xl font-semibold;
+  }
+
+  .structured-text :where(h2):not(:where([data-cms-block] *)) {
+    @apply mt-6 text-2xl font-semibold;
+  }
+
+  .structured-text :where(h3):not(:where([data-cms-block] *)) {
+    @apply mt-4 text-xl font-semibold;
+  }
+
+  .structured-text :where(p):not(:where([data-cms-block] *)) {
+    @apply mt-4 leading-relaxed text-muted-foreground;
+  }
+
   /* Fallback para nós DAST renderizados pelo default do Structured Text (sem customNodeRule) */
   .structured-text > pre {
     @apply my-6 overflow-x-auto rounded-lg border border-border bg-muted/60 p-4 font-mono text-sm leading-relaxed text-foreground;
@@ -151,6 +177,15 @@
 
   .structured-text > hr {
     @apply my-10 border-0 border-t border-border;
+  }
+
+  /*
+   * Logo GRID abaixo da dobra: o browser adia pintura e pedidos até a secção
+   * aproximar-se do viewport. `contain-intrinsic-size` reserva altura e evita CLS.
+   */
+  .logo-grid-defer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 220px;
   }
 
   /*

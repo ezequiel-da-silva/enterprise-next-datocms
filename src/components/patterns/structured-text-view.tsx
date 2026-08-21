@@ -28,8 +28,9 @@ export function StructuredTextView({
     return null;
   }
 
+  /* Tipografia dos nós em `globals.css` (`.structured-text`) — assim não vaza para os blocos CMS. */
   const body = (
-    <div className="structured-text max-w-none text-foreground [&_a]:text-primary [&_a]:underline-offset-4 [&_h1]:mt-8 [&_h1]:text-3xl [&_h1]:font-semibold [&_h2]:mt-6 [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-semibold [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted-foreground">
+    <div className="structured-text max-w-none text-foreground">
       <StructuredText
         data={data}
         customNodeRules={structuredTextDatoNodeRules}
