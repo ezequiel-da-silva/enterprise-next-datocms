@@ -1,6 +1,9 @@
 /** Definido no proxy (`src/proxy.ts`) a partir do primeiro segmento da URL (fallback: default). */
 export const REQUEST_LOCALE_HEADER = "x-nd-locale";
 
+/** Pathname da request, definido no proxy — não ler um header enviado pelo cliente. */
+export const REQUEST_PATHNAME_HEADER = "x-nd-pathname";
+
 /** Locales expostos na URL como primeiro segmento (`/en/...`, `/pt/...` — partilha `[slug]` com páginas CMS). */
 export type AppLocale = "en" | "pt" | "es";
 

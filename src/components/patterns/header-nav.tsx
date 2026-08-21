@@ -78,6 +78,27 @@ function mobileMenuLabels(locale: AppLocale): {
   return { open: "Open menu", close: "Close menu", title: "Menu", dismiss: "Close" };
 }
 
+/** Só ponteiro (`lg:`): 8px de folga do link chega, não precisa do alvo de 48px do toque. */
+function SubmenuChevron({ horizontal, open }: { horizontal: boolean; open: boolean }) {
+  return (
+    <svg
+      className={cn(
+        "h-4 w-4 transition-transform motion-reduce:transition-none",
+        !horizontal && open && "rotate-180",
+      )}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d={horizontal ? "m9 6 6 6-6 6" : "m6 9 6 6 6-6"} />
+    </svg>
+  );
+}
+
 function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; locale: AppLocale; level: number }) {
   const children = item.submenu?.filter(Boolean) ?? [];
   const menuId = useId();
@@ -114,27 +135,24 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
         />
         <button
           type="button"
-          className="touch-target rounded-md hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           aria-expanded={open}
-          aria-haspopup="menu"
+          aria-haspopup="true"
           aria-controls={menuId}
           aria-label={submenuToggleLabel(locale, label)}
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="text-[10px] opacity-70" aria-hidden>
-            {level === 0 ? "▾" : "›"}
-          </span>
+          <SubmenuChevron horizontal={level > 0} open={open} />
         </button>
       </div>
       {open ? (
         <div className={cn("absolute z-[60]", level === 0 ? "left-0 top-full pt-1.5" : "left-full top-0 ml-1 pt-0")}>
           <ul
             id={menuId}
-            role="menu"
             className="min-w-[12rem] rounded-lg border border-border bg-background p-1 shadow-lg ring-1 ring-border/50"
           >
             {children.map((child) => (
-              <li key={child.id} className="relative py-0.5" role="none">
+              <li key={child.id} className="relative py-0.5">
                 <DesktopMenuBranch item={child} locale={locale} level={level + 1} />
               </li>
             ))}
@@ -165,9 +183,18 @@ type HeaderNavProps = {
   menuLinks: NavItemRecord[];
   locale: AppLocale;
   themeToggle: ReactNode;
+  localeSwitcher: ReactNode;
+  /** Variante de largura total para o painel móvel. */
+  localeSwitcherBlock: ReactNode;
 };
 
-export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
+export function HeaderNav({
+  menuLinks,
+  locale,
+  themeToggle,
+  localeSwitcher,
+  localeSwitcherBlock,
+}: HeaderNavProps) {
   const panelId = useId();
   const dialogTitleId = useId();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -249,8 +276,8 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
 
   return (
     <>
-      <div className="hidden min-w-0 flex-1 items-center justify-end gap-3 lg:flex">
-        <nav aria-label="Principal" className="min-w-0">
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
+        <nav aria-label="Principal" className="hidden min-w-0 lg:block">
           <ul className="flex max-w-full flex-wrap items-center justify-end gap-2">
             {menuLinks.map((item) => (
               <li key={item.id} className="relative max-w-full shrink-0">
@@ -259,16 +286,13 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
             ))}
           </ul>
         </nav>
-        {themeToggle}
-      </div>
-
-      <div className="flex shrink-0 items-center gap-2 lg:hidden">
-        {/* Enquanto o painel está aberto o toggle vive lá dentro — evita duplicar o switch na árvore de acessibilidade. */}
+        {/* Um compacto no header; no drawer o block monta só depois do clique. */}
+        {open ? null : localeSwitcher}
         {open ? null : themeToggle}
         <button
           ref={menuButtonRef}
           type="button"
-          className="touch-target cursor-pointer rounded-md border border-border bg-background text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="touch-target cursor-pointer rounded-md border border-border bg-background text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => setOpen((v) => !v)}
@@ -323,21 +347,24 @@ export function HeaderNav({ menuLinks, locale, themeToggle }: HeaderNavProps) {
                     </button>
                   </div>
                 </div>
-                <nav
+                <div
                   className="flex-1 overflow-y-auto px-4 py-4"
-                  aria-label="Principal móvel"
                   onClick={(e) => {
                     if (e.target instanceof HTMLAnchorElement) handleClose();
                   }}
                 >
-                  <Link
-                    href={homeBreadcrumbPath(locale)}
-                    className="touch-target-text mb-2 block rounded-md text-sm font-medium text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                  >
-                    {homeBreadcrumbLabel(locale)}
-                  </Link>
-                  <MobileNavList items={menuLinks} locale={locale} depth={0} />
-                </nav>
+                  {/* Landmarks planos: o seletor de idioma é irmão da navegação, não filho. */}
+                  <nav aria-label="Principal móvel">
+                    <Link
+                      href={homeBreadcrumbPath(locale)}
+                      className="touch-target-text mb-2 block rounded-md text-sm font-medium text-foreground transition hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    >
+                      {homeBreadcrumbLabel(locale)}
+                    </Link>
+                    <MobileNavList items={menuLinks} locale={locale} depth={0} />
+                  </nav>
+                  <div className="mt-4 border-t border-border pt-4">{localeSwitcherBlock}</div>
+                </div>
               </div>
             </div>,
             document.body,

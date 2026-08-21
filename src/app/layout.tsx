@@ -5,12 +5,14 @@ import { GlobalHeader } from "@/components/patterns/global-header";
 import { SiteFooter } from "@/components/patterns/site-footer";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { buildThemeBootScript } from "@/lib/theme-boot-script";
-import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, appLocaleFromParam, type AppLocale } from "@/constants/i18n";
+import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, appLocaleFromParam } from "@/constants/i18n";
 import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
 import { cn } from "@/lib/cn";
+import { resolveLocaleSwitcherHrefs } from "@/lib/i18n/resolve-locale-switcher-hrefs";
 import { getNonce } from "@/lib/nonce";
 import { buildMetadata } from "@/lib/seo";
+import { schemaLanguage } from "@/lib/seo/locale-tags";
 import { getSiteName } from "@/lib/seo/site-config";
 import { buildSiteJsonLdGraph } from "@/lib/seo/json-ld-site";
 import type { Metadata, Viewport } from "next";
@@ -61,12 +63,6 @@ export const viewport: Viewport = {
   ],
 };
 
-function htmlLangFromAppLocale(locale: AppLocale): string {
-  if (locale === "en") return "en";
-  if (locale === "pt") return "pt-BR";
-  return "es";
-}
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -77,7 +73,11 @@ export default async function RootLayout({
   const localeHeader = headerStore.get(REQUEST_LOCALE_HEADER);
   const appLocale = appLocaleFromParam(localeHeader ?? "") ?? DEFAULT_APP_LOCALE;
   const { isEnabled } = await draftMode();
-  const navigationResult = await getNavigation(appLocale, isEnabled);
+  const pathname = headerStore.get(REQUEST_PATHNAME_HEADER) ?? `/${appLocale}`;
+  const [navigationResult, localeHrefs] = await Promise.all([
+    getNavigation(appLocale, isEnabled),
+    resolveLocaleSwitcherHrefs(pathname, appLocale, isEnabled),
+  ]);
   const navigation = pickNavigationData(navigationResult);
 
   const cookieStore = await cookies();
@@ -86,11 +86,11 @@ export default async function RootLayout({
   const serverDark = initialThemeMode === "dark";
   const themeCss = buildThemeCssVariables();
 
-  const siteJsonLd = buildSiteJsonLdGraph(appLocale);
+  const siteJsonLd = buildSiteJsonLdGraph();
 
   return (
     <html
-      lang={htmlLangFromAppLocale(appLocale)}
+      lang={schemaLanguage(appLocale)}
       suppressHydrationWarning
       data-theme={initialThemeMode}
       className={cn(fontVariables, "h-full", serverDark && "dark")}
@@ -111,7 +111,12 @@ export default async function RootLayout({
         <JsonLdScript graph={siteJsonLd} />
         <div className="sticky top-0 z-50 overflow-visible">
           <DraftChrome />
-          <GlobalHeader data={navigation} locale={appLocale} initialThemeMode={initialThemeMode} />
+          <GlobalHeader
+            data={navigation}
+            locale={appLocale}
+            localeHrefs={localeHrefs}
+            initialThemeMode={initialThemeMode}
+          />
         </div>
         <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
           {children}

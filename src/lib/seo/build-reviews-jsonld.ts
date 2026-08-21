@@ -9,8 +9,7 @@ export type ReviewJsonLdItem = {
 
 /**
  * AggregateRating (+ Review[]) sobre a Organization do site.
- * Google só aceita este schema em Product / LocalBusiness / Organization —
- * não usar o título da secção CMS como `name`.
+ * Reutiliza `${base}/#organization` do JSON-LD global (layout) para um só nó.
  */
 export function buildReviewsSectionJsonLd(
   sectionId: string,
@@ -21,11 +20,13 @@ export function buildReviewsSectionJsonLd(
 
   const sum = rated.reduce((acc, r) => acc + r.rating, 0);
   const avg = Math.round((sum / rated.length) * 10) / 10;
+  const organizationId = `${getSiteBaseUrl()}/#organization`;
+  const itemReviewed = { "@id": organizationId };
 
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "@id": `${getSiteBaseUrl()}/#organization-reviews-${sectionId}`,
+    "@id": organizationId,
     name: getOrganizationName(),
     url: getSiteBaseUrl(),
     aggregateRating: {
@@ -37,7 +38,8 @@ export function buildReviewsSectionJsonLd(
     },
     review: rated.map((r) => ({
       "@type": "Review",
-      "@id": `https://schema.org/Review/${r.id}`,
+      "@id": `${getSiteBaseUrl()}/#review-${sectionId}-${r.id}`,
+      itemReviewed,
       author: {
         "@type": "Person",
         name: r.authorName,

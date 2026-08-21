@@ -99,4 +99,20 @@ describe("buildDatoPageMetadata title resolution", () => {
       images: ["https://www.datocms-assets.com/og.jpg"],
     });
   });
+
+  it("sets og:locale:alternate from hreflang paths", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+      hreflangPaths: {
+        en: "/en/page-two",
+        pt: "/pt/pagina-dois",
+      },
+    });
+
+    expect(meta.openGraph?.locale).toBe("en_US");
+    expect(meta.openGraph?.alternateLocale).toEqual(["pt_BR"]);
+  });
 });

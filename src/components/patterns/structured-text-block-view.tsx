@@ -1,4 +1,5 @@
 import type { AppLocale } from "@/constants/i18n";
+import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import type {
@@ -25,6 +26,7 @@ type StructuredTextBlockViewProps = {
   record: PageStructuredTextBlock;
   locale: AppLocale;
   contentLinkGroup?: boolean;
+  submitUserReview?: UserReviewSubmitAction;
 };
 
 function unknownBlockFallback(record: PageStructuredTextBlock): null {
@@ -113,7 +115,12 @@ async function VideoBlockView({
 /**
  * Blocos modulares partilhados entre `PageStructuredText` e `StructuredTextRenderer`.
  */
-export function StructuredTextBlockView({ record, locale, contentLinkGroup = false }: StructuredTextBlockViewProps) {
+export function StructuredTextBlockView({
+  record,
+  locale,
+  contentLinkGroup = false,
+  submitUserReview,
+}: StructuredTextBlockViewProps) {
   switch (record.__typename) {
     case "ImageBlockRecord": {
       const mobile = record.asset;
@@ -182,7 +189,13 @@ export function StructuredTextBlockView({ record, locale, contentLinkGroup = fal
     case "LogoGridRecord":
       return <LogoGridBlock record={record} locale={locale} />;
     case "ReviewsSectionRecord":
-      return <ReviewsSectionBlock record={record as ReviewsSectionBlockRecord} locale={locale} />;
+      return (
+        <ReviewsSectionBlock
+          record={record as ReviewsSectionBlockRecord}
+          locale={locale}
+          action={submitUserReview}
+        />
+      );
     default:
       return unknownBlockFallback(record);
   }

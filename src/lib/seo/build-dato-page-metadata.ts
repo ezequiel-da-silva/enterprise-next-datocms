@@ -1,7 +1,7 @@
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
-import { appLocaleFromPath, openGraphLocale } from "@/lib/seo/locale-tags";
+import { appLocaleFromPath, openGraphAlternateLocales, openGraphLocale } from "@/lib/seo/locale-tags";
 import type { Metadata } from "next";
 import { toNextMetadata, type TitleMetaLinkTag } from "react-datocms/seo";
 import type { SeoSettingsSocial } from "@/infra/datocms/types-page";
@@ -43,10 +43,13 @@ export function buildDatoPageMetadata({
   const fromField: Metadata = {};
 
   const resolvedTitle = s?.title?.trim() || fallbackTitle?.trim() || "";
+  const pageLocale = appLocaleFromPath(canonicalPath);
+  const alternateLocale = openGraphAlternateLocales(pageLocale, hreflangPaths);
 
   const openGraph: NonNullable<Metadata["openGraph"]> = {
     ...fromTags.openGraph,
-    locale: openGraphLocale(appLocaleFromPath(canonicalPath)),
+    locale: openGraphLocale(pageLocale),
+    ...(alternateLocale ? { alternateLocale } : {}),
   };
   const twitterBase = typeof fromTags.twitter === "object" && fromTags.twitter ? fromTags.twitter : {};
   const twitterTitle = resolvedTitle ? { title: resolvedTitle } : {};

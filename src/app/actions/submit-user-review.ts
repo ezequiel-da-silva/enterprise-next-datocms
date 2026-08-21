@@ -1,7 +1,7 @@
 "use server";
 
 import { HONEYPOT_FIELD } from "@/constants/contact-form";
-import { isAppLocale, type AppLocale } from "@/constants/i18n";
+import { DEFAULT_APP_LOCALE, isAppLocale, type AppLocale } from "@/constants/i18n";
 import type { UserReviewActionState } from "@/core/entities/user-review";
 import { submitUserReviewUseCase } from "@/core/use-cases/submit-user-review";
 import { createPendingUserReview } from "@/infra/datocms/create-user-review";
@@ -14,7 +14,7 @@ async function normalizeBotDelay(): Promise<void> {
 
 function readLocale(formData: FormData): AppLocale {
   const raw = String(formData.get("locale") ?? "").trim();
-  return isAppLocale(raw) ? raw : "pt";
+  return isAppLocale(raw) ? raw : DEFAULT_APP_LOCALE;
 }
 
 export async function submitUserReview(

@@ -1,8 +1,8 @@
-import { submitUserReview } from "@/app/actions/submit-user-review";
 import { Container } from "@/components/atoms/container";
 import { ReviewForm } from "@/components/molecules/review-form";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DEFAULT_APP_LOCALE, type AppLocale } from "@/constants/i18n";
+import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { FileFieldLike, ReviewsSectionBlockRecord } from "@/infra/datocms/types-page";
 import { readCdaArray, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -61,7 +61,7 @@ function ReviewAvatar({ name, avatar }: { name: string; avatar?: FileFieldLike |
       <span className="relative inline-flex size-12 shrink-0 overflow-hidden rounded-full bg-muted">
         <Image
           src={avatar.url}
-          alt={avatar.alt?.trim() || name}
+          alt=""
           width={layout.width}
           height={layout.height}
           sizes="48px"
@@ -105,11 +105,13 @@ function ReviewCard({ review }: { review: ReviewItem }) {
 export type ReviewsSectionBlockProps = {
   record: ReviewsSectionBlockRecord;
   locale?: AppLocale;
+  action?: UserReviewSubmitAction;
 };
 
 export async function ReviewsSectionBlock({
   record,
   locale = DEFAULT_APP_LOCALE,
+  action,
 }: ReviewsSectionBlockProps) {
   const title = readCdaString(record as Record<string, unknown>, "title", "title");
   const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
@@ -177,7 +179,7 @@ export async function ReviewsSectionBlock({
           </ul>
         ) : null}
 
-        {allowSubmissions ? <ReviewForm locale={locale} action={submitUserReview} /> : null}
+        {allowSubmissions && action ? <ReviewForm locale={locale} action={action} /> : null}
       </Container>
     </section>
   );

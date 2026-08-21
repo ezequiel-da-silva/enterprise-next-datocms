@@ -4,6 +4,7 @@ import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { PageStructuredText } from "@/components/patterns/page-structured-text";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
+import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1 } from "@/lib/datocms/hero-first-block";
@@ -16,9 +17,16 @@ type CmsPageArticleProps = {
   /** Caminho canónico (ex.: `/en/page-two`, `/en` para home localizada). */
   canonicalPath: string;
   contentLinkGroup: boolean;
+  submitUserReview?: UserReviewSubmitAction;
 };
 
-export async function CmsPageArticle({ page, locale, canonicalPath, contentLinkGroup }: CmsPageArticleProps) {
+export async function CmsPageArticle({
+  page,
+  locale,
+  canonicalPath,
+  contentLinkGroup,
+  submitUserReview,
+}: CmsPageArticleProps) {
   const description = page.seoSettingsSocial?.description ?? null;
   const jsonLd = buildPageWebPageJsonLd({
     path: canonicalPath,
@@ -47,7 +55,12 @@ export async function CmsPageArticle({ page, locale, canonicalPath, contentLinkG
           {!heroH1 ? (
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{page.title}</h1>
           ) : null}
-          <PageStructuredText data={page.structuredText} contentLinkGroup={contentLinkGroup} locale={locale} />
+          <PageStructuredText
+            data={page.structuredText}
+            contentLinkGroup={contentLinkGroup}
+            locale={locale}
+            submitUserReview={submitUserReview}
+          />
         </div>
       </Container>
     </>
