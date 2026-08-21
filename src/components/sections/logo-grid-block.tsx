@@ -25,27 +25,15 @@ function logoMobile(item: LogoItem): FileFieldLike | null {
  */
 const MARQUEE_SLOT = "shrink-0 pe-10 sm:pe-14";
 
-/**
- * Multiplica o array de logos até atingir um limite mínimo (ex: 10)
- * para garantir que o Marquee cubra telas grandes sem buracos,
- * mesmo quando o editor cadastra apenas 2 ou 3 logos.
- */
-function getMarqueeList<T>(items: T[], targetMin = 10): T[] {
-  if (items.length === 0) return [];
-  let result = [...items];
-  while (result.length < targetMin) {
-    result = result.concat(items);
-  }
-  return result;
-}
-
 type LogoCellProps = {
   item: LogoItem;
   grayscale: boolean;
   className?: string;
+  /** Clone do marquee: sem alt duplicado para leitores de ecrã. */
+  decorative?: boolean;
 };
 
-function LogoCell({ item, grayscale, className }: LogoCellProps) {
+function LogoCell({ item, grayscale, className, decorative = false }: LogoCellProps) {
   const mobile = logoMobile(item);
   if (!mobile?.url) return null;
 
@@ -68,6 +56,8 @@ function LogoCell({ item, grayscale, className }: LogoCellProps) {
         className="max-h-14 w-full max-w-full object-contain object-center sm:max-h-16"
         sizes="200px"
         fallbackAlt={alt}
+        decorative={decorative}
+        decoding="async"
       />
     </figure>
   );
@@ -87,14 +77,11 @@ export function LogoGridBlock({ record }: LogoGridBlockProps) {
 
   if (logos.length === 0) return null;
 
-  // Garante uma lista pré-preenchida para o Marquee não quebrar com poucos itens
-  const marqueeLogos = getMarqueeList(logos, 10);
-
   return (
     <section
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
-      className="not-prose my-12 w-full py-6 bg-muted/10"
+      className="logo-grid-defer not-prose my-12 w-full bg-muted/10 py-6"
       aria-labelledby={title ? headingId : undefined}
       aria-label={!title ? "Logos e Parceiros" : undefined}
     >
@@ -124,21 +111,19 @@ export function LogoGridBlock({ record }: LogoGridBlockProps) {
             aria-label="Carrossel de parceiros"
           >
             <ul className="logo-marquee__track m-0 flex w-max list-none items-center p-0">
-              {/* Trilha A (Suficiente para telas ultrawide) */}
-              {marqueeLogos.map((item, idx) => (
+              {logos.map((item, idx) => (
                 <li key={`${item.id}-m1-${idx}`} className={MARQUEE_SLOT}>
                   <LogoCell item={item} grayscale={grayscale} />
                 </li>
               ))}
-              {/* Trilha B (Clone para efeito loop infinito perfeito) */}
-              {marqueeLogos.map((item, idx) => (
+              {logos.map((item, idx) => (
                 <li
                   key={`${item.id}-m2-${idx}`}
                   data-marquee-clone=""
                   aria-hidden="true"
                   className={MARQUEE_SLOT}
                 >
-                  <LogoCell item={item} grayscale={grayscale} />
+                  <LogoCell item={item} grayscale={grayscale} decorative />
                 </li>
               ))}
             </ul>

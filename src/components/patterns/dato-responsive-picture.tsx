@@ -14,6 +14,8 @@ type DatoResponsivePictureProps = {
   sizes?: string;
   priority?: boolean;
   quality?: number;
+  /** Default `async` quando a imagem é lazy — não atrasa o LCP. */
+  decoding?: "async" | "auto" | "sync";
 };
 
 /**
@@ -29,6 +31,7 @@ export function DatoResponsivePicture({
   sizes = "(max-width: 767px) 100vw, 960px",
   priority,
   quality = 75,
+  decoding,
 }: DatoResponsivePictureProps) {
   if (!mobile?.url) {
     return null;
@@ -42,6 +45,7 @@ export function DatoResponsivePicture({
   const { width, height } = clampLayoutDimensions(intrinsicW, intrinsicH);
   const desktopUrl = desktop?.url;
   const desktopW = Math.min(desktop?.width ?? 1280, 1280);
+  const resolvedDecoding = decoding ?? (priority ? "auto" : "async");
 
   if (desktopUrl) {
     const desktopWidths = [
@@ -65,6 +69,7 @@ export function DatoResponsivePicture({
           priority={priority}
           loading={priority ? undefined : "lazy"}
           fetchPriority={priority ? "high" : undefined}
+          decoding={resolvedDecoding}
           className={className}
         />
       </picture>
@@ -82,6 +87,7 @@ export function DatoResponsivePicture({
       priority={priority}
       loading={priority ? undefined : "lazy"}
       fetchPriority={priority ? "high" : undefined}
+      decoding={resolvedDecoding}
       className={className}
     />
   );

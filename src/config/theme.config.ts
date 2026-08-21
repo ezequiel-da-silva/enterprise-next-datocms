@@ -12,7 +12,8 @@ export const themeConfig = {
       background: { h: 0, s: 0, l: 100 } satisfies HslChannels,
       foreground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
       muted: { h: 210, s: 40, l: 96 } satisfies HslChannels,
-      mutedForeground: { h: 215, s: 16, l: 47 } satisfies HslChannels,
+      /* l:47 dava 4.29:1 sobre `muted` (avatar, figcaption de código) — abaixo de AA. */
+      mutedForeground: { h: 215, s: 16, l: 44 } satisfies HslChannels,
       border: { h: 214, s: 32, l: 91 } satisfies HslChannels,
       ring: { h: 222, s: 84, l: 5 } satisfies HslChannels,
       primary: { h: 222, s: 47, l: 11 } satisfies HslChannels,

@@ -31,7 +31,7 @@ export function BreadcrumbNav({ items, locale }: BreadcrumbNavProps) {
           return (
             <li key={`${item.label}-${index}`} className="inline-flex items-center gap-1">
               {index > 0 ? (
-                <span aria-hidden className="px-0.5 text-muted-foreground/70">
+                <span aria-hidden className="px-0.5 text-muted-foreground">
                   /
                 </span>
               ) : null}
