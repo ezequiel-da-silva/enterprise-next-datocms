@@ -1,6 +1,7 @@
 import type { AppLocale } from "@/constants/i18n";
 import { StructuredTextBlockView } from "@/components/patterns/structured-text-block-view";
 import { structuredTextDatoNodeRules } from "@/components/patterns/structured-text-dato-rules";
+import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { PageStructuredTextBlock } from "@/infra/datocms/types-page";
 import { resolveStructuredTextRecordLink } from "@/lib/datocms/st-record-link";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
@@ -10,13 +11,19 @@ type StructuredTextViewProps = {
   data: CdaStructuredTextValue | null | undefined;
   contentLinkGroup: boolean;
   locale: AppLocale;
+  submitUserReview?: UserReviewSubmitAction;
 };
 
 /**
  * Renderer unificado de Structured Text (Page, Post, Author, Category, etc.).
  * Usa `resolveStructuredTextRecordLink` — no ST de Page o CDA só expõe `PageRecord` em links.
  */
-export function StructuredTextView({ data, contentLinkGroup, locale }: StructuredTextViewProps) {
+export function StructuredTextView({
+  data,
+  contentLinkGroup,
+  locale,
+  submitUserReview,
+}: StructuredTextViewProps) {
   if (!data) {
     return null;
   }
@@ -68,6 +75,7 @@ export function StructuredTextView({ data, contentLinkGroup, locale }: Structure
             record={record as PageStructuredTextBlock}
             locale={locale}
             contentLinkGroup={contentLinkGroup}
+            submitUserReview={submitUserReview}
           />
         )}
         renderInlineBlock={({ record }) => (
@@ -76,6 +84,7 @@ export function StructuredTextView({ data, contentLinkGroup, locale }: Structure
               record={record as PageStructuredTextBlock}
               locale={locale}
               contentLinkGroup={contentLinkGroup}
+              submitUserReview={submitUserReview}
             />
           </span>
         )}

@@ -1,4 +1,5 @@
 import { CmsPageArticle } from "@/components/patterns/cms-page-article";
+import { submitUserReview } from "@/app/actions/submit-user-review";
 import {
   APP_LOCALES,
   DEFAULT_APP_LOCALE,
@@ -81,6 +82,7 @@ export default async function DynamicPage({ params }: PageProps) {
       locale={cmsLocale}
       canonicalPath={cmsPageCanonicalPath(pageSlug, cmsLocale)}
       contentLinkGroup={isEnabled}
+      submitUserReview={submitUserReview}
     />
   );
 }

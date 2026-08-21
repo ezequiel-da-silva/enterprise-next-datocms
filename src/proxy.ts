@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, isAppLocale } from "@/constants/i18n";
+import {
+  DEFAULT_APP_LOCALE,
+  REQUEST_LOCALE_HEADER,
+  REQUEST_PATHNAME_HEADER,
+  isAppLocale,
+} from "@/constants/i18n";
 import { NONCE_HEADER } from "@/constants/security";
 import { THEME_COOKIE_NAME, isThemeMode, type ThemeMode } from "@/constants/theme";
 
@@ -92,6 +97,7 @@ export function proxy(request: NextRequest) {
   const firstSegment = pathname.split("/").filter(Boolean)[0];
   const requestLocale = firstSegment && isAppLocale(firstSegment) ? firstSegment : DEFAULT_APP_LOCALE;
   requestHeaders.set(REQUEST_LOCALE_HEADER, requestLocale);
+  requestHeaders.set(REQUEST_PATHNAME_HEADER, pathname);
 
   const response = applySecurityHeaders(
     NextResponse.next({ request: { headers: requestHeaders } }),

@@ -1,6 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
-import { appLocaleFromPath, openGraphLocale } from "@/lib/seo/locale-tags";
+import { appLocaleFromPath, openGraphAlternateLocales, openGraphLocale } from "@/lib/seo/locale-tags";
 import { getOrganizationName, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
 import type { Metadata } from "next";
 
@@ -42,6 +42,7 @@ export function buildMetadata(input: SeoInput): Metadata {
   const ogImages = input.openGraphImage ? [{ url: input.openGraphImage, alt: input.title }] : undefined;
 
   const hreflang = input.hreflangPaths ? buildHreflangAlternates(input.hreflangPaths) : undefined;
+  const alternateLocale = openGraphAlternateLocales(locale, input.hreflangPaths);
 
   return {
     title,
@@ -64,6 +65,7 @@ export function buildMetadata(input: SeoInput): Metadata {
       type: "website",
       siteName,
       locale: openGraphLocale(locale),
+      ...(alternateLocale ? { alternateLocale } : {}),
       images: ogImages,
     },
     twitter: {

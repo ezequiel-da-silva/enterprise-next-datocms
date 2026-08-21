@@ -1,5 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import { HeaderNav } from "@/components/patterns/header-nav";
+import { LocaleSwitcher } from "@/components/patterns/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { NavigationData } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
@@ -7,6 +8,7 @@ import type { ThemeMode } from "@/constants/theme";
 import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { getSiteName } from "@/lib/seo/site-config";
 
@@ -21,15 +23,20 @@ function homeAriaLabel(locale: AppLocale): string {
 type GlobalHeaderProps = {
   data: NavigationData | null;
   locale: AppLocale;
+  localeHrefs: Record<AppLocale, string>;
   /** Cookie `nd-theme` no SSR — evita skeleton no ThemeToggle. */
   initialThemeMode?: ThemeMode;
 };
 
-export function GlobalHeader({ data, locale, initialThemeMode }: GlobalHeaderProps) {
+export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: GlobalHeaderProps) {
   const logo = data?.logo;
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
   const showTheme = data?.showThemeToggle === true;
   const themeToggle = showTheme ? <ThemeToggle initialMode={initialThemeMode} /> : null;
+  const localeSwitcher: ReactNode = <LocaleSwitcher locale={locale} hrefs={localeHrefs} />;
+  const localeSwitcherBlock: ReactNode = (
+    <LocaleSwitcher locale={locale} hrefs={localeHrefs} variant="block" />
+  );
   const homeHref = homeBreadcrumbPath(locale);
   const homeLabel = homeAriaLabel(locale);
 
@@ -63,9 +70,18 @@ export function GlobalHeader({ data, locale, initialThemeMode }: GlobalHeaderPro
 
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
           {menuLinks.length > 0 ? (
-            <HeaderNav menuLinks={menuLinks} locale={locale} themeToggle={themeToggle} />
+            <HeaderNav
+              menuLinks={menuLinks}
+              locale={locale}
+              themeToggle={themeToggle}
+              localeSwitcher={localeSwitcher}
+              localeSwitcherBlock={localeSwitcherBlock}
+            />
           ) : (
-            <div className="flex shrink-0 items-center gap-2">{themeToggle}</div>
+            <div className="flex shrink-0 items-center gap-2">
+              {localeSwitcher}
+              {themeToggle}
+            </div>
           )}
         </div>
       </Container>

@@ -1,4 +1,5 @@
 import { CmsPageArticle } from "@/components/patterns/cms-page-article";
+import { submitUserReview } from "@/app/actions/submit-user-review";
 import { isAppLocale, type AppLocale } from "@/constants/i18n";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
@@ -68,6 +69,7 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
       locale={locale}
       canonicalPath={cmsPageCanonicalPath(pageSlug, locale)}
       contentLinkGroup={isEnabled}
+      submitUserReview={submitUserReview}
     />
   );
 }

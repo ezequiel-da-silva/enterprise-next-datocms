@@ -1,10 +1,6 @@
 import { buildClient, type Client } from "@datocms/cma-client-node";
 import { toDatoSiteLocale } from "@/constants/i18n";
-import type {
-  CreateUserReviewPayload,
-  CreateUserReviewResult,
-  UserReviewCreator,
-} from "@/core/ports/user-review-creator";
+import type { CreateUserReviewPayload, CreateUserReviewResult } from "@/core/ports/user-review-creator";
 
 const USER_REVIEW_API_KEY = "user_review";
 
@@ -66,15 +62,11 @@ export async function createPendingUserReview(
 
     return { ok: true };
   } catch (err) {
-    console.error("[createPendingUserReview] CMA create failed", err);
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[createPendingUserReview] CMA create failed", err);
+    } else {
+      console.error("[createPendingUserReview] CMA create failed");
+    }
     return { ok: false, reason: "transport_error" };
   }
-}
-
-export const createPendingUserReviewAsCreator: UserReviewCreator = createPendingUserReview;
-
-/** @internal — testes / reinício de cache em hot-reload. */
-export function __resetUserReviewCmaCacheForTests(): void {
-  cachedClient = null;
-  cachedItemTypeId = null;
 }

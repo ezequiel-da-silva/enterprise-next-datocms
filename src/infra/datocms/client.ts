@@ -91,18 +91,29 @@ export async function datocmsFetch<T>(
     baseEditingUrl: includeDrafts ? baseEditingUrl : undefined,
   });
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      ...baseHeaders,
-      "Content-Type": "application/json",
-      /** Garantia explícita (além do `buildRequestHeaders`): `Bearer <token>`. */
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ query, variables }),
-    cache: bypassCache ? "no-store" : (cacheOverride ?? "default"),
-    next: nextCache,
-  });
+  /*
+   * Falhas de transporte (DNS, VPN, corte de ligação) e corpos truncados chegam como
+   * exceção. Sem este catch, um erro de rede em `generateStaticParams` derruba a rota
+   * inteira com 500 em vez de degradar para `notFound()` / lista vazia.
+   */
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...baseHeaders,
+        "Content-Type": "application/json",
+        /** Garantia explícita (além do `buildRequestHeaders`): `Bearer <token>`. */
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ query, variables }),
+      cache: bypassCache ? "no-store" : (cacheOverride ?? "default"),
+      next: nextCache,
+    });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : "erro desconhecido";
+    return { errors: [{ message: `DatoCMS: falha de rede — ${detail}` }] };
+  }
 
   if (!res.ok) {
     return {
@@ -110,10 +121,12 @@ export async function datocmsFetch<T>(
     };
   }
 
-  const body = (await res.json()) as {
-    data?: T;
-    errors?: { message: string }[];
-  };
+  let body: { data?: T; errors?: { message: string }[] };
+  try {
+    body = (await res.json()) as { data?: T; errors?: { message: string }[] };
+  } catch {
+    return { errors: [{ message: "DatoCMS: resposta inválida (JSON malformado)" }] };
+  }
 
   if (body.errors?.length) {
     return { errors: body.errors };

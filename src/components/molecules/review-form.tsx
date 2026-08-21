@@ -2,7 +2,7 @@
 
 import { HONEYPOT_FIELD } from "@/constants/contact-form";
 import type { AppLocale } from "@/constants/i18n";
-import type { UserReviewActionState } from "@/core/entities/user-review";
+import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import {
   userReviewFormClientSchema,
   type UserReviewFormClientValues,
@@ -29,7 +29,7 @@ function toFormData(values: UserReviewFormClientValues, locale: AppLocale): Form
 
 export type ReviewFormProps = {
   locale: AppLocale;
-  action: (prev: UserReviewActionState, formData: FormData) => Promise<UserReviewActionState>;
+  action: UserReviewSubmitAction;
 };
 
 export function ReviewForm({ locale, action }: ReviewFormProps) {
@@ -87,6 +87,7 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
       className="mx-auto grid max-w-xl gap-6 rounded-2xl border border-border bg-background/80 p-6 shadow-sm"
       noValidate
       aria-busy={isPending}
+      aria-labelledby="review-form-heading"
       onSubmit={handleSubmit((values) => {
         startTransition(() => {
           formAction(toFormData(values, locale));
@@ -94,7 +95,9 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
       })}
     >
       <div className="space-y-1">
-        <h3 className="text-lg font-semibold text-foreground">Deixe sua avaliação</h3>
+        <h3 id="review-form-heading" className="text-lg font-semibold text-foreground">
+          Deixe sua avaliação
+        </h3>
         <p className="text-sm text-muted-foreground">
           Seu depoimento será publicado após moderação.
         </p>
@@ -141,7 +144,6 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
               <div
                 id="rating"
                 role="radiogroup"
-                aria-label="Avaliação de 1 a 5 estrelas"
                 aria-required="true"
                 aria-invalid={!!errors.rating}
                 aria-describedby={errors.rating ? "rating-error" : "rating-hint"}

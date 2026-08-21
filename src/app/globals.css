@@ -7,22 +7,25 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Channel vars from theme.config (`--palette-*`) feed Tailwind color tokens */
+/*
+ * Channel vars from theme.config (`--palette-*`) feed Tailwind color tokens.
+ * Sem `<alpha-value>` (sintaxe v3): no v4 o placeholder ficava literal no CSS, tornava a
+ * declaração inválida e o browser descartava `bg-background`, `border-border`, etc.
+ * Modificadores de opacidade (`bg-background/95`) passam a resolver via `color-mix`.
+ */
 @theme inline {
-  --color-background: hsl(var(--palette-background) / <alpha-value>);
-  --color-foreground: hsl(var(--palette-foreground) / <alpha-value>);
-  --color-muted: hsl(var(--palette-muted) / <alpha-value>);
-  --color-muted-foreground: hsl(var(--palette-muted-foreground) / <alpha-value>);
-  --color-border: hsl(var(--palette-border) / <alpha-value>);
-  --color-ring: hsl(var(--palette-ring) / <alpha-value>);
-  --color-primary: hsl(var(--palette-primary) / <alpha-value>);
-  --color-primary-foreground: hsl(var(--palette-primary-foreground) / <alpha-value>);
-  --color-accent: hsl(var(--palette-accent) / <alpha-value>);
-  --color-accent-foreground: hsl(var(--palette-accent-foreground) / <alpha-value>);
-  --color-destructive: hsl(var(--palette-destructive) / <alpha-value>);
-  --color-destructive-foreground: hsl(
-    var(--palette-destructive-foreground) / <alpha-value>
-  );
+  --color-background: hsl(var(--palette-background));
+  --color-foreground: hsl(var(--palette-foreground));
+  --color-muted: hsl(var(--palette-muted));
+  --color-muted-foreground: hsl(var(--palette-muted-foreground));
+  --color-border: hsl(var(--palette-border));
+  --color-ring: hsl(var(--palette-ring));
+  --color-primary: hsl(var(--palette-primary));
+  --color-primary-foreground: hsl(var(--palette-primary-foreground));
+  --color-accent: hsl(var(--palette-accent));
+  --color-accent-foreground: hsl(var(--palette-accent-foreground));
+  --color-destructive: hsl(var(--palette-destructive));
+  --color-destructive-foreground: hsl(var(--palette-destructive-foreground));
   /* next/font/google em layout.tsx: Inter, Roboto, Roboto_Mono — self-hosted, sem Google CDN */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-roboto-mono), ui-monospace, SFMono-Regular, monospace;

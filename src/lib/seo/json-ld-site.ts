@@ -1,15 +1,17 @@
-import type { AppLocale } from "@/constants/i18n";
 import { getOrganizationName, getSearchPath, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
-import { schemaLanguage } from "@/lib/seo/locale-tags";
+import { schemaLanguages } from "@/lib/seo/locale-tags";
 
 /**
  * Organization + WebSite (SearchAction) para layout — crawlers e motores de resposta (AEO).
+ * `inLanguage` / `availableLanguage` listam todos os locales da app; o `WebPage` de cada rota
+ * continua a declarar o idioma da renderização.
  */
-export function buildSiteJsonLdGraph(locale: AppLocale): Record<string, unknown>[] {
+export function buildSiteJsonLdGraph(): Record<string, unknown>[] {
   const base = getSiteBaseUrl();
   const name = getOrganizationName();
   const siteLabel = getSiteName();
   const searchUrl = new URL(getSearchPath(), `${base}/`).toString();
+  const languages = schemaLanguages();
 
   const organization: Record<string, unknown> = {
     "@type": "Organization",
@@ -39,7 +41,8 @@ export function buildSiteJsonLdGraph(locale: AppLocale): Record<string, unknown>
     "@id": `${base}/#website`,
     url: base,
     name: siteLabel,
-    inLanguage: schemaLanguage(locale),
+    inLanguage: languages,
+    availableLanguage: languages,
     publisher: { "@id": `${base}/#organization` },
     potentialAction: {
       "@type": "SearchAction",

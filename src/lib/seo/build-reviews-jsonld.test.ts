@@ -14,6 +14,7 @@ describe("buildReviewsSectionJsonLd", () => {
 
     expect(graph).toMatchObject({
       "@type": "Organization",
+      "@id": "http://localhost:3000/#organization",
       name: "next-dato",
       url: "http://localhost:3000",
       aggregateRating: {
@@ -26,5 +27,8 @@ describe("buildReviewsSectionJsonLd", () => {
     });
     expect(Array.isArray(graph?.review)).toBe(true);
     expect((graph?.review as unknown[]).length).toBe(2);
+    expect((graph?.review as { itemReviewed: { "@id": string } }[])[0]?.itemReviewed).toEqual({
+      "@id": "http://localhost:3000/#organization",
+    });
   });
 });
