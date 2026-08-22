@@ -14,7 +14,14 @@ type JsonLdScriptSyncProps = JsonLdProps & {
  * Variante síncrona — usar quando o nonce já foi resolvido no componente pai async.
  */
 export function JsonLdScriptSync({ graph, nonce }: JsonLdScriptSyncProps) {
-  const payload = Array.isArray(graph) ? graph : [graph];
+  const payload = (Array.isArray(graph) ? graph : [graph]).map((node) => {
+    if (node && typeof node === "object" && "@context" in node) {
+      const rest = { ...node };
+      delete rest["@context"];
+      return rest;
+    }
+    return node;
+  });
 
   return (
     <script

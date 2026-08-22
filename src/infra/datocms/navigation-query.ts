@@ -49,6 +49,7 @@ const FILE_FIELD = `
   alt
   width
   height
+  blurUpThumb
 `;
 
 /**

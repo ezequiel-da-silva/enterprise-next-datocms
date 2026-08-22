@@ -18,6 +18,12 @@ type DatoResponsivePictureProps = {
   decoding?: "async" | "auto" | "sync";
 };
 
+function blurPlaceholder(file: FileFieldLike): { placeholder: "blur"; blurDataURL: string } | Record<string, never> {
+  const dataUrl = file?.blurUpThumb?.trim();
+  if (!dataUrl) return {};
+  return { placeholder: "blur", blurDataURL: dataUrl };
+}
+
 /**
  * `asset` (mobile) + `assetDesktop` (≥md) sem `style` inline (compatível com CSP estrita).
  */
@@ -46,6 +52,7 @@ export function DatoResponsivePicture({
   const desktopUrl = desktop?.url;
   const desktopW = Math.min(desktop?.width ?? 1280, 1280);
   const resolvedDecoding = decoding ?? (priority ? "auto" : "async");
+  const blur = blurPlaceholder(mobile);
 
   if (desktopUrl) {
     const desktopWidths = [
@@ -71,6 +78,7 @@ export function DatoResponsivePicture({
           fetchPriority={priority ? "high" : undefined}
           decoding={resolvedDecoding}
           className={className}
+          {...blur}
         />
       </picture>
     );
@@ -89,6 +97,7 @@ export function DatoResponsivePicture({
       fetchPriority={priority ? "high" : undefined}
       decoding={resolvedDecoding}
       className={className}
+      {...blur}
     />
   );
 }

@@ -12,6 +12,7 @@ describe("buildReviewsSectionJsonLd", () => {
       { id: "r2", authorName: "Bob", rating: 3, comment: "Bom, mas pode melhorar." },
     ]);
 
+    expect(graph).not.toHaveProperty("@context");
     expect(graph).toMatchObject({
       "@type": "Organization",
       "@id": "http://localhost:3000/#organization",

@@ -7,7 +7,7 @@ import {
 } from "@/lib/seo/breadcrumb-labels";
 import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { schemaLanguage } from "@/lib/seo/locale-tags";
-import { getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
+import { getOrganizationId, getSiteBaseUrl } from "@/lib/seo/site-config";
 
 export function buildBlogPostJsonLdGraph(
   locale: AppLocale,
@@ -31,11 +31,10 @@ export function buildBlogPostJsonLdGraph(
       }
     : undefined;
 
-  const publisherName = getOrganizationName();
-
   const blogPosting: Record<string, unknown> = {
     "@type": "BlogPosting",
     "@id": `${url}#article`,
+    url,
     headline: post.postTitle,
     datePublished: post._firstPublishedAt,
     dateModified: post._updatedAt || post._firstPublishedAt,
@@ -50,11 +49,7 @@ export function buildBlogPostJsonLdGraph(
     ...(imageUrl ? { image: [imageUrl] } : {}),
     ...(author ? { author } : {}),
     ...(primaryCategory ? { articleSection: primaryCategory } : {}),
-    publisher: {
-      "@type": "Organization",
-      name: publisherName,
-      url: base,
-    },
+    publisher: { "@id": getOrganizationId() },
   };
 
   const crumbs = buildLocaleBreadcrumbTrail(

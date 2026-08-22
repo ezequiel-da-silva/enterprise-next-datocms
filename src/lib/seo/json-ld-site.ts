@@ -1,4 +1,5 @@
-import { getOrganizationName, getSearchPath, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
+import { getSearchPath, getSiteBaseUrl } from "@/lib/seo/site-config";
+import type { SiteIdentity } from "@/lib/seo/site-identity";
 import { schemaLanguages } from "@/lib/seo/locale-tags";
 
 /**
@@ -6,41 +7,31 @@ import { schemaLanguages } from "@/lib/seo/locale-tags";
  * `inLanguage` / `availableLanguage` listam todos os locales da app; o `WebPage` de cada rota
  * continua a declarar o idioma da renderização.
  */
-export function buildSiteJsonLdGraph(): Record<string, unknown>[] {
+export function buildSiteJsonLdGraph(identity: SiteIdentity): Record<string, unknown>[] {
   const base = getSiteBaseUrl();
-  const name = getOrganizationName();
-  const siteLabel = getSiteName();
   const searchUrl = new URL(getSearchPath(), `${base}/`).toString();
   const languages = schemaLanguages();
 
   const organization: Record<string, unknown> = {
     "@type": "Organization",
     "@id": `${base}/#organization`,
-    name,
+    name: identity.organizationName,
     url: base,
   };
 
-  const logoUrl = process.env.NEXT_PUBLIC_ORGANIZATION_LOGO_URL?.trim();
-  if (logoUrl) {
-    organization.logo = { "@type": "ImageObject", url: logoUrl };
+  if (identity.logoUrl) {
+    organization.logo = { "@type": "ImageObject", url: identity.logoUrl };
   }
 
-  const sameAsRaw = process.env.NEXT_PUBLIC_ORGANIZATION_SAME_AS?.trim();
-  if (sameAsRaw) {
-    const sameAs = sameAsRaw
-      .split(",")
-      .map((u) => u.trim())
-      .filter(Boolean);
-    if (sameAs.length > 0) {
-      organization.sameAs = sameAs;
-    }
+  if (identity.sameAs.length > 0) {
+    organization.sameAs = identity.sameAs;
   }
 
   const website: Record<string, unknown> = {
     "@type": "WebSite",
     "@id": `${base}/#website`,
     url: base,
-    name: siteLabel,
+    name: identity.siteName,
     inLanguage: languages,
     availableLanguage: languages,
     publisher: { "@id": `${base}/#organization` },

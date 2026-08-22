@@ -6,9 +6,10 @@ import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { getPostBySlug } from "@/infra/datocms/get-blog";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsBlogPosts } from "@/infra/datocms/static-params";
 import { buildBlogPostJsonLdGraph } from "@/lib/seo/build-blog-post-jsonld";
-import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import {
   blogBreadcrumbLabel,
@@ -16,6 +17,7 @@ import {
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
@@ -38,19 +40,24 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const result = await getPostBySlug(toDatoSiteLocale(locale), postSlug, isEnabled);
+  const [result, seoResult] = await Promise.all([
+    getPostBySlug(toDatoSiteLocale(locale), postSlug, isEnabled),
+    getSiteSeo(locale, isEnabled),
+  ]);
 
   if ("errors" in result || !result.data.post) {
     return buildUnavailableMetadata("Artigo");
   }
 
   const { post, _site } = result.data;
+  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   return buildDatoPageMetadata({
     path: `/${locale}/blog/${postSlug}`,
     seoMetaTags: post._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: post.seoSettingsSocial,
     fallbackTitle: post.postTitle,
+    fallbackOgImage: cmsContentOgImage({ cover: post.coverImage }) ?? siteOg,
     hreflangPaths: buildHreflangPathsFromSlugLocales(post.slugLocales, (l, s) => `/${l}/blog/${s}`),
   });
 }
@@ -140,7 +147,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             desktop={coverDesktop}
             className="h-auto w-full object-cover"
             sizes="(max-width: 768px) 100vw, 720px"
-            priority
             fallbackAlt={post.postTitle}
           />
         </figure>

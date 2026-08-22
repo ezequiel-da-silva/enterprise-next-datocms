@@ -13,6 +13,7 @@ export type FileFieldLike = {
   title?: string | null;
   width?: number | null;
   height?: number | null;
+  blurUpThumb?: string | null;
 } | null;
 
 export type SeoSettingsSocial = PageQueryData["seoSettingsSocial"];

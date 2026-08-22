@@ -173,12 +173,14 @@ const IMAGE_BLOCK_RESPONSIVE = `
     alt
     width
     height
+    blurUpThumb
   }
   assetDesktop {
     url
     alt
     width
     height
+    blurUpThumb
   }
 `;
 
@@ -198,6 +200,7 @@ const ST_BLOCKS_MEDIA_ONLY = `
       alt
       width
       height
+      blurUpThumb
     }
   }
   ... on VideoBlockRecord {
@@ -354,6 +357,7 @@ const REVIEWS_SECTION_BLOCK = `
         alt
         width
         height
+        blurUpThumb
       }
     }
   }
@@ -668,6 +672,7 @@ export const GET_CATEGORY_BY_SLUG = /* GraphQL */ `
         alt
         width
         height
+        blurUpThumb
       }
       seoSettingsSocial {
         ${SEO_SETTINGS_SOCIAL}
@@ -698,6 +703,32 @@ export const GET_POSTS_BY_CATEGORY = /* GraphQL */ `
       first: 100
     ) {
       ${POST_CARD_FIELDS}
+    }
+  }
+`;
+
+/**
+ * Preferências de SEO do projecto (`_site.globalSeo`).
+ */
+export const GET_SITE_SEO = /* GraphQL */ `
+  query GetSiteSeo($locale: SiteLocale!) {
+    _site {
+      globalSeo(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+        siteName
+        titleSuffix
+        facebookPageUrl
+        twitterAccount
+        fallbackSeo {
+          title
+          description
+          image {
+            url
+            alt
+            width
+            height
+          }
+        }
+      }
     }
   }
 `;

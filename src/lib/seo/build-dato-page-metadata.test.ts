@@ -115,4 +115,34 @@ describe("buildDatoPageMetadata title resolution", () => {
     expect(meta.openGraph?.locale).toBe("en_US");
     expect(meta.openGraph?.alternateLocale).toEqual(["pt_BR"]);
   });
+
+  it("sets openGraph.url from the canonical path", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+    });
+
+    expect(meta.openGraph?.url).toBe("http://localhost:3000/en/page-two");
+  });
+
+  it("falls back to content or default OG image when SEO image is empty", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/en/page-two",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+      fallbackTitle: "Record title",
+      fallbackOgImage: "https://www.datocms-assets.com/hero.jpg",
+    });
+
+    expect(meta.openGraph?.images).toEqual([
+      { url: "https://www.datocms-assets.com/hero.jpg", alt: "Record title" },
+    ]);
+    expect(meta.twitter).toMatchObject({
+      card: "summary_large_image",
+      images: ["https://www.datocms-assets.com/hero.jpg"],
+    });
+  });
 });

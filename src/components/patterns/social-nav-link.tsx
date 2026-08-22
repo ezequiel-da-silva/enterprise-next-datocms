@@ -1,4 +1,5 @@
 import type { SocialLinkNav } from "@/infra/datocms/types-navigation";
+import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -75,7 +76,7 @@ function platformGlyph(plataforma: string): { label: string; svg: ReactNode } {
 export function SocialNavLink({ link }: { link: SocialLinkNav }) {
   const img = link.image;
   const url = link.url?.trim() ?? "";
-  if (!url) return null;
+  if (!url || !isSafeExternalHref(url)) return null;
   const className =
     "touch-target rounded-full border border-border bg-muted/60 text-foreground transition hover:border-primary/40 hover:bg-muted";
 

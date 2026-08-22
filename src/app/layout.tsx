@@ -8,16 +8,18 @@ import { buildThemeBootScript } from "@/lib/theme-boot-script";
 import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, appLocaleFromParam } from "@/constants/i18n";
 import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { cn } from "@/lib/cn";
 import { resolveLocaleSwitcherHrefs } from "@/lib/i18n/resolve-locale-switcher-hrefs";
 import { getNonce } from "@/lib/nonce";
 import { buildMetadata } from "@/lib/seo";
 import { schemaLanguage } from "@/lib/seo/locale-tags";
-import { getSiteName } from "@/lib/seo/site-config";
 import { buildSiteJsonLdGraph } from "@/lib/seo/json-ld-site";
+import { buildSiteIdentity, siteDefaultDocumentTitle } from "@/lib/seo/site-identity";
 import type { Metadata, Viewport } from "next";
 import { cookies, draftMode, headers } from "next/headers";
 import { Inter, Roboto_Mono } from "next/font/google";
+import { cache } from "react";
 import "./globals.css";
 
 const inter = Inter({
@@ -38,21 +40,43 @@ const robotoMono = Roboto_Mono({
 
 const fontVariables = `${inter.variable} ${robotoMono.variable}`;
 
-const siteDescription =
-  process.env.NEXT_PUBLIC_SITE_DESCRIPTION?.trim() ||
-  "Next.js 16, Clean Architecture, DatoCMS, Tailwind v4, CSP com nonce e streaming.";
+const loadLayoutChrome = cache(async () => {
+  const headerStore = await headers();
+  const localeHeader = headerStore.get(REQUEST_LOCALE_HEADER);
+  const appLocale = appLocaleFromParam(localeHeader ?? "") ?? DEFAULT_APP_LOCALE;
+  const { isEnabled } = await draftMode();
+  const pathname = headerStore.get(REQUEST_PATHNAME_HEADER) ?? `/${appLocale}`;
+  const [navigationResult, seoResult, localeHrefs] = await Promise.all([
+    getNavigation(appLocale, isEnabled),
+    getSiteSeo(appLocale, isEnabled),
+    resolveLocaleSwitcherHrefs(pathname, appLocale, isEnabled),
+  ]);
+  const navigation = pickNavigationData(navigationResult);
+  const identity = buildSiteIdentity({
+    seo: pickSiteSeo(seoResult),
+    logoUrl: navigation?.logo?.url,
+    socialLinks: navigation?.socialLinks,
+  });
+  return { appLocale, navigation, localeHrefs, identity };
+});
 
-export const metadata: Metadata = {
-  ...buildMetadata({
-    title: "Boilerplate Elite 2026",
-    description: siteDescription,
-    path: "/",
-  }),
-  title: {
-    default: `Boilerplate Elite 2026 · ${getSiteName()}`,
-    template: `%s · ${getSiteName()}`,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { appLocale, identity } = await loadLayoutChrome();
+  const title = identity.fallbackTitle;
+  return {
+    ...buildMetadata({
+      title,
+      description: identity.description,
+      path: "/",
+      openGraphImage: identity.fallbackOgImage,
+      locale: appLocale,
+    }),
+    title: {
+      default: siteDefaultDocumentTitle(identity),
+      template: `%s · ${identity.siteName}`,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -69,16 +93,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const nonce = await getNonce();
-  const headerStore = await headers();
-  const localeHeader = headerStore.get(REQUEST_LOCALE_HEADER);
-  const appLocale = appLocaleFromParam(localeHeader ?? "") ?? DEFAULT_APP_LOCALE;
-  const { isEnabled } = await draftMode();
-  const pathname = headerStore.get(REQUEST_PATHNAME_HEADER) ?? `/${appLocale}`;
-  const [navigationResult, localeHrefs] = await Promise.all([
-    getNavigation(appLocale, isEnabled),
-    resolveLocaleSwitcherHrefs(pathname, appLocale, isEnabled),
-  ]);
-  const navigation = pickNavigationData(navigationResult);
+  const { appLocale, navigation, localeHrefs, identity } = await loadLayoutChrome();
 
   const cookieStore = await cookies();
   const themeCookie = cookieStore.get(THEME_COOKIE_NAME)?.value;
@@ -86,7 +101,7 @@ export default async function RootLayout({
   const serverDark = initialThemeMode === "dark";
   const themeCss = buildThemeCssVariables();
 
-  const siteJsonLd = buildSiteJsonLdGraph();
+  const siteJsonLd = buildSiteJsonLdGraph(identity);
 
   return (
     <html

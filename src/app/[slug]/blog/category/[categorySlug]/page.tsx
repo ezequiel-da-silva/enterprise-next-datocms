@@ -5,6 +5,7 @@ import { StructuredTextRenderer } from "@/components/patterns/structured-text-re
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { getCategoryBySlug, getPostsByCategory } from "@/infra/datocms/get-blog";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsCategories } from "@/infra/datocms/static-params";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
@@ -15,6 +16,7 @@ import {
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -36,19 +38,24 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const result = await getCategoryBySlug(toDatoSiteLocale(locale), categorySlug, isEnabled);
+  const [result, seoResult] = await Promise.all([
+    getCategoryBySlug(toDatoSiteLocale(locale), categorySlug, isEnabled),
+    getSiteSeo(locale, isEnabled),
+  ]);
 
   if ("errors" in result || !result.data.category) {
     return buildUnavailableMetadata("Categoria");
   }
 
   const { category, _site } = result.data;
+  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   return buildDatoPageMetadata({
     path: `/${locale}/blog/category/${categorySlug}`,
     seoMetaTags: category._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: category.seoSettingsSocial,
     fallbackTitle: category.categoryName,
+    fallbackOgImage: siteOg,
     hreflangPaths: buildHreflangPathsFromSlugLocales(category.slugLocales, (l, s) => `/${l}/blog/category/${s}`),
   });
 }

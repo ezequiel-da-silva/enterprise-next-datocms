@@ -1,10 +1,26 @@
-import { getSiteBaseUrl } from "@/lib/seo/site-config";
+import { getDefaultOpenGraphImage, getSiteBaseUrl } from "@/lib/seo/site-config";
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
 import { appLocaleFromPath, openGraphAlternateLocales, openGraphLocale } from "@/lib/seo/locale-tags";
 import type { Metadata } from "next";
 import { toNextMetadata, type TitleMetaLinkTag } from "react-datocms/seo";
 import type { SeoSettingsSocial } from "@/infra/datocms/types-page";
+
+/** Hero / cover quando o campo SEO de imagem está vazio. */
+export function cmsContentOgImage(input: {
+  hero?: {
+    imageHero?: { asset?: { url?: string | null } | null } | null;
+    imageOverlay?: { asset?: { url?: string | null } | null } | null;
+  } | null;
+  cover?: { asset?: { url?: string | null } | null } | null;
+}): string | undefined {
+  return (
+    input.hero?.imageHero?.asset?.url?.trim() ||
+    input.hero?.imageOverlay?.asset?.url?.trim() ||
+    input.cover?.asset?.url?.trim() ||
+    undefined
+  );
+}
 
 type BuildArgs = {
   path: string;
@@ -18,6 +34,8 @@ type BuildArgs = {
    * sem isto o Dato devolve o fallback global e todas as páginas ficam com o mesmo `<title>`.
    */
   fallbackTitle?: string | null;
+  /** Hero, cover ou outro asset quando `seoSettingsSocial.image` está vazio. */
+  fallbackOgImage?: string | null;
 };
 
 /**
@@ -31,6 +49,7 @@ export function buildDatoPageMetadata({
   seoSettingsSocial,
   hreflangPaths,
   fallbackTitle,
+  fallbackOgImage,
 }: BuildArgs): Metadata {
   const baseUrl = getSiteBaseUrl();
   const canonicalPath = path.startsWith("/") ? path : `/${path}`;
@@ -48,6 +67,7 @@ export function buildDatoPageMetadata({
 
   const openGraph: NonNullable<Metadata["openGraph"]> = {
     ...fromTags.openGraph,
+    url: canonical,
     locale: openGraphLocale(pageLocale),
     ...(alternateLocale ? { alternateLocale } : {}),
   };
@@ -79,6 +99,12 @@ export function buildDatoPageMetadata({
       },
     ];
     hasOpenGraph = true;
+  } else {
+    const fallback = fallbackOgImage?.trim() || getDefaultOpenGraphImage();
+    if (fallback) {
+      openGraph.images = [{ url: fallback, alt: resolvedTitle || undefined }];
+      hasOpenGraph = true;
+    }
   }
 
   if (hasOpenGraph) {
@@ -86,7 +112,10 @@ export function buildDatoPageMetadata({
   }
 
   const twitterDescription = s?.description ? { description: s.description } : {};
-  const twitterImages = s?.image?.url ? { images: [s.image.url] } : {};
+  const resolvedOgUrl =
+    s?.image?.url || fallbackOgImage?.trim() || getDefaultOpenGraphImage() || undefined;
+  const twitterImages = resolvedOgUrl ? { images: [resolvedOgUrl] } : {};
+  const inferredCard = resolvedOgUrl ? ("summary_large_image" as const) : ("summary" as const);
   /* `card` discrimina a união Twitter do Next — precisa de ser um literal na criação do objeto. */
   if (twitterCard) {
     fromField.twitter = {
@@ -96,12 +125,13 @@ export function buildDatoPageMetadata({
       ...twitterImages,
       card: twitterCard,
     };
-  } else if (resolvedTitle || s?.description || s?.image?.url) {
+  } else if (resolvedTitle || s?.description || resolvedOgUrl) {
     fromField.twitter = {
       ...twitterBase,
       ...twitterTitle,
       ...twitterDescription,
       ...twitterImages,
+      card: inferredCard,
     };
   }
 

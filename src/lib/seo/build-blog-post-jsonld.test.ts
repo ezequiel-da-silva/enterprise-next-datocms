@@ -31,6 +31,8 @@ describe("buildBlogPostJsonLdGraph", () => {
 
     expect(graph).toHaveLength(2);
     expect(graph[0]["@type"]).toBe("BlogPosting");
+    expect(graph[0].url).toBe("https://example.com/en/blog/my-post");
+    expect(graph[0].publisher).toEqual({ "@id": "https://example.com/#organization" });
     expect(graph[0].headline).toBe("My Post");
     expect(graph[0].datePublished).toBe("2024-01-01T00:00:00Z");
     expect(graph[0].dateModified).toBe("2024-06-15T12:00:00Z");

@@ -37,7 +37,8 @@ function LogoCell({ item, grayscale, className, decorative = false }: LogoCellPr
   const mobile = logoMobile(item);
   if (!mobile?.url) return null;
 
-  const alt = mobile.alt?.trim() || "Logo do parceiro";
+  const alt = mobile.alt?.trim() || undefined;
+  const missingAlt = !alt;
 
   return (
     <figure
@@ -56,7 +57,7 @@ function LogoCell({ item, grayscale, className, decorative = false }: LogoCellPr
         className="max-h-14 w-full max-w-full object-contain object-center sm:max-h-16"
         sizes="200px"
         fallbackAlt={alt}
-        decorative={decorative}
+        decorative={decorative || missingAlt}
         decoding="async"
       />
     </figure>

@@ -1,7 +1,7 @@
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
 import { appLocaleFromPath, openGraphAlternateLocales, openGraphLocale } from "@/lib/seo/locale-tags";
-import { getOrganizationName, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
+import { getDefaultOpenGraphImage, getOrganizationName, getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
 import type { Metadata } from "next";
 
 export type SeoInput = {
@@ -39,7 +39,8 @@ export function buildMetadata(input: SeoInput): Metadata {
   const title = input.absoluteTitle ? { absolute: input.title } : input.title;
   const locale = input.locale ?? appLocaleFromPath(input.path);
 
-  const ogImages = input.openGraphImage ? [{ url: input.openGraphImage, alt: input.title }] : undefined;
+  const ogImage = input.openGraphImage?.trim() || getDefaultOpenGraphImage();
+  const ogImages = ogImage ? [{ url: ogImage, alt: input.title }] : undefined;
 
   const hreflang = input.hreflangPaths ? buildHreflangAlternates(input.hreflangPaths) : undefined;
   const alternateLocale = openGraphAlternateLocales(locale, input.hreflangPaths);
@@ -69,10 +70,10 @@ export function buildMetadata(input: SeoInput): Metadata {
       images: ogImages,
     },
     twitter: {
-      card: "summary_large_image",
+      card: ogImage ? "summary_large_image" : "summary",
       title: input.title,
       description: input.description,
-      images: input.openGraphImage ? [input.openGraphImage] : undefined,
+      images: ogImage ? [ogImage] : undefined,
     },
     alternates: input.omitCanonical
       ? hreflang
