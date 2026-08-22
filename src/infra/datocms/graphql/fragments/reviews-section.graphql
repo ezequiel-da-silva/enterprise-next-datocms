@@ -21,6 +21,7 @@ fragment ReviewsSectionBlockFragment on ReviewsSectionRecord {
       alt
       width
       height
+      blurUpThumb
     }
   }
 }

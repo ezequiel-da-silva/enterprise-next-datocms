@@ -23,7 +23,7 @@ Complements [`react-rsc.mdc`](react-rsc.mdc) and [`datocms-blocks.mdc`](datocms-
 | `get-page` | `datocms:page`, `page:${locale}:${slug}` |
 | `get-blog` | `datocms:blog`, `datocms:posts`, `post:…` |
 | `get-navigation` | `NAV_TAG`, `navigation:${locale}` |
-| `get-global-settings` | `GLOBAL_SETTINGS_TAG`, `global-settings:${locale}` |
+| `get-site-seo` | `datocms:site-seo`, `site-seo:${locale}` |
 | sitemap / search / home | existing `SITEMAP_TAG` / `SEARCH_TAG` / `datocms:site` |
 
 A DatoCMS webhook should call `revalidateTag` for those same strings (no route in this repo yet). Do not invent tags that fetches never set. Time-based `revalidate` remains the fallback.

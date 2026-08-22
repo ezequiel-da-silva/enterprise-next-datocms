@@ -1,5 +1,10 @@
 # Release Please: Conventional Commits on `main` → CHANGELOG + version bump PR → tag `vX.Y.Z`.
-# GITHUB_TOKEN PRs may not trigger other workflows until a human merge; CI still runs on that PR if opened from a fork-less default branch push after merge.
+# Uses the automatic GITHUB_TOKEN — no extra secret/env var.
+# Required in the GitHub UI (otherwise: "not permitted to create or approve pull requests"):
+#   Settings → Actions → General → Workflow permissions
+#   - "Read and write permissions"
+#   - Enable "Allow GitHub Actions to create and approve pull requests"
+# GITHUB_TOKEN PRs may not trigger other workflows until a human merge.
 name: Release
 
 on:

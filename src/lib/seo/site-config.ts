@@ -12,6 +12,22 @@ export function getOrganizationName(): string {
   return process.env.NEXT_PUBLIC_ORGANIZATION_NAME?.trim() || getSiteName();
 }
 
+/** `@id` do nó Organization no JSON-LD global (`buildSiteJsonLdGraph`). */
+export function getOrganizationId(): string {
+  return `${getSiteBaseUrl()}/#organization`;
+}
+
+/**
+ * Imagem OG por omissão (1200×630). Usada quando o campo SEO / hero / cover está vazio.
+ * Preferir `NEXT_PUBLIC_DEFAULT_OG_IMAGE`; senão o logo da organização.
+ */
+export function getDefaultOpenGraphImage(): string | undefined {
+  const dedicated = process.env.NEXT_PUBLIC_DEFAULT_OG_IMAGE?.trim();
+  if (dedicated) return dedicated;
+  const logo = process.env.NEXT_PUBLIC_ORGANIZATION_LOGO_URL?.trim();
+  return logo || undefined;
+}
+
 /** Caminho da busca interna (SearchAction / AEO). */
 export function getSearchPath(): string {
   return "/busca";

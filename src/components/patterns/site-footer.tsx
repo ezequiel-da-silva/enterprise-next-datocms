@@ -4,6 +4,7 @@ import { structuredTextDatoNodeRules } from "@/components/patterns/structured-te
 import type { NavigationData, NavItemRecord } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
+import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import Image from "next/image";
@@ -12,6 +13,9 @@ import { StructuredText } from "react-datocms/structured-text";
 
 function FooterLink({ item, locale }: { item: NavItemRecord; locale: AppLocale }) {
   const hrefRaw = item.navItemLink.trim();
+  if (isExternalHref(hrefRaw) && !isSafeExternalHref(hrefRaw)) {
+    return null;
+  }
   const href = isExternalHref(hrefRaw) ? hrefRaw : localizeInternalHref(hrefRaw, locale);
   const aria = navLinkAriaProps(locale, item.navItemLabel, {
     customAria: item.navItemLinkAria,

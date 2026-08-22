@@ -59,8 +59,7 @@ export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: Gl
               width={logo.width ?? 160}
               height={logo.height ?? 40}
               sizes="160px"
-              priority
-              fetchPriority="high"
+              loading="eager"
               className="h-9 w-auto max-w-[10rem] object-contain object-left"
             />
           ) : (

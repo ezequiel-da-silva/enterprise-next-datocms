@@ -48,7 +48,7 @@ export async function CmsPageArticle({
   return (
     <>
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
-      <Container as="article" size={wideLayout ? "md" : "sm"} name="CmsPageArticle" className="py-12">
+      <Container as="article" size={wideLayout ? "md" : "sm"} name="CmsPageArticle" className={page.heroPage ? (isHome ? "pb-12 pt-0" : "pb-12 pt-6") : "py-12"}>
         {isHome ? null : <BreadcrumbNav locale={locale} items={breadcrumbItems} />}
         <div className={isHome ? undefined : "mt-4"}>
           {page.heroPage ? <HeroSectionBlock record={page.heroPage} locale={locale} /> : null}

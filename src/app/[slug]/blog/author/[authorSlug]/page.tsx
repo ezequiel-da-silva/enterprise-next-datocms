@@ -6,6 +6,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { getAuthorBySlug, getPostsByAuthor } from "@/infra/datocms/get-blog";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsAuthors } from "@/infra/datocms/static-params";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
@@ -18,6 +19,7 @@ import {
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -38,19 +40,24 @@ export async function generateMetadata({ params }: AuthorPageProps): Promise<Met
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const result = await getAuthorBySlug(toDatoSiteLocale(locale), authorSlug, isEnabled);
+  const [result, seoResult] = await Promise.all([
+    getAuthorBySlug(toDatoSiteLocale(locale), authorSlug, isEnabled),
+    getSiteSeo(locale, isEnabled),
+  ]);
 
   if ("errors" in result || !result.data.author) {
     return buildUnavailableMetadata("Autor");
   }
 
   const { author, _site } = result.data;
+  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   return buildDatoPageMetadata({
     path: `/${locale}/blog/author/${authorSlug}`,
     seoMetaTags: author._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: author.seoSettingsSocial,
     fallbackTitle: author.authorName,
+    fallbackOgImage: siteOg,
     hreflangPaths: buildHreflangPathsFromSlugLocales(author.slugLocales, (l, s) => `/${l}/blog/author/${s}`),
   });
 }

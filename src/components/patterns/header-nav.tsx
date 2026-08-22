@@ -3,6 +3,7 @@
 import type { NavItemRecord } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
+import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
 import { homeBreadcrumbLabel, homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import { cn } from "@/lib/cn";
@@ -10,10 +11,12 @@ import Link from "next/link";
 import { createPortal } from "react-dom";
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
 
-function resolveHref(raw: string, locale: AppLocale): string {
+function resolveHref(raw: string, locale: AppLocale): string | null {
   const t = raw.trim();
   if (!t) return "/";
-  if (isExternalHref(t)) return t;
+  if (isExternalHref(t)) {
+    return isSafeExternalHref(t) ? t : null;
+  }
   return localizeInternalHref(t, locale);
 }
 
@@ -27,6 +30,7 @@ function NavLink({
   className?: string;
 }) {
   const href = resolveHref(item.navItemLink, locale);
+  if (!href) return null;
   const external = isExternalHref(href);
   const label = item.navItemLabel;
   const aria = navLinkAriaProps(locale, label, {

@@ -2,10 +2,12 @@ import { CmsPageArticle } from "@/components/patterns/cms-page-article";
 import { submitUserReview } from "@/app/actions/submit-user-review";
 import { isAppLocale, type AppLocale } from "@/constants/i18n";
 import { getPageBySlug } from "@/infra/datocms/get-page";
-import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
+import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { getStaticParamsLocaleCmsPages } from "@/infra/datocms/static-params";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -26,19 +28,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const result = await getPageBySlug(pageSlug, isEnabled, locale);
+  const [result, seoResult] = await Promise.all([
+    getPageBySlug(pageSlug, isEnabled, locale),
+    getSiteSeo(locale, isEnabled),
+  ]);
 
   if ("errors" in result || !result.data.page) {
     return buildUnavailableMetadata("Página");
   }
 
   const { page, _site } = result.data;
+  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   return buildDatoPageMetadata({
     path: cmsPageCanonicalPath(pageSlug, locale),
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: page.seoSettingsSocial,
     fallbackTitle: page.title,
+    fallbackOgImage: cmsContentOgImage({ hero: page.heroPage }) ?? siteOg,
     hreflangPaths: buildHreflangPathsFromSlugLocales(page.slugLocales, (l, s) =>
       cmsPageCanonicalPath(s, l),
     ),

@@ -9,11 +9,13 @@ import {
   type AppLocale,
 } from "@/constants/i18n";
 import { getPageBySlug } from "@/infra/datocms/get-page";
-import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
+import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { getStaticParamsPages } from "@/infra/datocms/static-params";
+import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { draftMode, headers } from "next/headers";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -37,19 +39,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cmsLocale: AppLocale = isAppLocale(slug) ? slug : headerLocale;
   const pageSlug = isAppLocale(slug) ? "home" : slug;
 
-  const result = await getPageBySlug(pageSlug, isEnabled, cmsLocale);
+  const [result, seoResult] = await Promise.all([
+    getPageBySlug(pageSlug, isEnabled, cmsLocale),
+    getSiteSeo(cmsLocale, isEnabled),
+  ]);
 
   if ("errors" in result || !result.data.page) {
     return buildUnavailableMetadata("Página");
   }
 
   const { page, _site } = result.data;
+  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   return buildDatoPageMetadata({
     path: cmsPageCanonicalPath(pageSlug, cmsLocale),
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: page.seoSettingsSocial,
     fallbackTitle: page.title,
+    fallbackOgImage: cmsContentOgImage({ hero: page.heroPage }) ?? siteOg,
     hreflangPaths: buildHreflangPathsFromSlugLocales(page.slugLocales, (l, s) =>
       cmsPageCanonicalPath(s, l),
     ),

@@ -20,12 +20,14 @@ fragment LogoGridBlockFragment on LogoGridRecord {
         alt
         width
         height
+        blurUpThumb
       }
       assetDesktop {
         url
         alt
         width
         height
+        blurUpThumb
       }
     }
   }

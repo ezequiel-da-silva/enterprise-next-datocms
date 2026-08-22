@@ -4,6 +4,7 @@ import { JsonLdScript } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
 import { APP_LOCALES, isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { getAllPosts } from "@/infra/datocms/get-blog";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
@@ -11,6 +12,7 @@ import { blogBreadcrumbLabel, crumbsToNavItems, homeBreadcrumbLabel } from "@/li
 import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { openGraphLocale } from "@/lib/seo/locale-tags";
 import { buildMetadata } from "@/lib/seo";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -36,7 +38,10 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
   }
   const locale = slug;
   const { isEnabled } = await draftMode();
-  const result = await getAllPosts(toDatoSiteLocale(locale), isEnabled);
+  const [result, seoResult] = await Promise.all([
+    getAllPosts(toDatoSiteLocale(locale), isEnabled),
+    getSiteSeo(locale, isEnabled),
+  ]);
 
   if ("errors" in result) {
     return buildUnavailableMetadata("Blog");
@@ -45,11 +50,13 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
   const path = `/${locale}/blog`;
   const hreflangPaths = buildLocaleAlternatePaths((l) => `/${l}/blog`);
   const description = BLOG_INDEX_DESCRIPTION[locale];
+  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   const fromDato = buildDatoPageMetadata({
     path,
     seoMetaTags: [],
     faviconMetaTags: result.data._site.faviconMetaTags,
     fallbackTitle: "Blog",
+    fallbackOgImage: siteOg,
     hreflangPaths,
   });
   const base = buildMetadata({
@@ -58,6 +65,7 @@ export async function generateMetadata({ params }: BlogIndexProps): Promise<Meta
     path,
     locale,
     hreflangPaths,
+    openGraphImage: siteOg,
   });
   return {
     ...fromDato,

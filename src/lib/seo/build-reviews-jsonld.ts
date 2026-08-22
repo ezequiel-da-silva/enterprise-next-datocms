@@ -1,4 +1,4 @@
-import { getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
+import { getOrganizationId, getOrganizationName, getSiteBaseUrl } from "@/lib/seo/site-config";
 
 export type ReviewJsonLdItem = {
   id: string;
@@ -20,11 +20,10 @@ export function buildReviewsSectionJsonLd(
 
   const sum = rated.reduce((acc, r) => acc + r.rating, 0);
   const avg = Math.round((sum / rated.length) * 10) / 10;
-  const organizationId = `${getSiteBaseUrl()}/#organization`;
+  const organizationId = getOrganizationId();
   const itemReviewed = { "@id": organizationId };
 
   return {
-    "@context": "https://schema.org",
     "@type": "Organization",
     "@id": organizationId,
     name: getOrganizationName(),

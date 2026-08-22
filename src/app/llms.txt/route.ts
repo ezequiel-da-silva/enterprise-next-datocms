@@ -1,5 +1,8 @@
+import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
 import { getSitemapEntries } from "@/infra/datocms/get-sitemap";
-import { getSiteBaseUrl, getSiteName } from "@/lib/seo/site-config";
+import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
+import { getSiteBaseUrl } from "@/lib/seo/site-config";
+import { buildSiteIdentity } from "@/lib/seo/site-identity";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600;
@@ -9,11 +12,11 @@ export const revalidate = 3600;
  * @see https://llmstxt.org/
  */
 export async function GET() {
-  const site = getSiteName();
+  const seoResult = await getSiteSeo(DEFAULT_APP_LOCALE, false);
+  const identity = buildSiteIdentity({ seo: pickSiteSeo(seoResult) });
+  const site = identity.siteName;
   const base = getSiteBaseUrl();
-  const description =
-    process.env.NEXT_PUBLIC_SITE_DESCRIPTION?.trim() ||
-    `${site} — site Next.js + DatoCMS.`;
+  const description = identity.description;
 
   let entries: Awaited<ReturnType<typeof getSitemapEntries>> = [];
   try {

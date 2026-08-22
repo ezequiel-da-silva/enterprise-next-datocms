@@ -139,7 +139,7 @@ export function StructuredTextBlockView({
             desktop={record.assetDesktop}
             className="h-full w-full max-w-full object-cover"
             sizes="(max-width: 768px) 100vw, 992px"
-            fallbackAlt="Embedded image"
+            decorative={!mobile.alt?.trim()}
           />
         </figure>
       );
@@ -151,6 +151,7 @@ export function StructuredTextBlockView({
         <div {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6 grid gap-3 sm:grid-cols-2">
           {items.map((img, i) => {
             const layout = clampLayoutDimensions(img.width ?? 800, img.height ?? 600);
+            const blurDataURL = img.blurUpThumb?.trim() ?? "";
             return (
               <figure
                 key={`${record.id}-${i}`}
@@ -158,13 +159,16 @@ export function StructuredTextBlockView({
               >
                 <Image
                   src={img.url}
-                  alt={img.alt?.trim() || "Gallery image"}
+                  alt={img.alt?.trim() ?? ""}
                   width={layout.width}
                   height={layout.height}
                   quality={75}
                   loading="lazy"
                   className="h-full w-full object-cover"
                   sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 480px"
+                  {...(blurDataURL
+                    ? { placeholder: "blur" as const, blurDataURL }
+                    : {})}
                 />
               </figure>
             );
