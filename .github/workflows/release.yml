@@ -5,6 +5,7 @@
 #   - "Read and write permissions"
 #   - Enable "Allow GitHub Actions to create and approve pull requests"
 # GITHUB_TOKEN PRs may not trigger other workflows until a human merge.
+# Full repo settings: docs/GITHUB.md
 name: Release
 
 on:

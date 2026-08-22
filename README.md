@@ -26,6 +26,18 @@ Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Cursor rules: `.curs
 
 Quality gate: `npm run check-all` (typecheck, test, lint, build). GraphQL drift: `npm run codegen:check`.
 
+## GitHub
+
+Flow: feature → `develop` → `main` → Release Please PR → tag. Full setup: [docs/GITHUB.md](docs/GITHUB.md). Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md). Secrets: [docs/SECURITY.md](docs/SECURITY.md).
+
+Checklist (repo **Settings**):
+
+- [ ] **Actions → General → Workflow permissions:** Read and write + **Allow GitHub Actions to create and approve pull requests**
+- [ ] **General → Pull Requests:** Automatically delete head branches
+- [ ] **Branches:** protect `main`, `develop`, `qa` — **Allow deletions** off; required checks `quality`, `lighthouse (desktop)`, `lighthouse (mobile)`, `security`, `smoke`
+- [ ] **Do not allow bypassing** on `main` (recommended on `develop` if the team is more than one person)
+- [ ] **Secrets and variables → Actions:** DatoCMS tokens for CI builds (see [docs/SECURITY.md](docs/SECURITY.md))
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Segurança
