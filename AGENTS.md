@@ -46,6 +46,8 @@ Copy [`.env.example`](.env.example) to `.env` for CMS and codegen.
 - [`security.mdc`](.cursor/rules/security.mdc) — CSP, secrets, draft mode
 - [`architecture.mdc`](.cursor/rules/architecture.mdc) — layers, naming, imports
 - [`datocms-blocks.mdc`](.cursor/rules/datocms-blocks.mdc) — CMS blocks + GraphQL
+- [`datocms-next.mdc`](.cursor/rules/datocms-next.mdc) — RSC fetch, cache tags, codegen, images
+- [`git-conventions.mdc`](.cursor/rules/git-conventions.mdc) — Conventional Commits + PR titles
 - [`react-rsc.mdc`](.cursor/rules/react-rsc.mdc) — RSC, error boundaries
 - [`testing.mdc`](.cursor/rules/testing.mdc) — Vitest patterns
 
