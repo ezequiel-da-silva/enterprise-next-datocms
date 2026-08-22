@@ -47,7 +47,7 @@ Copy [`.env.example`](.env.example) to `.env` for CMS and codegen.
 - [`architecture.mdc`](.cursor/rules/architecture.mdc) — layers, naming, imports
 - [`datocms-blocks.mdc`](.cursor/rules/datocms-blocks.mdc) — CMS blocks + GraphQL
 - [`datocms-next.mdc`](.cursor/rules/datocms-next.mdc) — RSC fetch, cache tags, codegen, images
-- [`git-conventions.mdc`](.cursor/rules/git-conventions.mdc) — Conventional Commits + PR titles
+- [`git-conventions.mdc`](.cursor/rules/git-conventions.mdc) — Conventional Commits + PR titles · repo settings: [docs/GITHUB.md](docs/GITHUB.md)
 - [`react-rsc.mdc`](.cursor/rules/react-rsc.mdc) — RSC, error boundaries
 - [`testing.mdc`](.cursor/rules/testing.mdc) — Vitest patterns
 
@@ -57,7 +57,7 @@ Copy [`.env.example`](.env.example) to `.env` for CMS and codegen.
 - `pre-merge-quality` — run quality gates before PR
 - `seo-aeo-feature` — metadata + JSON-LD
 
-Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md)
+Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) · GitHub: [docs/GITHUB.md](docs/GITHUB.md)
 
 ## Learned anti-patterns (do not repeat)
 

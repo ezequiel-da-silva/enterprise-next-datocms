@@ -33,6 +33,7 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 | `datocms-blocks.mdc` | GraphQL, blocks, ST registration |
 | `react-rsc.mdc` | App Router RSC patterns |
 | `testing.mdc` | Vitest conventions |
+| `git-conventions.mdc` | Conventional Commits + PR titles ([GITHUB.md](./GITHUB.md)) |
 
 ## Project skills (`.cursor/skills/`)
 

@@ -54,6 +54,8 @@ cp .env.example .env
 
 ## CI (GitHub Actions)
 
+Permissões do `GITHUB_TOKEN` (Release Please) e proteção de branches: [GITHUB.md](./GITHUB.md). Secrets DatoCMS abaixo.
+
 Workflow: [`.github/workflows/security.yml`](../.github/workflows/security.yml)
 
 1. `npm run security:audit`

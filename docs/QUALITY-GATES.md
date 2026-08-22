@@ -14,7 +14,7 @@ Seven pillars agents and reviewers must verify before merge. Each pillar lists *
 | Security / proxy / API | `npm run security:check` |
 | Full pre-merge | `npm run check-all` |
 
-CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflows/security.yml`](../.github/workflows/security.yml).
+CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflows/security.yml`](../.github/workflows/security.yml). Required checks on protected branches: `quality`, `lighthouse (desktop)`, `lighthouse (mobile)`, `security`, `smoke`. Repo settings: [GITHUB.md](./GITHUB.md).
 
 ---
 
