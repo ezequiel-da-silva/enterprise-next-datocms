@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.2.0...next-dato-v0.2.1) (2026-08-22)
+
+
+### Documentation
+
+* update documentation to include GitHub settings and references ([645bc5c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/645bc5c8f9dac06a963636d54eaa91fe581f041d))
+* update documentation to include GitHub settings and references; enhance clarity on CI requirements and Git conventions ([aa86c82](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/aa86c82df6243ebd7d632c0baa42402f3bd90d88))
+
 ## [0.2.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.1.0...next-dato-v0.2.0) (2026-08-22)
 
 
