@@ -1,0 +1,28 @@
+# Release Please: Conventional Commits on `main` → CHANGELOG + version bump PR → tag `vX.Y.Z`.
+# GITHUB_TOKEN PRs may not trigger other workflows until a human merge; CI still runs on that PR if opened from a fork-less default branch push after merge.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Release Please
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

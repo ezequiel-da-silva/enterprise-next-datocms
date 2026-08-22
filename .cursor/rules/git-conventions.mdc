@@ -1,0 +1,61 @@
+---
+description: Conventional Commits and PR titles (scopes cms, ui, seo, deps, core, next, codegen)
+alwaysApply: true
+---
+
+# Git conventions (next-dato)
+
+Always write **commit messages** and **PR titles** as [Conventional Commits](https://www.conventionalcommits.org/). English, imperative, one line subject.
+
+```
+type(scope): description
+```
+
+Release Please ([`.github/workflows/release.yml`](../../.github/workflows/release.yml)) groups the CHANGELOG by **type**; **scope** is how Next.js vs DatoCMS work is categorized (`feat(cms):`, `fix(next):`).
+
+## Types
+
+`feat` · `fix` · `docs` · `chore` · `refactor` · `perf` · `ci` · `test`
+
+## Scopes (required when it fits)
+
+| Scope | Use for |
+|-------|---------|
+| `cms` | Dato models, CDA queries, blocks, draft/preview |
+| `ui` | Components, layout, Tailwind |
+| `seo` | metadata, JSON-LD, sitemap, robots |
+| `deps` | dependency bumps |
+| `core` | `src/core/` entities / use-cases |
+| `next` | App Router, `next.config`, cache, proxy |
+| `codegen` | GraphQL codegen / generated types |
+
+## DatoCMS breaking schema
+
+Removing/renaming CDA fields or required GraphQL shapes:
+
+```
+feat(cms)!: drop ImageBlock.assetDesktop
+
+feat(cms): require captions on video_block
+
+BREAKING CHANGE: video_block.captions is now required in PAGE_BY_SLUG.
+```
+
+`!` after the type/scope **or** a `BREAKING CHANGE:` footer → major bump (Release Please).
+
+## PRs
+
+- Title = same Conventional subject as the main commit.
+- Body = [`.github/PULL_REQUEST_TEMPLATE.md`](../../.github/PULL_REQUEST_TEMPLATE.md).
+
+```
+# ✅
+feat(cms): add FAQ group Structured Text block
+fix(next): skip fetch cache in draft mode
+chore(codegen): regenerate operations after PAGE_BY_SLUG
+
+# ❌
+Updated stuff
+Ajustes no Dato
+feat: new block
+```
