@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.2.1...next-dato-v0.3.0) (2026-08-23)
+
+
+### Features
+
+* **pricing-section:** implement Pricing Section block with PricingCard component; add GraphQL integration for pricing plans and enhance styling for better presentation ([48c0d38](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/48c0d38e55dd0a96e4dd5d88c8e6945fdc3ec45b))
+
 ## [0.2.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.2.0...next-dato-v0.2.1) (2026-08-22)
 
 
