@@ -53,15 +53,22 @@ export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: Gl
         >
           <span className="sr-only">{homeLabel}</span>
           {logo?.url ? (
-            <Image
-              src={logo.url}
-              alt=""
-              width={logo.width ?? 160}
-              height={logo.height ?? 40}
-              sizes="160px"
-              loading="eager"
-              className="h-9 w-auto max-w-[10rem] object-contain object-left"
-            />
+            <span
+              className="relative block h-9 max-w-[10rem] shrink-0 overflow-hidden"
+              style={{
+                aspectRatio: `${logo.width ?? 160} / ${logo.height ?? 40}`,
+              }}
+            >
+              <Image
+                src={logo.url}
+                alt=""
+                width={logo.width ?? 160}
+                height={logo.height ?? 40}
+                sizes="160px"
+                loading="eager"
+                className="h-full w-full object-contain object-left"
+              />
+            </span>
           ) : (
             <span aria-hidden className="text-sm font-semibold tracking-tight text-foreground">
               {SITE_WORDMARK}
