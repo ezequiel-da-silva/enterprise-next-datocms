@@ -340,6 +340,33 @@ const LOGO_GRID_BLOCK = `
   }
 `;
 
+/** Pricing Section — tabela de planos (`PricingSectionRecord`). @see fragments/pricing-section.graphql */
+const PRICING_SECTION_BLOCK = `
+  ... on PricingSectionRecord {
+    id
+    title
+    subtitle
+    plans {
+      __typename
+      ... on PricingCardRecord {
+        id
+        name
+        description
+        priceType
+        currency
+        amount
+        billingPeriod
+        isPopular
+        features
+        hasButton
+        ctaButton {
+          ${LINK_HERO_CTA_FIELDS}
+        }
+      }
+    }
+  }
+`;
+
 /** Reviews Section — depoimentos (`ReviewsSectionRecord`). @see fragments/reviews-section.graphql */
 const REVIEWS_SECTION_BLOCK = `
   ... on ReviewsSectionRecord {
@@ -364,7 +391,7 @@ const REVIEWS_SECTION_BLOCK = `
 `;
 
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
@@ -373,6 +400,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${CTA_BANNER_BLOCK}
   ${LOGO_GRID_BLOCK}
   ${REVIEWS_SECTION_BLOCK}
+  ${PRICING_SECTION_BLOCK}
   ... on FeatureGridRecord {
     id
     titleFeatureGrid

@@ -16,6 +16,8 @@
 @theme inline {
   --color-background: hsl(var(--palette-background));
   --color-foreground: hsl(var(--palette-foreground));
+  --color-card: hsl(var(--palette-card));
+  --color-card-foreground: hsl(var(--palette-card-foreground));
   --color-muted: hsl(var(--palette-muted));
   --color-muted-foreground: hsl(var(--palette-muted-foreground));
   --color-border: hsl(var(--palette-border));

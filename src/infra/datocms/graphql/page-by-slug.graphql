@@ -1,6 +1,7 @@
 #import "./fragments/cta-banner.graphql"
 #import "./fragments/logo-grid.graphql"
 #import "./fragments/reviews-section.graphql"
+#import "./fragments/pricing-section.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -232,6 +233,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         ... on ReviewsSectionRecord {
           ...ReviewsSectionBlockFragment
+        }
+        ... on PricingSectionRecord {
+          ...PricingSectionBlockFragment
         }
       }
       inlineBlocks

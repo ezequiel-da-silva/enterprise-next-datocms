@@ -42,6 +42,13 @@ export type ReviewsSectionBlockRecord = Extract<
   { __typename: "ReviewsSectionRecord" }
 >;
 
+export type PricingSectionBlockRecord = Extract<
+  PageStructuredTextBlock,
+  { __typename: "PricingSectionRecord" }
+>;
+
+export type PricingCardBlockRecord = PricingSectionBlockRecord["plans"][number];
+
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];
 
 export type HeroSectionRecord = NonNullable<PageQueryData["heroPage"]>;
