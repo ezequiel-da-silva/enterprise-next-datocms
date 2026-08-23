@@ -5,7 +5,7 @@ export function HomeCmsSkeleton() {
     <section
       aria-busy="true"
       aria-label="Carregando conteúdo do CMS"
-      className="rounded-lg border border-border p-6"
+      className="min-h-[calc(100dvh-5.5rem)] rounded-lg border border-border p-6"
     >
       <Skeleton className="h-6 w-48" />
       <Skeleton className="mt-4 h-4 w-full max-w-md" />
