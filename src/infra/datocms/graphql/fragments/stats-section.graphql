@@ -1,0 +1,20 @@
+# Fragmento do bloco Stats Section (`stats_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Stats Section**.
+# Depois: `#import` + `... on StatsSectionRecord` em `page-by-slug.graphql`,
+# `${STATS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+fragment StatsSectionBlockFragment on StatsSectionRecord {
+  id
+  title
+  subtitle
+  stats {
+    __typename
+    ... on StatCardRecord {
+      id
+      value
+      label
+      description
+    }
+  }
+}
