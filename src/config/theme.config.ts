@@ -11,6 +11,9 @@ export const themeConfig = {
     light: {
       background: { h: 0, s: 0, l: 100 } satisfies HslChannels,
       foreground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
+      /* Superfície elevada (cards). No escuro fica acima do fundo, senão o card desaparece. */
+      card: { h: 0, s: 0, l: 100 } satisfies HslChannels,
+      cardForeground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
       muted: { h: 210, s: 40, l: 96 } satisfies HslChannels,
       /* l:47 dava 4.29:1 sobre `muted` (avatar, figcaption de código) — abaixo de AA. */
       mutedForeground: { h: 215, s: 16, l: 44 } satisfies HslChannels,
@@ -26,6 +29,8 @@ export const themeConfig = {
     dark: {
       background: { h: 224, s: 71, l: 4 } satisfies HslChannels,
       foreground: { h: 210, s: 40, l: 98 } satisfies HslChannels,
+      card: { h: 222, s: 42, l: 12 } satisfies HslChannels,
+      cardForeground: { h: 210, s: 40, l: 98 } satisfies HslChannels,
       muted: { h: 215, s: 28, l: 17 } satisfies HslChannels,
       mutedForeground: { h: 217, s: 10, l: 64 } satisfies HslChannels,
       border: { h: 215, s: 28, l: 17 } satisfies HslChannels,

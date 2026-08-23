@@ -1,0 +1,51 @@
+# Fragmento do bloco Pricing Section (`pricing_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Pricing Section**.
+# Depois: `#import` + `... on PricingSectionRecord` em `page-by-slug.graphql`,
+# `${PRICING_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+fragment PricingSectionBlockFragment on PricingSectionRecord {
+  id
+  title
+  subtitle
+  plans {
+    __typename
+    ... on PricingCardRecord {
+      id
+      name
+      description
+      priceType
+      currency
+      amount
+      billingPeriod
+      isPopular
+      features
+      hasButton
+      ctaButton {
+        __typename
+        id
+        ctaLabel
+        typeContent
+        externalLink
+        openInNewTab
+        ctaLinkAria
+        internalLinkPage {
+          __typename
+          slug
+        }
+        internalLinkPost {
+          __typename
+          postSlug
+        }
+        internalLinkCategory {
+          __typename
+          categorySlug
+        }
+        internalLinkAuthor {
+          __typename
+          authorSlug
+        }
+      }
+    }
+  }
+}

@@ -857,6 +857,12 @@ export type HeroSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+export type HeroSectionRecordMultiLocaleField = {
+  __typename?: 'HeroSectionRecordMultiLocaleField';
+  locale?: Maybe<SiteLocale>;
+  value?: Maybe<HeroSectionRecord>;
+};
+
 /** Block of type 🌅 Image (image_block) */
 export type ImageBlockRecord = RecordInterface & {
   __typename?: 'ImageBlockRecord';
@@ -3091,7 +3097,7 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
-export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | ReviewsSectionRecord | VideoBlockRecord;
+export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | VideoBlockRecord;
 
 export type PageModelStructuredTextField = {
   __typename?: 'PageModelStructuredTextField';
@@ -3110,6 +3116,7 @@ export type PageModelStructuredTextFieldMultiLocaleField = {
 /** Record of type 📚 Page (page) */
 export type PageRecord = RecordInterface & {
   __typename?: 'PageRecord';
+  _allHeroPageLocales?: Maybe<Array<HeroSectionRecordMultiLocaleField>>;
   _allSeoAnalysisLocales?: Maybe<Array<JsonFieldMultiLocaleField>>;
   _allSeoSettingsSocialLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allSlugLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -3136,6 +3143,12 @@ export type PageRecord = RecordInterface & {
   slug?: Maybe<Scalars['String']['output']>;
   structuredText?: Maybe<PageModelStructuredTextField>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 📚 Page (page) */
+export type PageRecord_AllHeroPageLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
@@ -3171,6 +3184,13 @@ export type PageRecord_AllTitleLocalesArgs = {
 
 /** Record of type 📚 Page (page) */
 export type PageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 📚 Page (page) */
+export type PageRecordHeroPageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3370,6 +3390,75 @@ export type PostRecordSeoAnalysisArgs = {
 /** Record of type 📝 Post (post) */
 export type PostRecordSeoSettingsSocialArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+/** Block of type 💸 Pricing Card (pricing_card) */
+export type PricingCardRecord = RecordInterface & {
+  __typename?: 'PricingCardRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  amount?: Maybe<Scalars['FloatType']['output']>;
+  billingPeriod?: Maybe<Scalars['String']['output']>;
+  ctaButton: Array<LinkRecord>;
+  currency?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  features?: Maybe<Scalars['String']['output']>;
+  hasButton: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  isPopular: Scalars['BooleanType']['output'];
+  name?: Maybe<Scalars['String']['output']>;
+  priceType?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 💸 Pricing Card (pricing_card) */
+export type PricingCardRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Block of type 💸 Pricing Card (pricing_card) */
+export type PricingCardRecordFeaturesArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Block of type 💵 Pricing Section (pricing_section) */
+export type PricingSectionRecord = RecordInterface & {
+  __typename?: 'PricingSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  id: Scalars['ItemId']['output'];
+  plans: Array<PricingCardRecord>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 💵 Pricing Section (pricing_section) */
+export type PricingSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 

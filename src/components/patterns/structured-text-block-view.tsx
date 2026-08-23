@@ -6,12 +6,14 @@ import type {
   CtaBannerBlockRecord,
   FeatureGridRecord,
   PageStructuredTextBlock,
+  PricingSectionBlockRecord,
   ReviewsSectionBlockRecord,
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
 import { CtaBannerBlock } from "@/components/sections/cta-banner-block";
 import { LogoGridBlock } from "@/components/sections/logo-grid-block";
+import { PricingSectionBlock } from "@/components/sections/pricing-section-block";
 import { ReviewsSectionBlock } from "@/components/sections/reviews-section-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
@@ -200,6 +202,8 @@ export function StructuredTextBlockView({
           action={submitUserReview}
         />
       );
+    case "PricingSectionRecord":
+      return <PricingSectionBlock record={record as PricingSectionBlockRecord} locale={locale} />;
     default:
       return unknownBlockFallback(record);
   }
