@@ -1,0 +1,40 @@
+# Fragmento do bloco Steps Section (`steps_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Steps Section**.
+# Depois: `#import` + `... on StepsSectionRecord` em `page-by-slug.graphql`,
+# `${STEPS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+fragment StepsSectionBlockFragment on StepsSectionRecord {
+  id
+  title
+  subtitle
+  steps {
+    __typename
+    ... on StepCardRecord {
+      id
+      title
+      description
+      hasImage
+      mediaImage {
+        __typename
+        ... on ImageBlockRecord {
+          id
+          asset {
+            url
+            alt
+            width
+            height
+            blurUpThumb
+          }
+          assetDesktop {
+            url
+            alt
+            width
+            height
+            blurUpThumb
+          }
+        }
+      }
+    }
+  }
+}

@@ -340,6 +340,30 @@ const LOGO_GRID_BLOCK = `
   }
 `;
 
+/** Steps Section — timeline de etapas (`StepsSectionRecord`). @see fragments/steps-section.graphql */
+const STEPS_SECTION_BLOCK = `
+  ... on StepsSectionRecord {
+    id
+    title
+    subtitle
+    steps {
+      __typename
+      ... on StepCardRecord {
+        id
+        title
+        description
+        hasImage
+        mediaImage {
+          __typename
+          ... on ImageBlockRecord {
+            ${IMAGE_BLOCK_RESPONSIVE}
+          }
+        }
+      }
+    }
+  }
+`;
+
 /** Stats Section — métricas (`StatsSectionRecord`). @see fragments/stats-section.graphql */
 const STATS_SECTION_BLOCK = `
   ... on StatsSectionRecord {
@@ -409,7 +433,7 @@ const REVIEWS_SECTION_BLOCK = `
 `;
 
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats + Steps.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
@@ -420,6 +444,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${REVIEWS_SECTION_BLOCK}
   ${PRICING_SECTION_BLOCK}
   ${STATS_SECTION_BLOCK}
+  ${STEPS_SECTION_BLOCK}
   ... on FeatureGridRecord {
     id
     titleFeatureGrid

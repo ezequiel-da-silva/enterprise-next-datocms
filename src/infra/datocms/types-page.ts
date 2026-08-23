@@ -56,6 +56,13 @@ export type StatsSectionBlockRecord = Extract<
 
 export type StatCardBlockRecord = StatsSectionBlockRecord["stats"][number];
 
+export type StepsSectionBlockRecord = Extract<
+  PageStructuredTextBlock,
+  { __typename: "StepsSectionRecord" }
+>;
+
+export type StepCardBlockRecord = StepsSectionBlockRecord["steps"][number];
+
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];
 
 export type HeroSectionRecord = NonNullable<PageQueryData["heroPage"]>;
