@@ -340,6 +340,24 @@ const LOGO_GRID_BLOCK = `
   }
 `;
 
+/** Stats Section — métricas (`StatsSectionRecord`). @see fragments/stats-section.graphql */
+const STATS_SECTION_BLOCK = `
+  ... on StatsSectionRecord {
+    id
+    title
+    subtitle
+    stats {
+      __typename
+      ... on StatCardRecord {
+        id
+        value
+        label
+        description
+      }
+    }
+  }
+`;
+
 /** Pricing Section — tabela de planos (`PricingSectionRecord`). @see fragments/pricing-section.graphql */
 const PRICING_SECTION_BLOCK = `
   ... on PricingSectionRecord {
@@ -391,7 +409,7 @@ const REVIEWS_SECTION_BLOCK = `
 `;
 
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
@@ -401,6 +419,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${LOGO_GRID_BLOCK}
   ${REVIEWS_SECTION_BLOCK}
   ${PRICING_SECTION_BLOCK}
+  ${STATS_SECTION_BLOCK}
   ... on FeatureGridRecord {
     id
     titleFeatureGrid

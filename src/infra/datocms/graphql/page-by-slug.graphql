@@ -2,6 +2,7 @@
 #import "./fragments/logo-grid.graphql"
 #import "./fragments/reviews-section.graphql"
 #import "./fragments/pricing-section.graphql"
+#import "./fragments/stats-section.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -236,6 +237,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         ... on PricingSectionRecord {
           ...PricingSectionBlockFragment
+        }
+        ... on StatsSectionRecord {
+          ...StatsSectionBlockFragment
         }
       }
       inlineBlocks
