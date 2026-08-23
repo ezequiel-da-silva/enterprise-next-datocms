@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.3.0...next-dato-v0.3.1) (2026-08-23)
+
+
+### Refactoring
+
+* **global-header:** update logo rendering to improve responsiveness and accessibility; adjust home CMS skeleton styling for better layout ([2ec8cf2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/2ec8cf2426a9879d43d4ba171703f717be84794d))
+
 ## [0.3.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.2.1...next-dato-v0.3.0) (2026-08-23)
 
 
