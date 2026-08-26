@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.3.1...next-dato-v0.4.0) (2026-08-26)
+
+
+### Features
+
+* **reviews:** enhance user review submission process with localized messages and error handling ([0a17407](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/0a1740748a98f59158d90da3b5dcc48dcd9dbb0d))
+* **reviews:** enhance user review submission process with localized messages and error handling; refactor review form and section components for improved accessibility and user experience ([f3f2417](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/f3f2417a760a04d2163b02fd16975467955dc7bd))
+
 ## [0.3.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.3.0...next-dato-v0.3.1) (2026-08-23)
 
 
