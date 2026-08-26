@@ -426,7 +426,6 @@ const REVIEWS_SECTION_BLOCK = `
         alt
         width
         height
-        blurUpThumb
       }
     }
   }

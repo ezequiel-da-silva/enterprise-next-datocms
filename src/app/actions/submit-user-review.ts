@@ -5,6 +5,7 @@ import { DEFAULT_APP_LOCALE, isAppLocale, type AppLocale } from "@/constants/i18
 import type { UserReviewActionState } from "@/core/entities/user-review";
 import { submitUserReviewUseCase } from "@/core/use-cases/submit-user-review";
 import { createPendingUserReview } from "@/infra/datocms/create-user-review";
+import { reviewsCopy } from "@/lib/i18n/reviews-copy";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/lib/security/rate-limit";
 
@@ -21,26 +22,21 @@ export async function submitUserReview(
   _prev: UserReviewActionState,
   formData: FormData,
 ): Promise<UserReviewActionState> {
+  const locale = readLocale(formData);
+  const copy = reviewsCopy(locale);
   const honeypot = String(formData.get(HONEYPOT_FIELD) ?? "");
 
   if (honeypot.trim().length > 0) {
     await normalizeBotDelay();
-    return {
-      status: "success",
-      message: "Recebemos seu depoimento. Ele será publicado após moderação.",
-    };
+    return { status: "success", message: copy.status.submitted };
   }
 
   const ipKey = await getClientIpKey("user-review");
   const rate = checkRateLimit(ipKey, { limit: 5, windowMs: 60_000 });
   if (!rate.ok) {
-    return {
-      status: "error",
-      message: "Muitas tentativas. Aguarde um minuto e tente novamente.",
-    };
+    return { status: "error", message: copy.status.rateLimited };
   }
 
-  const locale = readLocale(formData);
   const raw = {
     authorName: formData.get("authorName"),
     authorEmail: formData.get("authorEmail"),
@@ -54,9 +50,10 @@ export async function submitUserReview(
     return {
       status: "error",
       fieldErrors: result.fieldErrors,
-      message: result.message,
+      /* `fieldErrors` seguem como código: quem traduz campo a campo é o formulário. */
+      message: result.statusCode ? copy.status[result.statusCode] : undefined,
     };
   }
 
-  return { status: "success", message: result.message };
+  return { status: "success", message: copy.status[result.statusCode] };
 }

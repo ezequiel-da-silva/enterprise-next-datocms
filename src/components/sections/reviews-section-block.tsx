@@ -1,24 +1,57 @@
 import { Container } from "@/components/atoms/container";
 import { ReviewFormLazy } from "@/components/molecules/review-form-lazy";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
-import { DEFAULT_APP_LOCALE, type AppLocale } from "@/constants/i18n";
+import type { AppLocale } from "@/constants/i18n";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { FileFieldLike, ReviewsSectionBlockRecord } from "@/infra/datocms/types-page";
 import { readCdaArray, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
+import { formatRatingAverage, reviewsCopy } from "@/lib/i18n/reviews-copy";
 import { getNonce } from "@/lib/nonce";
-import { buildReviewsSectionJsonLd } from "@/lib/seo/build-reviews-jsonld";
+import {
+  buildReviewsSectionJsonLd,
+  computeRatingAggregate,
+  type ReviewJsonLdItem,
+} from "@/lib/seo/build-reviews-jsonld";
 import { clampLayoutDimensions } from "@/lib/datocms-image-loader";
 import Image from "next/image";
 
 type ReviewItem = ReviewsSectionBlockRecord["reviews"][number];
 
-function readReviews(record: ReviewsSectionBlockRecord): ReviewItem[] {
+/** Corte defensivo: o campo `reviews` do CMS não tem máximo. */
+const MAX_REVIEWS = 24;
+
+type ParsedReview = {
+  id: string;
+  name: string;
+  rating: number;
+  comment: string;
+  avatar: FileFieldLike | null;
+};
+
+function readReviews(record: ReviewsSectionBlockRecord, anonymous: string): ParsedReview[] {
   const raw =
     record.reviews ??
     readCdaArray<ReviewItem>(record as Record<string, unknown>, "reviews", "reviews");
-  return raw.filter((r): r is ReviewItem => Boolean(r?.id));
+
+  const parsed: ParsedReview[] = [];
+  for (const item of raw) {
+    if (!item?.id) continue;
+    const name = item.authorName?.trim() ?? "";
+    const comment = item.comment?.trim() ?? "";
+    /* Sem nome e sem texto o card fica vazio — não vale a pena ocupar uma coluna. */
+    if (!name && !comment) continue;
+    parsed.push({
+      id: item.id,
+      name: name || anonymous,
+      rating: typeof item.rating === "number" ? item.rating : 0,
+      comment,
+      avatar: item.authorAvatar ?? null,
+    });
+    if (parsed.length >= MAX_REVIEWS) break;
+  }
+  return parsed;
 }
 
 function initialsFromName(name: string): string {
@@ -28,10 +61,17 @@ function initialsFromName(name: string): string {
   return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();
 }
 
-function StarRating({ rating, label }: { rating: number; label: string }) {
+/**
+ * `label` só quando as estrelas são a única pista; ao lado de texto equivalente ficam decorativas.
+ * Root em `span` para poder viver dentro do `<p>` do agregado sem HTML inválido.
+ */
+function StarRating({ rating, label }: { rating: number; label?: string }) {
   const clamped = Math.min(5, Math.max(0, Math.round(rating)));
   return (
-    <div className="flex items-center gap-0.5" role="img" aria-label={label}>
+    <span
+      className="inline-flex items-center gap-0.5"
+      {...(label ? { role: "img", "aria-label": label } : { "aria-hidden": true })}
+    >
       {Array.from({ length: 5 }, (_, i) => {
         const filled = i < clamped;
         return (
@@ -48,7 +88,7 @@ function StarRating({ rating, label }: { rating: number; label: string }) {
           </svg>
         );
       })}
-    </div>
+    </span>
   );
 }
 
@@ -81,22 +121,20 @@ function ReviewAvatar({ name, avatar }: { name: string; avatar?: FileFieldLike |
   );
 }
 
-function ReviewCard({ review }: { review: ReviewItem }) {
-  const name = review.authorName?.trim() || "Anónimo";
-  const rating = typeof review.rating === "number" ? review.rating : 0;
-  const comment = review.comment?.trim() || "";
-
+function ReviewCard({ review, starsLabel }: { review: ParsedReview; starsLabel: string }) {
   return (
-    <article className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-background/80 p-5 shadow-sm">
+    <article className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm">
       <header className="flex items-center gap-3">
-        <ReviewAvatar name={name} avatar={review.authorAvatar} />
+        <ReviewAvatar name={review.name} avatar={review.avatar} />
         <div className="min-w-0">
-          <p className="truncate font-medium text-foreground">{name}</p>
-          {rating > 0 ? <StarRating rating={rating} label={`${rating} de 5 estrelas`} /> : null}
+          <p className="truncate font-medium text-card-foreground">{review.name}</p>
+          {review.rating > 0 ? <StarRating rating={review.rating} label={starsLabel} /> : null}
         </div>
       </header>
-      {comment ? (
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{comment}</p>
+      {review.comment ? (
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+          {review.comment}
+        </p>
       ) : null}
     </article>
   );
@@ -104,15 +142,12 @@ function ReviewCard({ review }: { review: ReviewItem }) {
 
 export type ReviewsSectionBlockProps = {
   record: ReviewsSectionBlockRecord;
-  locale?: AppLocale;
+  locale: AppLocale;
   action?: UserReviewSubmitAction;
 };
 
-export async function ReviewsSectionBlock({
-  record,
-  locale = DEFAULT_APP_LOCALE,
-  action,
-}: ReviewsSectionBlockProps) {
+export async function ReviewsSectionBlock({ record, locale, action }: ReviewsSectionBlockProps) {
+  const copy = reviewsCopy(locale);
   const title = readCdaString(record as Record<string, unknown>, "title", "title");
   const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
   const allowSubmissions = readCdaBool(
@@ -120,25 +155,23 @@ export async function ReviewsSectionBlock({
     "allowSubmissions",
     "allow_submissions",
   );
-  const reviews = readReviews(record);
-  const headingId = `reviews-section-${record.id}`;
-
-  const jsonLd = buildReviewsSectionJsonLd(
-    record.id,
-    reviews
-      .map((r) => ({
-        id: r.id,
-        authorName: r.authorName?.trim() || "Anónimo",
-        rating: typeof r.rating === "number" ? r.rating : 0,
-        comment: r.comment?.trim() || "",
-      }))
-      .filter((r) => r.rating >= 1 && r.comment),
-  );
-  const nonce = jsonLd ? await getNonce() : undefined;
+  const reviews = readReviews(record, copy.anonymous);
 
   if (reviews.length === 0 && !allowSubmissions) {
     return null;
   }
+
+  const headingId = `reviews-section-${record.id}`;
+  /* Mesma lista para o texto visível e para o JSON-LD: a Google exige que a média marcada apareça na página. */
+  const ratedReviews: ReviewJsonLdItem[] = reviews
+    .map((r) => ({ id: r.id, authorName: r.name, rating: r.rating, comment: r.comment }))
+    .filter((r) => r.rating >= 1 && r.comment);
+  const aggregate = computeRatingAggregate(ratedReviews);
+  const jsonLd = buildReviewsSectionJsonLd(record.id, ratedReviews);
+  const nonce = jsonLd ? await getNonce() : undefined;
+  const aggregateLabel = aggregate
+    ? copy.aggregateLabel(formatRatingAverage(aggregate.average, locale), aggregate.count)
+    : null;
 
   return (
     <section
@@ -146,12 +179,12 @@ export async function ReviewsSectionBlock({
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
       aria-labelledby={title ? headingId : undefined}
-      aria-label={!title ? "Avaliações" : undefined}
+      aria-label={!title ? copy.sectionLabel : undefined}
     >
       {jsonLd ? <JsonLdScriptSync graph={jsonLd} nonce={nonce} /> : null}
 
       <Container size="lg" name="ReviewsSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
+        {title || subtitle || aggregateLabel ? (
           <header className="mx-auto max-w-3xl text-center">
             {title ? (
               <h2
@@ -166,6 +199,17 @@ export async function ReviewsSectionBlock({
                 {subtitle}
               </p>
             ) : null}
+            {aggregate && aggregateLabel ? (
+              <p
+                className={cn(
+                  "flex flex-wrap items-center justify-center gap-2 text-sm font-medium text-foreground",
+                  title || subtitle ? "mt-4" : "mt-0",
+                )}
+              >
+                <StarRating rating={aggregate.average} />
+                <span>{aggregateLabel}</span>
+              </p>
+            ) : null}
           </header>
         ) : null}
 
@@ -173,7 +217,7 @@ export async function ReviewsSectionBlock({
           <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
             {reviews.map((review) => (
               <li key={review.id} className="min-w-0">
-                <ReviewCard review={review} />
+                <ReviewCard review={review} starsLabel={copy.starsLabel(review.rating)} />
               </li>
             ))}
           </ul>

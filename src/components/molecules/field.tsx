@@ -5,6 +5,11 @@ import { Children, cloneElement, isValidElement, type ReactElement, type ReactNo
 type FieldProps = {
   id: string;
   label: string;
+  /**
+   * `group`: o controlo não é rotulável por `<label for>` (ex.: `div role="radiogroup"`).
+   * O rótulo passa a `<span id="{id}-label">` e o grupo aponta-lhe `aria-labelledby`.
+   */
+  as?: "control" | "group";
   hint?: string;
   error?: string;
   children: ReactNode;
@@ -27,16 +32,24 @@ function attachDescribedBy(children: ReactNode, describedBy?: string): ReactNode
   });
 }
 
-export function Field({ id, label, hint, error, children, className }: FieldProps) {
+export function Field({ id, label, as = "control", hint, error, children, className }: FieldProps) {
   const describedBy = [hint && !error ? `${id}-hint` : null, error ? `${id}-error` : null]
     .filter(Boolean)
     .join(" ");
 
+  const labelClassName = "text-sm font-medium text-foreground";
+
   return (
     <div className={cn("grid gap-2", className)}>
-      <Label htmlFor={id} className="text-sm font-medium text-foreground">
-        {label}
-      </Label>
+      {as === "group" ? (
+        <span id={`${id}-label`} className={labelClassName}>
+          {label}
+        </span>
+      ) : (
+        <Label htmlFor={id} className={labelClassName}>
+          {label}
+        </Label>
+      )}
       {attachDescribedBy(children, describedBy || undefined)}
       {hint && !error ? (
         <p id={`${id}-hint`} className="text-xs text-muted-foreground">
