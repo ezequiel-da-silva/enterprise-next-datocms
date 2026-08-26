@@ -23,10 +23,10 @@ describe("validateUserReviewSubmission", () => {
   it.each([0, 6, 1.5])("rejects rating %s outside the integer 1–5 range", (rating) => {
     const result = validateUserReviewSubmission({ ...validInput, rating });
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.fieldErrors.rating).toBeDefined();
+    if (!result.ok) expect(result.fieldErrors.rating).toMatch(/^rating\./);
   });
 
-  it("rejects invalid identity and short comments", () => {
+  it("rejects invalid identity and short comments with stable codes", () => {
     const result = validateUserReviewSubmission({
       ...validInput,
       authorName: "A",
@@ -35,10 +35,10 @@ describe("validateUserReviewSubmission", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.fieldErrors).toMatchObject({
-        authorName: expect.any(String),
-        authorEmail: expect.any(String),
-        comment: expect.any(String),
+      expect(result.fieldErrors).toEqual({
+        authorName: "authorName.min",
+        authorEmail: "authorEmail.invalid",
+        comment: "comment.min",
       });
     }
   });
@@ -52,9 +52,18 @@ describe("validateUserReviewSubmission", () => {
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.fieldErrors.authorName).toContain("100");
-      expect(result.fieldErrors.authorEmail).toBeDefined();
-      expect(result.fieldErrors.comment).toContain("1000");
+      expect(result.fieldErrors.authorName).toBe("authorName.max");
+      expect(result.fieldErrors.authorEmail).toBe("authorEmail.max");
+      expect(result.fieldErrors.comment).toBe("comment.max");
+    }
+  });
+
+  it("falls back to a field code when Zod reports a missing value", () => {
+    const result = validateUserReviewSubmission({});
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.fieldErrors.authorName).toBe("authorName.min");
+      expect(result.fieldErrors.rating).toBe("rating.range");
     }
   });
 });

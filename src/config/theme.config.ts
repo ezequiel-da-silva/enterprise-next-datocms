@@ -23,7 +23,8 @@ export const themeConfig = {
       primaryForeground: { h: 210, s: 40, l: 98 } satisfies HslChannels,
       accent: { h: 210, s: 40, l: 96 } satisfies HslChannels,
       accentForeground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
-      destructive: { h: 0, s: 72, l: 51 } satisfies HslChannels,
+      /* `text-destructive` em 12px: l:51 dava 4.34:1 sobre branco, abaixo de AA. */
+      destructive: { h: 0, s: 72, l: 47 } satisfies HslChannels,
       destructiveForeground: { h: 0, s: 0, l: 100 } satisfies HslChannels,
     },
     dark: {
@@ -39,8 +40,10 @@ export const themeConfig = {
       primaryForeground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
       accent: { h: 215, s: 28, l: 17 } satisfies HslChannels,
       accentForeground: { h: 210, s: 40, l: 98 } satisfies HslChannels,
-      destructive: { h: 0, s: 63, l: 31 } satisfies HslChannels,
-      destructiveForeground: { h: 210, s: 40, l: 98 } satisfies HslChannels,
+      /* Vermelho escuro (l:31) sobre `card` dava 1.77:1 nas mensagens de erro: clareado para AA. */
+      destructive: { h: 0, s: 84, l: 68 } satisfies HslChannels,
+      /* Par invertido no escuro: texto navy sobre a superfície vermelha clara. */
+      destructiveForeground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
     },
   },
   fonts: {

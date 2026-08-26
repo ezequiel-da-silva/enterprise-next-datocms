@@ -16,12 +16,12 @@ fragment ReviewsSectionBlockFragment on ReviewsSectionRecord {
     authorName
     rating
     comment
+    # Avatar renderiza sempre a 48px: `blurUpThumb` não é usado e só pesa na resposta.
     authorAvatar {
       url
       alt
       width
       height
-      blurUpThumb
     }
   }
 }

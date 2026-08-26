@@ -14,7 +14,7 @@ const ReviewForm = dynamic(
     ssr: true,
     loading: () => (
       <div
-        className="mx-auto min-h-[28rem] max-w-xl rounded-2xl border border-border bg-background/80 p-6 shadow-sm"
+        className="mx-auto min-h-[28rem] max-w-xl rounded-2xl border border-border bg-card p-6 shadow-sm"
         aria-hidden
       />
     ),

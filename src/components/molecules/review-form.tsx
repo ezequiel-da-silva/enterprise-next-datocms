@@ -12,8 +12,9 @@ import { Input } from "@/components/atoms/input";
 import { Textarea } from "@/components/atoms/textarea";
 import { Field } from "@/components/molecules/field";
 import { cn } from "@/lib/cn";
+import { reviewsCopy, translateReviewFieldError } from "@/lib/i18n/reviews-copy";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useActionState, useEffect, useState, startTransition } from "react";
+import { useActionState, useEffect, useId, useState, startTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 function toFormData(values: UserReviewFormClientValues, locale: AppLocale): FormData {
@@ -35,6 +36,18 @@ export type ReviewFormProps = {
 export function ReviewForm({ locale, action }: ReviewFormProps) {
   const [state, formAction, isPending] = useActionState(action, { status: "idle" });
   const [previewRating, setPreviewRating] = useState<number | null>(null);
+  const copy = reviewsCopy(locale);
+
+  /* Ids únicos por instância: a mesma página pode ter dois blocos de avaliações. */
+  const uid = useId();
+  const ids = {
+    heading: `${uid}-heading`,
+    name: `${uid}-name`,
+    email: `${uid}-email`,
+    rating: `${uid}-rating`,
+    comment: `${uid}-comment`,
+    honeypot: `${uid}-honeypot`,
+  };
 
   const {
     register,
@@ -42,7 +55,7 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
     control,
     reset,
     setError,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<UserReviewFormClientValues>({
     resolver: zodResolver(userReviewFormClientSchema),
     mode: "onChange",
@@ -82,12 +95,14 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
     }
   }, [state, reset, setError, locale]);
 
+  const fieldError = (code: string | undefined) => translateReviewFieldError(code, locale);
+
   return (
     <form
-      className="mx-auto grid max-w-xl gap-6 rounded-2xl border border-border bg-background/80 p-6 shadow-sm"
+      className="mx-auto grid max-w-xl gap-6 rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm"
       noValidate
       aria-busy={isPending}
-      aria-labelledby="review-form-heading"
+      aria-labelledby={ids.heading}
       onSubmit={handleSubmit((values) => {
         startTransition(() => {
           formAction(toFormData(values, locale));
@@ -95,17 +110,15 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
       })}
     >
       <div className="space-y-1">
-        <h3 id="review-form-heading" className="text-lg font-semibold text-foreground">
-          Deixe sua avaliação
+        <h3 id={ids.heading} className="text-lg font-semibold text-card-foreground">
+          {copy.form.heading}
         </h3>
-        <p className="text-sm text-muted-foreground">
-          Seu depoimento será publicado após moderação.
-        </p>
+        <p className="text-sm text-muted-foreground">{copy.form.intro}</p>
       </div>
 
-      <Field id="authorName" label="Nome" error={errors.authorName?.message}>
+      <Field id={ids.name} label={copy.form.name} error={fieldError(errors.authorName?.message)}>
         <Input
-          id="authorName"
+          id={ids.name}
           autoComplete="name"
           required
           {...register("authorName")}
@@ -114,9 +127,9 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
         />
       </Field>
 
-      <Field id="authorEmail" label="E-mail" error={errors.authorEmail?.message}>
+      <Field id={ids.email} label={copy.form.email} error={fieldError(errors.authorEmail?.message)}>
         <Input
-          id="authorEmail"
+          id={ids.email}
           type="email"
           inputMode="email"
           autoComplete="email"
@@ -128,10 +141,11 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
       </Field>
 
       <Field
-        id="rating"
-        label="Avaliação"
-        hint="Selecione de 1 a 5 estrelas. A avaliação começa com 5 estrelas."
-        error={errors.rating?.message}
+        id={ids.rating}
+        label={copy.form.rating}
+        as="group"
+        hint={copy.form.ratingHint}
+        error={fieldError(errors.rating?.message)}
       >
         <Controller
           name="rating"
@@ -142,11 +156,11 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
 
             return (
               <div
-                id="rating"
                 role="radiogroup"
+                aria-labelledby={`${ids.rating}-label`}
                 aria-required="true"
                 aria-invalid={!!errors.rating}
-                aria-describedby={errors.rating ? "rating-error" : "rating-hint"}
+                aria-describedby={errors.rating ? `${ids.rating}-error` : `${ids.rating}-hint`}
                 className="flex w-fit flex-wrap gap-1 rounded-xl border border-border bg-muted/30 p-1.5"
                 onMouseLeave={() => setPreviewRating(null)}
               >
@@ -198,9 +212,7 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
                           d="m12 2.75 2.82 5.72 6.31.92-4.57 4.45 1.08 6.28L12 17.15l-5.64 2.97 1.08-6.28-4.57-4.45 6.31-.92L12 2.75Z"
                         />
                       </svg>
-                      <span className="sr-only">
-                        {value} {value === 1 ? "estrela" : "estrelas"}
-                      </span>
+                      <span className="sr-only">{copy.form.ratingOption(value)}</span>
                     </label>
                   );
                 })}
@@ -210,9 +222,9 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
         />
       </Field>
 
-      <Field id="comment" label="Comentário" error={errors.comment?.message}>
+      <Field id={ids.comment} label={copy.form.comment} error={fieldError(errors.comment?.message)}>
         <Textarea
-          id="comment"
+          id={ids.comment}
           rows={5}
           required
           {...register("comment")}
@@ -222,11 +234,11 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
       </Field>
 
       <div className="relative">
-        <label htmlFor={`review-${HONEYPOT_FIELD}`} className="sr-only">
-          Não preencha este campo
+        <label htmlFor={ids.honeypot} className="sr-only">
+          {copy.form.honeypot}
         </label>
         <input
-          id={`review-${HONEYPOT_FIELD}`}
+          id={ids.honeypot}
           tabIndex={-1}
           autoComplete="off"
           {...register(HONEYPOT_FIELD)}
@@ -247,10 +259,12 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
         </p>
       ) : null}
 
+      {/* Sempre ativo: um botão desativado sai da ordem de tabulação e esconde o motivo.
+          O `handleSubmit` do RHF bloqueia o envio inválido e foca o primeiro campo com erro. */}
       <Button
         type="submit"
-        disabled={isPending || !isValid}
-        aria-disabled={isPending || !isValid}
+        disabled={isPending}
+        aria-disabled={isPending}
         variant="primary"
         className={cn(
           "min-h-12 cursor-pointer shadow-sm",
@@ -260,13 +274,8 @@ export function ReviewForm({ locale, action }: ReviewFormProps) {
           "disabled:pointer-events-auto disabled:cursor-not-allowed disabled:translate-y-0 disabled:shadow-none",
         )}
       >
-        {isPending ? "Enviando…" : "Enviar avaliação"}
+        {isPending ? copy.form.submitting : copy.form.submit}
       </Button>
-      {!isValid && state.status !== "success" ? (
-        <p className="-mt-3 text-center text-xs text-muted-foreground">
-          Preencha corretamente todos os campos para enviar.
-        </p>
-      ) : null}
     </form>
   );
 }

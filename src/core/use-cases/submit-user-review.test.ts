@@ -27,6 +27,9 @@ describe("submitUserReviewUseCase", () => {
       create,
     );
     expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.statusCode).toBe("submitted");
+    }
     expect(create).toHaveBeenCalledWith({
       authorName: "Maria Silva",
       authorEmail: "maria@example.com",
@@ -53,7 +56,7 @@ describe("submitUserReviewUseCase", () => {
     );
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.message).toContain("Não foi possível");
+      expect(result.statusCode).toBe("transportError");
     }
   });
 
@@ -74,7 +77,7 @@ describe("submitUserReviewUseCase", () => {
     );
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.message).toContain("indisponível");
+      expect(result.statusCode).toBe("notConfigured");
     }
   });
 });
