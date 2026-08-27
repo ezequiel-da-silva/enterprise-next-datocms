@@ -1,3 +1,4 @@
+import "@/core/zod-jitless";
 import { HONEYPOT_FIELD } from "@/constants/contact-form";
 import { z } from "zod";
 
