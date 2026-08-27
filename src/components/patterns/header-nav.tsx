@@ -109,7 +109,13 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
   const [open, setOpen] = useState(false);
 
   if (children.length === 0) {
-    return <NavLink item={item} locale={locale} className={cn(level > 0 && "block w-full text-left")} />;
+    return (
+      <NavLink
+        item={item}
+        locale={locale}
+        className={cn(level > 0 && "w-full items-center justify-start text-left")}
+      />
+    );
   }
 
   const label = item.navItemLabel;
@@ -128,18 +134,27 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
     >
       <div
         className={cn(
-          "flex items-center gap-2 rounded-md text-sm font-medium text-muted-foreground",
-          level > 0 && "w-full justify-between",
+          "flex items-center rounded-md text-sm font-medium text-muted-foreground",
+          level === 0
+            ? "transition hover:bg-muted hover:text-foreground motion-reduce:transition-none"
+            : "w-full justify-between gap-2",
         )}
       >
         <NavLink
           item={item}
           locale={locale}
-          className={level > 0 ? "min-h-11 min-w-0 flex-1 bg-transparent px-2 hover:bg-transparent" : undefined}
+          className={
+            level > 0
+              ? "min-h-11 min-w-0 flex-1 items-center justify-start bg-transparent px-2 text-left hover:bg-transparent"
+              : "pr-1 hover:bg-transparent hover:text-inherit"
+          }
         />
         <button
           type="button"
-          className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className={cn(
+            "inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-md transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            level === 0 ? "-ml-1 w-6 hover:text-inherit" : "hover:bg-muted hover:text-foreground",
+          )}
           aria-expanded={open}
           aria-haspopup="true"
           aria-controls={menuId}
@@ -169,12 +184,16 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
 
 function MobileNavList({ items, locale, depth }: { items: NavItemRecord[]; locale: AppLocale; depth: number }) {
   return (
-    <ul className={cn("space-y-0.5", depth > 0 && "mt-1 border-l border-border pl-3")}>
+    <ul className={cn("space-y-0.5", depth > 0 && "mt-0.5 pl-4")}>
       {items.map((item) => {
         const children = item.submenu?.filter(Boolean) ?? [];
         return (
           <li key={item.id}>
-            <NavLink item={item} locale={locale} className="block" />
+            <NavLink
+              item={item}
+              locale={locale}
+              className="w-full items-center justify-start text-left"
+            />
             {children.length > 0 ? <MobileNavList items={children} locale={locale} depth={depth + 1} /> : null}
           </li>
         );

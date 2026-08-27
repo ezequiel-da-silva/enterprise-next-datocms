@@ -10,6 +10,7 @@ import type {
   ReviewsSectionBlockRecord,
   StatsSectionBlockRecord,
   StepsSectionBlockRecord,
+  TabsSectionBlockRecord,
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
@@ -19,6 +20,7 @@ import { PricingSectionBlock } from "@/components/sections/pricing-section-block
 import { ReviewsSectionBlock } from "@/components/sections/reviews-section-block";
 import { StatsSectionBlock } from "@/components/sections/stats-section-block";
 import { StepsSectionBlock } from "@/components/sections/steps-section-block";
+import { TabsSectionBlock } from "@/components/sections/tabs-section-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -212,6 +214,8 @@ export function StructuredTextBlockView({
       return <StatsSectionBlock record={record as StatsSectionBlockRecord} locale={locale} />;
     case "StepsSectionRecord":
       return <StepsSectionBlock record={record as StepsSectionBlockRecord} locale={locale} />;
+    case "TabsSectionRecord":
+      return <TabsSectionBlock record={record as TabsSectionBlockRecord} locale={locale} />;
     default:
       return unknownBlockFallback(record);
   }
