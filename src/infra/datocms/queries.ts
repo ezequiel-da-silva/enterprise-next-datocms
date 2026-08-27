@@ -340,6 +340,37 @@ const LOGO_GRID_BLOCK = `
   }
 `;
 
+/** Tabs Section — abas de conteúdo (`TabsSectionRecord`). @see fragments/tabs-section.graphql */
+const TABS_SECTION_BLOCK = `
+  ... on TabsSectionRecord {
+    id
+    title
+    subtitle
+    tabs {
+      __typename
+      ... on TabItemRecord {
+        id
+        labelTab
+        title
+        description
+        hasLink
+        hasImage
+        ctaLink {
+          ... on LinkRecord {
+            ${LINK_HERO_CTA_FIELDS}
+          }
+        }
+        mediaImage {
+          __typename
+          ... on ImageBlockRecord {
+            ${IMAGE_BLOCK_RESPONSIVE}
+          }
+        }
+      }
+    }
+  }
+`;
+
 /** Steps Section — timeline de etapas (`StepsSectionRecord`). @see fragments/steps-section.graphql */
 const STEPS_SECTION_BLOCK = `
   ... on StepsSectionRecord {
@@ -432,7 +463,7 @@ const REVIEWS_SECTION_BLOCK = `
 `;
 
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats + Steps.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats + Steps + Tabs.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
@@ -444,6 +475,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${PRICING_SECTION_BLOCK}
   ${STATS_SECTION_BLOCK}
   ${STEPS_SECTION_BLOCK}
+  ${TABS_SECTION_BLOCK}
   ... on FeatureGridRecord {
     id
     titleFeatureGrid

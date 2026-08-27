@@ -1,5 +1,5 @@
 import type { PageBySlugQuery } from "@/infra/datocms/generated/operations.types";
-import type { CtaBannerRecord } from "@/infra/datocms/generated/schema.types";
+import type { CtaBannerRecord, TabsSectionRecord } from "@/infra/datocms/generated/schema.types";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import type { TitleMetaLinkTag } from "react-datocms/seo";
 
@@ -27,7 +27,10 @@ export type CardIconJson = {
   iconName?: string;
 };
 
-export type PageStructuredTextBlock = PageStructuredTextField["blocks"][number];
+/** Inclui Tabs Section mesmo antes do bloco estar na união ST da Page (codegen operations). */
+export type PageStructuredTextBlock =
+  | PageStructuredTextField["blocks"][number]
+  | TabsSectionRecord;
 
 export type FeatureGridRecord = Extract<PageStructuredTextBlock, { __typename: "FeatureGridRecord" }>;
 
@@ -62,6 +65,9 @@ export type StepsSectionBlockRecord = Extract<
 >;
 
 export type StepCardBlockRecord = StepsSectionBlockRecord["steps"][number];
+
+export type TabsSectionBlockRecord = TabsSectionRecord;
+export type TabItemBlockRecord = TabsSectionBlockRecord["tabs"][number];
 
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];
 

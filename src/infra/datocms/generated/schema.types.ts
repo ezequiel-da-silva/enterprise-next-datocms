@@ -3097,7 +3097,7 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
-export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | VideoBlockRecord;
+export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | VideoBlockRecord;
 
 export type PageModelStructuredTextField = {
   __typename?: 'PageModelStructuredTextField';
@@ -4065,6 +4065,72 @@ export type StructuredTextFilter = {
   matches?: InputMaybe<StringMatchesFilter>;
   /** Exclude records based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
+};
+
+/** Block of type 🔽 Tab item (tab_item) */
+export type TabItemRecord = RecordInterface & {
+  __typename?: 'TabItemRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  ctaLink?: Maybe<LinkRecord>;
+  description?: Maybe<Scalars['String']['output']>;
+  hasImage: Scalars['BooleanType']['output'];
+  hasLink: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  labelTab?: Maybe<Scalars['String']['output']>;
+  mediaImage?: Maybe<ImageBlockRecord>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 🔽 Tab item (tab_item) */
+export type TabItemRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Block of type 🔽 Tab item (tab_item) */
+export type TabItemRecordDescriptionArgs = {
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Block of type ⬇️ Tabs section (tabs_section) */
+export type TabsSectionRecord = RecordInterface & {
+  __typename?: 'TabsSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  id: Scalars['ItemId']['output'];
+  subtitle?: Maybe<Scalars['String']['output']>;
+  tabs: Array<TabItemRecord>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type ⬇️ Tabs section (tabs_section) */
+export type TabsSectionRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
 };
 
 export type Tag = {

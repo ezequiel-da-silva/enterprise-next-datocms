@@ -86,6 +86,19 @@
     @apply inline-flex min-h-12 items-center px-3 py-2;
   }
 
+  @keyframes tabs-panel-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .tabs-panel-fade {
+    animation: tabs-panel-fade 200ms ease-out;
+  }
+
   /*
    * Ícone do ThemeToggle por CSS: a primeira pintura fica correta sem JS, por isso o
    * componente pode emitir markup idêntico no servidor e no cliente (sem skeleton nem

@@ -4,6 +4,7 @@
 #import "./fragments/pricing-section.graphql"
 #import "./fragments/stats-section.graphql"
 #import "./fragments/steps-section.graphql"
+#import "./fragments/tabs-section.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -244,6 +245,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         ... on StepsSectionRecord {
           ...StepsSectionBlockFragment
+        }
+        ... on TabsSectionRecord {
+          ...TabsSectionBlockFragment
         }
       }
       inlineBlocks

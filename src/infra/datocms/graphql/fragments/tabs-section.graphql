@@ -1,0 +1,69 @@
+# Fragmento do bloco Tabs Section (`tabs_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Tabs Section**.
+# Depois: `#import` + `... on TabsSectionRecord` em `page-by-slug.graphql`,
+# `${TABS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+fragment TabsSectionBlockFragment on TabsSectionRecord {
+  id
+  title
+  subtitle
+  tabs {
+    __typename
+    ... on TabItemRecord {
+      id
+      labelTab
+      title
+      description
+      hasLink
+      hasImage
+      ctaLink {
+        __typename
+        ... on LinkRecord {
+          id
+          ctaLabel
+          typeContent
+          externalLink
+          openInNewTab
+          ctaLinkAria
+          internalLinkPage {
+            __typename
+            slug
+          }
+          internalLinkPost {
+            __typename
+            postSlug
+          }
+          internalLinkCategory {
+            __typename
+            categorySlug
+          }
+          internalLinkAuthor {
+            __typename
+            authorSlug
+          }
+        }
+      }
+      mediaImage {
+        __typename
+        ... on ImageBlockRecord {
+          id
+          asset {
+            url
+            alt
+            width
+            height
+            blurUpThumb
+          }
+          assetDesktop {
+            url
+            alt
+            width
+            height
+            blurUpThumb
+          }
+        }
+      }
+    }
+  }
+}
