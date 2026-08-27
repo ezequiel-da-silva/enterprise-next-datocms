@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.5.0...next-dato-v0.6.0) (2026-08-27)
+
+
+### Features
+
+* **tabs-section:** implement Tabs Section block with interactive tab functionality; add GraphQL integration and update types for tab handling in structured text ([7b2a70e](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7b2a70e687704d470980e171c2af534da449fb7a))
+
 ## [0.5.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.4.0...next-dato-v0.5.0) (2026-08-27)
 
 
