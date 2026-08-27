@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.4.0...next-dato-v0.5.0) (2026-08-27)
+
+
+### Features
+
+* **zod:** introduce jitless configuration for Zod to enhance CSP compliance; update package.json with browserslist support and import jitless module in contact and user review entities ([d66d538](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d66d53874dcbb2f47c7c3fa084b15100274c0db3))
+
 ## [0.4.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.3.1...next-dato-v0.4.0) (2026-08-26)
 
 
