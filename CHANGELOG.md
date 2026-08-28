@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.6.0...next-dato-v0.7.0) (2026-08-28)
+
+
+### Features
+
+* **feature-grid:** implement Feature Grid block with carousel functionality; add GraphQL integration and update types for card handling ([aeb24c4](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/aeb24c47b2f43802140c4c9d0467e63e885d0d75))
+* **feature-grid:** implement Feature Grid block with carousel functionality; add GraphQL integration and update types for card handling; introduce new components for card display and enhance styling for improved user experience ([4271422](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/4271422bb3b53240077f4fd584796c66012871a4))
+
 ## [0.6.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.5.0...next-dato-v0.6.0) (2026-08-27)
 
 
