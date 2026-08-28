@@ -1,6 +1,24 @@
+/**
+ * CARD (`card`) field toggles.
+ *
+ * CMS booleans: `has_icon`, `has_description`, `has_image`, `has_link`.
+ * `readCdaBool` is true only when the CDA value is exactly `true`.
+ */
+import type { AppLocale } from "@/constants/i18n";
+import type { CardRecord, FileFieldLike, LinkBlockRecord } from "@/infra/datocms/types-page";
+import { readCdaBool, readCdaObject, readCdaString } from "@/lib/datocms/cda-field";
 import type { DatoFontAwesomeIconJson } from "@/lib/datocms/fa-icon-types";
-import type { LinkBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaBool, readCdaObject } from "@/lib/datocms/cda-field";
+import { resolveLinkBlock } from "@/lib/datocms/link-block";
+
+/** Whether the card icon should render (respects CMS `has_icon` toggle). */
+export function resolveCardShowIcon(record: Record<string, unknown>): boolean {
+  return readCdaBool(record, "hasIcon", "has_icon");
+}
+
+/** Whether the card description should render (respects CMS `has_description` toggle). */
+export function resolveCardShowDescription(record: Record<string, unknown>): boolean {
+  return readCdaBool(record, "hasDescription", "has_description");
+}
 
 /** Whether the card image block should render (respects CMS `has_image` toggle). */
 export function resolveCardShowImage(record: Record<string, unknown>): boolean {
@@ -36,4 +54,53 @@ export function resolveCardLinkRecord(record: Record<string, unknown>): LinkBloc
   }
   const legacy = legacyRaw as LinkBlockRecord;
   return legacy.__typename === "LinkRecord" ? legacy : null;
+}
+
+export type FeatureGridCardContent = {
+  title: string;
+  description: string;
+  icon: DatoFontAwesomeIconJson | null;
+  link: LinkBlockRecord | null;
+  linkLabel: string;
+  image: FileFieldLike;
+  desktopImage: FileFieldLike;
+};
+
+function readImageBlock(card: CardRecord): NonNullable<CardRecord["imageCard"]> | null {
+  return (
+    card.imageCard ??
+    readCdaObject<NonNullable<CardRecord["imageCard"]>>(
+      card as Record<string, unknown>,
+      "imageCard",
+      "image_card",
+    )
+  );
+}
+
+export function readFeatureGridCardContent(
+  card: CardRecord,
+  locale: AppLocale,
+): FeatureGridCardContent {
+  const fields = card as Record<string, unknown>;
+  const link = resolveCardLinkRecord(fields);
+  const linkLabel = (link?.ctaLabel ?? "").trim();
+  const validLink =
+    resolveCardShowLink(fields) && link && linkLabel && resolveLinkBlock(link, locale) ? link : null;
+  const imageBlock = readImageBlock(card);
+  const image =
+    resolveCardShowImage(fields) && imageBlock?.asset?.url ? imageBlock.asset : null;
+  const description = resolveCardShowDescription(fields)
+    ? readCdaString(card, "descriptionCard", "description_card")
+    : "";
+  const icon = resolveCardShowIcon(fields) ? readCardIconJson(fields) : null;
+
+  return {
+    title: readCdaString(card, "titleCard", "title_card"),
+    description,
+    icon,
+    link: validLink,
+    linkLabel: validLink ? linkLabel : "",
+    image,
+    desktopImage: image ? imageBlock?.assetDesktop ?? null : null,
+  };
 }

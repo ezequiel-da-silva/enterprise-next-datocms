@@ -173,6 +173,7 @@ export type CardRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   descriptionCard?: Maybe<Scalars['String']['output']>;
   hasDescription: Scalars['BooleanType']['output'];
+  hasIcon: Scalars['BooleanType']['output'];
   hasImage: Scalars['BooleanType']['output'];
   hasLink: Scalars['BooleanType']['output'];
   iconCard?: Maybe<Scalars['JsonField']['output']>;
@@ -553,9 +554,18 @@ export type FeatureGridRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  advancedOptions: Scalars['BooleanType']['output'];
+  autoplay: Scalars['BooleanType']['output'];
+  autoplayInterval?: Maybe<Scalars['IntType']['output']>;
   id: Scalars['ItemId']['output'];
   itemsFeatureGrid: Array<CardRecord>;
+  loop: Scalars['BooleanType']['output'];
+  sectionId?: Maybe<Scalars['String']['output']>;
+  showArrows: Scalars['BooleanType']['output'];
+  showDots: Scalars['BooleanType']['output'];
+  subtitleFeatureGrid?: Maybe<Scalars['String']['output']>;
   titleFeatureGrid?: Maybe<Scalars['String']['output']>;
+  variant?: Maybe<Scalars['String']['output']>;
 };
 
 

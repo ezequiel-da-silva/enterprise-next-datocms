@@ -33,7 +33,6 @@ import Image from "next/image";
 type StructuredTextBlockViewProps = {
   record: PageStructuredTextBlock;
   locale: AppLocale;
-  contentLinkGroup?: boolean;
   submitUserReview?: UserReviewSubmitAction;
 };
 
@@ -126,7 +125,6 @@ async function VideoBlockView({
 export function StructuredTextBlockView({
   record,
   locale,
-  contentLinkGroup = false,
   submitUserReview,
 }: StructuredTextBlockViewProps) {
   switch (record.__typename) {
@@ -187,13 +185,7 @@ export function StructuredTextBlockView({
     case "VideoBlockRecord":
       return <VideoBlockView record={record} locale={locale} />;
     case "FeatureGridRecord":
-      return (
-        <FeatureGridBlock
-          record={record as FeatureGridRecord}
-          locale={locale}
-          contentLinkGroup={contentLinkGroup}
-        />
-      );
+      return <FeatureGridBlock record={record as FeatureGridRecord} locale={locale} />;
     case "FaqGroupRecord":
       return <FaqGroupBlock record={record} />;
     case "CtaBannerRecord":

@@ -75,7 +75,6 @@ export function StructuredTextView({
           <StructuredTextBlockView
             record={record as PageStructuredTextBlock}
             locale={locale}
-            contentLinkGroup={contentLinkGroup}
             submitUserReview={submitUserReview}
           />
         )}
@@ -84,7 +83,6 @@ export function StructuredTextView({
             <StructuredTextBlockView
               record={record as PageStructuredTextBlock}
               locale={locale}
-              contentLinkGroup={contentLinkGroup}
               submitUserReview={submitUserReview}
             />
           </span>

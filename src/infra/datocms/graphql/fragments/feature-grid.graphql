@@ -1,0 +1,78 @@
+# Fragmento do bloco Feature GRID (`feature_grid`).
+#
+# CMS:
+#   Page → Structured text → blocos permitidos → Feature GRID.
+# Variantes: `cards` e `full_bleed`.
+fragment FeatureGridBlockFragment on FeatureGridRecord {
+  id
+  titleFeatureGrid
+  subtitleFeatureGrid
+  advancedOptions
+  variant
+  autoplay
+  autoplayInterval
+  showArrows
+  showDots
+  loop
+  sectionId
+  itemsFeatureGrid {
+    __typename
+    ... on CardRecord {
+      id
+      titleCard
+      hasIcon
+      iconCard
+      hasDescription
+      descriptionCard
+      hasImage
+      imageCard {
+        __typename
+        ... on ImageBlockRecord {
+          id
+          asset {
+            url
+            alt
+            width
+            height
+            blurUpThumb
+          }
+          assetDesktop {
+            url
+            alt
+            width
+            height
+            blurUpThumb
+          }
+        }
+      }
+      hasLink
+      linkCard {
+        __typename
+        ... on LinkRecord {
+          id
+          ctaLabel
+          typeContent
+          externalLink
+          openInNewTab
+          ctaLinkAria
+          internalLinkPage {
+            __typename
+            slug
+          }
+          internalLinkPost {
+            __typename
+            postSlug
+          }
+          internalLinkCategory {
+            __typename
+            categorySlug
+          }
+          internalLinkAuthor {
+            __typename
+            authorSlug
+          }
+        }
+      }
+    }
+  }
+}
