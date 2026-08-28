@@ -5,6 +5,7 @@
 #import "./fragments/stats-section.graphql"
 #import "./fragments/steps-section.graphql"
 #import "./fragments/tabs-section.graphql"
+#import "./fragments/feature-grid.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -152,61 +153,7 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
           # captions { url title }
         }
         ... on FeatureGridRecord {
-          id
-          titleFeatureGrid
-          itemsFeatureGrid {
-            __typename
-            ... on CardRecord {
-              id
-              iconCard
-              titleCard
-              descriptionCard
-              hasImage
-              imageCard {
-                id
-                asset {
-                  url
-                  alt
-                  width
-                  height
-                  blurUpThumb
-                }
-                assetDesktop {
-                  url
-                  alt
-                  width
-                  height
-                  blurUpThumb
-                }
-              }
-              hasLink
-              linkCard {
-                __typename
-                id
-                ctaLabel
-                typeContent
-                externalLink
-                openInNewTab
-                ctaLinkAria
-                internalLinkPage {
-                  __typename
-                  slug
-                }
-                internalLinkPost {
-                  __typename
-                  postSlug
-                }
-                internalLinkCategory {
-                  __typename
-                  categorySlug
-                }
-                internalLinkAuthor {
-                  __typename
-                  authorSlug
-                }
-              }
-            }
-          }
+          ...FeatureGridBlockFragment
         }
         ... on FaqGroupRecord {
           id

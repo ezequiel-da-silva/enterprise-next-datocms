@@ -371,6 +371,45 @@ const TABS_SECTION_BLOCK = `
   }
 `;
 
+/** Feature GRID — carrossel de cards (`FeatureGridRecord`). @see fragments/feature-grid.graphql */
+const FEATURE_GRID_BLOCK = `
+  ... on FeatureGridRecord {
+    id
+    titleFeatureGrid
+    subtitleFeatureGrid
+    advancedOptions
+    variant
+    autoplay
+    autoplayInterval
+    showArrows
+    showDots
+    loop
+    sectionId
+    itemsFeatureGrid {
+      __typename
+      ... on CardRecord {
+        id
+        titleCard
+        hasIcon
+        iconCard
+        hasDescription
+        descriptionCard
+        hasImage
+        imageCard {
+          __typename
+          ... on ImageBlockRecord {
+            ${IMAGE_BLOCK_RESPONSIVE}
+          }
+        }
+        hasLink
+        linkCard {
+          ${LINK_HERO_CTA_FIELDS}
+        }
+      }
+    }
+  }
+`;
+
 /** Steps Section — timeline de etapas (`StepsSectionRecord`). @see fragments/steps-section.graphql */
 const STEPS_SECTION_BLOCK = `
   ... on StepsSectionRecord {
@@ -476,27 +515,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${STATS_SECTION_BLOCK}
   ${STEPS_SECTION_BLOCK}
   ${TABS_SECTION_BLOCK}
-  ... on FeatureGridRecord {
-    id
-    titleFeatureGrid
-    itemsFeatureGrid {
-      __typename
-      ... on CardRecord {
-        id
-        iconCard
-        titleCard
-        descriptionCard
-        hasImage
-        imageCard {
-          ${IMAGE_BLOCK_RESPONSIVE}
-        }
-        hasLink
-        linkCard {
-          ${LINK_HERO_CTA_FIELDS}
-        }
-      }
-    }
-  }
+  ${FEATURE_GRID_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
