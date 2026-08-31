@@ -14,9 +14,10 @@ export function buildAuthorPersonJsonLd(
   const image =
     author.avatarBio?.asset?.url ?? author.avatarBio?.assetDesktop?.url ?? undefined;
   const description = author.authorBio ? dastPlainText(author.authorBio) || undefined : undefined;
-  const socialUrl = author.authorSocialLinks?.url?.trim();
-  const sameAs =
-    socialUrl && isSafeExternalHref(socialUrl) ? [socialUrl] : undefined;
+  const sameAs = author.authorSocialLinks
+    .map((link) => link.url?.trim() ?? "")
+    .filter((href) => href && isSafeExternalHref(href));
+  const jobTitle = author.authorRole?.trim() || undefined;
 
   return {
     "@type": "Person",
@@ -25,6 +26,7 @@ export function buildAuthorPersonJsonLd(
     url,
     ...(image ? { image } : {}),
     ...(description ? { description } : {}),
-    ...(sameAs ? { sameAs } : {}),
+    ...(jobTitle ? { jobTitle } : {}),
+    ...(sameAs.length > 0 ? { sameAs } : {}),
   };
 }

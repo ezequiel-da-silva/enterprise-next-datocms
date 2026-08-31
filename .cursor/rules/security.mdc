@@ -30,6 +30,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Tokens só no servidor: `DATOCMS_API_TOKEN`, `DATOCMS_DRAFT_CDA_TOKEN`, `DATOCMS_PREVIEW_SECRET`.
 - Preview: comparar segredos com `isSecretEqual()` (`src/lib/security/compare-secret.ts`) — não `===` direto em rotas públicas.
 - `DATOCMS_PREVIEW_SECRET` obrigatório para `/api/draft` e `/api/preview-links`; sem secret → 500/401, nunca draft aberto.
+- `DATOCMS_REVALIDATE_SECRET` obrigatório para `POST /api/revalidate` (webhook Dato); comparar com `isSecretEqual()`.
 
 ## Draft Mode e preview
 
@@ -55,6 +56,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 ## APIs (`src/app/api/`)
 
 - `preview-links`: POST + `token` na query; CORS **só** origens DatoCMS (`resolveDatoCorsOrigin`) — sem `*`.
+- `revalidate`: POST do webhook Dato; `Authorization: Bearer` ou `?token=`; sem CORS `*`. Receita: [`docs/DATOCMS.md`](../../docs/DATOCMS.md).
 - Respostas de erro genéricas em auth (401/422); sem vazar stack em produção.
 
 ## Cookies

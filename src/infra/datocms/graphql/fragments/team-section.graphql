@@ -1,0 +1,19 @@
+# Fragmento do bloco Team Section (`team_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Structured text → blocos permitidos → incluir **Team Section**.
+#   Publicar `author_role` no model Author.
+# Depois: `#import` + `... on TeamSectionRecord` em `page-by-slug.graphql`,
+# `${TEAM_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#
+# `members` são links para Author (mín. 1 no CMS). Bio ST não entra no card.
+#import "./author.graphql"
+
+fragment TeamSectionBlockFragment on TeamSectionRecord {
+  id
+  title
+  subtitle
+  members {
+    ...AuthorCardFragment
+  }
+}

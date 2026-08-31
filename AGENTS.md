@@ -74,4 +74,4 @@ Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GAT
 
 ## Security docs
 
-[docs/SECURITY.md](docs/SECURITY.md) · CI: [`.github/workflows/security.yml`](.github/workflows/security.yml)
+[docs/SECURITY.md](docs/SECURITY.md) · Revalidate: [docs/DATOCMS.md](docs/DATOCMS.md) · CI: [`.github/workflows/security.yml`](.github/workflows/security.yml)

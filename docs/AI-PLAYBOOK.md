@@ -17,6 +17,7 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 | New DatoCMS ST block | `datocms-blocks.mdc` | `add-datocms-block` |
 | Page metadata / JSON-LD | `web-excellence.mdc` | `seo-aeo-feature` |
 | CSP, draft, API, forms | `security.mdc` | — |
+| Dato webhook / cache tags | `datocms-next.mdc` + [DATOCMS.md](./DATOCMS.md) | — |
 | RSC, error boundaries, client boundaries | `react-rsc.mdc` | — |
 | Layer / import boundaries | `architecture.mdc` | — |
 | Unit tests for resolvers | `testing.mdc` | — |

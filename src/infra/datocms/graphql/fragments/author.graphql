@@ -1,0 +1,44 @@
+# Campos do model Author usados no card da Team Section e reutilizáveis noutros blocos.
+#
+# `authorRole` é localized (string opcional). `authorBio` (Structured Text) não
+# entra no card — omitir do CDA para não inflar a Page ST.
+# `authorSocialLinks` pode ser single block ou modular (vários Social Link).
+fragment AuthorCardFragment on AuthorRecord {
+  id
+  authorName
+  authorSlug
+  authorRole
+  avatarBio {
+    __typename
+    ... on ImageBlockRecord {
+      id
+      asset {
+        url
+        alt
+        width
+        height
+        blurUpThumb
+      }
+      assetDesktop {
+        url
+        alt
+        width
+        height
+        blurUpThumb
+      }
+    }
+  }
+  authorSocialLinks {
+    id
+    plataforma
+    url
+    image {
+      url
+      alt
+      width
+      height
+    }
+    openInNewTab
+    linkAria
+  }
+}
