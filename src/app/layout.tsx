@@ -1,5 +1,5 @@
 import { buildThemeCssVariables } from "@/config/theme.config";
-import { DraftChrome } from "@/components/patterns/draft-chrome";
+import { DraftChrome, DraftContentLink } from "@/components/patterns/draft-chrome";
 import { SkipLink } from "@/components/patterns/skip-link";
 import { GlobalHeader } from "@/components/patterns/global-header";
 import { SiteFooter } from "@/components/patterns/site-footer";
@@ -146,6 +146,7 @@ export default async function RootLayout({
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: themeCss }}
         />
+        <DraftContentLink />
       </body>
     </html>
   );

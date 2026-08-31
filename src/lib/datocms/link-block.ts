@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { recordToWebsiteRoute } from "@/lib/datocms/record-to-website-route";
+import { stripStega } from "react-datocms/stega";
 
 export type LinkTypeContent = "external" | "page" | "post" | "category" | "author";
 
@@ -78,11 +79,13 @@ export type ResolvedLinkBlock =
  * Lê o bloco Link do Dato (campos camelCase do GraphQL ou snake_case vindos de JSON).
  */
 export function resolveLinkBlock(record: UnknownRecord, locale: AppLocale): ResolvedLinkBlock | null {
-  const typeRaw = readString(record, "typeContent", "type_content")?.toLowerCase();
+  const rawType = readString(record, "typeContent", "type_content");
+  const typeRaw = rawType ? stripStega(rawType).toLowerCase() : null;
   if (!typeRaw) return null;
 
   const openInNewTab = readBool(record, "openInNewTab", "open_in_new_tab");
-  const ariaLabel = readString(record, "ctaLinkAria", "cta_link_aria");
+  const rawAriaLabel = readString(record, "ctaLinkAria", "cta_link_aria");
+  const ariaLabel = rawAriaLabel ? stripStega(rawAriaLabel) : null;
   const label = readString(record, "ctaLabel", "cta_label");
 
   if (typeRaw === "external") {

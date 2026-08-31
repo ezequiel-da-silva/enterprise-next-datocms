@@ -10,6 +10,7 @@
  */
 
 import type { AppLocale } from "@/constants/i18n";
+import { stripStega } from "react-datocms/stega";
 
 export type PricingPriceType = "paid" | "free" | "upon-request" | "custom";
 export type PricingCurrency = "brl" | "usd" | "eur";
@@ -63,7 +64,7 @@ const NUMBER_LOCALE: Record<AppLocale, string> = {
 };
 
 function normalizeToken(raw: string): string {
-  return raw.trim().toLowerCase().replace(/[\s]+/g, "_").replace(/-/g, "-");
+  return stripStega(raw).trim().toLowerCase().replace(/[\s]+/g, "_").replace(/-/g, "-");
 }
 
 export function parsePriceType(raw: string | null | undefined): PricingPriceType {

@@ -90,7 +90,12 @@ async function VideoBlockView({
   const nonce = videoLd ? await getNonce() : undefined;
 
   return (
-    <figure {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6">
+    <figure
+      {...cmsBlockAttrs(record)}
+      data-datocms-content-link-boundary=""
+      data-datocms-content-link-url={record._editingUrl ?? undefined}
+      className="my-6"
+    >
       {videoLd ? <JsonLdScriptSync graph={videoLd} nonce={nonce} /> : null}
       <video
         controls

@@ -9,15 +9,18 @@ export async function DraftChrome() {
   }
 
   return (
-    <>
-      <div className="border-b border-amber-600/40 bg-amber-950/90 px-4 py-2 text-center text-sm text-amber-50 backdrop-blur">
-        <span className="font-medium">Draft Mode ativo</span>
-        {" · "}
-        <Link className="underline underline-offset-2 hover:text-white" href="/api/disable-draft?redirect=/">
-          Sair do preview
-        </Link>
-      </div>
-      <DatoContentLinkBridge />
-    </>
+    <div className="border-b border-amber-600/40 bg-amber-950/90 px-4 py-2 text-center text-sm text-amber-50 backdrop-blur">
+      <span className="font-medium">Draft Mode ativo</span>
+      {" · "}
+      <Link className="underline underline-offset-2 hover:text-white" href="/api/disable-draft?redirect=/">
+        Sair do preview
+      </Link>
+    </div>
   );
+}
+
+/** Montado no fim do body para não marcar segmentos streamed antes da hidratação. */
+export async function DraftContentLink() {
+  const draft = await draftMode();
+  return draft.isEnabled ? <DatoContentLinkBridge /> : null;
 }

@@ -16,6 +16,7 @@ import {
 } from "@/lib/seo/build-reviews-jsonld";
 import { clampLayoutDimensions } from "@/lib/datocms-image-loader";
 import Image from "next/image";
+import { stripStega } from "react-datocms/stega";
 
 type ReviewItem = ReviewsSectionBlockRecord["reviews"][number];
 
@@ -55,7 +56,7 @@ function readReviews(record: ReviewsSectionBlockRecord, anonymous: string): Pars
 }
 
 function initialsFromName(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const parts = stripStega(name).trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
   if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase();
   return `${parts[0]![0] ?? ""}${parts[1]![0] ?? ""}`.toUpperCase();

@@ -32,10 +32,14 @@ export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: Gl
   const logo = data?.logo;
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
   const showTheme = data?.showThemeToggle === true;
-  const themeToggle = showTheme ? <ThemeToggle initialMode={initialThemeMode} /> : null;
-  const localeSwitcher: ReactNode = <LocaleSwitcher locale={locale} hrefs={localeHrefs} />;
+  const themeToggle = showTheme ? (
+    <ThemeToggle key="header-theme-toggle" initialMode={initialThemeMode} />
+  ) : null;
+  const localeSwitcher: ReactNode = (
+    <LocaleSwitcher key="header-locale-switcher" locale={locale} hrefs={localeHrefs} />
+  );
   const localeSwitcherBlock: ReactNode = (
-    <LocaleSwitcher locale={locale} hrefs={localeHrefs} variant="block" />
+    <LocaleSwitcher key="header-locale-switcher-block" locale={locale} hrefs={localeHrefs} variant="block" />
   );
   const homeHref = homeBreadcrumbPath(locale);
   const homeLabel = homeAriaLabel(locale);

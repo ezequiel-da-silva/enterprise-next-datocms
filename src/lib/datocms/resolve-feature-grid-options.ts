@@ -14,6 +14,7 @@
  * Autoplay só aplica com `advanced_options`. Sem `loop`, o autoplay pára no último
  * snap (não volta ao início à revelia do toggle Loop).
  */
+import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
 export type FeatureGridVariant = "cards" | "full_bleed";
 
@@ -47,8 +48,7 @@ function readOptionalBool(record: Record<string, unknown>, camel: string, snake:
 }
 
 function readOptionalString(record: Record<string, unknown>, camel: string, snake: string): string | undefined {
-  const raw = record[camel] ?? record[snake];
-  return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
+  return readCdaStringForLogic(record, camel, snake) || undefined;
 }
 
 function readOptionalNumber(record: Record<string, unknown>, camel: string, snake: string): number | undefined {

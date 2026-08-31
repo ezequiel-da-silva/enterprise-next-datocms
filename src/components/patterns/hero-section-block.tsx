@@ -4,7 +4,13 @@ import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-pic
 import { SmartLink } from "@/components/patterns/smart-link";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { FileFieldLike, HeroSectionRecord, LinkBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaBool, readCdaObject, readCdaString } from "@/lib/datocms/cda-field";
+import {
+  readCdaArray,
+  readCdaBool,
+  readCdaObject,
+  readCdaString,
+  readCdaStringForLogic,
+} from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
 import { cn } from "@/lib/cn";
@@ -27,7 +33,7 @@ function imageBlockDesktopAsset(
 }
 
 function readLayout(record: HeroSectionRecord): HeroLayout {
-  const raw = readCdaString(record, "layoutHero", "layout_hero").toLowerCase();
+  const raw = readCdaStringForLogic(record, "layoutHero", "layout_hero").toLowerCase();
   const compact = raw.replace(/[\s-]+/g, "_");
   if (/_overlay\b/.test(compact) || compact === "overlay") return "image_overlay";
   if (/_side\b/.test(compact) || /\bimage_side\b/.test(compact)) return "image_side";
@@ -89,23 +95,57 @@ function HeroButtons({ record, locale }: { record: HeroSectionRecord; locale: Ap
   );
 }
 
-function HeroSubtitle({ record, locale, className }: { record: HeroSectionRecord; locale: AppLocale; className?: string }) {
+function HeroSubtitle({
+  record,
+  locale,
+  className,
+  contentLinkGroup,
+}: {
+  record: HeroSectionRecord;
+  locale: AppLocale;
+  className?: string;
+  contentLinkGroup: boolean;
+}) {
   const data = subtitleData(record);
   if (!data || !structuredTextValueHasContent(data.value)) return null;
   return (
     <div className={cn("mt-4 text-lg text-muted-foreground [&_p]:mt-0", className)}>
-      <StructuredTextRenderer data={data as unknown as CdaStructuredTextValue} contentLinkGroup={false} locale={locale} />
+      <StructuredTextRenderer
+        data={data as unknown as CdaStructuredTextValue}
+        contentLinkGroup={contentLinkGroup}
+        locale={locale}
+      />
     </div>
   );
 }
 
-function HeroTitle({ title, className }: { title: string; className?: string }) {
-  return (
-    <h1 className={cn("text-balance text-4xl font-semibold tracking-tight text-foreground md:text-5xl", className)}>{title}</h1>
+function HeroTitle({
+  title,
+  className,
+  contentLinkGroup,
+}: {
+  title: string;
+  className?: string;
+  contentLinkGroup: boolean;
+}) {
+  const heading = (
+    <h1 className={cn("text-balance text-4xl font-semibold tracking-tight text-foreground md:text-5xl", className)}>
+      {title}
+    </h1>
   );
+  if (!contentLinkGroup) return heading;
+  return <div data-datocms-content-link-group="">{heading}</div>;
 }
 
-export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord; locale: AppLocale }) {
+export function HeroSectionBlock({
+  record,
+  locale,
+  contentLinkGroup = false,
+}: {
+  record: HeroSectionRecord;
+  locale: AppLocale;
+  contentLinkGroup?: boolean;
+}) {
   const layout = readLayout(record);
   const title = readCdaString(record, "titleHero", "title_hero");
   const showHeroImg = readCdaBool(record, "showImageHero", "show_image_hero");
@@ -116,8 +156,8 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
 
   const textColumn = (
     <div className="min-w-0 flex-1">
-      {title ? <HeroTitle title={title} /> : null}
-      <HeroSubtitle record={record} locale={locale} />
+      {title ? <HeroTitle title={title} contentLinkGroup={contentLinkGroup} /> : null}
+      <HeroSubtitle record={record} locale={locale} contentLinkGroup={contentLinkGroup} />
       <HeroButtons record={record} locale={locale} />
     </div>
   );
@@ -192,10 +232,17 @@ export function HeroSectionBlock({ record, locale }: { record: HeroSectionRecord
                   : "border-border bg-background/95 text-foreground ring-border/60",
               )}
             >
-              {title ? <HeroTitle title={title} className={hasOverlayBg ? "text-white" : undefined} /> : null}
+              {title ? (
+                <HeroTitle
+                  title={title}
+                  className={hasOverlayBg ? "text-white" : undefined}
+                  contentLinkGroup={contentLinkGroup}
+                />
+              ) : null}
               <HeroSubtitle
                 record={record}
                 locale={locale}
+                contentLinkGroup={contentLinkGroup}
                 className={
                   hasOverlayBg
                     ? "mt-4 text-lg text-white/95 [&_p]:mt-0 [&_a]:text-white"

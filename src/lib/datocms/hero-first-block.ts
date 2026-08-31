@@ -1,12 +1,12 @@
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import type { HeroSectionRecord } from "@/infra/datocms/types-page";
-import { readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
 const HERO_TYPENAMES = new Set(["HeroSectionBlockRecord", "HeroSectionRecord"]);
 
 function pageHeroSuppliesH1(heroPage: HeroSectionRecord | null | undefined): boolean {
   if (!heroPage) return false;
-  return readCdaString(heroPage, "titleHero", "title_hero").length > 0;
+  return readCdaStringForLogic(heroPage, "titleHero", "title_hero").length > 0;
 }
 
 /**
@@ -28,6 +28,5 @@ export function heroFirstBlockSuppliesH1(
   if (!first?.__typename || !HERO_TYPENAMES.has(first.__typename)) {
     return false;
   }
-  const title = first.titleHero ?? first.title_hero;
-  return typeof title === "string" && title.trim().length > 0;
+  return readCdaStringForLogic(first, "titleHero", "title_hero").length > 0;
 }

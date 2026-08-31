@@ -11,6 +11,7 @@
  *
  * Select values: `grid` | `marquee`. O CMS pode gravar o label (`GRID`) — normalizamos.
  */
+import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
 export type LogoGridLayoutStyle = "grid" | "marquee";
 
@@ -32,8 +33,7 @@ function readOptionalBool(record: Record<string, unknown>, camel: string, snake:
 }
 
 function readOptionalString(record: Record<string, unknown>, camel: string, snake: string): string | undefined {
-  const raw = record[camel] ?? record[snake];
-  return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
+  return readCdaStringForLogic(record, camel, snake) || undefined;
 }
 
 function parseLayoutStyle(raw: string): LogoGridLayoutStyle {

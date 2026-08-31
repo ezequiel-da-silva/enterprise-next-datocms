@@ -8,7 +8,7 @@
 #import "./fragments/feature-grid.graphql"
 #import "./fragments/team-section.graphql"
 
-query PageBySlug($slug: String!, $locale: SiteLocale!) {
+query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
     id
     title
@@ -133,6 +133,8 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         ... on VideoBlockRecord {
           id
+          # O CDA exige o header X-Base-Editing-Url para resolver _editingUrl: pedir só em draft.
+          _editingUrl @include(if: $withEditingUrl)
           asset {
             url
             title

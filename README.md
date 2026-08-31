@@ -18,6 +18,24 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 Copy [`.env.example`](.env.example) to `.env` and configure DatoCMS tokens before fetching CMS content.
 
+### DatoCMS cache revalidation
+
+Create a dedicated random secret (do not reuse `DATOCMS_PREVIEW_SECRET`):
+
+```bash
+openssl rand -hex 32
+```
+
+1. Add the result locally as `DATOCMS_REVALIDATE_SECRET` in `.env`.
+2. In Vercel, add `DATOCMS_REVALIDATE_SECRET` as a **Secret** for Production and Preview, then redeploy.
+3. In DatoCMS, create a webhook for record create/update/delete/publish/unpublish:
+   - URL: `https://<your-domain>/api/revalidate`
+   - Header: `Authorization: Bearer <same-secret>`
+   - Payload: API v3
+4. Send a ping or publish a record. A valid request returns HTTP 200 with `"revalidated": true`; a different secret returns 401.
+
+Never commit the generated value. Full webhook and cache-tag mapping: [docs/DATOCMS.md](docs/DATOCMS.md).
+
 ## For AI agents
 
 Start with [AGENTS.md](AGENTS.md), then [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) and [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md).
