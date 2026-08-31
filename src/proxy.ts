@@ -7,6 +7,8 @@ import {
 } from "@/constants/i18n";
 import { NONCE_HEADER } from "@/constants/security";
 import { THEME_COOKIE_NAME, isThemeMode, type ThemeMode } from "@/constants/theme";
+import { getRedirects, pickRedirectRecords } from "@/infra/datocms/get-redirects";
+import { matchRedirect } from "@/lib/datocms/match-redirect";
 
 const DATO_ADMIN_FRAME =
   process.env.DATOCMS_ADMIN_FRAME_ANCESTOR ?? "https://boilerplate-dato.admin.datocms.com";
@@ -80,7 +82,7 @@ function applySecurityHeaders(response: NextResponse, nonce: string, isDev: bool
   return response;
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const nonce = createNonce();
   const isDev = process.env.NODE_ENV === "development";
   const pathname = request.nextUrl.pathname;
@@ -89,6 +91,22 @@ export function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = `/${DEFAULT_APP_LOCALE}`;
     return applySecurityHeaders(NextResponse.redirect(url, 308), nonce, isDev);
+  }
+
+  if (!pathname.startsWith("/api")) {
+    const records = pickRedirectRecords(await getRedirects());
+    const matched = matchRedirect(pathname, records);
+    if (matched) {
+      const isExternal = /^https:\/\//i.test(matched.destination);
+      const target = isExternal
+        ? matched.destination
+        : (() => {
+            const url = request.nextUrl.clone();
+            url.pathname = matched.destination;
+            return url;
+          })();
+      return applySecurityHeaders(NextResponse.redirect(target, matched.status), nonce, isDev);
+    }
   }
 
   const requestHeaders = new Headers(request.headers);

@@ -4,6 +4,11 @@ type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 import type * as Types from './schema.types';
 
+export type AllRedirectsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllRedirectsQuery = { allRedirects: Array<{ id: string, fromPathRedirect: string | null, toPathRedirect: string | null, statusRedirect: string | null }> };
+
 export type AuthorCardFragmentFragment = { id: string, authorName: string | null, authorSlug: string | null, authorRole: string | null, avatarBio: { __typename: 'ImageBlockRecord', id: string, asset: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null } | null, authorSocialLinks: Array<{ id: string, plataforma: string | null, url: string | null, openInNewTab: boolean, linkAria: string | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null }> };
 
 export type CtaBannerBlockFieldsFragment = { id: string, title: string | null, hasEyebrow: boolean, eyebrow: string | null, hasDescription: boolean, description: string | null, advancedOptions: boolean, variant: string | null, bgTheme: string | null, sectionId: string | null, hasImage: boolean, buttons: Array<{ __typename: 'LinkRecord', id: string, ctaLabel: string | null, typeContent: string | null, externalLink: string | null, openInNewTab: boolean, ctaLinkAria: string | null, internalLinkPage: { __typename: 'PageRecord', slug: string | null } | null, internalLinkPost: { __typename: 'PostRecord', postSlug: string | null } | null, internalLinkCategory: { __typename: 'CategoryRecord', categorySlug: string | null } | null, internalLinkAuthor: { __typename: 'AuthorRecord', authorSlug: string | null } | null }>, imageBanner: Array<{ id: string, asset: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null }> };

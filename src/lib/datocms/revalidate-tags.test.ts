@@ -107,6 +107,14 @@ describe("tagsToRevalidateFromWebhook", () => {
     expect(settings).toContain(DATOCMS_CACHE_TAGS.globalSettings);
   });
 
+  it("maps redirect records to datocms:redirects", () => {
+    const tags = tagsToRevalidateFromWebhook({
+      entity: { relationships: { item_type: { data: { id: "t" } } } },
+      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "redirect" } }],
+    });
+    expect(tags).toEqual([DATOCMS_CACHE_TAGS.redirects]);
+  });
+
   it("uses coarse tags for CDA cache-tag events and unknown models", () => {
     const cda = tagsToRevalidateFromWebhook({ entity: { attributes: { tags: ["opaque-1"] } } });
     expect(cda).toEqual(coarseDatocmsCacheTags());

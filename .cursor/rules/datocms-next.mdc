@@ -25,6 +25,7 @@ Complements [`react-rsc.mdc`](react-rsc.mdc) and [`datocms-blocks.mdc`](datocms-
 | `get-navigation` | `NAV_TAG`, `navigation:${locale}` |
 | `get-site-seo` | `datocms:site-seo`, `site-seo:${locale}` |
 | sitemap / search / home | existing `SITEMAP_TAG` / `SEARCH_TAG` / `datocms:site` |
+| `get-redirects` | `datocms:redirects` |
 
 A DatoCMS webhook should call `POST /api/revalidate` ([`docs/DATOCMS.md`](../../docs/DATOCMS.md)) so `revalidateTag` runs on those same strings. Time-based `revalidate` remains the fallback.
 
