@@ -70,6 +70,7 @@ Secrets opcionais no GitHub (**Settings → Secrets and variables → Actions**)
 | `DATOCMS_API_TOKEN` | Build/SSG com dados reais do CMS |
 | `DATOCMS_DRAFT_CDA_TOKEN` | Se o build precisar de rascunhos |
 | `DATOCMS_PREVIEW_SECRET` | Smoke tests 401/422 no draft (CI usa fallback se ausente) |
+| `DATOCMS_REVALIDATE_SECRET` | Não usado no CI; obrigatório em produção para `POST /api/revalidate` |
 
 ## Ferramentas externas (staging / produção)
 
@@ -93,6 +94,7 @@ Com HTTPS e domínio público:
 - [ ] Links externos do CMS com `javascript:` não renderizam (`isSafeExternalHref`)
 - [ ] Tokens Dato **não** aparecem no bundle do browser (DevTools → Sources)
 - [ ] `.env` fora do git; produção com secrets no painel do host
+- [ ] Webhook Dato → `POST /api/revalidate` (200 com secret correcto; 401 sem)
 
 ## Limitações
 

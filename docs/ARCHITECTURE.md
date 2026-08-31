@@ -68,6 +68,7 @@ flowchart TB
 2. **Normalize**: `normalizePageBySlugResult()` in [`types-page.ts`](../src/infra/datocms/types-page.ts).
 3. **Render**: Page RSC → `CmsPageArticle` → hero + `PageStructuredText`.
 4. **Structured Text**: `StructuredTextView` → `StructuredTextBlockView` → block components (`FaqGroupBlock`, `CtaBannerBlock`, etc.).
+5. **Cache**: tags em `datocmsFetch`; publicação no Dato chama [`POST /api/revalidate`](../src/app/api/revalidate/route.ts) ([DATOCMS.md](./DATOCMS.md)).
 
 Runtime queries live in `queries.ts`. Codegen input lives in `src/infra/datocms/graphql/*.graphql` → `generated/operations.types.ts`.
 
