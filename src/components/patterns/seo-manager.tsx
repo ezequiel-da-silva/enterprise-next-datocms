@@ -1,4 +1,5 @@
 import { getNonce } from "@/lib/nonce";
+import { stripStega } from "react-datocms/stega";
 
 export type JsonLdNode = Record<string, unknown>;
 
@@ -22,6 +23,7 @@ export function JsonLdScriptSync({ graph, nonce }: JsonLdScriptSyncProps) {
     }
     return node;
   });
+  const cleanPayload = stripStega(payload);
 
   return (
     <script
@@ -29,7 +31,7 @@ export function JsonLdScriptSync({ graph, nonce }: JsonLdScriptSyncProps) {
       nonce={nonce ?? undefined}
       suppressHydrationWarning
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify({ "@context": "https://schema.org", "@graph": payload }),
+        __html: JSON.stringify({ "@context": "https://schema.org", "@graph": cleanPayload }),
       }}
     />
   );

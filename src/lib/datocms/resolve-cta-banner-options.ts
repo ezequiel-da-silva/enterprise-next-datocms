@@ -8,6 +8,7 @@
  * | Background theme         | bg_theme          | primary                            |
  * | Section ID (âncora)      | section_id        | — (omitido)                        |
  */
+import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
 export type CtaBannerVariant = "centered" | "split" | "card_inset";
 export type CtaBannerBgTheme = "primary" | "muted" | "transparent";
@@ -31,8 +32,7 @@ function readOptionalBool(record: Record<string, unknown>, camel: string, snake:
 }
 
 function readOptionalString(record: Record<string, unknown>, camel: string, snake: string): string | undefined {
-  const raw = record[camel] ?? record[snake];
-  return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
+  return readCdaStringForLogic(record, camel, snake) || undefined;
 }
 
 function isAdvancedOptionsEnabled(record: Record<string, unknown>): boolean {

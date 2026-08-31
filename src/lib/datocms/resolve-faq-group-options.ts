@@ -9,6 +9,7 @@
  * | Enable FAQ schema             | enable_faq_schema    | true                              |
  * | Header alignment              | header_alignment     | left (left | center | right)      |
  */
+import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
 export type FaqAccordionMode = "single" | "multiple";
 export type FaqHeaderAlignment = "left" | "center" | "right";
@@ -54,8 +55,7 @@ function readOptionalBool(record: Record<string, unknown>, camel: string, snake:
 }
 
 function readOptionalString(record: Record<string, unknown>, camel: string, snake: string): string | undefined {
-  const raw = record[camel] ?? record[snake];
-  return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
+  return readCdaStringForLogic(record, camel, snake) || undefined;
 }
 
 function isAdvancedOptionsEnabled(record: Record<string, unknown>): boolean {

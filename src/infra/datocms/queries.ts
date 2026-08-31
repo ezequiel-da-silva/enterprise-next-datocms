@@ -205,6 +205,7 @@ const ST_BLOCKS_MEDIA_ONLY = `
   }
   ... on VideoBlockRecord {
     id
+    _editingUrl
     asset {
       url
       title

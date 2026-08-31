@@ -8,7 +8,12 @@
  */
 import type { FileFieldLike } from "@/infra/datocms/types-page";
 import type { SocialLinkNav } from "@/infra/datocms/types-navigation";
-import { readCdaArray, readCdaBlock, readCdaString } from "@/lib/datocms/cda-field";
+import {
+  readCdaArray,
+  readCdaBlock,
+  readCdaString,
+  readCdaStringForLogic,
+} from "@/lib/datocms/cda-field";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
 
 export type TeamMemberAvatar = {
@@ -46,9 +51,9 @@ function readSocialItem(raw: Record<string, unknown>): TeamMemberSocial | null {
   const image = readCdaObjectOrNull(raw);
   return {
     id,
-    plataforma: readCdaString(raw, "plataforma", "plataforma") || null,
+    plataforma: readCdaStringForLogic(raw, "plataforma", "plataforma") || null,
     url: readCdaString(raw, "url", "url") || null,
-    linkAria: readCdaString(raw, "linkAria", "link_aria") || null,
+    linkAria: readCdaStringForLogic(raw, "linkAria", "link_aria") || null,
     openInNewTab: raw.openInNewTab === false || raw.open_in_new_tab === false ? false : true,
     image,
   };

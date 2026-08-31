@@ -1,9 +1,19 @@
+import { stripStega } from "react-datocms/stega";
+
 type RecordLike = Record<string, unknown>;
 
 /** Lê campo camelCase ou snake_case legado vindo do CDA / JSON antigo. */
 export function readCdaString(record: RecordLike, camel: string, snake: string): string {
   const raw = record[camel] ?? record[snake];
   return typeof raw === "string" ? raw.trim() : "";
+}
+
+/**
+ * Lê texto usado como configuração/chave, removendo metadados invisíveis do Content Link.
+ * Para copy renderizada, use `readCdaString()` para preservar o click-to-edit.
+ */
+export function readCdaStringForLogic(record: RecordLike, camel: string, snake: string): string {
+  return stripStega(readCdaString(record, camel, snake));
 }
 
 /** Lê boolean camelCase ou snake_case legado. */

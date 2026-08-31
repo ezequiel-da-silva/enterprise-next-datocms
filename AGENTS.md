@@ -66,6 +66,7 @@ Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GAT
 3. **`dynamic()` on Server Components** in Structured Text — import blocks directly.
 4. **`SmartLink` inside `Button asChild`** — pass `tone="inherit"` so button colors are not overridden by `text-primary`.
 5. **GraphQL drift** — update both [`queries.ts`](src/infra/datocms/queries.ts) and [`page-by-slug.graphql`](src/infra/datocms/graphql/page-by-slug.graphql), then codegen.
+6. **Content Link drift in CMS blocks** — every ST block root needs a boundary; Structured Text needs a group; non-render string logic must use `readCdaStringForLogic()` / `stripStega()`; textless blocks need `_editingUrl`.
 
 ## Do not edit
 

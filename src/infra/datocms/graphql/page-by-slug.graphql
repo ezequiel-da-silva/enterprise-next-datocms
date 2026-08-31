@@ -133,6 +133,7 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         ... on VideoBlockRecord {
           id
+          _editingUrl
           asset {
             url
             title

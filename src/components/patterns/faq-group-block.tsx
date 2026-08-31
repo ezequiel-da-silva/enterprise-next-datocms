@@ -50,6 +50,7 @@ export async function FaqGroupBlock({ record }: FaqGroupBlockProps) {
   return (
     <section
       {...cmsBlockAttrs(record)}
+      data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full"
       aria-labelledby={title ? headingId : undefined}
     >

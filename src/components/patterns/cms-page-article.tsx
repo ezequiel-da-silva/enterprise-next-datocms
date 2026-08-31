@@ -44,6 +44,9 @@ export async function CmsPageArticle({
         { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
         { name: page.title, path: canonicalPath },
       ]);
+  const pageTitleHeading = (
+    <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{page.title}</h1>
+  );
 
   return (
     <>
@@ -51,9 +54,15 @@ export async function CmsPageArticle({
       <Container as="article" size={wideLayout ? "md" : "sm"} name="CmsPageArticle" className={page.heroPage ? (isHome ? "pb-12 pt-0" : "pb-12 pt-6") : "py-12"}>
         {isHome ? null : <BreadcrumbNav locale={locale} items={breadcrumbItems} />}
         <div className={isHome ? undefined : "mt-4"}>
-          {page.heroPage ? <HeroSectionBlock record={page.heroPage} locale={locale} /> : null}
+          {page.heroPage ? (
+            <HeroSectionBlock record={page.heroPage} locale={locale} contentLinkGroup={contentLinkGroup} />
+          ) : null}
           {!heroH1 ? (
-            <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{page.title}</h1>
+            contentLinkGroup ? (
+              <div data-datocms-content-link-group="">{pageTitleHeading}</div>
+            ) : (
+              pageTitleHeading
+            )
           ) : null}
           <PageStructuredText
             data={page.structuredText}

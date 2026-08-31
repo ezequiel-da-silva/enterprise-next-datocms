@@ -15,6 +15,7 @@ import {
 } from "@/lib/datocms/resolve-team-section";
 import { buildTeamSectionJsonLd } from "@/lib/seo/build-team-section-jsonld";
 import Link from "next/link";
+import { stripStega } from "react-datocms/stega";
 
 type TeamSectionBlockProps = {
   record: TeamSectionBlockRecord;
@@ -28,7 +29,7 @@ const FALLBACK_SECTION_LABEL: Record<AppLocale, string> = {
 };
 
 function authorInitials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean).slice(0, 2);
+  const parts = stripStega(name).trim().split(/\s+/).filter(Boolean).slice(0, 2);
   return parts.map((part) => part.charAt(0).toUpperCase()).join("");
 }
 
