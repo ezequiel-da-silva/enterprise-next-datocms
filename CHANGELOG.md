@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.9.0...next-dato-v0.10.0) (2026-08-31)
+
+
+### Features
+
+* **redirects:** implement DatoCMS redirects functionality; add GraphQL queries and types for managing redirects, enhance proxy logic to handle redirects with security headers, and update tests for redirect matching and handling ([af92b74](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/af92b746dddb93a1e7375772d61b7e16ce94fead))
+
 ## [0.9.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.8.0...next-dato-v0.9.0) (2026-08-31)
 
 
