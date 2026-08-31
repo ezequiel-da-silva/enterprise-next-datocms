@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.7.0...next-dato-v0.8.0) (2026-08-31)
+
+
+### Features
+
+* **datocms-integration:** add DatoCMS skills and references for CDA; implement new skills for querying and managing content delivery, enhance documentation for filtering, caching, and environment targeting ([7cd2558](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7cd2558369ffaebf782e09512b5f513ba1bafcc9))
+* **datocms-revalidation:** implement DatoCMS webhook for on-demand cache revalidation; add necessary environment variables and update documentation for integration; enhance security measures for API access ([dcf348c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/dcf348c20dec8923baa22cc857473f5c908c1c2f))
+
 ## [0.7.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.6.0...next-dato-v0.7.0) (2026-08-28)
 
 
