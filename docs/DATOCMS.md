@@ -39,6 +39,7 @@ Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testa
 | `item` modelo `page` | `datocms:page`, `page:{locale}:{slug}`, sitemap, search |
 | `post` / `author` / `category` | famílias `datocms:blog` + slug (`post:…`, `author-posts:{id}`, …) |
 | `navigation` / `global_setting` | `datocms:navigation` / `datocms:global-settings` + por locale |
+| `redirect` | `datocms:redirects` |
 | CDA `tags[]` ou modelo desconhecido | [famílias coarse](../src/lib/datocms/revalidate-tags.ts) |
 
 O ISR de 300s permanece como rede de segurança se o webhook falhar.

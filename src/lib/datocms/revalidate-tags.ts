@@ -16,6 +16,7 @@ export const DATOCMS_CACHE_TAGS = {
   globalSettings: "datocms:global-settings",
   sitemap: "datocms:sitemap",
   search: "datocms:search",
+  redirects: "datocms:redirects",
 } as const;
 
 /** Famílias usadas em todos os fetches publicados (webhook CDA / payload desconhecido). */
@@ -37,6 +38,7 @@ export function coarseDatocmsCacheTags(): string[] {
     DATOCMS_CACHE_TAGS.globalSettings,
     DATOCMS_CACHE_TAGS.sitemap,
     DATOCMS_CACHE_TAGS.search,
+    DATOCMS_CACHE_TAGS.redirects,
     ...localePairs,
   ]);
 }
@@ -177,6 +179,8 @@ function tagsForApiKey(
       return [DATOCMS_CACHE_TAGS.navigation, ...APP_LOCALES.map((locale) => `navigation:${locale}`)];
     case "global_setting":
       return [DATOCMS_CACHE_TAGS.globalSettings, ...APP_LOCALES.map((locale) => `global-settings:${locale}`)];
+    case "redirect":
+      return [DATOCMS_CACHE_TAGS.redirects];
     default:
       return [];
   }

@@ -3505,6 +3505,8 @@ export type Query = {
   _allPagesMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
   _allPostsMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
+  _allRedirectsMeta: CollectionMetadata;
   /** Returns meta information regarding an assets collection */
   _allUploadsMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
@@ -3519,6 +3521,8 @@ export type Query = {
   allPages: Array<PageRecord>;
   /** Returns a collection of records */
   allPosts: Array<PostRecord>;
+  /** Returns a collection of records */
+  allRedirects: Array<RedirectRecord>;
   /** Returns a collection of assets */
   allUploads: Array<FileField>;
   /** Returns a collection of records */
@@ -3535,6 +3539,8 @@ export type Query = {
   page?: Maybe<PageRecord>;
   /** Returns a specific record */
   post?: Maybe<PostRecord>;
+  /** Returns a specific record */
+  redirect?: Maybe<RedirectRecord>;
   /** Returns a specific asset */
   upload?: Maybe<FileField>;
   /** Returns a specific record */
@@ -3566,6 +3572,13 @@ export type Query_AllPagesMetaArgs = {
 /** The query root for this schema */
 export type Query_AllPostsMetaArgs = {
   filter?: InputMaybe<PostModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
+export type Query_AllRedirectsMetaArgs = {
+  filter?: InputMaybe<RedirectModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3631,6 +3644,17 @@ export type QueryAllPostsArgs = {
   first?: InputMaybe<Scalars['IntType']['input']>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<PostModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+/** The query root for this schema */
+export type QueryAllRedirectsArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<RedirectModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<RedirectModelOrderBy>>>;
   skip?: InputMaybe<Scalars['IntType']['input']>;
 };
 
@@ -3708,6 +3732,15 @@ export type QueryPostArgs = {
 
 
 /** The query root for this schema */
+export type QueryRedirectArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<RedirectModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<RedirectModelOrderBy>>>;
+};
+
+
+/** The query root for this schema */
 export type QueryUploadArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<UploadFilter>;
@@ -3743,6 +3776,77 @@ export type RecordInterface = {
 
 
 export type RecordInterface_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+export type RedirectModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<RedirectModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<RedirectModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  fromPathRedirect?: InputMaybe<StringFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  statusRedirect?: InputMaybe<StringFilter>;
+  toPathRedirect?: InputMaybe<StringFilter>;
+};
+
+export type RedirectModelOrderBy =
+  | '_createdAt_ASC'
+  | '_createdAt_DESC'
+  | '_firstPublishedAt_ASC'
+  | '_firstPublishedAt_DESC'
+  | '_isValid_ASC'
+  | '_isValid_DESC'
+  | '_publicationScheduledAt_ASC'
+  | '_publicationScheduledAt_DESC'
+  | '_publishedAt_ASC'
+  | '_publishedAt_DESC'
+  | '_status_ASC'
+  | '_status_DESC'
+  | '_unpublishingScheduledAt_ASC'
+  | '_unpublishingScheduledAt_DESC'
+  | '_updatedAt_ASC'
+  | '_updatedAt_DESC'
+  | 'fromPathRedirect_ASC'
+  | 'fromPathRedirect_DESC'
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'statusRedirect_ASC'
+  | 'statusRedirect_DESC'
+  | 'toPathRedirect_ASC'
+  | 'toPathRedirect_DESC';
+
+/** Record of type 🔁 Redirect (redirect) */
+export type RedirectRecord = RecordInterface & {
+  __typename?: 'RedirectRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  fromPathRedirect?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  statusRedirect?: Maybe<Scalars['String']['output']>;
+  toPathRedirect?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 🔁 Redirect (redirect) */
+export type RedirectRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 

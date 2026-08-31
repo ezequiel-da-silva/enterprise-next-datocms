@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { recordToWebsiteRoute } from "@/lib/datocms/record-to-website-route";
+import { recordToWebsitePath, recordToWebsiteRoute } from "@/lib/datocms/record-to-website-route";
 
 describe("recordToWebsiteRoute", () => {
   it("maps PageRecord including home slug", () => {
@@ -16,5 +16,16 @@ describe("recordToWebsiteRoute", () => {
   it("returns null for missing slug", () => {
     expect(recordToWebsiteRoute("PageRecord", "", "en")).toBeNull();
     expect(recordToWebsiteRoute("UnknownRecord", "x", "en")).toBeNull();
+  });
+});
+
+describe("recordToWebsitePath", () => {
+  it("maps redirect records to from_path", () => {
+    expect(
+      recordToWebsitePath(
+        { attributes: { from_path_redirect: "/en/contact" } },
+        { attributes: { api_key: "redirect" } },
+      ),
+    ).toBe("/en/contact");
   });
 });

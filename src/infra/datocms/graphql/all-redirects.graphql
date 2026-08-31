@@ -1,0 +1,8 @@
+query AllRedirects {
+  allRedirects(first: 100, orderBy: _updatedAt_DESC) {
+    id
+    fromPathRedirect
+    toPathRedirect
+    statusRedirect
+  }
+}

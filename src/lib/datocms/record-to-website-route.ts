@@ -82,6 +82,10 @@ export function recordToWebsitePath(
       if (!slug) return null;
       return `/${appLocale}/blog/author/${slug}`;
     }
+    case "redirect": {
+      const fromPath = readStringAttr(item, ["from_path_redirect", "fromPathRedirect"]);
+      return fromPath ? fromPath : null;
+    }
     case "navigation":
     case "global_setting":
       return "/";
