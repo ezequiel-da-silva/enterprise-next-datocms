@@ -38,7 +38,8 @@ Skill: [`.cursor/skills/add-datocms-block/SKILL.md`](../skills/add-datocms-block
 - Structured Text: wrapper `data-datocms-content-link-group=""`; blocos e inline records internos mantêm boundary; link-to-record não recebe boundary.
 - Campos sem texto editável (vídeo, boolean, número, JSON): consultar `_editingUrl` e usar `data-datocms-content-link-url`, ou `data-datocms-content-link-source` com um texto stega apropriado.
 - Configuração usada em comparação, `switch`, regex, URL/ID, SEO, JSON-LD ou analytics: `readCdaStringForLogic()` / `stripStega()`.
-- Se adicionar `_editingUrl`, atualizar `queries.ts` e `page-by-slug.graphql`, depois `npm run codegen`.
+- `_editingUrl` só resolve com o header `X-Base-Editing-Url`, que só é enviado em draft: pedir sempre com `@include(if: $withEditingUrl)` e declarar `$withEditingUrl: Boolean!` na operação. Sem a diretiva, a leitura publicada devolve `errors` e a rota cai em `notFound()`.
+- Se adicionar `_editingUrl`, atualizar `queries.ts`, `page-by-slug.graphql` e as variáveis em `get-page.ts` / `get-blog.ts`, depois `npm run codegen`.
 - Teste manual em draft: cada `[data-cms-block]` tem alvo automático ou URL explícita; console sem “Multiple stega-encoded payloads”.
 
 ## RSC note

@@ -67,7 +67,7 @@ const loadPostBySlug = cache(
       _site: GetPostBySlugQueryResult["_site"];
     }>({
       query: GET_POST_BY_SLUG,
-      variables: { locale, slug },
+      variables: { locale, slug, withEditingUrl: Boolean(editing.baseEditingUrl) },
       tags: noStore ? undefined : ["datocms:blog", "datocms:posts", `post:${locale}:${slug}`],
       revalidate: noStore ? false : 120,
       includeDrafts,

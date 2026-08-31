@@ -64,7 +64,7 @@ For image toggles: see `resolve-cta-banner-image.ts`.
 - Wrap in `<section className="not-prose my-12 w-full ..." data-datocms-content-link-boundary="">`
 - Preserve stega in visible copy with `readCdaString()`; use `readCdaStringForLogic()` for selects, comparisons, IDs, URLs, SEO or other programmatic use
 - Wrap Structured Text in `data-datocms-content-link-group`; keep boundaries on its blocks/inline records
-- For a block with no editable text (video/number/boolean/JSON), query `_editingUrl` in both GraphQL sources and set `data-datocms-content-link-url`
+- For a block with no editable text (video/number/boolean/JSON), query `_editingUrl @include(if: $withEditingUrl)` in both GraphQL sources and set `data-datocms-content-link-url` — an unguarded `_editingUrl` makes published reads fail with `X-Base-Editing-Url header is mandatory`
 - Conteúdo alinhado: `<Container size="lg">` (ou `md`/`sm` se for bloco estreito) — não inventar `mx-auto max-w-* px-4`
 - Reuse: `Container`, `SmartLink`, `Button`, `DatoResponsivePicture`, `readCda*`
 - Async if you need `await getNonce()` — use `JsonLdScriptSync` for JSON-LD

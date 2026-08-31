@@ -205,7 +205,8 @@ const ST_BLOCKS_MEDIA_ONLY = `
   }
   ... on VideoBlockRecord {
     id
-    _editingUrl
+    # O CDA exige o header X-Base-Editing-Url para resolver _editingUrl: pedir só em draft.
+    _editingUrl @include(if: $withEditingUrl)
     asset {
       url
       title
@@ -597,7 +598,7 @@ const HERO_PAGE_FIELDS = `
  *   (IDs), não unions de blocos — não abrir sub-seleção GraphQL nesses campos.
  */
 export const PAGE_BY_SLUG = /* GraphQL */ `
-  query PageBySlug($slug: String!, $locale: SiteLocale!) {
+  query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
     page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
       id
       title
@@ -701,7 +702,7 @@ export const GET_ALL_POSTS = /* GraphQL */ `
 
 /** Artigo completo + SEO + autor (para `AuthorSection`). */
 export const GET_POST_BY_SLUG = /* GraphQL */ `
-  query GetPostBySlug($locale: SiteLocale!, $slug: String!) {
+  query GetPostBySlug($locale: SiteLocale!, $slug: String!, $withEditingUrl: Boolean!) {
     post(locale: $locale, filter: { postSlug: { eq: $slug } }) {
       id
       _firstPublishedAt
