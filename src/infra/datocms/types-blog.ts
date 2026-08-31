@@ -33,6 +33,9 @@ export type SocialLinkRecord = {
   id: string;
   plataforma: string | null;
   url: string | null;
+  linkAria?: string | null;
+  openInNewTab?: boolean | null;
+  image?: FileFieldLike;
 };
 
 export type AuthorBioField = Pick<CdaStructuredTextValue, "value" | "blocks" | "links" | "inlineBlocks">;
@@ -43,9 +46,10 @@ export type AuthorDetailRecord = {
   id: string;
   authorName: string;
   authorSlug: string;
+  authorRole?: string | null;
   authorBio: AuthorBioField | null;
   avatarBio: ImageBlockResponsive | null;
-  authorSocialLinks: SocialLinkRecord | null;
+  authorSocialLinks: SocialLinkRecord[];
   seoSettingsSocial: SeoSettingsSocial;
   _seoMetaTags: TitleMetaLinkTag[] | null;
   /** Presente no fetch de autor; omitido no nested `postAuthor`. */
@@ -112,6 +116,33 @@ function readSlugLocales(record: Record<string, unknown>, key: string): SlugLoca
   return Array.isArray(raw) ? (raw as SlugLocaleRow[]) : [];
 }
 
+function coerceSocialLinks(raw: unknown): SocialLinkRecord[] {
+  if (Array.isArray(raw)) {
+    return raw.filter(
+      (item): item is SocialLinkRecord =>
+        Boolean(item && typeof item === "object" && typeof (item as SocialLinkRecord).id === "string"),
+    );
+  }
+  if (raw && typeof raw === "object" && typeof (raw as SocialLinkRecord).id === "string") {
+    return [raw as SocialLinkRecord];
+  }
+  return [];
+}
+
+function coerceAuthorDetail(
+  record: Record<string, unknown>,
+  slugLocales: SlugLocaleRow[] | undefined,
+): AuthorDetailRecord {
+  const author = record as unknown as Omit<AuthorDetailRecord, "slugLocales" | "authorSocialLinks"> & {
+    authorSocialLinks?: unknown;
+  };
+  return {
+    ...author,
+    authorSocialLinks: coerceSocialLinks(author.authorSocialLinks),
+    ...(slugLocales ? { slugLocales } : {}),
+  };
+}
+
 /** Normaliza `_allPostSlugLocales` do CDA para `slugLocales`. */
 export function normalizePostBySlugResult(data: {
   post: Record<string, unknown> | null;
@@ -119,9 +150,15 @@ export function normalizePostBySlugResult(data: {
 }): GetPostBySlugQueryResult {
   const post = data.post;
   if (!post) return { post: null, _site: data._site };
+  const postAuthorRaw = post.postAuthor;
+  const postAuthor =
+    postAuthorRaw && typeof postAuthorRaw === "object"
+      ? coerceAuthorDetail(postAuthorRaw as Record<string, unknown>, undefined)
+      : null;
   return {
     post: {
-      ...(post as unknown as Omit<PostDetailRecord, "slugLocales">),
+      ...(post as unknown as Omit<PostDetailRecord, "slugLocales" | "postAuthor">),
+      postAuthor,
       slugLocales: readSlugLocales(post, "_allPostSlugLocales"),
     },
     _site: data._site,
@@ -135,10 +172,7 @@ export function normalizeAuthorBySlugResult(data: {
   const author = data.author;
   if (!author) return { author: null, _site: data._site };
   return {
-    author: {
-      ...(author as unknown as Omit<AuthorDetailRecord, "slugLocales">),
-      slugLocales: readSlugLocales(author, "_allAuthorSlugLocales"),
-    },
+    author: coerceAuthorDetail(author, readSlugLocales(author, "_allAuthorSlugLocales")),
     _site: data._site,
   };
 }

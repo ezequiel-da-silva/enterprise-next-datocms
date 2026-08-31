@@ -434,6 +434,42 @@ const STEPS_SECTION_BLOCK = `
   }
 `;
 
+/** Campos Author no card da Team Section (e alinhados ao perfil). @see fragments/author.graphql */
+const AUTHOR_CARD_FIELDS = `
+  id
+  authorName
+  authorSlug
+  authorRole
+  avatarBio {
+    ${IMAGE_BLOCK_RESPONSIVE}
+  }
+  authorSocialLinks {
+    id
+    plataforma
+    url
+    image {
+      url
+      alt
+      width
+      height
+    }
+    openInNewTab
+    linkAria
+  }
+`;
+
+/** Team Section — membros (links para Author). @see fragments/team-section.graphql */
+const TEAM_SECTION_BLOCK = `
+  ... on TeamSectionRecord {
+    id
+    title
+    subtitle
+    members {
+      ${AUTHOR_CARD_FIELDS}
+    }
+  }
+`;
+
 /** Stats Section — métricas (`StatsSectionRecord`). @see fragments/stats-section.graphql */
 const STATS_SECTION_BLOCK = `
   ... on StatsSectionRecord {
@@ -502,7 +538,7 @@ const REVIEWS_SECTION_BLOCK = `
 `;
 
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats + Steps + Tabs.
+ * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats + Steps + Tabs + Team.
  * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
  */
 const PAGE_STRUCTURED_TEXT_BLOCKS = `
@@ -516,6 +552,7 @@ const PAGE_STRUCTURED_TEXT_BLOCKS = `
   ${STEPS_SECTION_BLOCK}
   ${TABS_SECTION_BLOCK}
   ${FEATURE_GRID_BLOCK}
+  ${TEAM_SECTION_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
@@ -695,6 +732,7 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
         id
         authorName
         authorSlug
+        authorRole
         authorBio {
           ${STRUCTURED_TEXT_SCALAR_FIELDS}
         }
@@ -705,6 +743,14 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
           id
           plataforma
           url
+          image {
+            url
+            alt
+            width
+            height
+          }
+          openInNewTab
+          linkAria
         }
       }
       seoSettingsSocial {
@@ -733,6 +779,7 @@ export const GET_AUTHOR_BY_SLUG = /* GraphQL */ `
       id
       authorName
       authorSlug
+      authorRole
       authorBio {
         ${STRUCTURED_TEXT_SCALAR_FIELDS}
       }
@@ -743,6 +790,14 @@ export const GET_AUTHOR_BY_SLUG = /* GraphQL */ `
         id
         plataforma
         url
+        image {
+          url
+          alt
+          width
+          height
+        }
+        openInNewTab
+        linkAria
       }
       seoSettingsSocial {
         ${SEO_SETTINGS_SOCIAL}

@@ -26,8 +26,9 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
         }
       : null;
 
-  const social = author.authorSocialLinks;
+  const social = author.authorSocialLinks[0];
   const socialHref = social?.url && isSafeExternalHref(social.url) ? social.url : null;
+  const role = author.authorRole?.trim() ?? "";
 
   return (
     <section className="mt-12 rounded-xl border border-border bg-muted/20 p-6 ring-1 ring-border/40" aria-labelledby={`autor-${author.id}`}>
@@ -50,6 +51,7 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
             <h2 id={`autor-${author.id}`} className="text-lg font-semibold tracking-tight text-foreground">
               {author.authorName}
             </h2>
+            {role ? <p className="text-sm text-muted-foreground">{role}</p> : null}
             <p className="text-sm text-muted-foreground">
               <Link className="font-medium text-primary underline-offset-4 hover:underline" href={`/${locale}/blog/author/${author.authorSlug}`}>
                 Ver perfil do autor

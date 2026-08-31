@@ -46,6 +46,7 @@ export type AuthorModelFilter = {
   _updatedAt?: InputMaybe<UpdatedAtFilter>;
   authorBio?: InputMaybe<StructuredTextFilter>;
   authorName?: InputMaybe<StringFilter>;
+  authorRole?: InputMaybe<StringFilter>;
   authorSlug?: InputMaybe<SlugFilter>;
   id?: InputMaybe<ItemIdFilter>;
   seoAnalysis?: InputMaybe<JsonFilter>;
@@ -71,6 +72,8 @@ export type AuthorModelOrderBy =
   | '_updatedAt_DESC'
   | 'authorName_ASC'
   | 'authorName_DESC'
+  | 'authorRole_ASC'
+  | 'authorRole_DESC'
   | 'id_ASC'
   | 'id_DESC';
 
@@ -96,8 +99,9 @@ export type AuthorRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   authorBio?: Maybe<AuthorModelAuthorBioField>;
   authorName?: Maybe<Scalars['String']['output']>;
+  authorRole?: Maybe<Scalars['String']['output']>;
   authorSlug?: Maybe<Scalars['String']['output']>;
-  authorSocialLinks?: Maybe<SocialLinkRecord>;
+  authorSocialLinks: Array<SocialLinkRecord>;
   avatarBio?: Maybe<ImageBlockRecord>;
   id: Scalars['ItemId']['output'];
   seoAnalysis?: Maybe<Scalars['JsonField']['output']>;
@@ -3107,7 +3111,7 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
-export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | VideoBlockRecord;
+export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | VideoBlockRecord;
 
 export type PageModelStructuredTextField = {
   __typename?: 'PageModelStructuredTextField';
@@ -4148,6 +4152,34 @@ export type Tag = {
   attributes?: Maybe<Scalars['MetaTagAttributes']['output']>;
   content?: Maybe<Scalars['String']['output']>;
   tag: Scalars['String']['output'];
+};
+
+/** Block of type 🧑‍🦱 Team Section (team_section) */
+export type TeamSectionRecord = RecordInterface & {
+  __typename?: 'TeamSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  id: Scalars['ItemId']['output'];
+  members: Array<AuthorRecord>;
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 🧑‍🦱 Team Section (team_section) */
+export type TeamSectionRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
 };
 
 /** Specifies how to filter text fields */

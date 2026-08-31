@@ -99,8 +99,9 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
 
   const avatarMobile = author.avatarBio?.asset;
   const avatarDesktop = author.avatarBio?.assetDesktop;
-  const social = author.authorSocialLinks;
+  const social = author.authorSocialLinks[0];
   const socialHref = social?.url && isSafeExternalHref(social.url) ? social.url : null;
+  const role = author.authorRole?.trim() ?? "";
   const authorPath = `/${locale}/blog/author/${authorSlug}`;
   const listingLd = buildListingPageJsonLd(
     locale,
@@ -143,6 +144,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
         <div className="min-w-0 flex-1 space-y-4">
           <div>
             <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{author.authorName}</h1>
+            {role ? <p className="mt-2 text-sm text-muted-foreground">{role}</p> : null}
             {socialHref ? (
               <p className="mt-2 text-sm">
                 <a href={socialHref} className="font-medium text-primary underline-offset-4 hover:underline" rel="noopener noreferrer" target="_blank">
