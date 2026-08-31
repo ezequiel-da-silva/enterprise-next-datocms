@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.9.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.8.0...next-dato-v0.9.0) (2026-08-31)
+
+
+### Features
+
+* **content-link:** enhance content link handling in Structured Text and various components; implement boundary and group attributes for better CMS integration; update GraphQL queries and types for editing URLs; improve documentation for DatoCMS integration ([afd2676](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/afd267690c82d7920d670a4d9c8da29508998459))
+* **datocms-editing-url:** update GraphQL queries and types to include `withEditingUrl` for proper handling of `_editingUrl`; enhance documentation for Structured Text and CMS blocks to ensure correct usage and prevent errors in published reads ([3337145](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/333714526081b5f45784193884219a15c8706345))
+
+
+### Refactoring
+
+* **global-header:** add keys to theme toggle and locale switcher components for improved rendering performance and to prevent potential React warnings ([86207aa](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/86207aa945b7d40ade117933a59411d73e3913a3))
+
 ## [0.8.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.7.0...next-dato-v0.8.0) (2026-08-31)
 
 
