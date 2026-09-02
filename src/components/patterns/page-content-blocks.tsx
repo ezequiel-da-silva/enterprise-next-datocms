@@ -9,7 +9,7 @@ type PageContentBlocksProps = {
   locale: AppLocale;
   contentLinkGroup: boolean;
   submitUserReview?: UserReviewSubmitAction;
-  latestPostsCatalog?: LatestPostsCatalog;
+  latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
 };
 
 /**

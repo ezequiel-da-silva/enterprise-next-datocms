@@ -86,7 +86,7 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
-    ? await loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
+    ? loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
     : undefined;
 
   return (

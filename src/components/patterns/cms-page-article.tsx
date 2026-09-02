@@ -19,7 +19,7 @@ type CmsPageArticleProps = {
   canonicalPath: string;
   contentLinkGroup: boolean;
   submitUserReview?: UserReviewSubmitAction;
-  latestPostsCatalog?: LatestPostsCatalog;
+  latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
 };
 
 export async function CmsPageArticle({
