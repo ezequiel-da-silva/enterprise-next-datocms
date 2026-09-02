@@ -16,11 +16,9 @@ const loadPageBySlug = cache(
     /** Em dev evita cache de `page: null` após publicares no Dato (fetch com tags ainda guardava 404). */
     const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
 
-    const withEditingUrl = Boolean(includeDrafts && baseEditingUrl);
-
     const response = await datocmsFetch<PageBySlugQuery>({
       query: PAGE_BY_SLUG,
-      variables: { slug, locale: toDatoSiteLocale(locale), withEditingUrl },
+      variables: { slug, locale: toDatoSiteLocale(locale) },
       tags: includeDrafts || devPublishedNoStore ? undefined : ["datocms:page", `page:${locale}:${slug}`],
       revalidate: includeDrafts || devPublishedNoStore ? false : 120,
       includeDrafts,

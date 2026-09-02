@@ -1,7 +1,7 @@
 import { Container } from "@/components/atoms/container";
 import { HeroSectionBlock } from "@/components/patterns/hero-section-block";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
-import { PageStructuredText } from "@/components/patterns/page-structured-text";
+import { PageContentBlocks } from "@/components/patterns/page-content-blocks";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
@@ -35,8 +35,8 @@ export async function CmsPageArticle({
     locale,
   });
   const nonce = await getNonce();
-  const heroH1 = heroFirstBlockSuppliesH1(page.structuredText, page.heroPage);
-  const wideLayout = heroH1 || Boolean(page.heroPage);
+  const heroH1 = heroFirstBlockSuppliesH1(page.heroPage);
+  const wideLayout = heroH1 || Boolean(page.heroPage) || page.contentPage.length > 0;
   const isHome = page.slug.toLowerCase() === "home";
   const breadcrumbItems = isHome
     ? [{ label: homeBreadcrumbLabel(locale), href: canonicalPath }]
@@ -64,8 +64,8 @@ export async function CmsPageArticle({
               pageTitleHeading
             )
           ) : null}
-          <PageStructuredText
-            data={page.structuredText}
+          <PageContentBlocks
+            records={page.contentPage}
             contentLinkGroup={contentLinkGroup}
             locale={locale}
             submitUserReview={submitUserReview}
