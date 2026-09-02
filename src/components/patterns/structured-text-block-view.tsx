@@ -25,7 +25,7 @@ import { StatsSectionBlock } from "@/components/sections/stats-section-block";
 import { StepsSectionBlock } from "@/components/sections/steps-section-block";
 import { TabsSectionBlock } from "@/components/sections/tabs-section-block";
 import { TeamSectionBlock } from "@/components/sections/team-section-block";
-import { LatestPostsSectionBlock } from "@/components/sections/latest-posts-section-block";
+import { LatestPostsSectionBlock, LatestPostsSectionFallback } from "@/components/sections/latest-posts-section-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -34,12 +34,13 @@ import { resolveVideoSources } from "@/lib/datocms/resolve-video-sources";
 import { buildVideoObjectJsonLd } from "@/lib/seo/build-video-object-jsonld";
 import { getNonce } from "@/lib/nonce";
 import Image from "next/image";
+import { Suspense } from "react";
 
 type StructuredTextBlockViewProps = {
   record: PageStructuredTextBlock;
   locale: AppLocale;
   submitUserReview?: UserReviewSubmitAction;
-  latestPostsCatalog?: LatestPostsCatalog;
+  latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
 };
 
 function unknownBlockFallback(record: PageStructuredTextBlock): null {
@@ -224,11 +225,17 @@ export function StructuredTextBlockView({
       return <TeamSectionBlock record={record as TeamSectionBlockRecord} locale={locale} />;
     case "LatestPostsSectionRecord":
       return (
-        <LatestPostsSectionBlock
-          record={record as LatestPostsSectionBlockRecord}
-          locale={locale}
-          catalog={latestPostsCatalog}
-        />
+        <Suspense
+          fallback={
+            <LatestPostsSectionFallback locale={locale} record={record as LatestPostsSectionBlockRecord} />
+          }
+        >
+          <LatestPostsSectionBlock
+            record={record as LatestPostsSectionBlockRecord}
+            locale={locale}
+            catalog={latestPostsCatalog}
+          />
+        </Suspense>
       );
     default:
       return unknownBlockFallback(record);

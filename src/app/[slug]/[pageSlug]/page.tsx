@@ -72,7 +72,7 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
   }
 
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
-    ? await loadLatestPostsCatalog(toDatoSiteLocale(locale), isEnabled)
+    ? loadLatestPostsCatalog(toDatoSiteLocale(locale), isEnabled)
     : undefined;
 
   return (
