@@ -1,15 +1,24 @@
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import type { AppLocale } from "@/constants/i18n";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
+import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
 import type { PostCardRecord } from "@/infra/datocms/types-blog";
 import Link from "next/link";
 
 type PostCardProps = {
   post: PostCardRecord;
   locale: AppLocale;
+  /** Default `h2` (índice do blog). Na Latest posts section usar `h3` se já houver título da secção. */
+  headingLevel?: "h2" | "h3";
+  sizes?: string;
 };
 
-export function PostCard({ post, locale }: PostCardProps) {
+export function PostCard({
+  post,
+  locale,
+  headingLevel = "h2",
+  sizes = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px",
+}: PostCardProps) {
   const href = `/${locale}/blog/${post.postSlug}`;
   const cover = post.coverImage;
   const mobile = cover?.asset;
@@ -17,21 +26,25 @@ export function PostCard({ post, locale }: PostCardProps) {
   const primaryCategory = post.postCategory[0];
   const dateLabel = formatPublishedAt(locale, post._firstPublishedAt);
   const colorHex = primaryCategory?.categoryColor?.hex;
+  const excerptRaw = readPostExcerpt(post as Record<string, unknown>);
+  const excerpt = excerptPlainText(excerptRaw);
+  const TitleTag = headingLevel;
 
   return (
-    <article className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-1 ring-border/40 transition hover:border-primary/25 hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-1 ring-border/40 transition hover:border-primary/25 hover:shadow-md">
       <Link
         href={href}
-        className="block rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="flex h-full flex-col rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
-        <div className="relative aspect-video w-full overflow-hidden bg-muted">
+        <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-muted">
           {mobile?.url ? (
             <DatoResponsivePicture
               mobile={mobile}
               desktop={desktop}
-              className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-              sizes="(max-width: 768px) 100vw, 480px"
+              className="h-full w-full object-cover motion-safe:transition motion-safe:duration-300 motion-safe:group-hover:scale-[1.02]"
+              sizes={sizes}
               fallbackAlt={post.postTitle}
+              decorative
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">Sem capa</div>
@@ -52,10 +65,11 @@ export function PostCard({ post, locale }: PostCardProps) {
             <time dateTime={post._firstPublishedAt}>{dateLabel}</time>
           </div>
         </div>
-        <div className="space-y-2 p-4">
-          <h2 className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">{post.postTitle}</h2>
+        <div className="flex flex-1 flex-col gap-2 p-4">
+          <TitleTag className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">{post.postTitle}</TitleTag>
+          {excerpt ? <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerpt}</p> : null}
           {post.postAuthor?.authorName ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="mt-auto pt-1 text-sm text-muted-foreground">
               <span className="font-medium text-foreground/90">{post.postAuthor.authorName}</span>
             </p>
           ) : null}

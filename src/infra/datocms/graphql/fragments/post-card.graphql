@@ -1,0 +1,38 @@
+# Campos de cartão do modelo Post (`post`).
+# Runtime: `POST_CARD_FIELDS` em `queries.ts`.
+fragment PostCardFields on PostRecord {
+  id
+  _firstPublishedAt
+  _updatedAt
+  postTitle
+  postSlug
+  excerpt
+  postAuthor {
+    authorName
+  }
+  postCategory {
+    id
+    categoryName
+    categorySlug
+    categoryColor {
+      hex
+    }
+  }
+  coverImage {
+    id
+    asset {
+      url
+      alt
+      width
+      height
+      blurUpThumb
+    }
+    assetDesktop {
+      url
+      alt
+      width
+      height
+      blurUpThumb
+    }
+  }
+}

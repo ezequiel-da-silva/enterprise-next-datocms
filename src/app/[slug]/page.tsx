@@ -6,8 +6,10 @@ import {
   REQUEST_LOCALE_HEADER,
   appLocaleFromParam,
   isAppLocale,
+  toDatoSiteLocale,
   type AppLocale,
 } from "@/constants/i18n";
+import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
@@ -83,6 +85,10 @@ export default async function DynamicPage({ params }: PageProps) {
     notFound();
   }
 
+  const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
+    ? await loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
+    : undefined;
+
   return (
     <CmsPageArticle
       page={page}
@@ -90,6 +96,7 @@ export default async function DynamicPage({ params }: PageProps) {
       canonicalPath={cmsPageCanonicalPath(pageSlug, cmsLocale)}
       contentLinkGroup={isEnabled}
       submitUserReview={submitUserReview}
+      latestPostsCatalog={latestPostsCatalog}
     />
   );
 }

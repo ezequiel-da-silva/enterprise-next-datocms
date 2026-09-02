@@ -22,8 +22,10 @@ export type PostAuthorName = {
 export type PostCardRecord = {
   id: string;
   _firstPublishedAt: string;
+  _updatedAt?: string;
   postTitle: string;
   postSlug: string;
+  excerpt?: string | null;
   postAuthor: PostAuthorName | null;
   postCategory: PostCategorySummary[];
   coverImage: ImageBlockResponsive | null;
@@ -62,6 +64,7 @@ export type PostDetailRecord = {
   _updatedAt: string;
   postTitle: string;
   postSlug: string;
+  excerpt?: string | null;
   postCategory: PostCategorySummary[];
   postContent: (CdaStructuredTextValue & { blocks: PageStructuredTextBlock[] | null }) | null;
   coverImage: ImageBlockResponsive | null;
@@ -109,6 +112,15 @@ export type GetCategoryBySlugQueryResult = {
 
 export type GetPostsByCategoryQueryResult = {
   allPosts: PostCardRecord[];
+};
+
+export type GetAllCategoriesQueryResult = {
+  allCategories: PostCategorySummary[];
+};
+
+export type LatestPostsCatalog = {
+  posts: PostCardRecord[];
+  categories: PostCategorySummary[];
 };
 
 function readSlugLocales(record: Record<string, unknown>, key: string): SlugLocaleRow[] {

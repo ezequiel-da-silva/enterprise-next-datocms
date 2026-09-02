@@ -243,3 +243,77 @@
     }
   }
 }
+
+/*
+ * Lista aberta dos selects de filtro (Latest posts, mobile). Progressive enhancement:
+ * onde existe `appearance: base-select` o popup é renderizado pelo browser e aceita
+ * este CSS; nos restantes fica o picker nativo do SO, sem fallback a manter.
+ * Fora de `@layer` de propósito — o utilitário `appearance-none` do Tailwind está na
+ * camada utilities e venceria estas regras se estivessem em `@layer base`.
+ */
+@supports (appearance: base-select) {
+  select.filter-select,
+  select.filter-select::picker(select) {
+    appearance: base-select;
+  }
+
+  select.filter-select::picker-icon {
+    display: none;
+  }
+
+  select.filter-select::picker(select) {
+    margin-top: 0.375rem;
+    border: 1px solid hsl(var(--palette-border));
+    border-radius: 0.875rem;
+    background-color: hsl(var(--palette-background));
+    padding: 0.25rem;
+    box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.35);
+    opacity: 0;
+    translate: 0 -0.25rem;
+    transition:
+      opacity 140ms ease,
+      translate 140ms ease,
+      display 140ms allow-discrete,
+      overlay 140ms allow-discrete;
+  }
+
+  select.filter-select:open::picker(select) {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    select.filter-select:open::picker(select) {
+      opacity: 0;
+      translate: 0 -0.25rem;
+    }
+  }
+
+  select.filter-select option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    color: hsl(var(--palette-foreground));
+  }
+
+  select.filter-select option:hover,
+  select.filter-select option:focus {
+    background-color: hsl(var(--palette-muted));
+    outline: none;
+  }
+
+  select.filter-select option:checked {
+    background-color: hsl(var(--palette-muted));
+    font-weight: 600;
+  }
+
+  select.filter-select option::checkmark {
+    order: 1;
+    margin-left: auto;
+    color: hsl(var(--palette-primary));
+  }
+}

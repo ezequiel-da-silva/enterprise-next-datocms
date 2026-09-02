@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { StructuredTextBlockView } from "@/components/patterns/structured-text-block-view";
+import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { PageContentBlock, PageStructuredTextBlock } from "@/infra/datocms/types-page";
 
@@ -8,6 +9,7 @@ type PageContentBlocksProps = {
   locale: AppLocale;
   contentLinkGroup: boolean;
   submitUserReview?: UserReviewSubmitAction;
+  latestPostsCatalog?: LatestPostsCatalog;
 };
 
 /**
@@ -18,6 +20,7 @@ export function PageContentBlocks({
   locale,
   contentLinkGroup,
   submitUserReview,
+  latestPostsCatalog,
 }: PageContentBlocksProps) {
   if (records.length === 0) {
     return null;
@@ -29,6 +32,7 @@ export function PageContentBlocks({
       record={record as PageStructuredTextBlock}
       locale={locale}
       submitUserReview={submitUserReview}
+      latestPostsCatalog={latestPostsCatalog}
     />
   ));
 

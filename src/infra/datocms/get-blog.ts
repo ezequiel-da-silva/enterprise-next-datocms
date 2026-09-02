@@ -1,6 +1,7 @@
 import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import type { DatoSiteLocale } from "@/constants/i18n";
 import {
+  GET_ALL_CATEGORIES,
   GET_ALL_POSTS,
   GET_AUTHOR_BY_SLUG,
   GET_CATEGORY_BY_SLUG,
@@ -9,12 +10,14 @@ import {
   GET_POST_BY_SLUG,
 } from "@/infra/datocms/queries";
 import type {
+  GetAllCategoriesQueryResult,
   GetAllPostsQueryResult,
   GetAuthorBySlugQueryResult,
   GetCategoryBySlugQueryResult,
   GetPostBySlugQueryResult,
   GetPostsByAuthorQueryResult,
   GetPostsByCategoryQueryResult,
+  LatestPostsCatalog,
 } from "@/infra/datocms/types-blog";
 import {
   normalizeAuthorBySlugResult,
@@ -169,8 +172,49 @@ const loadPostsByCategory = cache(
   },
 );
 
+const loadAllCategories = cache(
+  async (
+    locale: DatoSiteLocale,
+    includeDrafts: boolean,
+  ): Promise<DatocmsResponse<GetAllCategoriesQueryResult>> => {
+    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
+    const editing = baseEditingOptions(includeDrafts);
+    return datocmsFetch<GetAllCategoriesQueryResult>({
+      query: GET_ALL_CATEGORIES,
+      variables: { locale },
+      tags: noStore ? undefined : ["datocms:blog", "datocms:categories"],
+      revalidate: noStore ? false : 300,
+      includeDrafts,
+      ...editing,
+      cache: noStore ? "no-store" : undefined,
+    });
+  },
+);
+
 export function getAllPosts(locale: DatoSiteLocale, includeDrafts: boolean) {
   return loadAllPosts(locale, includeDrafts);
+}
+
+export function getAllCategories(locale: DatoSiteLocale, includeDrafts: boolean) {
+  return loadAllCategories(locale, includeDrafts);
+}
+
+export async function loadLatestPostsCatalog(
+  locale: DatoSiteLocale,
+  includeDrafts: boolean,
+): Promise<LatestPostsCatalog> {
+  const [postsResult, categoriesResult] = await Promise.all([
+    loadAllPosts(locale, includeDrafts),
+    loadAllCategories(locale, includeDrafts),
+  ]);
+  return {
+    posts: "errors" in postsResult ? [] : postsResult.data.allPosts,
+    categories: "errors" in categoriesResult ? [] : categoriesResult.data.allCategories,
+  };
+}
+
+export function contentNeedsLatestPostsCatalog(blocks: { __typename?: string }[]): boolean {
+  return blocks.some((block) => block.__typename === "LatestPostsSectionRecord");
 }
 
 export function getPostBySlug(locale: DatoSiteLocale, slug: string, includeDrafts: boolean) {

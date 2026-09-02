@@ -9,4 +9,12 @@ describe("buildListingPageJsonLd", () => {
     expect(breadcrumb.itemListElement[0]?.name).toBe(homeBreadcrumbLabel("pt"));
     expect(breadcrumb.itemListElement[1]?.name).toBe("Blog");
   });
+
+  it("adds ItemList descriptions when provided", () => {
+    const graph = buildListingPageJsonLd("en", "/en/blog", "Blog", undefined, [
+      { name: "Hello", path: "/en/blog/hello", description: "Teaser" },
+    ]);
+    const list = graph[2] as { itemListElement: { description?: string }[] };
+    expect(list.itemListElement[0]?.description).toBe("Teaser");
+  });
 });

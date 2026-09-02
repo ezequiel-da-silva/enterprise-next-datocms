@@ -1,10 +1,12 @@
 import type { AppLocale } from "@/constants/i18n";
+import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import type {
   CtaBannerBlockRecord,
   FeatureGridRecord,
+  LatestPostsSectionBlockRecord,
   PageStructuredTextBlock,
   PricingSectionBlockRecord,
   ReviewsSectionBlockRecord,
@@ -23,6 +25,7 @@ import { StatsSectionBlock } from "@/components/sections/stats-section-block";
 import { StepsSectionBlock } from "@/components/sections/steps-section-block";
 import { TabsSectionBlock } from "@/components/sections/tabs-section-block";
 import { TeamSectionBlock } from "@/components/sections/team-section-block";
+import { LatestPostsSectionBlock } from "@/components/sections/latest-posts-section-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -36,6 +39,7 @@ type StructuredTextBlockViewProps = {
   record: PageStructuredTextBlock;
   locale: AppLocale;
   submitUserReview?: UserReviewSubmitAction;
+  latestPostsCatalog?: LatestPostsCatalog;
 };
 
 function unknownBlockFallback(record: PageStructuredTextBlock): null {
@@ -133,6 +137,7 @@ export function StructuredTextBlockView({
   record,
   locale,
   submitUserReview,
+  latestPostsCatalog,
 }: StructuredTextBlockViewProps) {
   switch (record.__typename) {
     case "ImageBlockRecord": {
@@ -217,6 +222,14 @@ export function StructuredTextBlockView({
       return <TabsSectionBlock record={record as TabsSectionBlockRecord} locale={locale} />;
     case "TeamSectionRecord":
       return <TeamSectionBlock record={record as TeamSectionBlockRecord} locale={locale} />;
+    case "LatestPostsSectionRecord":
+      return (
+        <LatestPostsSectionBlock
+          record={record as LatestPostsSectionBlockRecord}
+          locale={locale}
+          catalog={latestPostsCatalog}
+        />
+      );
     default:
       return unknownBlockFallback(record);
   }

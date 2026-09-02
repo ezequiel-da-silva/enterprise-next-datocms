@@ -1,6 +1,7 @@
 import { CmsPageArticle } from "@/components/patterns/cms-page-article";
 import { submitUserReview } from "@/app/actions/submit-user-review";
-import { isAppLocale, type AppLocale } from "@/constants/i18n";
+import { isAppLocale, toDatoSiteLocale, type AppLocale } from "@/constants/i18n";
+import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
@@ -70,6 +71,10 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
     notFound();
   }
 
+  const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
+    ? await loadLatestPostsCatalog(toDatoSiteLocale(locale), isEnabled)
+    : undefined;
+
   return (
     <CmsPageArticle
       page={page}
@@ -77,6 +82,7 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
       canonicalPath={cmsPageCanonicalPath(pageSlug, locale)}
       contentLinkGroup={isEnabled}
       submitUserReview={submitUserReview}
+      latestPostsCatalog={latestPostsCatalog}
     />
   );
 }

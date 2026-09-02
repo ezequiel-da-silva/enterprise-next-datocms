@@ -6,6 +6,7 @@ import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
+import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1 } from "@/lib/datocms/hero-first-block";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
@@ -18,6 +19,7 @@ type CmsPageArticleProps = {
   canonicalPath: string;
   contentLinkGroup: boolean;
   submitUserReview?: UserReviewSubmitAction;
+  latestPostsCatalog?: LatestPostsCatalog;
 };
 
 export async function CmsPageArticle({
@@ -26,6 +28,7 @@ export async function CmsPageArticle({
   canonicalPath,
   contentLinkGroup,
   submitUserReview,
+  latestPostsCatalog,
 }: CmsPageArticleProps) {
   const description = page.seoSettingsSocial?.description ?? null;
   const jsonLd = buildPageWebPageJsonLd({
@@ -69,6 +72,7 @@ export async function CmsPageArticle({
             contentLinkGroup={contentLinkGroup}
             locale={locale}
             submitUserReview={submitUserReview}
+            latestPostsCatalog={latestPostsCatalog}
           />
         </div>
       </Container>

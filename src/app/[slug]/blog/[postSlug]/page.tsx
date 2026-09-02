@@ -19,6 +19,7 @@ import {
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
+import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -92,6 +93,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const coverMobile = post.coverImage?.asset;
   const coverDesktop = post.coverImage?.assetDesktop;
   const dateLabel = formatPublishedAt(locale, post._firstPublishedAt);
+  const excerpt = readPostExcerpt(post as Record<string, unknown>);
+  const excerptLead = excerptPlainText(excerpt);
 
   return (
     <article className="mx-auto w-full max-w-3xl px-4 py-12">
@@ -109,6 +112,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <time dateTime={post._firstPublishedAt}>{dateLabel}</time>
         </p>
         <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{post.postTitle}</h1>
+        {excerptLead ? <p className="text-lg leading-relaxed text-muted-foreground">{excerpt}</p> : null}
         {post.postCategory?.length ? (
           <div className="flex flex-wrap gap-2">
             {post.postCategory.map((c) => {
