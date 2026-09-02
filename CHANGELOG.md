@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.12.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.11.0...next-dato-v0.12.0) (2026-09-02)
+
+
+### Features
+
+* **blog-excerpt:** introduce excerpt handling for blog posts; add functions for reading and formatting excerpts, update JSON-LD generation to include excerpts, and enhance GraphQL queries and types to support excerpt data ([e39dd13](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e39dd13a18e23a89a4e843205c8abdc741d92ee1))
+* **latest-posts-section:** implement Latest Posts section with interactive filtering and sorting; add GraphQL queries and types for fetching posts and categories, enhance components for displaying posts, and integrate with existing content structure ([57098ec](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/57098ec18094e8dbddce9ffff88c31bf836083c5))
+
+
+### Chores
+
+* **dependencies:** update fast-uri to version 3.1.7 in package-lock.json; ensure chalk dependency remains consistent in package.json ([12fd451](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/12fd45196805285be9cf42ccdb0e5585a230034f))
+
 ## [0.11.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.10.0...next-dato-v0.11.0) (2026-09-02)
 
 
