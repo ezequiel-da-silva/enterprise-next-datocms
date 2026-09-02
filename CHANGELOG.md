@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.10.0...next-dato-v0.11.0) (2026-09-02)
+
+
+### Features
+
+* **content-modularity:** refactor page content handling by introducing `PageContentBlocks` component; update `CmsPageArticle` to utilize modular content structure, enhancing rendering logic and GraphQL queries for improved content management ([bd6305c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/bd6305c185b4e4588660782ceca2d946141edf72))
+
 ## [0.10.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.9.0...next-dato-v0.10.0) (2026-08-31)
 
 
