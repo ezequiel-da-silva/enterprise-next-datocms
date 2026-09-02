@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.12.0...next-dato-v0.12.1) (2026-09-02)
+
+
+### Refactoring
+
+* **latest-posts:** optimize latest posts catalog handling by removing unnecessary await in loadLatestPostsCatalog calls; update type definitions to support both resolved and promise states for latestPostsCatalog across components; enhance LatestPostsSectionBlock with a fallback UI during data loading ([e5d52a0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e5d52a01e5c025e970fa605a8431480f38558afb))
+
 ## [0.12.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.11.0...next-dato-v0.12.0) (2026-09-02)
 
 
