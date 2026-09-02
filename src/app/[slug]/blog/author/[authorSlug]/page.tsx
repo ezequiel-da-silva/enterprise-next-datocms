@@ -20,6 +20,7 @@ import {
 } from "@/lib/seo/breadcrumb-labels";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
+import { postListingJsonLdItem } from "@/lib/blog/excerpt";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -108,10 +109,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
     authorPath,
     author.authorName,
     [{ name: blogBreadcrumbLabel(), path: `/${locale}/blog` }],
-    posts.map((post) => ({
-      name: post.postTitle,
-      path: `/${locale}/blog/${post.postSlug}`,
-    })),
+    posts.map((post) => postListingJsonLdItem(post as Record<string, unknown>, locale)),
   );
   const jsonLd = [...listingLd, buildAuthorPersonJsonLd(locale, authorSlug, author)];
 

@@ -1,6 +1,7 @@
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import type { AppLocale } from "@/constants/i18n";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
+import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
 import type { PostCardRecord } from "@/infra/datocms/types-blog";
 import Link from "next/link";
 
@@ -17,6 +18,8 @@ export function PostCard({ post, locale }: PostCardProps) {
   const primaryCategory = post.postCategory[0];
   const dateLabel = formatPublishedAt(locale, post._firstPublishedAt);
   const colorHex = primaryCategory?.categoryColor?.hex;
+  const excerptRaw = readPostExcerpt(post as Record<string, unknown>);
+  const excerpt = excerptPlainText(excerptRaw);
 
   return (
     <article className="group overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-1 ring-border/40 transition hover:border-primary/25 hover:shadow-md">
@@ -54,6 +57,7 @@ export function PostCard({ post, locale }: PostCardProps) {
         </div>
         <div className="space-y-2 p-4">
           <h2 className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">{post.postTitle}</h2>
+          {excerpt ? <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerptRaw}</p> : null}
           {post.postAuthor?.authorName ? (
             <p className="text-sm text-muted-foreground">
               <span className="font-medium text-foreground/90">{post.postAuthor.authorName}</span>

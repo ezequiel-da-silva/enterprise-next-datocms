@@ -3246,6 +3246,7 @@ export type PostModelFilter = {
   _status?: InputMaybe<StatusFilter>;
   _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
   _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  excerpt?: InputMaybe<TextFilter>;
   id?: InputMaybe<ItemIdFilter>;
   postAuthor?: InputMaybe<LinkFilter>;
   postCategory?: InputMaybe<LinksFilter>;
@@ -3297,6 +3298,7 @@ export type PostModelPostContentFieldMultiLocaleField = {
 /** Record of type 📝 Post (post) */
 export type PostRecord = RecordInterface & {
   __typename?: 'PostRecord';
+  _allExcerptLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPostContentLocales?: Maybe<Array<PostModelPostContentFieldMultiLocaleField>>;
   _allPostSlugLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPostTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -3317,6 +3319,7 @@ export type PostRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   coverImage?: Maybe<ImageBlockRecord>;
+  excerpt?: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
   postAuthor?: Maybe<AuthorRecord>;
   postCategory: Array<CategoryRecord>;
@@ -3325,6 +3328,13 @@ export type PostRecord = RecordInterface & {
   postTitle?: Maybe<Scalars['String']['output']>;
   seoAnalysis?: Maybe<Scalars['JsonField']['output']>;
   seoSettingsSocial?: Maybe<SeoField>;
+};
+
+
+/** Record of type 📝 Post (post) */
+export type PostRecord_AllExcerptLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -3361,6 +3371,14 @@ export type PostRecord_AllSeoSettingsSocialLocalesArgs = {
 /** Record of type 📝 Post (post) */
 export type PostRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 📝 Post (post) */
+export type PostRecordExcerptArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 

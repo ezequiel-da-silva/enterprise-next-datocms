@@ -1,0 +1,9 @@
+# Campos de cartão do modelo Post (`post`).
+# Runtime: `POST_CARD_FIELDS` em `queries.ts`.
+fragment PostCardFields on PostRecord {
+  id
+  _firstPublishedAt
+  postTitle
+  postSlug
+  excerpt
+}

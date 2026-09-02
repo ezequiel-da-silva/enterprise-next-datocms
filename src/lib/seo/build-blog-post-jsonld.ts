@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import type { PostDetailRecord } from "@/infra/datocms/types-blog";
+import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
 import {
   blogBreadcrumbLabel,
   buildLocaleBreadcrumbTrail,
@@ -20,7 +21,9 @@ export function buildBlogPostJsonLdGraph(
   const blogIndexPath = `/${locale}/blog`;
 
   const imageUrl = post.coverImage?.asset?.url ?? post.coverImage?.assetDesktop?.url ?? undefined;
-  const description = post.seoSettingsSocial?.description?.trim() || undefined;
+  const seoDescription = post.seoSettingsSocial?.description?.trim() || "";
+  const excerpt = excerptPlainText(readPostExcerpt(post as Record<string, unknown>));
+  const description = seoDescription || excerpt || undefined;
   const primaryCategory = post.postCategory[0]?.categoryName;
 
   const author = post.postAuthor

@@ -37,6 +37,28 @@ describe("buildBlogPostJsonLdGraph", () => {
     expect(graph[0].datePublished).toBe("2024-01-01T00:00:00Z");
     expect(graph[0].dateModified).toBe("2024-06-15T12:00:00Z");
     expect(graph[0].inLanguage).toBe("en");
+    expect(graph[0].description).toBe("Summary");
     expect(graph[1]["@type"]).toBe("BreadcrumbList");
+  });
+
+  it("falls back to excerpt when SEO description is empty", () => {
+    const post = {
+      id: "1",
+      _firstPublishedAt: "2024-01-01T00:00:00Z",
+      _updatedAt: "2024-06-15T12:00:00Z",
+      postTitle: "My Post",
+      postSlug: "my-post",
+      excerpt: "Teaser from CMS",
+      postCategory: [],
+      postContent: null,
+      coverImage: null,
+      postAuthor: null,
+      seoSettingsSocial: { description: null, title: null, twitterCard: null, noIndex: null, image: null },
+      _seoMetaTags: null,
+      slugLocales: [],
+    } satisfies PostDetailRecord;
+
+    const graph = buildBlogPostJsonLdGraph("en", "my-post", post);
+    expect(graph[0].description).toBe("Teaser from CMS");
   });
 });

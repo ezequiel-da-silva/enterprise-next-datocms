@@ -663,6 +663,7 @@ const POST_CARD_FIELDS = `
   _firstPublishedAt
   postTitle
   postSlug
+  excerpt
   postAuthor {
     authorName
   }
@@ -702,6 +703,7 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
       _updatedAt
       postTitle
       postSlug
+      excerpt
       postCategory {
         id
         categoryName

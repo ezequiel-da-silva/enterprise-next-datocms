@@ -13,6 +13,7 @@ import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { openGraphLocale } from "@/lib/seo/locale-tags";
 import { buildMetadata } from "@/lib/seo";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
+import { postListingJsonLdItem } from "@/lib/blog/excerpt";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -99,10 +100,7 @@ export default async function BlogIndexPage({ params }: BlogIndexProps) {
     blogPath,
     blogBreadcrumbLabel(),
     undefined,
-    posts.map((post) => ({
-      name: post.postTitle,
-      path: `/${locale}/blog/${post.postSlug}`,
-    })),
+    posts.map((post) => postListingJsonLdItem(post as Record<string, unknown>, locale)),
   );
 
   return (

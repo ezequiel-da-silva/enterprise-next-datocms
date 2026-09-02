@@ -24,6 +24,7 @@ export function buildBreadcrumbListJsonLd(crumbs: BreadcrumbCrumb[]): Record<str
 export type ListingItem = {
   name: string;
   path: string;
+  description?: string;
 };
 
 const ITEM_LIST_CAP = 20;
@@ -61,6 +62,7 @@ export function buildListingPageJsonLd(
         position: i + 1,
         name: item.name,
         url: toAbsoluteUrl(item.path),
+        ...(item.description ? { description: item.description } : {}),
       })),
     });
   }

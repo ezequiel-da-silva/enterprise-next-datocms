@@ -24,6 +24,7 @@ export type PostCardRecord = {
   _firstPublishedAt: string;
   postTitle: string;
   postSlug: string;
+  excerpt?: string | null;
   postAuthor: PostAuthorName | null;
   postCategory: PostCategorySummary[];
   coverImage: ImageBlockResponsive | null;
@@ -62,6 +63,7 @@ export type PostDetailRecord = {
   _updatedAt: string;
   postTitle: string;
   postSlug: string;
+  excerpt?: string | null;
   postCategory: PostCategorySummary[];
   postContent: (CdaStructuredTextValue & { blocks: PageStructuredTextBlock[] | null }) | null;
   coverImage: ImageBlockResponsive | null;
