@@ -305,7 +305,7 @@ const CTA_BANNER_BLOCK = `
 `;
 
 /**
- * Links do Structured Text em **Page.structuredText** e **Post.postContent** (CDA deste projeto):
+ * Links do Structured Text em **Post.postContent** (CDA deste projeto):
  * o schema expõe `links: Array<PageRecord>` — não há `PostRecord` / `CategoryRecord` / `AuthorRecord` aqui.
  */
 const ST_RECORD_LINKS_PAGE_ST = `
@@ -540,11 +540,14 @@ const REVIEWS_SECTION_BLOCK = `
 `;
 
 /**
- * ST da **Page**: média + FAQ + Feature GRID + CTA + Logo GRID + Reviews + Pricing + Stats + Steps + Tabs + Team.
- * **Post.postContent** usa só `STRUCTURED_TEXT_BLOCKS` (media) — Feature Grid / FAQ não entram no schema do Post.
+ * Modular Content **Page.contentPage**: secções de landing (sem prosa / média ST).
+ * Image / Gallery / Video ficam no **Post.postContent** (`STRUCTURED_TEXT_BLOCKS`).
  */
-const PAGE_STRUCTURED_TEXT_BLOCKS = `
-  ${ST_BLOCKS_MEDIA_ONLY}
+const PAGE_CONTENT_BLOCKS = `
+  __typename
+  ... on RecordInterface {
+    id
+  }
   ${FAQ_GROUP_BLOCK}
   ${CTA_BANNER_BLOCK}
   ${LOGO_GRID_BLOCK}
@@ -589,30 +592,20 @@ const HERO_PAGE_FIELDS = `
 /**
  * Page por slug.
  *
- * - Blocos do Structured Text: nomes gerados pelo Dato a partir dos modelos de bloco
- *   (ex.: `Image` → `ImageBlockRecord`, campo `asset` tipo FileField — não `ImageRecord`/`image`).
- * - `inlineBlocks` neste projeto é lista de strings (IDs), não union GraphQL: só pedir o scalar.
- * - `structuredText.links` no CDA: apenas **`PageRecord`** (não pedir `PostRecord` / `CategoryRecord` / `AuthorRecord`).
- * - Hero da página vem do campo modular `heroPage` (bloco **Hero section**), não do ST.
+ * - Corpo: Modular Content `contentPage` (lista de secções).
+ * - Hero da página vem do campo modular `heroPage` (bloco **Hero section**), não do contentor de secções.
  * - `subtitleHero` no modelo Hero deste projeto expõe `blocks`/`links`/`inlineBlocks` como listas de **strings**
  *   (IDs), não unions de blocos — não abrir sub-seleção GraphQL nesses campos.
  */
 export const PAGE_BY_SLUG = /* GraphQL */ `
-  query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
+  query PageBySlug($slug: String!, $locale: SiteLocale!) {
     page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
       id
       title
       slug
       ${HERO_PAGE_FIELDS}
-      structuredText {
-        value
-        links {
-          ${ST_RECORD_LINKS_PAGE_ST}
-        }
-        blocks {
-          ${PAGE_STRUCTURED_TEXT_BLOCKS}
-        }
-        inlineBlocks
+      contentPage {
+        ${PAGE_CONTENT_BLOCKS}
       }
       seoSettingsSocial {
         title
@@ -915,7 +908,7 @@ export const GET_SITE_SEO = /* GraphQL */ `
 /**
  * Single instance `global_setting` — 404 (título, structured text, bloco Image).
  * Em `description404`, `blocks`/`links`/`inlineBlocks` no CDA são escalares (IDs), não unions
- * como em `Page.structuredText`; pedir subcampos em `links`/`blocks` invalida a query.
+ * como em campos ST escalares (bio, 404); pedir subcampos em `links`/`blocks` invalida a query.
  */
 export const GET_GLOBAL_SETTINGS = /* GraphQL */ `
   query GetGlobalSettings($locale: SiteLocale!) {

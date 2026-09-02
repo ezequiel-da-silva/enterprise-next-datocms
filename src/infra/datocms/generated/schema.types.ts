@@ -3069,6 +3069,14 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
+export type PageModelContentPageField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord;
+
+export type PageModelContentPageFieldListListNonNullMultiLocaleField = {
+  __typename?: 'PageModelContentPageFieldListListNonNullMultiLocaleField';
+  locale?: Maybe<SiteLocale>;
+  value: Array<PageModelContentPageField>;
+};
+
 export type PageModelFilter = {
   AND?: InputMaybe<Array<InputMaybe<PageModelFilter>>>;
   OR?: InputMaybe<Array<InputMaybe<PageModelFilter>>>;
@@ -3085,7 +3093,6 @@ export type PageModelFilter = {
   seoAnalysis?: InputMaybe<JsonFilter>;
   seoSettingsSocial?: InputMaybe<SeoFilter>;
   slug?: InputMaybe<SlugFilter>;
-  structuredText?: InputMaybe<StructuredTextFilter>;
   title?: InputMaybe<StringFilter>;
 };
 
@@ -3111,30 +3118,14 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
-export type PageModelStructuredTextBlocksField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | ImageBlockRecord | ImageGalleryBlockRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | VideoBlockRecord;
-
-export type PageModelStructuredTextField = {
-  __typename?: 'PageModelStructuredTextField';
-  blocks: Array<PageModelStructuredTextBlocksField>;
-  inlineBlocks: Array<Scalars['String']['output']>;
-  links: Array<PageRecord>;
-  value: Scalars['JsonField']['output'];
-};
-
-export type PageModelStructuredTextFieldMultiLocaleField = {
-  __typename?: 'PageModelStructuredTextFieldMultiLocaleField';
-  locale?: Maybe<SiteLocale>;
-  value?: Maybe<PageModelStructuredTextField>;
-};
-
 /** Record of type 📚 Page (page) */
 export type PageRecord = RecordInterface & {
   __typename?: 'PageRecord';
+  _allContentPageLocales?: Maybe<Array<PageModelContentPageFieldListListNonNullMultiLocaleField>>;
   _allHeroPageLocales?: Maybe<Array<HeroSectionRecordMultiLocaleField>>;
   _allSeoAnalysisLocales?: Maybe<Array<JsonFieldMultiLocaleField>>;
   _allSeoSettingsSocialLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allSlugLocales?: Maybe<Array<StringMultiLocaleField>>;
-  _allStructuredTextLocales?: Maybe<Array<PageModelStructuredTextFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
   /** Editing URL */
@@ -3150,13 +3141,19 @@ export type PageRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  contentPage: Array<PageModelContentPageField>;
   heroPage?: Maybe<HeroSectionRecord>;
   id: Scalars['ItemId']['output'];
   seoAnalysis?: Maybe<Scalars['JsonField']['output']>;
   seoSettingsSocial?: Maybe<SeoField>;
   slug?: Maybe<Scalars['String']['output']>;
-  structuredText?: Maybe<PageModelStructuredTextField>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 📚 Page (page) */
+export type PageRecord_AllContentPageLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
@@ -3185,12 +3182,6 @@ export type PageRecord_AllSlugLocalesArgs = {
 
 
 /** Record of type 📚 Page (page) */
-export type PageRecord_AllStructuredTextLocalesArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-};
-
-
-/** Record of type 📚 Page (page) */
 export type PageRecord_AllTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
@@ -3198,6 +3189,13 @@ export type PageRecord_AllTitleLocalesArgs = {
 
 /** Record of type 📚 Page (page) */
 export type PageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 📚 Page (page) */
+export type PageRecordContentPageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3225,13 +3223,6 @@ export type PageRecordSeoSettingsSocialArgs = {
 
 /** Record of type 📚 Page (page) */
 export type PageRecordSlugArgs = {
-  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
-  locale?: InputMaybe<SiteLocale>;
-};
-
-
-/** Record of type 📚 Page (page) */
-export type PageRecordStructuredTextArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };

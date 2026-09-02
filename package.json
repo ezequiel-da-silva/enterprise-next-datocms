@@ -3,7 +3,7 @@
   "version": "0.10.0",
   "private": true,
   "scripts": {
-    "dev": "rm -rf .next && next dev --webpack",
+    "dev": "node scripts/dev.mjs",
     "build": "next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",

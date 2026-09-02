@@ -127,7 +127,7 @@ async function VideoBlockView({
 }
 
 /**
- * Blocos modulares partilhados entre `PageStructuredText` e `StructuredTextRenderer`.
+ * Blocos modulares partilhados entre `PageContentBlocks` e `StructuredTextView` (posts).
  */
 export function StructuredTextBlockView({
   record,

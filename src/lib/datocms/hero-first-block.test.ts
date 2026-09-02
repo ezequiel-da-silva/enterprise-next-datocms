@@ -18,11 +18,25 @@ describe("heroFirstBlockSuppliesH1", () => {
       imageOverlay: null,
     } as HeroSectionRecord;
 
-    expect(heroFirstBlockSuppliesH1(null, hero)).toBe(true);
+    expect(heroFirstBlockSuppliesH1(hero)).toBe(true);
   });
 
-  it("returns false when no hero and empty ST", () => {
-    expect(heroFirstBlockSuppliesH1(null, null)).toBe(false);
-    expect(heroFirstBlockSuppliesH1({ value: null, blocks: [] }, null)).toBe(false);
+  it("returns false when there is no hero or no title", () => {
+    expect(heroFirstBlockSuppliesH1(null)).toBe(false);
+    expect(
+      heroFirstBlockSuppliesH1({
+        __typename: "HeroSectionRecord",
+        id: "1",
+        layoutHero: null,
+        titleHero: "",
+        showButton: false,
+        showImageHero: false,
+        showImageOverlay: false,
+        buttonHero: [],
+        subtitleHero: null,
+        imageHero: null,
+        imageOverlay: null,
+      } as HeroSectionRecord),
+    ).toBe(false);
   });
 });

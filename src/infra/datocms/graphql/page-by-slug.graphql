@@ -8,7 +8,7 @@
 #import "./fragments/feature-grid.graphql"
 #import "./fragments/team-section.graphql"
 
-query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
+query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
     id
     title
@@ -89,121 +89,58 @@ query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!
         }
       }
     }
-    structuredText {
-      value
-      links {
-        __typename
-        ... on PageRecord {
+    contentPage {
+      __typename
+      ... on RecordInterface {
+        id
+      }
+      ... on FeatureGridRecord {
+        ...FeatureGridBlockFragment
+      }
+      ... on FaqGroupRecord {
+        id
+        title
+        subtitle
+        hasSubtitle
+        advancedOptions
+        accordionMode
+        openFirstItem
+        enableFaqSchema
+        headerAlignment
+        questions {
           id
-          title
-          slug
+          question {
+            value
+          }
+          answer {
+            value
+          }
         }
       }
-      blocks {
-        __typename
-        ... on RecordInterface {
-          id
-        }
-        ... on ImageBlockRecord {
-          id
-          asset {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-          assetDesktop {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-        }
-        ... on ImageGalleryBlockRecord {
-          id
-          assets {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-        }
-        ... on VideoBlockRecord {
-          id
-          # O CDA exige o header X-Base-Editing-Url para resolver _editingUrl: pedir só em draft.
-          _editingUrl @include(if: $withEditingUrl)
-          asset {
-            url
-            title
-            width
-            height
-            # Dato blocks the raw asset URL ("Serving raw videos is disabled"): use Mux.
-            video {
-              muxPlaybackId
-              streamingUrl
-              mp4Url(res: high)
-              # width limitado: o poster nativo (ex. 2732px) desperdiça bytes e atrasa o CLS.
-              thumbnailUrl(width: 640)
-              width
-              height
-              duration
-            }
-          }
-          # CMS: add file field `captions` on video_block, then:
-          # captions { url title }
-        }
-        ... on FeatureGridRecord {
-          ...FeatureGridBlockFragment
-        }
-        ... on FaqGroupRecord {
-          id
-          title
-          subtitle
-          hasSubtitle
-          advancedOptions
-          accordionMode
-          openFirstItem
-          enableFaqSchema
-          headerAlignment
-          questions {
-            id
-            question {
-              value
-            }
-            answer {
-              value
-            }
-          }
-        }
-        ... on CtaBannerRecord {
-          ...CtaBannerBlockFields
-        }
-        ... on LogoGridRecord {
-          ...LogoGridBlockFragment
-        }
-        ... on ReviewsSectionRecord {
-          ...ReviewsSectionBlockFragment
-        }
-        ... on PricingSectionRecord {
-          ...PricingSectionBlockFragment
-        }
-        ... on StatsSectionRecord {
-          ...StatsSectionBlockFragment
-        }
-        ... on StepsSectionRecord {
-          ...StepsSectionBlockFragment
-        }
-        ... on TabsSectionRecord {
-          ...TabsSectionBlockFragment
-        }
-        ... on TeamSectionRecord {
-          ...TeamSectionBlockFragment
-        }
+      ... on CtaBannerRecord {
+        ...CtaBannerBlockFields
       }
-      inlineBlocks
+      ... on LogoGridRecord {
+        ...LogoGridBlockFragment
+      }
+      ... on ReviewsSectionRecord {
+        ...ReviewsSectionBlockFragment
+      }
+      ... on PricingSectionRecord {
+        ...PricingSectionBlockFragment
+      }
+      ... on StatsSectionRecord {
+        ...StatsSectionBlockFragment
+      }
+      ... on StepsSectionRecord {
+        ...StepsSectionBlockFragment
+      }
+      ... on TabsSectionRecord {
+        ...TabsSectionBlockFragment
+      }
+      ... on TeamSectionRecord {
+        ...TeamSectionBlockFragment
+      }
     }
     seoSettingsSocial {
       title
