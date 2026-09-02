@@ -472,6 +472,55 @@ const TEAM_SECTION_BLOCK = `
   }
 `;
 
+const POST_CARD_FIELDS = `
+  id
+  _firstPublishedAt
+  _updatedAt
+  postTitle
+  postSlug
+  excerpt
+  postAuthor {
+    authorName
+  }
+  postCategory {
+    id
+    categoryName
+    categorySlug
+    categoryColor {
+      hex
+    }
+  }
+  coverImage {
+    ${IMAGE_BLOCK_RESPONSIVE}
+  }
+`;
+
+/** Latest posts section — listagem filtrável (`LatestPostsSectionRecord`). @see fragments/latest-posts-section.graphql */
+const LATEST_POSTS_SECTION_BLOCK = `
+  ... on LatestPostsSectionRecord {
+    id
+    title
+    subtitle
+    fetchMode
+    allCategoriesLabel
+    categoryDisplay
+    showSortTabs
+    limit
+    sectionId
+    selectedCategories {
+      id
+      categoryName
+      categorySlug
+      categoryColor {
+        hex
+      }
+    }
+    manualPosts {
+      ${POST_CARD_FIELDS}
+    }
+  }
+`;
+
 /** Stats Section — métricas (`StatsSectionRecord`). @see fragments/stats-section.graphql */
 const STATS_SECTION_BLOCK = `
   ... on StatsSectionRecord {
@@ -558,6 +607,7 @@ const PAGE_CONTENT_BLOCKS = `
   ${TABS_SECTION_BLOCK}
   ${FEATURE_GRID_BLOCK}
   ${TEAM_SECTION_BLOCK}
+  ${LATEST_POSTS_SECTION_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
@@ -658,28 +708,6 @@ const SEO_META_TAGS = `
   content
 `;
 
-const POST_CARD_FIELDS = `
-  id
-  _firstPublishedAt
-  postTitle
-  postSlug
-  excerpt
-  postAuthor {
-    authorName
-  }
-  postCategory {
-    id
-    categoryName
-    categorySlug
-    categoryColor {
-      hex
-    }
-  }
-  coverImage {
-    ${IMAGE_BLOCK_RESPONSIVE}
-  }
-`;
-
 /** Listagem de posts (cartão) para o índice do blog. */
 export const GET_ALL_POSTS = /* GraphQL */ `
   query GetAllPosts($locale: SiteLocale!) {
@@ -689,6 +717,20 @@ export const GET_ALL_POSTS = /* GraphQL */ `
     _site {
       faviconMetaTags {
         ${SEO_META_TAGS}
+      }
+    }
+  }
+`;
+
+/** Categorias para chips da Latest posts section (modo auto / categoryDisplay=all). */
+export const GET_ALL_CATEGORIES = /* GraphQL */ `
+  query GetAllCategories($locale: SiteLocale!) {
+    allCategories(locale: $locale, orderBy: categoryName_ASC, first: 100) {
+      id
+      categoryName
+      categorySlug
+      categoryColor {
+        hex
       }
     }
   }

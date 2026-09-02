@@ -7,6 +7,7 @@
 #import "./fragments/tabs-section.graphql"
 #import "./fragments/feature-grid.graphql"
 #import "./fragments/team-section.graphql"
+#import "./fragments/latest-posts-section.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -140,6 +141,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
       }
       ... on TeamSectionRecord {
         ...TeamSectionBlockFragment
+      }
+      ... on LatestPostsSectionRecord {
+        ...LatestPostsSectionBlockFragment
       }
     }
     seoSettingsSocial {

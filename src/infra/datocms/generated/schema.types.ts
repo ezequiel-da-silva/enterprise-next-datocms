@@ -2748,6 +2748,41 @@ export type JsonFilter = {
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+/** Block of type 🗞️ Latest posts section (latest_posts_section) */
+export type LatestPostsSectionRecord = RecordInterface & {
+  __typename?: 'LatestPostsSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  allCategoriesLabel?: Maybe<Scalars['String']['output']>;
+  categoryDisplay?: Maybe<Scalars['String']['output']>;
+  fetchMode?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  limit?: Maybe<Scalars['IntType']['output']>;
+  manualPosts: Array<PostRecord>;
+  sectionId?: Maybe<Scalars['String']['output']>;
+  selectedCategories: Array<CategoryRecord>;
+  showSortTabs: Scalars['BooleanType']['output'];
+  subtitle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 🗞️ Latest posts section (latest_posts_section) */
+export type LatestPostsSectionRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
 /** Specifies how to filter Single-link fields */
 export type LinkFilter = {
   /** Search for records with an exact match. The specified value must be a Record ID */
@@ -3069,7 +3104,7 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
-export type PageModelContentPageField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord;
+export type PageModelContentPageField = CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LatestPostsSectionRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord;
 
 export type PageModelContentPageFieldListListNonNullMultiLocaleField = {
   __typename?: 'PageModelContentPageFieldListListNonNullMultiLocaleField';
@@ -3279,7 +3314,7 @@ export type PostModelOrderBy =
   | 'postTitle_ASC'
   | 'postTitle_DESC';
 
-export type PostModelPostContentBlocksField = ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord;
+export type PostModelPostContentBlocksField = ImageBlockRecord | ImageGalleryBlockRecord | LatestPostsSectionRecord | VideoBlockRecord;
 
 export type PostModelPostContentField = {
   __typename?: 'PostModelPostContentField';

@@ -76,6 +76,11 @@ export type TabItemBlockRecord = TabsSectionBlockRecord["tabs"][number];
 export type TeamSectionBlockRecord = Extract<PageContentBlock, { __typename: "TeamSectionRecord" }>;
 export type TeamSectionMemberRecord = TeamSectionBlockRecord["members"][number];
 
+export type LatestPostsSectionBlockRecord = Extract<
+  PageContentBlock,
+  { __typename: "LatestPostsSectionRecord" }
+>;
+
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];
 
 export type HeroSectionRecord = NonNullable<PageQueryData["heroPage"]>;

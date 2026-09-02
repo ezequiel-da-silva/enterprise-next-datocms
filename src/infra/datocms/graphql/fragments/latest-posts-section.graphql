@@ -1,0 +1,35 @@
+# Fragmento do bloco Latest posts section (`latest_posts_section`).
+#
+# CMS (obrigatório antes de ativar na query):
+#   Schema → Page → Modular content (`contentPage`) → blocos permitidos
+#   → incluir **Latest posts section**.
+# Depois: `#import` + `... on LatestPostsSectionRecord` em `page-by-slug.graphql`,
+# `${LATEST_POSTS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#
+# `allPosts` / `allCategories` no modo auto NÃO entram neste fragmento —
+# o CDA não aninha colecções globais num record. Fetch via `GET_ALL_POSTS`
+# e `GET_ALL_CATEGORIES` no RSC.
+#import "./post-card.graphql"
+
+fragment LatestPostsSectionBlockFragment on LatestPostsSectionRecord {
+  id
+  title
+  subtitle
+  fetchMode
+  allCategoriesLabel
+  categoryDisplay
+  showSortTabs
+  limit
+  sectionId
+  selectedCategories {
+    id
+    categoryName
+    categorySlug
+    categoryColor {
+      hex
+    }
+  }
+  manualPosts {
+    ...PostCardFields
+  }
+}
