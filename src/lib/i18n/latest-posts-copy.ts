@@ -1,7 +1,7 @@
 import type { AppLocale } from "@/constants/i18n";
 
 /**
- * Copy da Latest posts section (chips, ordenação, estados vazios).
+ * Copy da Blog posts section (chips, ordenação, estados vazios).
  * Módulo puro: o bloco é RSC e a ilha de filtros é cliente.
  */
 export type LatestPostsCopy = {
@@ -18,7 +18,7 @@ export type LatestPostsCopy = {
 
 export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
   en: {
-    sectionLabel: "Latest posts",
+    sectionLabel: "Blog posts",
     allCategories: "All",
     sortGroup: "Sort posts",
     newest: "Newest",
@@ -29,7 +29,7 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     results: (count) => (count === 1 ? "1 post" : `${count} posts`),
   },
   pt: {
-    sectionLabel: "Últimos artigos",
+    sectionLabel: "Artigos",
     allCategories: "Todas",
     sortGroup: "Ordenar artigos",
     newest: "Mais recentes",
@@ -40,7 +40,7 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     results: (count) => (count === 1 ? "1 artigo" : `${count} artigos`),
   },
   es: {
-    sectionLabel: "Últimos artículos",
+    sectionLabel: "Artículos",
     allCategories: "Todas",
     sortGroup: "Ordenar artículos",
     newest: "Más recientes",

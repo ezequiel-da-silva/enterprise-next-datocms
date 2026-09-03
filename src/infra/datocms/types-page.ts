@@ -76,9 +76,9 @@ export type TabItemBlockRecord = TabsSectionBlockRecord["tabs"][number];
 export type TeamSectionBlockRecord = Extract<PageContentBlock, { __typename: "TeamSectionRecord" }>;
 export type TeamSectionMemberRecord = TeamSectionBlockRecord["members"][number];
 
-export type LatestPostsSectionBlockRecord = Extract<
+export type BlogPostsSectionBlockRecord = Extract<
   PageContentBlock,
-  { __typename: "LatestPostsSectionRecord" }
+  { __typename: "BlogPostsSectionRecord" }
 >;
 
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];

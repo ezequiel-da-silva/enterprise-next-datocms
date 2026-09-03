@@ -19,7 +19,8 @@ type LatestPostsInteractiveProps = {
   allCategoriesLabel: string;
   showCategoryBar: boolean;
   showSortTabs: boolean;
-  limit: number;
+  /** `null` = has_limit desligado, mostra todos os posts do dataset. */
+  limit: number | null;
   headingLevel: "h2" | "h3";
 };
 

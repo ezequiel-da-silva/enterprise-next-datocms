@@ -214,7 +214,7 @@ export async function loadLatestPostsCatalog(
 }
 
 export function contentNeedsLatestPostsCatalog(blocks: { __typename?: string }[]): boolean {
-  return blocks.some((block) => block.__typename === "LatestPostsSectionRecord");
+  return blocks.some((block) => block.__typename === "BlogPostsSectionRecord");
 }
 
 export function getPostBySlug(locale: DatoSiteLocale, slug: string, includeDrafts: boolean) {

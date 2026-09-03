@@ -495,9 +495,9 @@ const POST_CARD_FIELDS = `
   }
 `;
 
-/** Latest posts section — listagem filtrável (`LatestPostsSectionRecord`). @see fragments/latest-posts-section.graphql */
-const LATEST_POSTS_SECTION_BLOCK = `
-  ... on LatestPostsSectionRecord {
+/** Blog posts section — listagem filtrável (`BlogPostsSectionRecord`). @see fragments/blog-posts-section.graphql */
+const BLOG_POSTS_SECTION_BLOCK = `
+  ... on BlogPostsSectionRecord {
     id
     title
     subtitle
@@ -505,6 +505,7 @@ const LATEST_POSTS_SECTION_BLOCK = `
     allCategoriesLabel
     categoryDisplay
     showSortTabs
+    hasLimit
     limit
     sectionId
     selectedCategories {
@@ -607,7 +608,7 @@ const PAGE_CONTENT_BLOCKS = `
   ${TABS_SECTION_BLOCK}
   ${FEATURE_GRID_BLOCK}
   ${TEAM_SECTION_BLOCK}
-  ${LATEST_POSTS_SECTION_BLOCK}
+  ${BLOG_POSTS_SECTION_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
