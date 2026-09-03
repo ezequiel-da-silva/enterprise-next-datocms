@@ -1,11 +1,12 @@
 /**
- * Latest posts section (`latest_posts_section`).
+ * Blog posts section (`blog_posts_section`).
  *
  * | Campo                 | API key                | Default                         |
  * |-----------------------|------------------------|---------------------------------|
  * | fetch_mode            | fetch_mode             | auto                            |
  * | category_display      | category_display       | all                             |
  * | show_sort_tabs        | show_sort_tabs         | true (só `false` explícito off) |
+ * | has_limit             | has_limit              | false — `limit` só aplica se true |
  * | limit                 | limit                  | 6 (clamp 1–100)                 |
  * | section_id            | section_id             | —                               |
  * | all_categories_label  | all_categories_label   | copy i18n se vazio              |
@@ -14,7 +15,7 @@
  * CDA. Follow-up: integer `view_count` via Plausible/GA4/Vercel Analytics.
  */
 import type { PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
-import { readCdaArray, readCdaString, readCdaStringForLogic } from "@/lib/datocms/cda-field";
+import { readCdaArray, readCdaBool, readCdaString, readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
 export type LatestPostsFetchMode = "auto" | "manual";
 export type LatestPostsCategoryDisplay = "all" | "selected" | "none";
@@ -24,6 +25,7 @@ export type LatestPostsOptions = {
   fetchMode: LatestPostsFetchMode;
   categoryDisplay: LatestPostsCategoryDisplay;
   showSortTabs: boolean;
+  hasLimit: boolean;
   limit: number;
   sectionId?: string;
   allCategoriesLabel: string;
@@ -33,8 +35,12 @@ export const LATEST_POSTS_DEFAULTS = {
   fetchMode: "auto",
   categoryDisplay: "all",
   showSortTabs: true,
+  hasLimit: false,
   limit: 6,
-} as const satisfies Pick<LatestPostsOptions, "fetchMode" | "categoryDisplay" | "showSortTabs" | "limit">;
+} as const satisfies Pick<
+  LatestPostsOptions,
+  "fetchMode" | "categoryDisplay" | "showSortTabs" | "hasLimit" | "limit"
+>;
 
 const MIN_LIMIT = 1;
 const MAX_LIMIT = 100;
@@ -105,6 +111,7 @@ export function resolveLatestPostsOptions(
     fetchMode: fetchRaw ? parseFetchMode(fetchRaw) : LATEST_POSTS_DEFAULTS.fetchMode,
     categoryDisplay: displayRaw ? parseCategoryDisplay(displayRaw) : LATEST_POSTS_DEFAULTS.categoryDisplay,
     showSortTabs: readOptionalBool(record, "showSortTabs", "show_sort_tabs") ?? LATEST_POSTS_DEFAULTS.showSortTabs,
+    hasLimit: readCdaBool(record, "hasLimit", "has_limit"),
     limit: clampLimit(readOptionalNumber(record, "limit", "limit")),
     sectionId: sanitizeSectionId(readCdaStringForLogic(record, "sectionId", "section_id") || undefined),
     allCategoriesLabel: cmsAllLabel || fallbackAllLabel,
@@ -214,12 +221,12 @@ export function postsInCategories(posts: PostCardRecord[], categoryIds: string[]
   return posts.filter((post) => post.postCategory.some((category) => allowed.has(category.id)));
 }
 
-/** Filter by category id (null = all), sort, then apply limit. */
+/** Filter by category id (null = all), sort, then apply limit (`null` = sem teto). */
 export function filterSortLimitPosts(
   posts: PostCardRecord[],
   categoryId: string | null,
   sort: LatestPostsSort,
-  limit: number,
+  limit: number | null,
 ): PostCardRecord[] {
   const filtered = categoryId
     ? posts.filter((post) => post.postCategory.some((category) => category.id === categoryId))
@@ -234,6 +241,10 @@ export function filterSortLimitPosts(
     }
     return timeValue(b._firstPublishedAt) - timeValue(a._firstPublishedAt);
   });
+
+  if (limit == null) {
+    return sorted;
+  }
 
   return sorted.slice(0, Math.max(MIN_LIMIT, Math.min(MAX_LIMIT, limit)));
 }

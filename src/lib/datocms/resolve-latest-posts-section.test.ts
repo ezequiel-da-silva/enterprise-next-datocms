@@ -23,6 +23,7 @@ describe("resolveLatestPostsOptions", () => {
           fetchMode: "manual",
           categoryDisplay: "selected",
           showSortTabs: false,
+          hasLimit: true,
           limit: 9,
           sectionId: "Blog Destaques!",
           allCategoriesLabel: "Everything",
@@ -33,6 +34,7 @@ describe("resolveLatestPostsOptions", () => {
       fetchMode: "manual",
       categoryDisplay: "selected",
       showSortTabs: false,
+      hasLimit: true,
       limit: 9,
       sectionId: "blog-destaques",
       allCategoriesLabel: "Everything",
@@ -44,6 +46,7 @@ describe("resolveLatestPostsOptions", () => {
           fetch_mode: "auto",
           category_display: "none",
           show_sort_tabs: true,
+          has_limit: true,
           limit: 3,
         },
         "Todas",
@@ -52,6 +55,7 @@ describe("resolveLatestPostsOptions", () => {
       fetchMode: "auto",
       categoryDisplay: "none",
       showSortTabs: true,
+      hasLimit: true,
       limit: 3,
       allCategoriesLabel: "Todas",
     });
@@ -66,6 +70,8 @@ describe("resolveLatestPostsOptions", () => {
     expect(resolveLatestPostsOptions({ limit: 0 }, "All").limit).toBe(1);
     expect(resolveLatestPostsOptions({ limit: 500 }, "All").limit).toBe(100);
     expect(resolveLatestPostsOptions({ showSortTabs: false }, "All").showSortTabs).toBe(false);
+    expect(resolveLatestPostsOptions({ hasLimit: true }, "All").hasLimit).toBe(true);
+    expect(resolveLatestPostsOptions({ has_limit: false, limit: 3 }, "All").hasLimit).toBe(false);
   });
 });
 
@@ -100,6 +106,10 @@ describe("filterSortLimitPosts", () => {
 
   it("filters by category then sorts", () => {
     expect(filterSortLimitPosts(posts, "news", "newest", 10).map((p) => p.id)).toEqual(["a", "c"]);
+  });
+
+  it("skips the cap when limit is null", () => {
+    expect(filterSortLimitPosts(posts, null, "newest", null).map((p) => p.id)).toEqual(["b", "a", "c"]);
   });
 
   it("restricts the dataset to selected categories", () => {

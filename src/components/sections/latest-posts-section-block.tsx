@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/atoms/skeleton";
 import { LatestPostsInteractive } from "@/components/sections/latest-posts-interactive";
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog, PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
-import type { LatestPostsSectionBlockRecord } from "@/infra/datocms/types-page";
+import type { BlogPostsSectionBlockRecord } from "@/infra/datocms/types-page";
 import { readCdaString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
@@ -17,7 +17,7 @@ import {
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 
 type LatestPostsSectionBlockProps = {
-  record: LatestPostsSectionBlockRecord;
+  record: BlogPostsSectionBlockRecord;
   locale: AppLocale;
   catalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
 };
@@ -36,7 +36,7 @@ export function LatestPostsSectionFallback({
   record,
 }: {
   locale: AppLocale;
-  record: LatestPostsSectionBlockRecord;
+  record: BlogPostsSectionBlockRecord;
 }) {
   const copy = latestPostsCopy(locale);
   const title = readCdaString(record as Record<string, unknown>, "title", "title");
@@ -152,7 +152,7 @@ export async function LatestPostsSectionBlock({ record, locale, catalog }: Lates
           allCategoriesLabel={options.allCategoriesLabel}
           showCategoryBar={showCategoryBar}
           showSortTabs={options.showSortTabs}
-          limit={options.limit}
+          limit={options.hasLimit ? options.limit : null}
           headingLevel={headingLevel}
         />
       </Container>

@@ -6,7 +6,7 @@ import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-pic
 import type {
   CtaBannerBlockRecord,
   FeatureGridRecord,
-  LatestPostsSectionBlockRecord,
+  BlogPostsSectionBlockRecord,
   PageStructuredTextBlock,
   PricingSectionBlockRecord,
   ReviewsSectionBlockRecord,
@@ -223,15 +223,15 @@ export function StructuredTextBlockView({
       return <TabsSectionBlock record={record as TabsSectionBlockRecord} locale={locale} />;
     case "TeamSectionRecord":
       return <TeamSectionBlock record={record as TeamSectionBlockRecord} locale={locale} />;
-    case "LatestPostsSectionRecord":
+    case "BlogPostsSectionRecord":
       return (
         <Suspense
           fallback={
-            <LatestPostsSectionFallback locale={locale} record={record as LatestPostsSectionBlockRecord} />
+            <LatestPostsSectionFallback locale={locale} record={record as BlogPostsSectionBlockRecord} />
           }
         >
           <LatestPostsSectionBlock
-            record={record as LatestPostsSectionBlockRecord}
+            record={record as BlogPostsSectionBlockRecord}
             locale={locale}
             catalog={latestPostsCatalog}
           />
