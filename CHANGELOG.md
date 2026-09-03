@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.12.1...next-dato-v0.12.2) (2026-09-03)
+
+
+### Refactoring
+
+* **blog-posts:** rename LatestPostsSection to BlogPostsSection across components and types ([1ec69c8](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1ec69c8e5c0eda97d997687d0ad0753f2a826c8d))
+* **blog-posts:** rename LatestPostsSection to BlogPostsSection across components and types; update GraphQL queries and fragments to reflect new naming conventions; enhance type definitions for improved clarity and consistency ([e476b40](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e476b403cb7456f3afb5da666404f89da05e5a6d))
+
 ## [0.12.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.12.0...next-dato-v0.12.1) (2026-09-02)
 
 
