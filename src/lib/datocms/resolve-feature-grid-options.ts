@@ -4,41 +4,31 @@
  * | Campo             | API key           | Default (advanced_options=false) |
  * |-------------------|-------------------|----------------------------------|
  * | Variante          | variant           | cards                            |
- * | Autoplay          | autoplay          | false                            |
- * | Intervalo (s)     | autoplay_interval | 5 (clamp 3–12)                   |
- * | Mostrar setas     | show_arrows       | true                             |
- * | Mostrar pontos    | show_dots         | true                             |
- * | Loop              | loop              | true                             |
+ * | Carrossel         | carousel_options  | defaults de `carousel_setting`   |
  * | ID da secção      | section_id        | —                                |
  *
  * Autoplay só aplica com `advanced_options`. Sem `loop`, o autoplay pára no último
  * snap (não volta ao início à revelia do toggle Loop).
  */
 import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
+import {
+  CAROUSEL_SETTING_DEFAULTS,
+  resolveCarouselSetting,
+  type CarouselSetting,
+} from "@/lib/datocms/resolve-carousel-setting";
 
 export type FeatureGridVariant = "cards" | "full_bleed";
 
 export type FeatureGridOptions = {
   variant: FeatureGridVariant;
-  autoplay: boolean;
-  autoplayInterval: number;
-  showArrows: boolean;
-  showDots: boolean;
-  loop: boolean;
+  carousel: CarouselSetting;
   sectionId?: string;
 };
 
 export const FEATURE_GRID_DEFAULTS: FeatureGridOptions = {
   variant: "cards",
-  autoplay: false,
-  autoplayInterval: 5,
-  showArrows: true,
-  showDots: true,
-  loop: true,
+  carousel: CAROUSEL_SETTING_DEFAULTS,
 };
-
-const MIN_AUTOPLAY_INTERVAL = 3;
-const MAX_AUTOPLAY_INTERVAL = 12;
 
 function readOptionalBool(record: Record<string, unknown>, camel: string, snake: string): boolean | undefined {
   const raw = record[camel] ?? record[snake];
@@ -51,23 +41,12 @@ function readOptionalString(record: Record<string, unknown>, camel: string, snak
   return readCdaStringForLogic(record, camel, snake) || undefined;
 }
 
-function readOptionalNumber(record: Record<string, unknown>, camel: string, snake: string): number | undefined {
-  const raw = record[camel] ?? record[snake];
-  const value = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : Number.NaN;
-  return Number.isFinite(value) ? value : undefined;
-}
-
 function parseVariant(raw: string): FeatureGridVariant {
   const value = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
   if (value === "full_bleed" || value.includes("full") || value.includes("sangria")) {
     return "full_bleed";
   }
   return "cards";
-}
-
-function clampInterval(value: number | undefined): number {
-  if (value == null) return FEATURE_GRID_DEFAULTS.autoplayInterval;
-  return Math.min(MAX_AUTOPLAY_INTERVAL, Math.max(MIN_AUTOPLAY_INTERVAL, Math.round(value)));
 }
 
 function sanitizeSectionId(raw: string | undefined): string | undefined {
@@ -88,18 +67,12 @@ export function resolveFeatureGridOptions(record: Record<string, unknown>): Feat
   const advanced = readOptionalBool(record, "advancedOptions", "advanced_options") === true;
 
   if (!advanced) {
-    return { ...FEATURE_GRID_DEFAULTS, variant };
+    return { ...FEATURE_GRID_DEFAULTS, carousel: { ...CAROUSEL_SETTING_DEFAULTS }, variant };
   }
 
   return {
     variant,
-    autoplay: readOptionalBool(record, "autoplay", "autoplay") ?? FEATURE_GRID_DEFAULTS.autoplay,
-    autoplayInterval: clampInterval(
-      readOptionalNumber(record, "autoplayInterval", "autoplay_interval"),
-    ),
-    showArrows: readOptionalBool(record, "showArrows", "show_arrows") ?? FEATURE_GRID_DEFAULTS.showArrows,
-    showDots: readOptionalBool(record, "showDots", "show_dots") ?? FEATURE_GRID_DEFAULTS.showDots,
-    loop: readOptionalBool(record, "loop", "loop") ?? FEATURE_GRID_DEFAULTS.loop,
+    carousel: resolveCarouselSetting(record.carouselOptions ?? record.carousel_options),
     sectionId: sanitizeSectionId(readOptionalString(record, "sectionId", "section_id")),
   };
 }

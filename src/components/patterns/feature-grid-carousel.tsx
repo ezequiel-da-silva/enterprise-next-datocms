@@ -4,14 +4,13 @@ import type { AppLocale } from "@/constants/i18n";
 import type { FeatureGridOptions } from "@/lib/datocms/resolve-feature-grid-options";
 import { FEATURE_GRID_COPY } from "@/lib/i18n/feature-grid-copy";
 import { cn } from "@/lib/cn";
-import Autoplay from "embla-carousel-autoplay";
+import { useCarouselConfig } from "@/components/ui/carousel/use-carousel-config";
 import useEmblaCarousel from "embla-carousel-react";
 import {
   Children,
   isValidElement,
   useCallback,
   useEffect,
-  useMemo,
   useState,
   type KeyboardEvent,
   type ReactNode,
@@ -71,30 +70,9 @@ export function FeatureGridCarousel({
 }: FeatureGridCarouselProps) {
   const copy = FEATURE_GRID_COPY[locale];
   const slides = Children.toArray(children);
-  const autoplayPlugin = useMemo(
-    () =>
-      options.autoplay
-        ? Autoplay({
-            delay: options.autoplayInterval * 1000,
-            playOnInit: false,
-            stopOnFocusIn: true,
-            stopOnInteraction: false,
-            stopOnMouseEnter: false,
-            stopOnLastSnap: !options.loop,
-          })
-        : null,
-    [options.autoplay, options.autoplayInterval, options.loop],
-  );
-  const plugins = useMemo(() => (autoplayPlugin ? [autoplayPlugin] : []), [autoplayPlugin]);
-  const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
-      align: "start",
-      containScroll: "trimSnaps",
-      loop: options.loop,
-      slidesToScroll: 1,
-    },
-    plugins,
-  );
+  const carousel = options.carousel;
+  const { options: emblaOptions, plugins, autoplayPlugin } = useCarouselConfig(carousel);
+  const [emblaRef, emblaApi] = useEmblaCarousel(emblaOptions, plugins);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -110,13 +88,13 @@ export function FeatureGridCarousel({
     setCanScrollPrev(emblaApi.canScrollPrev());
     const canNext = emblaApi.canScrollNext();
     setCanScrollNext(canNext);
-    if (autoplayPlugin && !options.loop && !canNext) {
+    if (autoplayPlugin && !carousel.loop && !canNext) {
       autoplayPlugin.stop();
       setIsPlaying(false);
       return;
     }
     setIsPlaying(autoplayPlugin?.isPlaying() ?? false);
-  }, [autoplayPlugin, emblaApi, options.loop]);
+  }, [autoplayPlugin, carousel.loop, emblaApi]);
 
   const syncAutoplayState = useCallback(() => {
     setIsPlaying(autoplayPlugin?.isPlaying() ?? false);
@@ -171,13 +149,13 @@ export function FeatureGridCarousel({
       autoplayPlugin.stop();
     } else {
       setUserPaused(false);
-      if (!options.loop && emblaApi && !emblaApi.canScrollNext()) {
+      if (!carousel.loop && emblaApi && !emblaApi.canScrollNext()) {
         emblaApi.scrollTo(0);
       }
       autoplayPlugin.play();
     }
     syncAutoplayState();
-  }, [autoplayPlugin, emblaApi, options.loop, reducedMotion, syncAutoplayState]);
+  }, [autoplayPlugin, carousel.loop, emblaApi, reducedMotion, syncAutoplayState]);
 
   const pauseForHover = useCallback(() => {
     if (!autoplayPlugin || reducedMotion || userPaused) return;
@@ -260,9 +238,9 @@ export function FeatureGridCarousel({
         </div>
       </div>
 
-      {(options.showArrows || options.showDots || options.autoplay) && hasMultipleSlides ? (
+      {(carousel.showArrows || carousel.showDots || carousel.autoplay) && hasMultipleSlides ? (
         <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
-          {options.showArrows ? (
+          {carousel.showArrows ? (
             <div className="flex items-center gap-2">
               <button
                 type="button"
@@ -287,7 +265,7 @@ export function FeatureGridCarousel({
             <span />
           )}
 
-          {options.showDots ? (
+          {carousel.showDots ? (
             <div className="flex flex-wrap items-center justify-center gap-2">
               {scrollSnaps.map((_, index) => (
                 <button
@@ -308,7 +286,7 @@ export function FeatureGridCarousel({
             </div>
           ) : null}
 
-          {options.autoplay ? (
+          {carousel.autoplay ? (
             <button
               type="button"
               className="touch-target cursor-pointer gap-2 rounded-md px-3 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50"

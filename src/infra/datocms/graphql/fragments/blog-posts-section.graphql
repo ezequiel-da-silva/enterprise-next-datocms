@@ -10,6 +10,7 @@
 # o CDA não aninha colecções globais num record. Fetch via `GET_ALL_POSTS`
 # e `GET_ALL_CATEGORIES` no RSC.
 #import "./post-card.graphql"
+#import "./carousel-setting.graphql"
 
 fragment BlogPostsSectionBlockFragment on BlogPostsSectionRecord {
   id
@@ -22,6 +23,13 @@ fragment BlogPostsSectionBlockFragment on BlogPostsSectionRecord {
   hasLimit
   limit
   sectionId
+  displayType
+  initialCount
+  loadMoreStep
+  loadMoreLabel
+  carouselOptions {
+    ...CarouselSettingBlockFragment
+  }
   selectedCategories {
     id
     categoryName

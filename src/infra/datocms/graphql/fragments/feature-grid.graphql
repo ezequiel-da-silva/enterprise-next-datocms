@@ -3,17 +3,17 @@
 # CMS:
 #   Page → Structured text → blocos permitidos → Feature GRID.
 # Variantes: `cards` e `full_bleed`.
+#import "./carousel-setting.graphql"
+
 fragment FeatureGridBlockFragment on FeatureGridRecord {
   id
   titleFeatureGrid
   subtitleFeatureGrid
   advancedOptions
   variant
-  autoplay
-  autoplayInterval
-  showArrows
-  showDots
-  loop
+  carouselOptions {
+    ...CarouselSettingBlockFragment
+  }
   sectionId
   itemsFeatureGrid {
     __typename

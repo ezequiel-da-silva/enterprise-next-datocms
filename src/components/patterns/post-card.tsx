@@ -67,7 +67,9 @@ export function PostCard({
         </div>
         <div className="flex flex-1 flex-col gap-2 p-4">
           <TitleTag className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">{post.postTitle}</TitleTag>
-          {excerpt ? <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerpt}</p> : null}
+          {excerpt ? (
+            <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerptRaw}</p>
+          ) : null}
           {post.postAuthor?.authorName ? (
             <p className="mt-auto pt-1 text-sm text-muted-foreground">
               <span className="font-medium text-foreground/90">{post.postAuthor.authorName}</span>

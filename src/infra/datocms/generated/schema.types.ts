@@ -170,11 +170,16 @@ export type BlogPostsSectionRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   allCategoriesLabel?: Maybe<Scalars['String']['output']>;
+  carouselOptions: Array<CarouselSettingRecord>;
   categoryDisplay?: Maybe<Scalars['String']['output']>;
+  displayType?: Maybe<Scalars['String']['output']>;
   fetchMode?: Maybe<Scalars['String']['output']>;
   hasLimit: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
+  initialCount?: Maybe<Scalars['IntType']['output']>;
   limit?: Maybe<Scalars['IntType']['output']>;
+  loadMoreLabel?: Maybe<Scalars['String']['output']>;
+  loadMoreStep?: Maybe<Scalars['IntType']['output']>;
   manualPosts: Array<PostRecord>;
   sectionId?: Maybe<Scalars['String']['output']>;
   selectedCategories: Array<CategoryRecord>;
@@ -226,6 +231,36 @@ export type CardRecord = RecordInterface & {
 
 /** Block of type 📂 CARD (card) */
 export type CardRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+/** Block of type 🎡 Carousel Setting (carousel_setting) */
+export type CarouselSettingRecord = RecordInterface & {
+  __typename?: 'CarouselSettingRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  autoplay: Scalars['BooleanType']['output'];
+  autoplayInterval?: Maybe<Scalars['IntType']['output']>;
+  id: Scalars['ItemId']['output'];
+  loop: Scalars['BooleanType']['output'];
+  showArrows: Scalars['BooleanType']['output'];
+  showDots: Scalars['BooleanType']['output'];
+};
+
+
+/** Block of type 🎡 Carousel Setting (carousel_setting) */
+export type CarouselSettingRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -595,14 +630,10 @@ export type FeatureGridRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   advancedOptions: Scalars['BooleanType']['output'];
-  autoplay: Scalars['BooleanType']['output'];
-  autoplayInterval?: Maybe<Scalars['IntType']['output']>;
+  carouselOptions: Array<CarouselSettingRecord>;
   id: Scalars['ItemId']['output'];
   itemsFeatureGrid: Array<CardRecord>;
-  loop: Scalars['BooleanType']['output'];
   sectionId?: Maybe<Scalars['String']['output']>;
-  showArrows: Scalars['BooleanType']['output'];
-  showDots: Scalars['BooleanType']['output'];
   subtitleFeatureGrid?: Maybe<Scalars['String']['output']>;
   titleFeatureGrid?: Maybe<Scalars['String']['output']>;
   variant?: Maybe<Scalars['String']['output']>;
