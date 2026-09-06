@@ -8,18 +8,31 @@
  * | show_sort_tabs        | show_sort_tabs         | true (só `false` explícito off) |
  * | has_limit             | has_limit              | false — `limit` só aplica se true |
  * | limit                 | limit                  | 6 (clamp 1–100)                 |
+ * | display_type          | display_type           | grid                            |
+ * | initial_count         | initial_count          | 6 — só paginação / load more    |
+ * | load_more_step        | load_more_step          | 3 (clamp 1–100)                 |
+ * | load_more_label       | load_more_label         | copy i18n se vazio              |
+ * | carousel_options      | carousel_options        | defaults de `carousel_setting`  |
  * | section_id            | section_id             | —                               |
  * | all_categories_label  | all_categories_label   | copy i18n se vazio              |
+ *
+ * Display:
+ * - `grid` / `carousel` — mostram o dataset filtrado. O teto é só `has_limit`
+ *   (`limit`); `initial_count` não corta.
+ * - `pagination` — páginas de `initial_count`.
+ * - `load_more` — começa em `initial_count`, depois `load_more_step`.
  *
  * Ordenação “Populares”: `_updatedAt_DESC` (proxy editorial). Sem pageviews no
  * CDA. Follow-up: integer `view_count` via Plausible/GA4/Vercel Analytics.
  */
 import type { PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
 import { readCdaArray, readCdaBool, readCdaString, readCdaStringForLogic } from "@/lib/datocms/cda-field";
+import { resolveCarouselSetting, type CarouselSetting } from "@/lib/datocms/resolve-carousel-setting";
 
 export type LatestPostsFetchMode = "auto" | "manual";
 export type LatestPostsCategoryDisplay = "all" | "selected" | "none";
 export type LatestPostsSort = "newest" | "oldest" | "popular";
+export type BlogPostsDisplayType = "grid" | "carousel" | "pagination" | "load_more";
 
 export type LatestPostsOptions = {
   fetchMode: LatestPostsFetchMode;
@@ -27,6 +40,11 @@ export type LatestPostsOptions = {
   showSortTabs: boolean;
   hasLimit: boolean;
   limit: number;
+  displayType: BlogPostsDisplayType;
+  initialCount: number;
+  loadMoreStep: number;
+  loadMoreLabel: string;
+  carousel: CarouselSetting;
   sectionId?: string;
   allCategoriesLabel: string;
 };
@@ -37,9 +55,19 @@ export const LATEST_POSTS_DEFAULTS = {
   showSortTabs: true,
   hasLimit: false,
   limit: 6,
+  displayType: "grid",
+  initialCount: 6,
+  loadMoreStep: 3,
 } as const satisfies Pick<
   LatestPostsOptions,
-  "fetchMode" | "categoryDisplay" | "showSortTabs" | "hasLimit" | "limit"
+  | "fetchMode"
+  | "categoryDisplay"
+  | "showSortTabs"
+  | "hasLimit"
+  | "limit"
+  | "displayType"
+  | "initialCount"
+  | "loadMoreStep"
 >;
 
 const MIN_LIMIT = 1;
@@ -58,9 +86,17 @@ function readOptionalNumber(record: Record<string, unknown>, camel: string, snak
   return Number.isFinite(value) ? value : undefined;
 }
 
-function clampLimit(value: number | undefined): number {
-  if (value == null) return LATEST_POSTS_DEFAULTS.limit;
+function clampCount(value: number | undefined, fallback: number): number {
+  if (value == null) return fallback;
   return Math.min(MAX_LIMIT, Math.max(MIN_LIMIT, Math.round(value)));
+}
+
+function parseDisplayType(raw: string): BlogPostsDisplayType {
+  const value = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (value === "carousel" || value.includes("carross") || value.includes("carrus")) return "carousel";
+  if (value === "pagination" || value.includes("pagin")) return "pagination";
+  if (value === "load_more" || value.includes("load") || value.includes("carregar")) return "load_more";
+  return "grid";
 }
 
 function sanitizeSectionId(raw: string | undefined): string | undefined {
@@ -102,17 +138,31 @@ function parseCategoryDisplay(raw: string): LatestPostsCategoryDisplay {
 export function resolveLatestPostsOptions(
   record: Record<string, unknown>,
   fallbackAllLabel: string,
+  fallbackLoadMoreLabel = "Load more posts",
 ): LatestPostsOptions {
   const fetchRaw = readCdaStringForLogic(record, "fetchMode", "fetch_mode");
   const displayRaw = readCdaStringForLogic(record, "categoryDisplay", "category_display");
   const cmsAllLabel = readCdaString(record, "allCategoriesLabel", "all_categories_label");
+  const displayTypeRaw = readCdaStringForLogic(record, "displayType", "display_type");
+  const loadMoreLabel = readCdaString(record, "loadMoreLabel", "load_more_label");
 
   return {
     fetchMode: fetchRaw ? parseFetchMode(fetchRaw) : LATEST_POSTS_DEFAULTS.fetchMode,
     categoryDisplay: displayRaw ? parseCategoryDisplay(displayRaw) : LATEST_POSTS_DEFAULTS.categoryDisplay,
     showSortTabs: readOptionalBool(record, "showSortTabs", "show_sort_tabs") ?? LATEST_POSTS_DEFAULTS.showSortTabs,
     hasLimit: readCdaBool(record, "hasLimit", "has_limit"),
-    limit: clampLimit(readOptionalNumber(record, "limit", "limit")),
+    limit: clampCount(readOptionalNumber(record, "limit", "limit"), LATEST_POSTS_DEFAULTS.limit),
+    displayType: displayTypeRaw ? parseDisplayType(displayTypeRaw) : LATEST_POSTS_DEFAULTS.displayType,
+    initialCount: clampCount(
+      readOptionalNumber(record, "initialCount", "initial_count"),
+      LATEST_POSTS_DEFAULTS.initialCount,
+    ),
+    loadMoreStep: clampCount(
+      readOptionalNumber(record, "loadMoreStep", "load_more_step"),
+      LATEST_POSTS_DEFAULTS.loadMoreStep,
+    ),
+    loadMoreLabel: loadMoreLabel || fallbackLoadMoreLabel,
+    carousel: resolveCarouselSetting(record.carouselOptions ?? record.carousel_options),
     sectionId: sanitizeSectionId(readCdaStringForLogic(record, "sectionId", "section_id") || undefined),
     allCategoriesLabel: cmsAllLabel || fallbackAllLabel,
   };

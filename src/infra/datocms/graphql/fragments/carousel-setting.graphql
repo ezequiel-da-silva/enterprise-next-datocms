@@ -1,0 +1,10 @@
+# Configuração reutilizável de Embla (`carousel_setting`).
+fragment CarouselSettingBlockFragment on CarouselSettingRecord {
+  __typename
+  id
+  autoplay
+  autoplayInterval
+  showArrows
+  showDots
+  loop
+}

@@ -1,6 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import { Skeleton } from "@/components/atoms/skeleton";
-import { LatestPostsInteractive } from "@/components/sections/latest-posts-interactive";
+import { BlogPostsInteractive } from "@/components/sections/blog-posts-interactive";
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog, PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
 import type { BlogPostsSectionBlockRecord } from "@/infra/datocms/types-page";
@@ -16,7 +16,7 @@ import {
 } from "@/lib/datocms/resolve-latest-posts-section";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 
-type LatestPostsSectionBlockProps = {
+type BlogPostsSectionBlockProps = {
   record: BlogPostsSectionBlockRecord;
   locale: AppLocale;
   catalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
@@ -31,7 +31,7 @@ function usableCategories(categories: PostCategorySummary[]): PostCategorySummar
 }
 
 /** Placeholder while `allPosts`/`allCategories` resolve — keeps the H1 (LCP) unblocked. */
-export function LatestPostsSectionFallback({
+export function BlogPostsSectionFallback({
   locale,
   record,
 }: {
@@ -44,11 +44,13 @@ export function LatestPostsSectionFallback({
 
   return (
     <section
+      {...cmsBlockAttrs(record)}
+      data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
       aria-busy="true"
       aria-label={title || copy.sectionLabel}
     >
-      <Container size="lg" name="LatestPostsSection" className="flex flex-col gap-10">
+      <Container size="lg" name="BlogPostsSection" className="flex flex-col gap-10">
         {title || subtitle ? (
           <header className="mx-auto max-w-3xl text-center">
             {title ? (
@@ -84,9 +86,13 @@ export function LatestPostsSectionFallback({
   );
 }
 
-export async function LatestPostsSectionBlock({ record, locale, catalog }: LatestPostsSectionBlockProps) {
+export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPostsSectionBlockProps) {
   const copy = latestPostsCopy(locale);
-  const options = resolveLatestPostsOptions(record as Record<string, unknown>, copy.allCategories);
+  const options = resolveLatestPostsOptions(
+    record as Record<string, unknown>,
+    copy.allCategories,
+    copy.loadMore,
+  );
   const title = readCdaString(record as Record<string, unknown>, "title", "title");
   const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
   const resolvedCatalog = catalog ? await Promise.resolve(catalog) : undefined;
@@ -128,7 +134,7 @@ export async function LatestPostsSectionBlock({ record, locale, catalog }: Lates
         ? { "aria-labelledby": headingId }
         : { "aria-label": copy.sectionLabel })}
     >
-      <Container size="lg" name="LatestPostsSection" className="flex flex-col gap-10">
+      <Container size="lg" name="BlogPostsSection" className="flex flex-col gap-10">
         {title || subtitle ? (
           <header className="mx-auto max-w-3xl text-center">
             {title ? (
@@ -145,7 +151,8 @@ export async function LatestPostsSectionBlock({ record, locale, catalog }: Lates
           </header>
         ) : null}
 
-        <LatestPostsInteractive
+        <BlogPostsInteractive
+          key={`${options.displayType}-${options.initialCount}-${options.loadMoreStep}`}
           locale={locale}
           posts={dataset}
           categories={chips}
@@ -153,6 +160,11 @@ export async function LatestPostsSectionBlock({ record, locale, catalog }: Lates
           showCategoryBar={showCategoryBar}
           showSortTabs={options.showSortTabs}
           limit={options.hasLimit ? options.limit : null}
+          displayType={options.displayType}
+          initialCount={options.initialCount}
+          loadMoreStep={options.loadMoreStep}
+          loadMoreLabel={options.loadMoreLabel}
+          carousel={options.carousel}
           headingLevel={headingLevel}
         />
       </Container>

@@ -10,9 +10,10 @@ import {
 
 describe("resolveLatestPostsOptions", () => {
   it("uses defaults when fields are missing", () => {
-    expect(resolveLatestPostsOptions({}, "All")).toEqual({
+    expect(resolveLatestPostsOptions({}, "All")).toMatchObject({
       ...LATEST_POSTS_DEFAULTS,
       allCategoriesLabel: "All",
+      loadMoreLabel: "Load more posts",
     });
   });
 
@@ -30,7 +31,7 @@ describe("resolveLatestPostsOptions", () => {
         },
         "All",
       ),
-    ).toEqual({
+    ).toMatchObject({
       fetchMode: "manual",
       categoryDisplay: "selected",
       showSortTabs: false,
@@ -72,6 +73,31 @@ describe("resolveLatestPostsOptions", () => {
     expect(resolveLatestPostsOptions({ showSortTabs: false }, "All").showSortTabs).toBe(false);
     expect(resolveLatestPostsOptions({ hasLimit: true }, "All").hasLimit).toBe(true);
     expect(resolveLatestPostsOptions({ has_limit: false, limit: 3 }, "All").hasLimit).toBe(false);
+  });
+
+  it("resolves display modes, counts, label and carousel options", () => {
+    expect(
+      resolveLatestPostsOptions(
+        {
+          displayType: "Load more",
+          initialCount: 4,
+          loadMoreStep: 2,
+          loadMoreLabel: "Show more",
+          carouselOptions: [{ autoplay: true, autoplayInterval: 8, loop: false }],
+        },
+        "All",
+      ),
+    ).toMatchObject({
+      displayType: "load_more",
+      initialCount: 4,
+      loadMoreStep: 2,
+      loadMoreLabel: "Show more",
+      carousel: { autoplay: true, autoplayInterval: 8, loop: false },
+    });
+
+    expect(resolveLatestPostsOptions({ display_type: "Paginação" }, "Todas").displayType).toBe(
+      "pagination",
+    );
   });
 });
 

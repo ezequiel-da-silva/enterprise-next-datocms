@@ -184,6 +184,16 @@ const IMAGE_BLOCK_RESPONSIVE = `
   }
 `;
 
+const CAROUSEL_SETTING_FIELDS = `
+  __typename
+  id
+  autoplay
+  autoplayInterval
+  showArrows
+  showDots
+  loop
+`;
+
 /** Blocos de média no ST (sem Feature GRID aninhado — evita recursão GraphQL). */
 const ST_BLOCKS_MEDIA_ONLY = `
   __typename
@@ -381,11 +391,9 @@ const FEATURE_GRID_BLOCK = `
     subtitleFeatureGrid
     advancedOptions
     variant
-    autoplay
-    autoplayInterval
-    showArrows
-    showDots
-    loop
+    carouselOptions {
+      ${CAROUSEL_SETTING_FIELDS}
+    }
     sectionId
     itemsFeatureGrid {
       __typename
@@ -508,6 +516,13 @@ const BLOG_POSTS_SECTION_BLOCK = `
     hasLimit
     limit
     sectionId
+    displayType
+    initialCount
+    loadMoreStep
+    loadMoreLabel
+    carouselOptions {
+      ${CAROUSEL_SETTING_FIELDS}
+    }
     selectedCategories {
       id
       categoryName

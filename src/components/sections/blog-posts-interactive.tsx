@@ -2,25 +2,33 @@
 
 import { Button } from "@/components/atoms/button";
 import { PostCard } from "@/components/patterns/post-card";
+import { BlogPostsCarousel } from "@/components/sections/blog-posts-carousel";
 import type { AppLocale } from "@/constants/i18n";
 import type { PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
+import type { CarouselSetting } from "@/lib/datocms/resolve-carousel-setting";
 import { cn } from "@/lib/cn";
 import {
   filterSortLimitPosts,
+  type BlogPostsDisplayType,
   type LatestPostsSort,
 } from "@/lib/datocms/resolve-latest-posts-section";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 import { useCallback, useId, useMemo, useState, type KeyboardEvent, type ReactNode } from "react";
 
-type LatestPostsInteractiveProps = {
+type BlogPostsInteractiveProps = {
   locale: AppLocale;
   posts: PostCardRecord[];
   categories: PostCategorySummary[];
   allCategoriesLabel: string;
   showCategoryBar: boolean;
   showSortTabs: boolean;
-  /** `null` = has_limit desligado, mostra todos os posts do dataset. */
+  /** `null` = has_limit desligado: grid/carousel mostram o dataset completo (até 100 do catálogo). */
   limit: number | null;
+  displayType: BlogPostsDisplayType;
+  initialCount: number;
+  loadMoreStep: number;
+  loadMoreLabel: string;
+  carousel: CarouselSetting;
   headingLevel: "h2" | "h3";
 };
 
@@ -30,7 +38,7 @@ const ALL_CATEGORIES_VALUE = "__all";
 
 const CARD_SIZES = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px";
 
-export function LatestPostsInteractive({
+export function BlogPostsInteractive({
   locale,
   posts,
   categories,
@@ -38,19 +46,50 @@ export function LatestPostsInteractive({
   showCategoryBar,
   showSortTabs,
   limit,
+  displayType,
+  initialCount,
+  loadMoreStep,
+  loadMoreLabel,
+  carousel,
   headingLevel,
-}: LatestPostsInteractiveProps) {
+}: BlogPostsInteractiveProps) {
   const copy = latestPostsCopy(locale);
   const reactId = useId().replace(/:/g, "");
   const listId = `latest-posts-list-${reactId}`;
   const sortPrefix = `latest-posts-sort-${reactId}`;
   const [categoryId, setCategoryId] = useState<string | null>(null);
   const [sort, setSort] = useState<LatestPostsSort>("newest");
+  const [page, setPage] = useState(1);
+  const [visibleCount, setVisibleCount] = useState(initialCount);
 
-  const visible = useMemo(
+  const filteredPosts = useMemo(
     () => filterSortLimitPosts(posts, categoryId, sort, limit),
     [posts, categoryId, sort, limit],
   );
+  const pageCount = Math.max(1, Math.ceil(filteredPosts.length / initialCount));
+  const safePage = Math.min(page, pageCount);
+  const pagePosts = filteredPosts.slice((safePage - 1) * initialCount, safePage * initialCount);
+  const visiblePosts =
+    displayType === "pagination"
+      ? pagePosts
+      : displayType === "load_more"
+        ? filteredPosts.slice(0, visibleCount)
+        : filteredPosts;
+
+  const resetProgress = useCallback(() => {
+    setPage(1);
+    setVisibleCount(initialCount);
+  }, [initialCount]);
+
+  const changeCategory = useCallback((value: string | null) => {
+    setCategoryId(value);
+    resetProgress();
+  }, [resetProgress]);
+
+  const changeSort = useCallback((value: LatestPostsSort) => {
+    setSort(value);
+    resetProgress();
+  }, [resetProgress]);
 
   const onSortKeyDown = useCallback(
     (event: KeyboardEvent<HTMLButtonElement>) => {
@@ -67,10 +106,10 @@ export function LatestPostsInteractive({
         return;
       }
       const next = SORTS[nextIndex]!;
-      setSort(next);
+      changeSort(next);
       requestAnimationFrame(() => document.getElementById(`${sortPrefix}-${next}`)?.focus());
     },
-    [sort, sortPrefix],
+    [changeSort, sort, sortPrefix],
   );
 
   return (
@@ -88,7 +127,7 @@ export function LatestPostsInteractive({
                 label={copy.categoryGroup}
                 name="category"
                 value={categoryId ?? ALL_CATEGORIES_VALUE}
-                onChange={(value) => setCategoryId(value === ALL_CATEGORIES_VALUE ? null : value)}
+                onChange={(value) => changeCategory(value === ALL_CATEGORIES_VALUE ? null : value)}
               >
                 <option value={ALL_CATEGORIES_VALUE}>{allCategoriesLabel}</option>
                 {categories.map((category) => (
@@ -104,7 +143,7 @@ export function LatestPostsInteractive({
                 label={copy.sortGroup}
                 name="sort"
                 value={sort}
-                onChange={(value) => setSort(value as LatestPostsSort)}
+                onChange={(value) => changeSort(value as LatestPostsSort)}
               >
                 {SORTS.map((value) => (
                   <option key={value} value={value}>
@@ -124,14 +163,14 @@ export function LatestPostsInteractive({
               >
                 <CategoryChip
                   pressed={categoryId === null}
-                  onPress={() => setCategoryId(null)}
+                  onPress={() => changeCategory(null)}
                   label={allCategoriesLabel}
                 />
                 {categories.map((category) => (
                   <CategoryChip
                     key={category.id}
                     pressed={categoryId === category.id}
-                    onPress={() => setCategoryId(category.id)}
+                    onPress={() => changeCategory(category.id)}
                     label={category.categoryName}
                     colorHex={category.categoryColor?.hex}
                   />
@@ -151,7 +190,7 @@ export function LatestPostsInteractive({
                     key={value}
                     id={`${sortPrefix}-${value}`}
                     pressed={sort === value}
-                    onPress={() => setSort(value)}
+                    onPress={() => changeSort(value)}
                     onKeyDown={onSortKeyDown}
                     label={copy[value]}
                   />
@@ -164,24 +203,94 @@ export function LatestPostsInteractive({
 
       <div id={listId}>
         <p className="sr-only" aria-live="polite">
-          {visible.length === 0 ? copy.empty : copy.results(visible.length)}
+          {visiblePosts.length === 0
+            ? copy.empty
+            : displayType === "pagination"
+              ? `${copy.results(filteredPosts.length)}. ${copy.page(safePage, pageCount)}`
+              : copy.results(visiblePosts.length)}
         </p>
 
-        {visible.length === 0 ? (
+        {visiblePosts.length === 0 ? (
           <p
             className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-6 text-center text-sm text-muted-foreground sm:px-6 sm:py-10"
             aria-hidden
           >
             {copy.empty}
           </p>
+        ) : displayType === "carousel" ? (
+          <BlogPostsCarousel
+            posts={visiblePosts}
+            locale={locale}
+            headingLevel={headingLevel}
+            setting={carousel}
+          />
         ) : (
-          <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
-            {visible.map((post) => (
-              <li key={post.id} className="min-w-0">
-                <PostCard post={post} locale={locale} headingLevel={headingLevel} sizes={CARD_SIZES} />
-              </li>
-            ))}
-          </ul>
+          <>
+            <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+              {visiblePosts.map((post) => (
+                <li key={post.id} className="min-w-0">
+                  <PostCard post={post} locale={locale} headingLevel={headingLevel} sizes={CARD_SIZES} />
+                </li>
+              ))}
+            </ul>
+
+            {displayType === "pagination" && pageCount > 1 ? (
+              <nav className="mt-8 flex flex-wrap justify-center gap-2" aria-label={copy.pagination}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="touch-target rounded-full"
+                  aria-label={copy.previousPage}
+                  disabled={safePage === 1}
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                >
+                  <span aria-hidden>←</span>
+                </Button>
+                {Array.from({ length: pageCount }, (_, index) => {
+                  const pageNumber = index + 1;
+                  return (
+                    <Button
+                      key={pageNumber}
+                      type="button"
+                      variant={pageNumber === safePage ? "primary" : "outline"}
+                      className="touch-target rounded-full"
+                      aria-label={copy.page(pageNumber, pageCount)}
+                      aria-current={pageNumber === safePage ? "true" : undefined}
+                      onClick={() => setPage(pageNumber)}
+                    >
+                      {pageNumber}
+                    </Button>
+                  );
+                })}
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="touch-target rounded-full"
+                  aria-label={copy.nextPage}
+                  disabled={safePage === pageCount}
+                  onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
+                >
+                  <span aria-hidden>→</span>
+                </Button>
+              </nav>
+            ) : null}
+
+            {displayType === "load_more" && visiblePosts.length < filteredPosts.length ? (
+              <div className="mt-8 flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="touch-target-text"
+                  aria-controls={listId}
+                  onClick={() =>
+                    setVisibleCount((current) => Math.min(filteredPosts.length, current + loadMoreStep))
+                  }
+                >
+                  {loadMoreLabel}
+                </Button>
+              </div>
+            ) : null}
+          </>
         )}
       </div>
     </div>

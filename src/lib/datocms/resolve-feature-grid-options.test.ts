@@ -10,8 +10,7 @@ describe("resolveFeatureGridOptions", () => {
     expect(
       resolveFeatureGridOptions({
         advancedOptions: false,
-        autoplay: true,
-        showArrows: false,
+        carouselOptions: [{ autoplay: true, showArrows: false }],
         sectionId: "ignorado",
       }),
     ).toEqual(FEATURE_GRID_DEFAULTS);
@@ -28,20 +27,24 @@ describe("resolveFeatureGridOptions", () => {
       resolveFeatureGridOptions({
         advancedOptions: true,
         variant: "full_bleed",
+        carouselOptions: [{
+          autoplay: true,
+          autoplayInterval: 7,
+          showArrows: false,
+          showDots: false,
+          loop: false,
+        }],
+        sectionId: "Destaques Ágeis!",
+      }),
+    ).toEqual({
+      variant: "full_bleed",
+      carousel: {
         autoplay: true,
         autoplayInterval: 7,
         showArrows: false,
         showDots: false,
         loop: false,
-        sectionId: "Destaques Ágeis!",
-      }),
-    ).toEqual({
-      variant: "full_bleed",
-      autoplay: true,
-      autoplayInterval: 7,
-      showArrows: false,
-      showDots: false,
-      loop: false,
+      },
       sectionId: "destaques-ageis",
     });
   });
@@ -50,20 +53,27 @@ describe("resolveFeatureGridOptions", () => {
     expect(
       resolveFeatureGridOptions({
         advanced_options: true,
-        autoplay_interval: 1,
-        show_arrows: false,
-        show_dots: true,
+        carousel_options: [{
+          autoplay_interval: 1,
+          show_arrows: false,
+          show_dots: true,
+        }],
         section_id: "  feature_grid--principal  ",
       }),
     ).toMatchObject({
-      autoplayInterval: 3,
-      showArrows: false,
-      showDots: true,
+      carousel: {
+        autoplayInterval: 3,
+        showArrows: false,
+        showDots: true,
+      },
       sectionId: "feature_grid--principal",
     });
 
     expect(
-      resolveFeatureGridOptions({ advanced_options: true, autoplay_interval: 99 }).autoplayInterval,
-    ).toBe(12);
+      resolveFeatureGridOptions({
+        advanced_options: true,
+        carousel_options: [{ autoplay_interval: 99 }],
+      }).carousel.autoplayInterval,
+    ).toBe(60);
   });
 });
