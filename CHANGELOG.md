@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.12.2...next-dato-v0.13.0) (2026-09-06)
+
+
+### Features
+
+* **carousel:** introduce reusable carousel configuration and components; implement BlogPostsCarousel and BlogPostsInteractive for enhanced blog post display; update GraphQL queries and types to support carousel settings; refactor existing components to utilize new carousel functionality ([e3c6c3b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e3c6c3b5e427f5c684e9fa798d9c44cf6cf7c61f))
+
 ## [0.12.2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.12.1...next-dato-v0.12.2) (2026-09-03)
 
 
