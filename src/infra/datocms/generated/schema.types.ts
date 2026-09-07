@@ -181,11 +181,9 @@ export type BlogPostsSectionRecord = RecordInterface & {
   loadMoreLabel?: Maybe<Scalars['String']['output']>;
   loadMoreStep?: Maybe<Scalars['IntType']['output']>;
   manualPosts: Array<PostRecord>;
-  sectionId?: Maybe<Scalars['String']['output']>;
   selectedCategories: Array<CategoryRecord>;
   showSortTabs: Scalars['BooleanType']['output'];
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -513,15 +511,12 @@ export type CtaBannerRecord = RecordInterface & {
   advancedOptions: Scalars['BooleanType']['output'];
   bgTheme?: Maybe<Scalars['String']['output']>;
   buttons: Array<LinkRecord>;
-  description?: Maybe<Scalars['String']['output']>;
   eyebrow?: Maybe<Scalars['String']['output']>;
-  hasDescription: Scalars['BooleanType']['output'];
   hasEyebrow: Scalars['BooleanType']['output'];
   hasImage: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   imageBanner: Array<ImageBlockRecord>;
-  sectionId?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
   variant?: Maybe<Scalars['String']['output']>;
 };
 
@@ -550,13 +545,11 @@ export type FaqGroupRecord = RecordInterface & {
   accordionMode?: Maybe<Scalars['String']['output']>;
   advancedOptions: Scalars['BooleanType']['output'];
   enableFaqSchema: Scalars['BooleanType']['output'];
-  hasSubtitle: Scalars['BooleanType']['output'];
   headerAlignment?: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
   openFirstItem: Scalars['BooleanType']['output'];
   questions: Array<FaqItemRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -633,9 +626,7 @@ export type FeatureGridRecord = RecordInterface & {
   carouselOptions: Array<CarouselSettingRecord>;
   id: Scalars['ItemId']['output'];
   itemsFeatureGrid: Array<CardRecord>;
-  sectionId?: Maybe<Scalars['String']['output']>;
-  subtitleFeatureGrid?: Maybe<Scalars['String']['output']>;
-  titleFeatureGrid?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
   variant?: Maybe<Scalars['String']['output']>;
 };
 
@@ -2907,8 +2898,7 @@ export type LogoGridRecord = RecordInterface & {
   id: Scalars['ItemId']['output'];
   layoutStyle?: Maybe<Scalars['String']['output']>;
   logos: Array<ImageBlockRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -3506,6 +3496,7 @@ export type PricingCardRecord = RecordInterface & {
   description?: Maybe<Scalars['String']['output']>;
   features?: Maybe<Scalars['String']['output']>;
   hasButton: Scalars['BooleanType']['output'];
+  hasDescription: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   isPopular: Scalars['BooleanType']['output'];
   name?: Maybe<Scalars['String']['output']>;
@@ -3542,8 +3533,7 @@ export type PricingSectionRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   id: Scalars['ItemId']['output'];
   plans: Array<PricingCardRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -3978,8 +3968,7 @@ export type ReviewsSectionRecord = RecordInterface & {
   allowSubmissions: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   reviews: Array<UserReviewRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -4099,6 +4088,7 @@ export type StatCardRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  hasDescription: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   label?: Maybe<Scalars['String']['output']>;
   value?: Maybe<Scalars['String']['output']>;
@@ -4128,8 +4118,7 @@ export type StatsSectionRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   id: Scalars['ItemId']['output'];
   stats: Array<StatCardRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -4167,6 +4156,7 @@ export type StepCardRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
+  hasDescription: Scalars['BooleanType']['output'];
   hasImage: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   mediaImage: Array<ImageBlockRecord>;
@@ -4203,8 +4193,7 @@ export type StepsSectionRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   id: Scalars['ItemId']['output'];
   steps: Array<StepCardRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -4279,6 +4268,7 @@ export type TabItemRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   ctaLink?: Maybe<LinkRecord>;
   description?: Maybe<Scalars['String']['output']>;
+  hasDescription: Scalars['BooleanType']['output'];
   hasImage: Scalars['BooleanType']['output'];
   hasLink: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
@@ -4316,9 +4306,8 @@ export type TabsSectionRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   id: Scalars['ItemId']['output'];
-  subtitle?: Maybe<Scalars['String']['output']>;
   tabs: Array<TabItemRecord>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -4352,8 +4341,7 @@ export type TeamSectionRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   id: Scalars['ItemId']['output'];
   members: Array<AuthorRecord>;
-  subtitle?: Maybe<Scalars['String']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
@@ -4374,6 +4362,36 @@ export type TextFilter = {
   matches?: InputMaybe<StringMatchesFilter>;
   /** Exclude records based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
+};
+
+/** Block of type 🔤 Text header (text_header) */
+export type TextHeaderRecord = RecordInterface & {
+  __typename?: 'TextHeaderRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  hasDescription: Scalars['BooleanType']['output'];
+  hasSectionId: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  sectionId?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Block of type 🔤 Text header (text_header) */
+export type TextHeaderRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
 };
 
 /** Specifies how to filter by upload type */

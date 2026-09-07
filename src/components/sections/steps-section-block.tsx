@@ -1,10 +1,12 @@
 import { Container } from "@/components/atoms/container";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { AppLocale } from "@/constants/i18n";
 import type { FileFieldLike, StepCardBlockRecord, StepsSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaBlock, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray, readCdaBlock, readCdaBool, readCdaString, readCdaToggledString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 
 type StepsSectionBlockProps = {
   record: StepsSectionBlockRecord;
@@ -52,7 +54,13 @@ function readSteps(record: StepsSectionBlockRecord): ParsedStep[] {
     parsed.push({
       id: item.id,
       title,
-      description: readCdaString(item as Record<string, unknown>, "description", "description"),
+      description: readCdaToggledString(
+        item as Record<string, unknown>,
+        "hasDescription",
+        "has_description",
+        "description",
+        "description",
+      ),
       image: readStepImage(item),
     });
     if (parsed.length >= MAX_STEPS) break;
@@ -140,8 +148,7 @@ function StepCard({ step, index, total }: { step: ParsedStep; index: number; tot
 }
 
 export function StepsSectionBlock({ record, locale }: StepsSectionBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const steps = readSteps(record);
   if (steps.length === 0) return null;
 
@@ -153,23 +160,11 @@ export function StepsSectionBlock({ record, locale }: StepsSectionBlockProps) {
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      {...(title
-        ? { "aria-labelledby": headingId }
-        : { "aria-label": FALLBACK_SECTION_LABEL[locale] })}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       <Container size="lg" name="StepsSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2 id={headingId} className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title && "mt-2")}>{subtitle}</p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={headingId} />
 
         <div className={cn("relative", stepsWidthClass(steps.length))}>
           {/* A linha passa pelo centro dos cards e fica visível apenas nos vãos entre eles. */}

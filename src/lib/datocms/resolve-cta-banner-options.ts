@@ -6,7 +6,6 @@
  * | Opções avançadas         | advanced_options  | — usa defaults abaixo              |
  * | Variant                  | variant           | centered                           |
  * | Background theme         | bg_theme          | primary                            |
- * | Section ID (âncora)      | section_id        | — (omitido)                        |
  */
 import { readCdaStringForLogic } from "@/lib/datocms/cda-field";
 
@@ -16,7 +15,6 @@ export type CtaBannerBgTheme = "primary" | "muted" | "transparent";
 export type CtaBannerOptions = {
   variant: CtaBannerVariant;
   bgTheme: CtaBannerBgTheme;
-  sectionId?: string;
 };
 
 export const CTA_BANNER_DEFAULTS: CtaBannerOptions = {
@@ -54,31 +52,17 @@ function parseBgTheme(raw: string): CtaBannerBgTheme {
   return "primary";
 }
 
-/** Normaliza `section_id` para uso seguro em atributo HTML `id`. */
-export function sanitizeSectionId(raw: string): string | undefined {
-  const slug = raw
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug.length > 0 ? slug : undefined;
-}
-
-/** Resolve variant, tema e âncora: defaults globais ou campos CMS com opções avançadas ativas. */
+/** Resolve variant e tema: defaults globais ou campos CMS com opções avançadas ativas. */
 export function resolveCtaBannerOptions(record: Record<string, unknown>): CtaBannerOptions {
   // 1. Variant é LIDA SEMPRE (pois o campo está sempre visível no CMS)
   const variantRaw = readOptionalString(record, "variant", "variant");
 
-  // 2. Apenas Background Theme e Section ID dependem do switch advanced_options
+  // 2. Background Theme depende do switch advanced_options
   const isAdvanced = isAdvancedOptionsEnabled(record);
   const bgThemeRaw = isAdvanced ? readOptionalString(record, "bgTheme", "bg_theme") : undefined;
-  const sectionRaw = isAdvanced ? readOptionalString(record, "sectionId", "section_id") : undefined;
 
   return {
     variant: variantRaw ? parseVariant(variantRaw) : CTA_BANNER_DEFAULTS.variant,
     bgTheme: bgThemeRaw ? parseBgTheme(bgThemeRaw) : CTA_BANNER_DEFAULTS.bgTheme,
-    sectionId: sectionRaw ? sanitizeSectionId(sectionRaw) : undefined,
   };
 }

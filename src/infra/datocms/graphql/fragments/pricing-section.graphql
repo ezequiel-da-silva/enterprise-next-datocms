@@ -4,15 +4,19 @@
 #   Schema → Page → Structured text → blocos permitidos → incluir **Pricing Section**.
 # Depois: `#import` + `... on PricingSectionRecord` em `page-by-slug.graphql`,
 # `${PRICING_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#import "./text-header.graphql"
+
 fragment PricingSectionBlockFragment on PricingSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   plans {
     __typename
     ... on PricingCardRecord {
       id
       name
+      hasDescription
       description
       priceType
       currency

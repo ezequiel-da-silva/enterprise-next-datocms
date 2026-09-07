@@ -4,17 +4,18 @@
 #   Page → Structured text → blocos permitidos → Feature GRID.
 # Variantes: `cards` e `full_bleed`.
 #import "./carousel-setting.graphql"
+#import "./text-header.graphql"
 
 fragment FeatureGridBlockFragment on FeatureGridRecord {
   id
-  titleFeatureGrid
-  subtitleFeatureGrid
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   advancedOptions
   variant
   carouselOptions {
     ...CarouselSettingBlockFragment
   }
-  sectionId
   itemsFeatureGrid {
     __typename
     ... on CardRecord {

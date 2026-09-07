@@ -5,10 +5,13 @@
 # Depois: descomentar o `#import` e o `... on LogoGridRecord` em `page-by-slug.graphql`,
 # acrescentar `${LOGO_GRID_BLOCK}` em `queries.ts` (`PAGE_STRUCTURED_TEXT_BLOCKS`),
 # e correr `npm run codegen`.
+#import "./text-header.graphql"
+
 fragment LogoGridBlockFragment on LogoGridRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   grayscale
   layoutStyle
   logos {

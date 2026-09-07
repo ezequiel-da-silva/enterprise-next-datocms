@@ -1,14 +1,16 @@
 import { Container } from "@/components/atoms/container";
 import { ReviewFormLazy } from "@/components/molecules/review-form-lazy";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { AppLocale } from "@/constants/i18n";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { FileFieldLike, ReviewsSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray, readCdaBool } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 import { formatRatingAverage, reviewsCopy } from "@/lib/i18n/reviews-copy";
 import { getNonce } from "@/lib/nonce";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import {
   buildReviewsSectionJsonLd,
   computeRatingAggregate,
@@ -149,8 +151,7 @@ export type ReviewsSectionBlockProps = {
 
 export async function ReviewsSectionBlock({ record, locale, action }: ReviewsSectionBlockProps) {
   const copy = reviewsCopy(locale);
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const allowSubmissions = readCdaBool(
     record as Record<string, unknown>,
     "allowSubmissions",
@@ -179,39 +180,22 @@ export async function ReviewsSectionBlock({ record, locale, action }: ReviewsSec
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      aria-labelledby={title ? headingId : undefined}
-      aria-label={!title ? copy.sectionLabel : undefined}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, copy.sectionLabel)}
     >
       {jsonLd ? <JsonLdScriptSync graph={jsonLd} nonce={nonce} /> : null}
 
       <Container size="lg" name="ReviewsSection" className="flex flex-col gap-10">
-        {title || subtitle || aggregateLabel ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2
-                id={headingId}
-                className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-              >
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title ? "mt-2" : "mt-0")}>
-                {subtitle}
-              </p>
-            ) : null}
+        {header.title || header.description || aggregateLabel ? (
+          <div className="flex flex-col gap-4">
+            <SectionTextHeader header={header} headingId={headingId} />
             {aggregate && aggregateLabel ? (
-              <p
-                className={cn(
-                  "flex flex-wrap items-center justify-center gap-2 text-sm font-medium text-foreground",
-                  title || subtitle ? "mt-4" : "mt-0",
-                )}
-              >
+              <p className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2 text-center text-sm font-medium text-foreground">
                 <StarRating rating={aggregate.average} />
                 <span>{aggregateLabel}</span>
               </p>
             ) : null}
-          </header>
+          </div>
         ) : null}
 
         {reviews.length > 0 ? (

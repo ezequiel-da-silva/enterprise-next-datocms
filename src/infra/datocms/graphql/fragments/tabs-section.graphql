@@ -4,16 +4,20 @@
 #   Schema → Page → Structured text → blocos permitidos → incluir **Tabs Section**.
 # Depois: `#import` + `... on TabsSectionRecord` em `page-by-slug.graphql`,
 # `${TABS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#import "./text-header.graphql"
+
 fragment TabsSectionBlockFragment on TabsSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   tabs {
     __typename
     ... on TabItemRecord {
       id
       labelTab
       title
+      hasDescription
       description
       hasLink
       hasImage

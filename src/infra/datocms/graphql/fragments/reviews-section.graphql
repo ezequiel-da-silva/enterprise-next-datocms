@@ -6,10 +6,13 @@
 # `${REVIEWS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
 #
 # Privacidade: `authorEmail` NÃO é pedido no CDA público — só entra na CMA na submissão.
+#import "./text-header.graphql"
+
 fragment ReviewsSectionBlockFragment on ReviewsSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   allowSubmissions
   reviews {
     id

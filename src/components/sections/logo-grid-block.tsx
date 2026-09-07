@@ -1,10 +1,12 @@
 import { Container } from "@/components/atoms/container";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { AppLocale } from "@/constants/i18n";
 import type { FileFieldLike, LogoGridBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveLogoGridOptions } from "@/lib/datocms/resolve-logo-grid-options";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { cn } from "@/lib/cn";
 
 type LogoItem = LogoGridBlockRecord["logos"][number];
@@ -70,8 +72,7 @@ export type LogoGridBlockProps = {
 };
 
 export function LogoGridBlock({ record }: LogoGridBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const logos = readLogos(record);
   const { layoutStyle, grayscale } = resolveLogoGridOptions(record as Record<string, unknown>);
   const headingId = `logo-grid-${record.id}`;
@@ -83,27 +84,11 @@ export function LogoGridBlock({ record }: LogoGridBlockProps) {
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="logo-grid-defer not-prose my-12 w-full bg-muted/10 py-6"
-      aria-labelledby={title ? headingId : undefined}
-      aria-label={!title ? "Logos e Parceiros" : undefined}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, "Logos e Parceiros")}
     >
       <Container size="lg" name="LogoGrid" className="flex flex-col gap-8">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2
-                id={headingId}
-                className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-              >
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title ? "mt-2" : "mt-0")}>
-                {subtitle}
-              </p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={headingId} />
 
         {layoutStyle === "marquee" ? (
           <div

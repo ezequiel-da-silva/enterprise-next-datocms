@@ -1,0 +1,10 @@
+# Bloco 🔤 Text header (`text_header`) — cabeçalho partilhado das secções.
+fragment TextHeaderBlockFragment on TextHeaderRecord {
+  __typename
+  id
+  title
+  hasDescription
+  description
+  hasSectionId
+  sectionId
+}

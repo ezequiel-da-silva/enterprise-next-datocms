@@ -1,10 +1,10 @@
 import { Container } from "@/components/atoms/container";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import { SocialNavLink } from "@/components/patterns/social-nav-link";
 import type { AppLocale } from "@/constants/i18n";
 import type { TeamSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 import { getNonce } from "@/lib/nonce";
@@ -13,6 +13,7 @@ import {
   toSocialNavLink,
   type TeamMember,
 } from "@/lib/datocms/resolve-team-section";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { buildTeamSectionJsonLd } from "@/lib/seo/build-team-section-jsonld";
 import Link from "next/link";
 import { stripStega } from "react-datocms/stega";
@@ -99,13 +100,12 @@ function MemberCard({ member, locale }: { member: TeamMember; locale: AppLocale 
 }
 
 export async function TeamSectionBlock({ record, locale }: TeamSectionBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const members = resolveTeamMembers(record as Record<string, unknown>);
   if (members.length === 0) return null;
 
   const headingId = `team-section-${record.id}`;
-  const jsonLd = buildTeamSectionJsonLd(locale, record.id, members, title || undefined);
+  const jsonLd = buildTeamSectionJsonLd(locale, header.sectionId ?? record.id, members, header.title || undefined);
   const nonce = jsonLd ? await getNonce() : undefined;
 
   return (
@@ -113,27 +113,12 @@ export async function TeamSectionBlock({ record, locale }: TeamSectionBlockProps
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      {...(title
-        ? { "aria-labelledby": headingId }
-        : { "aria-label": FALLBACK_SECTION_LABEL[locale] })}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       {jsonLd ? <JsonLdScriptSync graph={jsonLd} nonce={nonce} /> : null}
       <Container size="lg" name="TeamSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2
-                id={headingId}
-                className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-              >
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title && "mt-2")}>{subtitle}</p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={headingId} />
 
         <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((member) => (

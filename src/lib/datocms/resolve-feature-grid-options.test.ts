@@ -11,7 +11,6 @@ describe("resolveFeatureGridOptions", () => {
       resolveFeatureGridOptions({
         advancedOptions: false,
         carouselOptions: [{ autoplay: true, showArrows: false }],
-        sectionId: "ignorado",
       }),
     ).toEqual(FEATURE_GRID_DEFAULTS);
   });
@@ -34,7 +33,6 @@ describe("resolveFeatureGridOptions", () => {
           showDots: false,
           loop: false,
         }],
-        sectionId: "Destaques Ágeis!",
       }),
     ).toEqual({
       variant: "full_bleed",
@@ -45,7 +43,6 @@ describe("resolveFeatureGridOptions", () => {
         showDots: false,
         loop: false,
       },
-      sectionId: "destaques-ageis",
     });
   });
 
@@ -58,7 +55,6 @@ describe("resolveFeatureGridOptions", () => {
           show_arrows: false,
           show_dots: true,
         }],
-        section_id: "  feature_grid--principal  ",
       }),
     ).toMatchObject({
       carousel: {
@@ -66,7 +62,6 @@ describe("resolveFeatureGridOptions", () => {
         showArrows: false,
         showDots: true,
       },
-      sectionId: "feature_grid--principal",
     });
 
     expect(
