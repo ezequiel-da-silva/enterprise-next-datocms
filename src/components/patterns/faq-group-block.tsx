@@ -1,15 +1,16 @@
 import { FaqGroupAccordion } from "@/components/patterns/faq-group-accordion";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { FaqGroupBlockRecord } from "@/infra/datocms/types-page";
 import { dastPlainText } from "@/lib/datocms/dast-plain-text";
 import {
   resolveFaqGroupOptions,
   type FaqGroupItem,
 } from "@/lib/datocms/resolve-faq-group-options";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { buildFaqPageJsonLd } from "@/lib/seo/build-faq-jsonld";
 import { claimFaqSchemaEmission } from "@/lib/seo/faq-schema-slot";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
-import { cn } from "@/lib/cn";
 import { getNonce } from "@/lib/nonce";
 
 type FaqGroupBlockProps = {
@@ -30,39 +31,33 @@ function extractFaqItems(record: FaqGroupBlockRecord): FaqGroupItem[] {
 /** Bloco FAQ group do Structured Text — accordion configurável (defaults + campos CMS opcionais). */
 export async function FaqGroupBlock({ record }: FaqGroupBlockProps) {
   const options = resolveFaqGroupOptions(record as Record<string, unknown>);
-  const title = record.title?.trim() ?? "";
-  const subtitle = record.hasSubtitle ? record.subtitle?.trim() ?? "" : "";
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const items = extractFaqItems(record);
 
-  if (items.length === 0 && !title) return null;
+  if (items.length === 0 && !header.title) return null;
 
   const headingId = `faq-${record.id}`;
   const faqJsonLd =
     options.enableFaqSchema && claimFaqSchemaEmission() ? buildFaqPageJsonLd(items) : null;
   const nonce = faqJsonLd ? await getNonce() : undefined;
-  const headerAlign =
-    options.headerAlignment === "center"
-      ? "text-center"
-      : options.headerAlignment === "right"
-        ? "text-right"
-        : "text-left";
 
   return (
     <section
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
+      id={header.sectionId}
       className="not-prose my-12 w-full"
-      aria-labelledby={title ? headingId : undefined}
+      {...(header.title ? sectionLandmarkProps(header, headingId, "FAQ") : {})}
     >
       {faqJsonLd ? <JsonLdScriptSync graph={faqJsonLd} nonce={nonce} /> : null}
-      {title ? (
-        <header className={cn("mb-6", headerAlign)}>
-          <h2 id={headingId} className="text-balance text-3xl font-semibold tracking-tight text-foreground">
-            {title}
-          </h2>
-          {subtitle ? <p className="mt-2 text-lg text-muted-foreground">{subtitle}</p> : null}
-        </header>
-      ) : null}
+      <SectionTextHeader
+        header={header}
+        headingId={headingId}
+        align={options.headerAlignment}
+        className="mb-6"
+        headingClassName="text-3xl font-semibold"
+        descriptionClassName="mt-2 text-lg"
+      />
       <FaqGroupAccordion groupId={String(record.id)} items={items} options={options} />
     </section>
   );

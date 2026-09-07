@@ -1,10 +1,12 @@
 import { Container } from "@/components/atoms/container";
 import { PricingCard } from "@/components/molecules/pricing-card";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { AppLocale } from "@/constants/i18n";
 import type { PricingCardBlockRecord, PricingSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray, readCdaBool } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 
 type PricingSectionBlockProps = {
   record: PricingSectionBlockRecord;
@@ -50,10 +52,7 @@ function plansGridClass(count: number, hasPopular: boolean): string {
 }
 
 export function PricingSectionBlock({ record, locale }: PricingSectionBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  if (!title) return null;
-
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const plans = readPlans(record);
   if (plans.length === 0) return null;
 
@@ -65,15 +64,11 @@ export function PricingSectionBlock({ record, locale }: PricingSectionBlockProps
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      aria-labelledby={headingId}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, locale === "pt" ? "Preços" : locale === "es" ? "Precios" : "Pricing")}
     >
       <Container size="lg" name="PricingSection" className="flex flex-col gap-10">
-        <header className="mx-auto max-w-3xl text-center">
-          <h2 id={headingId} className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            {title}
-          </h2>
-          {subtitle ? <p className="mt-2 text-base text-muted-foreground">{subtitle}</p> : null}
-        </header>
+        <SectionTextHeader header={header} headingId={headingId} />
 
         <ul className={cn("m-0 grid list-none gap-6 p-0", plansGridClass(plans.length, hasPopular))}>
           {plans.map((plan) => (

@@ -1,9 +1,11 @@
 import { Container } from "@/components/atoms/container";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { AppLocale } from "@/constants/i18n";
 import type { StatCardBlockRecord, StatsSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray, readCdaString, readCdaToggledString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 
 type StatsSectionBlockProps = {
   record: StatsSectionBlockRecord;
@@ -40,7 +42,13 @@ function readStats(record: StatsSectionBlockRecord): ParsedStat[] {
       id: item.id,
       value,
       label,
-      description: readCdaString(item as Record<string, unknown>, "description", "description"),
+      description: readCdaToggledString(
+        item as Record<string, unknown>,
+        "hasDescription",
+        "has_description",
+        "description",
+        "description",
+      ),
     });
     if (parsed.length >= MAX_STATS) break;
   }
@@ -71,8 +79,7 @@ function StatCard({ stat }: { stat: ParsedStat }) {
 }
 
 export function StatsSectionBlock({ record, locale }: StatsSectionBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const stats = readStats(record);
   if (stats.length === 0) return null;
 
@@ -83,23 +90,11 @@ export function StatsSectionBlock({ record, locale }: StatsSectionBlockProps) {
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      {...(title
-        ? { "aria-labelledby": headingId }
-        : { "aria-label": FALLBACK_SECTION_LABEL[locale] })}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       <Container size="lg" name="StatsSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2 id={headingId} className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title && "mt-2")}>{subtitle}</p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={headingId} />
 
         <dl className={cn("m-0 grid list-none gap-6 p-0", statsGridClass(stats.length))}>
           {stats.map((stat) => (

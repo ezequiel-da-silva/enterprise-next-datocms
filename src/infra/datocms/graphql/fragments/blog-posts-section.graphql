@@ -11,18 +11,19 @@
 # e `GET_ALL_CATEGORIES` no RSC.
 #import "./post-card.graphql"
 #import "./carousel-setting.graphql"
+#import "./text-header.graphql"
 
 fragment BlogPostsSectionBlockFragment on BlogPostsSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   fetchMode
   allCategoriesLabel
   categoryDisplay
   showSortTabs
   hasLimit
   limit
-  sectionId
   displayType
   initialCount
   loadMoreStep

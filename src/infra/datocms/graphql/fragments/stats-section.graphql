@@ -4,16 +4,20 @@
 #   Schema → Page → Structured text → blocos permitidos → incluir **Stats Section**.
 # Depois: `#import` + `... on StatsSectionRecord` em `page-by-slug.graphql`,
 # `${STATS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#import "./text-header.graphql"
+
 fragment StatsSectionBlockFragment on StatsSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   stats {
     __typename
     ... on StatCardRecord {
       id
       value
       label
+      hasDescription
       description
     }
   }

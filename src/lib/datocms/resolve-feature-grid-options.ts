@@ -5,7 +5,7 @@
  * |-------------------|-------------------|----------------------------------|
  * | Variante          | variant           | cards                            |
  * | Carrossel         | carousel_options  | defaults de `carousel_setting`   |
- * | ID da secção      | section_id        | —                                |
+ * | Cabeçalho         | text_header_section | title / description / âncora   |
  *
  * Autoplay só aplica com `advanced_options`. Sem `loop`, o autoplay pára no último
  * snap (não volta ao início à revelia do toggle Loop).
@@ -22,7 +22,6 @@ export type FeatureGridVariant = "cards" | "full_bleed";
 export type FeatureGridOptions = {
   variant: FeatureGridVariant;
   carousel: CarouselSetting;
-  sectionId?: string;
 };
 
 export const FEATURE_GRID_DEFAULTS: FeatureGridOptions = {
@@ -49,18 +48,6 @@ function parseVariant(raw: string): FeatureGridVariant {
   return "cards";
 }
 
-function sanitizeSectionId(raw: string | undefined): string | undefined {
-  if (!raw) return undefined;
-  const slug = raw
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || undefined;
-}
-
 export function resolveFeatureGridOptions(record: Record<string, unknown>): FeatureGridOptions {
   const variantRaw = readOptionalString(record, "variant", "variant");
   const variant = variantRaw ? parseVariant(variantRaw) : FEATURE_GRID_DEFAULTS.variant;
@@ -73,6 +60,5 @@ export function resolveFeatureGridOptions(record: Record<string, unknown>): Feat
   return {
     variant,
     carousel: resolveCarouselSetting(record.carouselOptions ?? record.carousel_options),
-    sectionId: sanitizeSectionId(readOptionalString(record, "sectionId", "section_id")),
   };
 }

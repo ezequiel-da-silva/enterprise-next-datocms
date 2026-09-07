@@ -4,15 +4,19 @@
 #   Schema → Page → Structured text → blocos permitidos → incluir **Steps Section**.
 # Depois: `#import` + `... on StepsSectionRecord` em `page-by-slug.graphql`,
 # `${STEPS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
+#import "./text-header.graphql"
+
 fragment StepsSectionBlockFragment on StepsSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   steps {
     __typename
     ... on StepCardRecord {
       id
       title
+      hasDescription
       description
       hasImage
       mediaImage {

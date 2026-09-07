@@ -1,5 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import type { SmartLinkBlockRecord } from "@/components/patterns/smart-link";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import {
   TabsSectionInteractive,
   type ParsedTab,
@@ -7,10 +8,10 @@ import {
 } from "@/components/sections/tabs-section-interactive";
 import type { AppLocale } from "@/constants/i18n";
 import type { FileFieldLike, TabItemBlockRecord, TabsSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaBlock, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray, readCdaBlock, readCdaBool, readCdaString, readCdaToggledString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
-import { cn } from "@/lib/cn";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 
 type TabsSectionBlockProps = {
   record: TabsSectionBlockRecord;
@@ -62,7 +63,13 @@ function readTabs(record: TabsSectionBlockRecord, locale: AppLocale): ParsedTab[
       id: item.id,
       labelTab,
       title,
-      description: readCdaString(item as Record<string, unknown>, "description", "description"),
+      description: readCdaToggledString(
+        item as Record<string, unknown>,
+        "hasDescription",
+        "has_description",
+        "description",
+        "description",
+      ),
       cta: readTabCta(item, locale),
       image: readTabImage(item),
     });
@@ -72,8 +79,7 @@ function readTabs(record: TabsSectionBlockRecord, locale: AppLocale): ParsedTab[
 }
 
 export function TabsSectionBlock({ record, locale }: TabsSectionBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const tabs = readTabs(record, locale);
   if (tabs.length === 0) return null;
 
@@ -84,29 +90,17 @@ export function TabsSectionBlock({ record, locale }: TabsSectionBlockProps) {
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      {...(title
-        ? { "aria-labelledby": headingId }
-        : { "aria-label": FALLBACK_SECTION_LABEL[locale] })}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       <Container size="lg" name="TabsSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2 id={headingId} className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title && "mt-2")}>{subtitle}</p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={headingId} />
 
         <TabsSectionInteractive
-          sectionId={record.id}
+          sectionId={header.sectionId ?? record.id}
           tabs={tabs}
           locale={locale}
-          {...(title
+          {...(header.title
             ? { tablistLabelledBy: headingId }
             : { tablistLabel: FALLBACK_SECTION_LABEL[locale] })}
         />

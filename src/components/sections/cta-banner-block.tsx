@@ -12,6 +12,7 @@ import {
   type CtaBannerBgTheme,
   type CtaBannerVariant,
 } from "@/lib/datocms/resolve-cta-banner-options";
+import { textHeaderFromRecord, type TextHeader } from "@/lib/datocms/resolve-text-header";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 
@@ -157,18 +158,19 @@ function CtaBannerContent({
   record,
   locale,
   options,
+  header,
   isOverlay = false,
 }: {
   record: CtaBannerBlockRecord;
   locale: AppLocale;
   options: ReturnType<typeof resolveCtaBannerOptions>;
+  header: TextHeader;
   isOverlay?: boolean;
 }) {
-  const title = readCdaString(record, "title", "title");
+  const title = header.title;
   const showEyebrow = readCdaBool(record, "hasEyebrow", "has_eyebrow");
   const eyebrow = showEyebrow ? readCdaString(record, "eyebrow", "eyebrow") : "";
-  const showDescription = readCdaBool(record, "hasDescription", "has_description");
-  const description = showDescription ? readCdaString(record, "description", "description") : "";
+  const description = header.description;
   const buttons = readButtons(record, locale);
   const isPrimary = options.bgTheme === "primary";
 
@@ -223,8 +225,9 @@ function CtaBannerContent({
 /** Bloco CTA Banner do Structured Text — variantes centered / split / card_inset. */
 export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
   const options = resolveCtaBannerOptions(record as Record<string, unknown>);
-  const title = readCdaString(record, "title", "title");
-  if (!title) return null;
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
+  const buttons = readButtons(record, locale);
+  if (!header.title && buttons.length === 0) return null;
 
   const image = resolveCtaBannerImage(record as Record<string, unknown>, options.variant);
   const imageBlock = image.block as CtaImageBlock | null;
@@ -235,7 +238,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
 
     return (
       <section
-        id={options.sectionId}
+        id={header.sectionId}
         {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
         className="not-prose my-12 w-full"
@@ -267,6 +270,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
                 record={record}
                 locale={locale}
                 options={options}
+                header={header}
                 isOverlay={hasOverlayImage}
               />
             </div>
@@ -278,7 +282,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
 
   return (
     <section
-      id={options.sectionId}
+      id={header.sectionId}
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className={cn(
@@ -302,12 +306,12 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         )}
       >
         <div className={options.variant === "split" && image.hasValidAsset ? "min-w-0" : "w-full max-w-3xl"}>
-          <CtaBannerContent record={record} locale={locale} options={options} />
+          <CtaBannerContent record={record} locale={locale} options={options} header={header} />
         </div>
 
         {options.variant === "split" && image.hasValidAsset && imageBlock ? (
           <div className="min-w-0">
-            <CtaBannerImage block={imageBlock} fallbackAlt={title} />
+            <CtaBannerImage block={imageBlock} fallbackAlt={header.title} />
           </div>
         ) : null}
       </Container>

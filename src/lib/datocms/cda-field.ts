@@ -22,6 +22,21 @@ export function readCdaBool(record: RecordLike, camel: string, snake: string): b
   return raw === true;
 }
 
+/**
+ * Copy visível só quando o toggle CMS (`has_description`, etc.) está ligado.
+ * Preserva stega no valor; o boolean não precisa de strip.
+ */
+export function readCdaToggledString(
+  record: RecordLike,
+  hasCamel: string,
+  hasSnake: string,
+  valueCamel: string,
+  valueSnake: string,
+): string {
+  if (!readCdaBool(record, hasCamel, hasSnake)) return "";
+  return readCdaString(record, valueCamel, valueSnake);
+}
+
 /** Lê object aninhado camelCase ou snake_case legado. Listas não contam (ver `readCdaBlock`). */
 export function readCdaObject<T>(record: RecordLike, camel: string, snake: string): T | null {
   const raw = record[camel] ?? record[snake];

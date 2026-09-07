@@ -26,7 +26,6 @@ describe("resolveLatestPostsOptions", () => {
           showSortTabs: false,
           hasLimit: true,
           limit: 9,
-          sectionId: "Blog Destaques!",
           allCategoriesLabel: "Everything",
         },
         "All",
@@ -37,7 +36,6 @@ describe("resolveLatestPostsOptions", () => {
       showSortTabs: false,
       hasLimit: true,
       limit: 9,
-      sectionId: "blog-destaques",
       allCategoriesLabel: "Everything",
     });
 

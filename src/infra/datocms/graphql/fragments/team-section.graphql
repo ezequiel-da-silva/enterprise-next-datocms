@@ -8,11 +8,13 @@
 #
 # `members` são links para Author (mín. 1 no CMS). Bio ST não entra no card.
 #import "./author.graphql"
+#import "./text-header.graphql"
 
 fragment TeamSectionBlockFragment on TeamSectionRecord {
   id
-  title
-  subtitle
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
   members {
     ...AuthorCardFragment
   }

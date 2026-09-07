@@ -13,7 +13,7 @@
  * | load_more_step        | load_more_step          | 3 (clamp 1–100)                 |
  * | load_more_label       | load_more_label         | copy i18n se vazio              |
  * | carousel_options      | carousel_options        | defaults de `carousel_setting`  |
- * | section_id            | section_id             | —                               |
+ * | text_header_section   | text_header_section     | title / description / âncora    |
  * | all_categories_label  | all_categories_label   | copy i18n se vazio              |
  *
  * Display:
@@ -45,7 +45,6 @@ export type LatestPostsOptions = {
   loadMoreStep: number;
   loadMoreLabel: string;
   carousel: CarouselSetting;
-  sectionId?: string;
   allCategoriesLabel: string;
 };
 
@@ -97,18 +96,6 @@ function parseDisplayType(raw: string): BlogPostsDisplayType {
   if (value === "pagination" || value.includes("pagin")) return "pagination";
   if (value === "load_more" || value.includes("load") || value.includes("carregar")) return "load_more";
   return "grid";
-}
-
-function sanitizeSectionId(raw: string | undefined): string | undefined {
-  if (!raw) return undefined;
-  const slug = raw
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || undefined;
 }
 
 function parseFetchMode(raw: string): LatestPostsFetchMode {
@@ -163,7 +150,6 @@ export function resolveLatestPostsOptions(
     ),
     loadMoreLabel: loadMoreLabel || fallbackLoadMoreLabel,
     carousel: resolveCarouselSetting(record.carouselOptions ?? record.carousel_options),
-    sectionId: sanitizeSectionId(readCdaStringForLogic(record, "sectionId", "section_id") || undefined),
     allCategoriesLabel: cmsAllLabel || fallbackAllLabel,
   };
 }

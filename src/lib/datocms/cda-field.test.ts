@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { readCdaBlock, readCdaObject } from "@/lib/datocms/cda-field";
+import { readCdaBlock, readCdaObject, readCdaToggledString } from "@/lib/datocms/cda-field";
 
 describe("readCdaObject", () => {
   it("reads camelCase and snake_case objects", () => {
@@ -28,5 +28,31 @@ describe("readCdaBlock", () => {
     expect(readCdaBlock({ ctaButton: [null] }, "ctaButton", "cta_button")).toBeNull();
     expect(readCdaBlock({ ctaButton: "nope" }, "ctaButton", "cta_button")).toBeNull();
     expect(readCdaBlock({}, "ctaButton", "cta_button")).toBeNull();
+  });
+});
+
+describe("readCdaToggledString", () => {
+  it("returns empty when the toggle is off even if copy exists", () => {
+    expect(
+      readCdaToggledString(
+        { hasDescription: false, description: "hidden" },
+        "hasDescription",
+        "has_description",
+        "description",
+        "description",
+      ),
+    ).toBe("");
+  });
+
+  it("returns copy when the toggle is on", () => {
+    expect(
+      readCdaToggledString(
+        { has_description: true, description: "Shown" },
+        "hasDescription",
+        "has_description",
+        "description",
+        "description",
+      ),
+    ).toBe("Shown");
   });
 });

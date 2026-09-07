@@ -1,10 +1,12 @@
 import { CardItem, FullBleedCard } from "@/components/patterns/feature-grid-card";
 import { FeatureGridCarousel } from "@/components/patterns/feature-grid-carousel";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import type { AppLocale } from "@/constants/i18n";
 import type { CardRecord, FeatureGridRecord } from "@/infra/datocms/types-page";
-import { readCdaArray, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaArray } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveFeatureGridOptions } from "@/lib/datocms/resolve-feature-grid-options";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { FEATURE_GRID_COPY } from "@/lib/i18n/feature-grid-copy";
 
 function readGridCards(record: FeatureGridRecord): CardRecord[] {
@@ -23,53 +25,35 @@ export type FeatureGridBlockProps = {
 };
 
 export function FeatureGridBlock({ record, locale }: FeatureGridBlockProps) {
-  const title = readCdaString(record as Record<string, unknown>, "titleFeatureGrid", "title_feature_grid");
-  const subtitle = readCdaString(
-    record as Record<string, unknown>,
-    "subtitleFeatureGrid",
-    "subtitle_feature_grid",
-  );
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const cards = readGridCards(record);
   if (cards.length === 0) return null;
 
   const options = resolveFeatureGridOptions(record as Record<string, unknown>);
   const headingId = `feature-grid-${record.id}`;
-  const hasHeader = Boolean(title || subtitle);
-  const cardHeading = title ? "h3" : "h2";
+  const cardHeading = header.title ? "h3" : "h2";
   const sectionLabel = FEATURE_GRID_COPY[locale].sectionLabel;
 
   return (
     <section
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
-      id={options.sectionId}
+      id={header.sectionId}
       className="not-prose my-12 w-full"
-      {...(title
-        ? { "aria-labelledby": headingId }
-        : { "aria-label": sectionLabel })}
+      {...sectionLandmarkProps(header, headingId, sectionLabel)}
     >
-      {hasHeader ? (
-        <header className="mx-auto mb-10 max-w-3xl text-center">
-          {title ? (
-            <h2
-              id={headingId}
-              className="text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl"
-            >
-              {title}
-            </h2>
-          ) : null}
-          {subtitle ? (
-            <p className={title ? "mt-4 text-lg leading-relaxed text-muted-foreground" : "text-lg leading-relaxed text-muted-foreground"}>
-              {subtitle}
-            </p>
-          ) : null}
-        </header>
-      ) : null}
+      <SectionTextHeader
+        header={header}
+        headingId={headingId}
+        className="mb-10"
+        headingClassName="text-3xl font-semibold md:text-4xl"
+        descriptionClassName="mt-4 text-lg leading-relaxed"
+      />
 
       <FeatureGridCarousel
         locale={locale}
         options={options}
-        {...(title ? { labelledBy: headingId } : { label: sectionLabel })}
+        {...(header.title ? { labelledBy: headingId } : { label: sectionLabel })}
       >
         {cards.map((card) =>
           options.variant === "cards" ? (

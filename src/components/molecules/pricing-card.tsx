@@ -2,7 +2,7 @@ import { Button } from "@/components/atoms/button";
 import { SmartLink } from "@/components/patterns/smart-link";
 import type { AppLocale } from "@/constants/i18n";
 import type { PricingCardBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaBlock, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
+import { readCdaBlock, readCdaBool, readCdaString, readCdaToggledString } from "@/lib/datocms/cda-field";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
 import {
   formatBillingPeriod,
@@ -38,18 +38,23 @@ function CheckIcon() {
 }
 
 export function PricingCard({ plan, locale, reserveBadgeRow = false }: PricingCardProps) {
-  const name = readCdaString(plan as Record<string, unknown>, "name", "name");
+  const fields = plan as Record<string, unknown>;
+  const name = readCdaString(fields, "name", "name");
   if (!name) return null;
 
-  const description = readCdaString(plan as Record<string, unknown>, "description", "description");
-  const isPopular = readCdaBool(plan as Record<string, unknown>, "isPopular", "is_popular");
-  const hasButton = readCdaBool(plan as Record<string, unknown>, "hasButton", "has_button");
-  const priceType = parsePriceType(readCdaString(plan as Record<string, unknown>, "priceType", "price_type"));
-  const currency = parseCurrency(readCdaString(plan as Record<string, unknown>, "currency", "currency"));
-  const amount = parseAmount(plan.amount);
-  const period = parseBillingPeriod(
-    readCdaString(plan as Record<string, unknown>, "billingPeriod", "billing_period"),
+  const description = readCdaToggledString(
+    fields,
+    "hasDescription",
+    "has_description",
+    "description",
+    "description",
   );
+  const isPopular = readCdaBool(fields, "isPopular", "is_popular");
+  const hasButton = readCdaBool(fields, "hasButton", "has_button");
+  const priceType = parsePriceType(readCdaString(fields, "priceType", "price_type"));
+  const currency = parseCurrency(readCdaString(fields, "currency", "currency"));
+  const amount = parseAmount(plan.amount);
+  const period = parseBillingPeriod(readCdaString(fields, "billingPeriod", "billing_period"));
   const features = parsePricingFeatures(
     readCdaString(plan as Record<string, unknown>, "features", "features"),
   );

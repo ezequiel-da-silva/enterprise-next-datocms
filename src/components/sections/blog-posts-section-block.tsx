@@ -1,12 +1,11 @@
 import { Container } from "@/components/atoms/container";
 import { Skeleton } from "@/components/atoms/skeleton";
+import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import { BlogPostsInteractive } from "@/components/sections/blog-posts-interactive";
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog, PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
 import type { BlogPostsSectionBlockRecord } from "@/infra/datocms/types-page";
-import { readCdaString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
-import { cn } from "@/lib/cn";
 import {
   categoriesWithPosts,
   postsInCategories,
@@ -14,6 +13,7 @@ import {
   readLatestPostCards,
   resolveLatestPostsOptions,
 } from "@/lib/datocms/resolve-latest-posts-section";
+import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 
 type BlogPostsSectionBlockProps = {
@@ -39,8 +39,7 @@ export function BlogPostsSectionFallback({
   record: BlogPostsSectionBlockRecord;
 }) {
   const copy = latestPostsCopy(locale);
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
 
   return (
     <section
@@ -48,21 +47,10 @@ export function BlogPostsSectionFallback({
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
       aria-busy="true"
-      aria-label={title || copy.sectionLabel}
+      aria-label={header.title || copy.sectionLabel}
     >
       <Container size="lg" name="BlogPostsSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2 className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title && "mt-2")}>{subtitle}</p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={`latest-posts-${record.id}`} />
         <div className="flex flex-col gap-5 sm:gap-8">
           <div className="grid grid-cols-2 gap-2 border-b border-border/60 pb-4 sm:hidden">
             <Skeleton className="h-12 rounded-full" />
@@ -93,8 +81,7 @@ export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPos
     copy.allCategories,
     copy.loadMore,
   );
-  const title = readCdaString(record as Record<string, unknown>, "title", "title");
-  const subtitle = readCdaString(record as Record<string, unknown>, "subtitle", "subtitle");
+  const header = textHeaderFromRecord(record as Record<string, unknown>);
   const resolvedCatalog = catalog ? await Promise.resolve(catalog) : undefined;
 
   const posts =
@@ -118,38 +105,22 @@ export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPos
 
   const chips = categoriesWithPosts(categories, dataset);
 
-  if (dataset.length === 0 && !title && !subtitle) return null;
+  if (dataset.length === 0 && !header.title && !header.description) return null;
 
   const headingId = `latest-posts-${record.id}`;
   const showCategoryBar = options.categoryDisplay !== "none" && chips.length > 0;
-  const headingLevel = title ? "h3" : "h2";
+  const headingLevel = header.title ? "h3" : "h2";
 
   return (
     <section
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       className="not-prose my-12 w-full py-6"
-      id={options.sectionId}
-      {...(title
-        ? { "aria-labelledby": headingId }
-        : { "aria-label": copy.sectionLabel })}
+      id={header.sectionId}
+      {...sectionLandmarkProps(header, headingId, copy.sectionLabel)}
     >
       <Container size="lg" name="BlogPostsSection" className="flex flex-col gap-10">
-        {title || subtitle ? (
-          <header className="mx-auto max-w-3xl text-center">
-            {title ? (
-              <h2
-                id={headingId}
-                className="text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl"
-              >
-                {title}
-              </h2>
-            ) : null}
-            {subtitle ? (
-              <p className={cn("text-base text-muted-foreground", title && "mt-2")}>{subtitle}</p>
-            ) : null}
-          </header>
-        ) : null}
+        <SectionTextHeader header={header} headingId={headingId} />
 
         <BlogPostsInteractive
           key={`${options.displayType}-${options.initialCount}-${options.loadMoreStep}`}

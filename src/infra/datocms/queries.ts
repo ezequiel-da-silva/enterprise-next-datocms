@@ -194,6 +194,17 @@ const CAROUSEL_SETTING_FIELDS = `
   loop
 `;
 
+/** Text header — bloco `text_header` aninhado (`textHeaderSection`). @see fragments/text-header.graphql */
+const TEXT_HEADER_FIELDS = `
+  __typename
+  id
+  title
+  hasDescription
+  description
+  hasSectionId
+  sectionId
+`;
+
 /** Blocos de média no ST (sem Feature GRID aninhado — evita recursão GraphQL). */
 const ST_BLOCKS_MEDIA_ONLY = `
   __typename
@@ -242,9 +253,9 @@ const ST_BLOCKS_MEDIA_ONLY = `
 const FAQ_GROUP_BLOCK = `
   ... on FaqGroupRecord {
     id
-    title
-    subtitle
-    hasSubtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     advancedOptions
     accordionMode
     openFirstItem
@@ -295,15 +306,14 @@ const LINK_HERO_CTA_FIELDS = `
 const CTA_BANNER_BLOCK = `
   ... on CtaBannerRecord {
     id
-    title
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     hasEyebrow
     eyebrow
-    hasDescription
-    description
     advancedOptions
     variant
     bgTheme
-    sectionId
     hasImage
     buttons {
       ${LINK_HERO_CTA_FIELDS}
@@ -339,8 +349,9 @@ const STRUCTURED_TEXT_SCALAR_FIELDS = `
 const LOGO_GRID_BLOCK = `
   ... on LogoGridRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     grayscale
     layoutStyle
     logos {
@@ -356,14 +367,16 @@ const LOGO_GRID_BLOCK = `
 const TABS_SECTION_BLOCK = `
   ... on TabsSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     tabs {
       __typename
       ... on TabItemRecord {
         id
         labelTab
         title
+        hasDescription
         description
         hasLink
         hasImage
@@ -387,14 +400,14 @@ const TABS_SECTION_BLOCK = `
 const FEATURE_GRID_BLOCK = `
   ... on FeatureGridRecord {
     id
-    titleFeatureGrid
-    subtitleFeatureGrid
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     advancedOptions
     variant
     carouselOptions {
       ${CAROUSEL_SETTING_FIELDS}
     }
-    sectionId
     itemsFeatureGrid {
       __typename
       ... on CardRecord {
@@ -424,13 +437,15 @@ const FEATURE_GRID_BLOCK = `
 const STEPS_SECTION_BLOCK = `
   ... on StepsSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     steps {
       __typename
       ... on StepCardRecord {
         id
         title
+        hasDescription
         description
         hasImage
         mediaImage {
@@ -472,8 +487,9 @@ const AUTHOR_CARD_FIELDS = `
 const TEAM_SECTION_BLOCK = `
   ... on TeamSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     members {
       ${AUTHOR_CARD_FIELDS}
     }
@@ -507,15 +523,15 @@ const POST_CARD_FIELDS = `
 const BLOG_POSTS_SECTION_BLOCK = `
   ... on BlogPostsSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     fetchMode
     allCategoriesLabel
     categoryDisplay
     showSortTabs
     hasLimit
     limit
-    sectionId
     displayType
     initialCount
     loadMoreStep
@@ -541,14 +557,16 @@ const BLOG_POSTS_SECTION_BLOCK = `
 const STATS_SECTION_BLOCK = `
   ... on StatsSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     stats {
       __typename
       ... on StatCardRecord {
         id
         value
         label
+        hasDescription
         description
       }
     }
@@ -559,13 +577,15 @@ const STATS_SECTION_BLOCK = `
 const PRICING_SECTION_BLOCK = `
   ... on PricingSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     plans {
       __typename
       ... on PricingCardRecord {
         id
         name
+        hasDescription
         description
         priceType
         currency
@@ -586,8 +606,9 @@ const PRICING_SECTION_BLOCK = `
 const REVIEWS_SECTION_BLOCK = `
   ... on ReviewsSectionRecord {
     id
-    title
-    subtitle
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
     allowSubmissions
     reviews {
       id

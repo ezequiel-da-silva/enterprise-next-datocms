@@ -8,6 +8,7 @@
 #import "./fragments/feature-grid.graphql"
 #import "./fragments/team-section.graphql"
 #import "./fragments/blog-posts-section.graphql"
+#import "./fragments/text-header.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -100,9 +101,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
       }
       ... on FaqGroupRecord {
         id
-        title
-        subtitle
-        hasSubtitle
+        textHeaderSection {
+          ...TextHeaderBlockFragment
+        }
         advancedOptions
         accordionMode
         openFirstItem
