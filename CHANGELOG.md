@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.1...next-dato-v0.13.2) (2026-09-07)
+
+
+### Refactoring
+
+* **components:** streamline section landmark properties in FAQ and CTA banner components ([527da5c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/527da5c49515877e3ecf6dd407b173908343b2f6))
+* **components:** streamline section landmark properties in FAQ and CTA banner components; ensure consistent header accessibility attributes and improve code readability ([2c68c70](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/2c68c70b3a44edce1bb3510e7cadb897cfdc318d))
+
 ## [0.13.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.0...next-dato-v0.13.1) (2026-09-07)
 
 
