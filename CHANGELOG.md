@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.0...next-dato-v0.13.1) (2026-09-07)
+
+
+### Refactoring
+
+* **components:** introduce SectionTextHeader for consistent header rendering across various sections; update components to utilize new header structure, enhancing readability and maintainability; modify GraphQL queries to support text header fields ([421abec](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/421abec792881e02f18f357129767212daca6134))
+
 ## [0.13.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.12.2...next-dato-v0.13.0) (2026-09-06)
 
 
