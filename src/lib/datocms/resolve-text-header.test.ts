@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   resolveTextHeader,
   sanitizeSectionId,
+  sectionLandmarkProps,
   textHeaderFromRecord,
 } from "./resolve-text-header";
 
@@ -45,6 +46,20 @@ describe("resolveTextHeader", () => {
         textHeaderSection: [{ title: "FAQ", hasDescription: false, hasSectionId: false }],
       }).title,
     ).toBe("FAQ");
+  });
+});
+
+describe("sectionLandmarkProps", () => {
+  it("names the region from the heading when a title exists", () => {
+    expect(sectionLandmarkProps({ title: "FAQ", description: "" }, "faq-1", "FAQ")).toEqual({
+      "aria-labelledby": "faq-1",
+    });
+  });
+
+  it("falls back to aria-label when the title is empty", () => {
+    expect(
+      sectionLandmarkProps({ title: "", description: "Só descrição" }, "faq-1", "FAQ"),
+    ).toEqual({ "aria-label": "FAQ" });
   });
 });
 

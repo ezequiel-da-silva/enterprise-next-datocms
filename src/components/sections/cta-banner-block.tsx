@@ -12,9 +12,19 @@ import {
   type CtaBannerBgTheme,
   type CtaBannerVariant,
 } from "@/lib/datocms/resolve-cta-banner-options";
-import { textHeaderFromRecord, type TextHeader } from "@/lib/datocms/resolve-text-header";
+import {
+  sectionLandmarkProps,
+  textHeaderFromRecord,
+  type TextHeader,
+} from "@/lib/datocms/resolve-text-header";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
+
+const CTA_SECTION_LABEL: Record<AppLocale, string> = {
+  en: "Call to action",
+  pt: "Chamada à ação",
+  es: "Llamada a la acción",
+};
 
 type CtaBannerBlockProps = {
   record: CtaBannerBlockRecord;
@@ -159,12 +169,14 @@ function CtaBannerContent({
   locale,
   options,
   header,
+  headingId,
   isOverlay = false,
 }: {
   record: CtaBannerBlockRecord;
   locale: AppLocale;
   options: ReturnType<typeof resolveCtaBannerOptions>;
   header: TextHeader;
+  headingId: string;
   isOverlay?: boolean;
 }) {
   const title = header.title;
@@ -189,6 +201,7 @@ function CtaBannerContent({
 
       {title ? (
         <h2
+          id={headingId}
           className={cn(
             "text-balance text-3xl font-semibold tracking-tight md:text-4xl",
             isOverlay ? "text-white drop-shadow-sm" : undefined,
@@ -232,6 +245,8 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
   const image = resolveCtaBannerImage(record as Record<string, unknown>, options.variant);
   const imageBlock = image.block as CtaImageBlock | null;
   const mobileAsset = imageMobileAsset(imageBlock);
+  const headingId = `cta-banner-${record.id}`;
+  const landmark = sectionLandmarkProps(header, headingId, CTA_SECTION_LABEL[locale]);
 
   if (options.variant === "card_inset") {
     const hasOverlayImage = image.hasValidAsset;
@@ -242,6 +257,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
         className="not-prose my-12 w-full"
+        {...landmark}
       >
         <Container size="lg" padded={false} name="CtaBanner">
           <div
@@ -271,6 +287,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
                 locale={locale}
                 options={options}
                 header={header}
+                headingId={headingId}
                 isOverlay={hasOverlayImage}
               />
             </div>
@@ -291,6 +308,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         options.bgTheme !== "transparent" && "rounded-2xl",
         bgThemeClasses(options.bgTheme),
       )}
+      {...landmark}
     >
       <Container
         size="lg"
@@ -306,7 +324,13 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         )}
       >
         <div className={options.variant === "split" && image.hasValidAsset ? "min-w-0" : "w-full max-w-3xl"}>
-          <CtaBannerContent record={record} locale={locale} options={options} header={header} />
+          <CtaBannerContent
+            record={record}
+            locale={locale}
+            options={options}
+            header={header}
+            headingId={headingId}
+          />
         </div>
 
         {options.variant === "split" && image.hasValidAsset && imageBlock ? (

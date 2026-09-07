@@ -47,7 +47,7 @@ export async function FaqGroupBlock({ record }: FaqGroupBlockProps) {
       data-datocms-content-link-boundary=""
       id={header.sectionId}
       className="not-prose my-12 w-full"
-      {...(header.title ? sectionLandmarkProps(header, headingId, "FAQ") : {})}
+      {...sectionLandmarkProps(header, headingId, "FAQ")}
     >
       {faqJsonLd ? <JsonLdScriptSync graph={faqJsonLd} nonce={nonce} /> : null}
       <SectionTextHeader
