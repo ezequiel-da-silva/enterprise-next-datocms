@@ -1,10 +1,18 @@
+import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import type { AppLocale } from "@/constants/i18n";
 import { toDatoSiteLocale } from "@/constants/i18n";
-import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import type { PageBySlugQuery } from "@/infra/datocms/generated/operations.types";
 import { PAGE_BY_SLUG } from "@/infra/datocms/queries";
 import { normalizePageBySlugResult, type PageBySlugQueryResult } from "@/infra/datocms/types-page";
 import { cache } from "react";
+
+function baseEditingOptions(includeDrafts: boolean) {
+  const baseEditingUrl = process.env.NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL;
+  return {
+    contentLink: includeDrafts && baseEditingUrl ? ("v1" as const) : undefined,
+    baseEditingUrl: includeDrafts && baseEditingUrl ? baseEditingUrl : undefined,
+  };
+}
 
 const loadPageBySlug = cache(
   async (
@@ -12,18 +20,21 @@ const loadPageBySlug = cache(
     includeDrafts: boolean,
     locale: AppLocale,
   ): Promise<DatocmsResponse<PageBySlugQueryResult>> => {
-    const baseEditingUrl = process.env.NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL;
     /** Em dev evita cache de `page: null` após publicares no Dato (fetch com tags ainda guardava 404). */
     const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
+    const editing = baseEditingOptions(includeDrafts);
 
     const response = await datocmsFetch<PageBySlugQuery>({
       query: PAGE_BY_SLUG,
-      variables: { slug, locale: toDatoSiteLocale(locale) },
+      variables: {
+        slug,
+        locale: toDatoSiteLocale(locale),
+        withEditingUrl: Boolean(editing.baseEditingUrl),
+      },
       tags: includeDrafts || devPublishedNoStore ? undefined : ["datocms:page", `page:${locale}:${slug}`],
       revalidate: includeDrafts || devPublishedNoStore ? false : 120,
       includeDrafts,
-      contentLink: includeDrafts && baseEditingUrl ? "v1" : undefined,
-      baseEditingUrl: includeDrafts && baseEditingUrl ? baseEditingUrl : undefined,
+      ...editing,
       cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
     });
 

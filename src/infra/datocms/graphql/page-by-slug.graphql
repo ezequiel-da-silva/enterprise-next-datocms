@@ -10,8 +10,9 @@
 #import "./fragments/team-section.graphql"
 #import "./fragments/blog-posts-section.graphql"
 #import "./fragments/text-header.graphql"
+#import "./fragments/text-section.graphql"
 
-query PageBySlug($slug: String!, $locale: SiteLocale!) {
+query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
     id
     title
@@ -118,6 +119,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
       }
       ... on BlogPostsSectionRecord {
         ...BlogPostsSectionBlockFragment
+      }
+      ... on TextSectionRecord {
+        ...TextSectionBlockFragment
       }
     }
     seoSettingsSocial {

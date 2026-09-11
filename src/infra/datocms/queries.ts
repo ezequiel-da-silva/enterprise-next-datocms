@@ -658,9 +658,30 @@ const REVIEWS_SECTION_BLOCK = `
   }
 `;
 
+/** Text section — prosa Structured Text no Modular Content da Page. @see fragments/text-section.graphql */
+const TEXT_SECTION_BLOCK = `
+  ... on TextSectionRecord {
+    id
+    hasTextHeader
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
+    body {
+      value
+      links {
+        ${ST_RECORD_LINKS_PAGE_ST}
+      }
+      blocks {
+        ${ST_BLOCKS_MEDIA_ONLY}
+      }
+      inlineBlocks
+    }
+  }
+`;
+
 /**
- * Modular Content **Page.contentPage**: secções de landing (sem prosa / média ST).
- * Image / Gallery / Video ficam no **Post.postContent** (`STRUCTURED_TEXT_BLOCKS`).
+ * Modular Content **Page.contentPage**: secções de landing.
+ * Image / Gallery / Video no Post e no corpo da Text section (`ST_BLOCKS_MEDIA_ONLY`).
  */
 const PAGE_CONTENT_BLOCKS = `
   __typename
@@ -678,6 +699,7 @@ const PAGE_CONTENT_BLOCKS = `
   ${FEATURE_GRID_BLOCK}
   ${TEAM_SECTION_BLOCK}
   ${BLOG_POSTS_SECTION_BLOCK}
+  ${TEXT_SECTION_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
@@ -718,7 +740,7 @@ const HERO_PAGE_FIELDS = `
  *   (IDs), não unions de blocos — não abrir sub-seleção GraphQL nesses campos.
  */
 export const PAGE_BY_SLUG = /* GraphQL */ `
-  query PageBySlug($slug: String!, $locale: SiteLocale!) {
+  query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
     page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
       id
       title

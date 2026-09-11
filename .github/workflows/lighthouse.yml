@@ -34,6 +34,7 @@ jobs:
       - name: Production build
         run: npm run build
         env:
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
           NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
@@ -44,10 +45,13 @@ jobs:
         env:
           NODE_ENV: production
           PORT: "3000"
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
           NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 
-      - name: Smoke URLs return 200
+      # `is-crawlable` vale ~31% da categoria SEO: um único `noindex` derruba a nota
+      # para 0.69 e falha o gate sem dizer porquê. Falhar aqui aponta a causa.
+      - name: Smoke URLs return 200 and are indexable
         run: |
           set -euo pipefail
           # Paths partilhadas com lighthouserc (lighthouse-paths.cjs)
@@ -61,19 +65,36 @@ jobs:
             sleep 1
           done
           for path in "${PATHS[@]}"; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${BASE}${path}")
+            body=$(mktemp)
+            headers=$(mktemp)
+            code=$(curl -s -D "${headers}" -o "${body}" -w '%{http_code}' --max-time 20 "${BASE}${path}")
             echo "GET ${path} → ${code}"
             if [ "${code}" != "200" ]; then
               echo "::error::Expected HTTP 200 for ${path} (got ${code}). Check DATOCMS_API_TOKEN and CMS content for this slug."
               exit 1
             fi
+            if grep -qiE '<meta name="robots"[^>]*noindex' "${body}"; then
+              echo "::error::${path} is served with <meta name=\"robots\" ... noindex>. Lighthouse SEO fails is-crawlable (score 0.69). Check the record's SEO field / DatoCMS global SEO, or whether the CMS read fell back to buildUnavailableMetadata()."
+              exit 1
+            fi
+            if grep -qiE '^x-robots-tag:.*noindex' "${headers}"; then
+              echo "::error::${path} is served with an X-Robots-Tag noindex header. Lighthouse SEO fails is-crawlable (score 0.69)."
+              exit 1
+            fi
           done
+          ROBOTS=$(curl -s --max-time 20 "${BASE}/robots.txt")
+          echo "${ROBOTS}"
+          if printf '%s' "${ROBOTS}" | grep -qiE '^[[:space:]]*Disallow:[[:space:]]*/[[:space:]]*$'; then
+            echo "::error::robots.txt disallows the whole site; Lighthouse SEO fails is-crawlable (score 0.69)."
+            exit 1
+          fi
 
       - name: Lighthouse CI
         run: npx lhci autorun --collect.startServerCommand=
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LHCI_DEVICE: ${{ matrix.device }}
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
           NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL: https://boilerplate-dato.admin.datocms.com
           DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
 

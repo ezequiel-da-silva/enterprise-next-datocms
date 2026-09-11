@@ -1,0 +1,78 @@
+# Fragmento do organismo Text section (`text_section`) no Modular Content `contentPage`.
+#
+# Corpo: Structured Text (nós nativos + image/gallery/video). Cabeçalho: `text_header`.
+#import "./text-header.graphql"
+
+fragment TextSectionMediaBlocks on RecordInterface {
+  __typename
+  id
+  ... on ImageBlockRecord {
+    id
+    asset {
+      url
+      alt
+      width
+      height
+      blurUpThumb
+    }
+    assetDesktop {
+      url
+      alt
+      width
+      height
+      blurUpThumb
+    }
+  }
+  ... on ImageGalleryBlockRecord {
+    id
+    assets {
+      url
+      alt
+      width
+      height
+      blurUpThumb
+    }
+  }
+  ... on VideoBlockRecord {
+    id
+    _editingUrl @include(if: $withEditingUrl)
+    asset {
+      url
+      title
+      width
+      height
+      video {
+        muxPlaybackId
+        streamingUrl
+        mp4Url(res: high)
+        thumbnailUrl(width: 640)
+        width
+        height
+        duration
+      }
+    }
+  }
+}
+
+fragment TextSectionBlockFragment on TextSectionRecord {
+  id
+  hasTextHeader
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
+  body {
+    value
+    links {
+      __typename
+      ... on PageRecord {
+        id
+        title
+        slug
+      }
+    }
+    blocks {
+      ...TextSectionMediaBlocks
+    }
+    inlineBlocks
+  }
+}

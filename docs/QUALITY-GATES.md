@@ -82,6 +82,12 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 
 **Anti-patterns:** Hardcoded production URLs; missing canonical on indexable pages.
 
+**Debugging the CI gate:** a Lighthouse SEO score of exactly **0.69** means the single failing audit is
+`is-crawlable` (weight ~31% of the category) — the page carries a `noindex`. Sources, in order of
+likelihood: the record's SEO field / DatoCMS global SEO, `buildUnavailableMetadata()` after a failed CMS
+read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. The smoke step in
+[`lighthouse.yml`](../.github/workflows/lighthouse.yml) fails first with the offending URL.
+
 ---
 
 ## 5. AEO (Answer Engine Optimization)

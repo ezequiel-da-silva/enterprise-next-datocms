@@ -110,6 +110,20 @@ Allowlists no develop: `hero_section` (`image_hero`, `image_overlay`) → hero; 
 
 O Next mapeia `asset_mobile` → `mobile` e `asset_desktop` → `desktop` em `DatoResponsivePicture` nos três blocos. `image_block` residual continua com `asset` (mobile) + `asset_desktop`.
 
+## Text section (`text_section`)
+
+Organismo do Modular Content `content_page` da Page (sandbox **develop**, migrations `1789152029_textSectionHeaderAndStructuredTextBody.ts`, `1789152399_textSectionHeaderAsRichTextEqOne.ts` e `1789161639_optionalTextSectionHeaderToggle.ts`). Não é um “bloco parágrafo”: o corpo é **Structured Text**.
+
+| Campo | Tipo | Notas |
+|-------|------|--------|
+| `has_text_header` | Boolean | Mostra/oculta no admin e no frontend o cabeçalho da secção |
+| `text_header_section` | Modular Content, 0–1× `text_header` | Título h2, descrição e section ID. Igual às outras secções (`[TextHeaderRecord!]!` no CDA — a union GraphQL exige o mesmo tipo do campo em todos os organismos) |
+| `body` | Structured Text | Nós nativos (listas, citação, código, headings **h3–h4**, links). Blocos: `image_block`, `image_gallery_block`, `video_block`. Links a `page`. |
+
+O `h1` continua no hero; quando `has_text_header` está ativo, o `h2` vem do `text_header`. O toggle desativado também ignora conteúdo residual no frontend. O stub vazio no **main** não foi preenchido (não promover).
+
+Inspect: `npx datocms schema:inspect text_section --environment=develop --include-validators`.
+
 Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --include-validators`.
 
 - Schema (CLI): `npx datocms migrations:run --source=develop --in-place` — **não** promove para `main`.

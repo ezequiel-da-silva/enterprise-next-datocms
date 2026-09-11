@@ -14,6 +14,7 @@ import type {
   StepsSectionBlockRecord,
   TabsSectionBlockRecord,
   TeamSectionBlockRecord,
+  TextSectionBlockRecord,
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
@@ -25,6 +26,7 @@ import { StatsSectionBlock } from "@/components/sections/stats-section-block";
 import { StepsSectionBlock } from "@/components/sections/steps-section-block";
 import { TabsSectionBlock } from "@/components/sections/tabs-section-block";
 import { TeamSectionBlock } from "@/components/sections/team-section-block";
+import { TextSectionBlock } from "@/components/sections/text-section-block";
 import {
   BlogPostsSectionBlock,
   BlogPostsSectionFallback,
@@ -226,6 +228,8 @@ export function StructuredTextBlockView({
       return <TabsSectionBlock record={record as TabsSectionBlockRecord} locale={locale} />;
     case "TeamSectionRecord":
       return <TeamSectionBlock record={record as TeamSectionBlockRecord} locale={locale} />;
+    case "TextSectionRecord":
+      return <TextSectionBlock record={record as TextSectionBlockRecord} locale={locale} contentLinkGroup />;
     case "BlogPostsSectionRecord":
       return (
         <Suspense
