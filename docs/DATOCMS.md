@@ -95,6 +95,28 @@ No código deste repo, as convenções em [AGENTS.md](../AGENTS.md) e `.cursor/s
 
 Só aí um token **CMA** (`can_access_cma`) faz sentido — secret à parte, **nunca** no lugar do CDA. Desenvolvimento local: OAuth.
 
+## Imagens (blocos especializados + `image_block`)
+
+No sandbox **develop**, slots de hero/card/banner usam blocos **próprios** (migrations `1789135631_specializedImageBlocksHeroCardBanner.ts` e `1789138255_cardBannerDualMobileDesktopAssets.ts`). O Dato não aceita um enum “16:9 **ou** 4:3”: usa-se intervalo `min_*`–`max_*` em `image_aspect_ratio`, mais hints no admin. Caption = `required_alt_title.title` (não há campo caption irmão). Extensões: `jpg, jpeg, png, webp, avif` (sem gif).
+
+| Bloco | Campos | Aspect ratio | Dimensões |
+|-------|--------|--------------|-----------|
+| `hero_image_block` | `asset_desktop` (16:9), `asset_mobile` (4:5–1:1) | desktop `eq` 16:9; mobile min 4:5, max 1:1 | D 1280–3840×720–2160; M 750–1080×750–1350 |
+| `card_image_block` | `asset_mobile` + `asset_desktop` | min 4:3, max 16:9 (ambos) | M 600–1080×338–810; D 960–1920×540–1440 |
+| `banner_image_block` | `asset_mobile` + `asset_desktop` | min 21:9, max 3:1 (ambos) | M 750–1440×250–617; D 1440–3840×480–1646 |
+| `image_block` | `asset` + `asset_desktop` | (validators largos do bloco genérico) | logos, avatar, 404, Structured Text |
+
+Allowlists no develop: `hero_section` (`image_hero`, `image_overlay`) → hero; `card` / `tab_item` / `step_card` / `post.cover_image` → card; `cta_banner.image_banner` → banner. Records antigos `ImageBlockRecord` **deixam de aparecer** nesses slots até o editor os substituir.
+
+O Next mapeia `asset_mobile` → `mobile` e `asset_desktop` → `desktop` em `DatoResponsivePicture` nos três blocos. `image_block` residual continua com `asset` (mobile) + `asset_desktop`.
+
+Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --include-validators`.
+
+- Schema (CLI): `npx datocms migrations:run --source=develop --in-place` — **não** promove para `main`.
+- Conteúdo no Next: `DATOCMS_ENVIRONMENT=develop` no `.env` (CDA). O token CDA tem de ter acesso ao sandbox `develop` (senão introspection/codegen devolve `INSUFFICIENT_PERMISSIONS`).
+- GraphQL: após o schema no ambiente alvo, `npm run codegen` (usa `DATOCMS_API_TOKEN` + `DATOCMS_ENVIRONMENT`). Não editar `src/infra/datocms/generated/**` à mão.
+- CI (`codegen:check`) aponta a `DATOCMS_ENVIRONMENT=main`. Enquanto estes blocos existirem só em `develop`, o check em `main` falha até promoveres o schema (ou apontares o CI ao sandbox).
+
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).

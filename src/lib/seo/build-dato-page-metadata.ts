@@ -5,19 +5,23 @@ import { appLocaleFromPath, openGraphAlternateLocales, openGraphLocale } from "@
 import type { Metadata } from "next";
 import { toNextMetadata, type TitleMetaLinkTag } from "react-datocms/seo";
 import type { SeoSettingsSocial } from "@/infra/datocms/types-page";
+import {
+  resolveSpecializedImage,
+  type SpecializedImageBlockLike,
+} from "@/lib/datocms/resolve-specialized-image";
 
 /** Hero / cover quando o campo SEO de imagem está vazio. */
 export function cmsContentOgImage(input: {
   hero?: {
-    imageHero?: { asset?: { url?: string | null } | null } | null;
-    imageOverlay?: { asset?: { url?: string | null } | null } | null;
+    imageHero?: SpecializedImageBlockLike;
+    imageOverlay?: SpecializedImageBlockLike;
   } | null;
-  cover?: { asset?: { url?: string | null } | null } | null;
+  cover?: SpecializedImageBlockLike;
 }): string | undefined {
   return (
-    input.hero?.imageHero?.asset?.url?.trim() ||
-    input.hero?.imageOverlay?.asset?.url?.trim() ||
-    input.cover?.asset?.url?.trim() ||
+    resolveSpecializedImage(input.hero?.imageHero).mobile?.url?.trim() ||
+    resolveSpecializedImage(input.hero?.imageOverlay).mobile?.url?.trim() ||
+    resolveSpecializedImage(input.cover).mobile?.url?.trim() ||
     undefined
   );
 }

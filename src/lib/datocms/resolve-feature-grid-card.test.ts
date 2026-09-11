@@ -53,9 +53,9 @@ describe("resolve-feature-grid-card", () => {
       descriptionCard: "Descrição",
       hasImage: true,
       imageCard: {
-        __typename: "ImageBlockRecord",
+        __typename: "CardImageBlockRecord",
         id: "img-1",
-        asset: { url: "https://www.datocms-assets.com/a.jpg", alt: "foto", width: 800, height: 600 },
+        assetMobile: { url: "https://www.datocms-assets.com/a.jpg", alt: "foto", width: 800, height: 600 },
         assetDesktop: { url: "https://www.datocms-assets.com/b.jpg", alt: "foto", width: 1200, height: 900 },
       },
       hasLink: true,
@@ -67,7 +67,7 @@ describe("resolve-feature-grid-card", () => {
         externalLink: "https://example.com",
         openInNewTab: true,
       },
-    } as CardRecord;
+    } as unknown as CardRecord;
 
     const shown = readFeatureGridCardContent(filled, "pt");
     expect(shown.title).toBe("Título");

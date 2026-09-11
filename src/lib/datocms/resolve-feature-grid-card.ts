@@ -9,6 +9,7 @@ import type { CardRecord, FileFieldLike, LinkBlockRecord } from "@/infra/datocms
 import { readCdaBool, readCdaObject, readCdaString } from "@/lib/datocms/cda-field";
 import type { DatoFontAwesomeIconJson } from "@/lib/datocms/fa-icon-types";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 
 /** Whether the card icon should render (respects CMS `has_icon` toggle). */
 export function resolveCardShowIcon(record: Record<string, unknown>): boolean {
@@ -87,8 +88,9 @@ export function readFeatureGridCardContent(
   const validLink =
     resolveCardShowLink(fields) && link && linkLabel && resolveLinkBlock(link, locale) ? link : null;
   const imageBlock = readImageBlock(card);
+  const resolvedImage = resolveSpecializedImage(imageBlock);
   const image =
-    resolveCardShowImage(fields) && imageBlock?.asset?.url ? imageBlock.asset : null;
+    resolveCardShowImage(fields) && resolvedImage.mobile ? resolvedImage.mobile : null;
   const description = resolveCardShowDescription(fields)
     ? readCdaString(card, "descriptionCard", "description_card")
     : "";
@@ -101,6 +103,6 @@ export function readFeatureGridCardContent(
     link: validLink,
     linkLabel: validLink ? linkLabel : "",
     image,
-    desktopImage: image ? imageBlock?.assetDesktop ?? null : null,
+    desktopImage: image ? resolvedImage.desktop : null,
   };
 }

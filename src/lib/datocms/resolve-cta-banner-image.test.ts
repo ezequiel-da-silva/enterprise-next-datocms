@@ -25,7 +25,20 @@ describe("resolveCtaBannerImage", () => {
     ).toEqual({ enabled: false, block: null, hasValidAsset: false });
   });
 
-  it("enables image on split when hasImage is true and asset is valid", () => {
+  it("enables image on split when hasImage is true and assetMobile is valid", () => {
+    const dual = {
+      __typename: "BannerImageBlockRecord",
+      assetMobile: { url: "https://example.com/m.jpg", alt: "m", width: 900, height: 300 },
+      assetDesktop: { url: "https://example.com/d.jpg", alt: "d", width: 1920, height: 640 },
+    };
+    expect(resolveCtaBannerImage({ hasImage: true, imageBanner: [dual] }, "split")).toEqual({
+      enabled: true,
+      block: dual,
+      hasValidAsset: true,
+    });
+  });
+
+  it("enables image on split when legacy asset url is valid", () => {
     expect(
       resolveCtaBannerImage(
         { hasImage: true, imageBanner: [validImageBlock] },

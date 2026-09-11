@@ -166,21 +166,63 @@ export const HOME_HIGHLIGHT = /* GraphQL */ `
   }
 `;
 
+const FILE_ASSET_FIELDS = `
+    url
+    alt
+    width
+    height
+    blurUpThumb
+`;
+
 const IMAGE_BLOCK_RESPONSIVE = `
   id
   asset {
-    url
-    alt
-    width
-    height
-    blurUpThumb
+    ${FILE_ASSET_FIELDS}
   }
   assetDesktop {
-    url
-    alt
-    width
-    height
-    blurUpThumb
+    ${FILE_ASSET_FIELDS}
+  }
+`;
+
+/** Hero Image (`hero_image_block`): mobile 4:5/1:1 + desktop 16:9. */
+const HERO_IMAGE_BLOCK_FIELDS = `
+  __typename
+  ... on HeroImageBlockRecord {
+    id
+    assetMobile {
+      ${FILE_ASSET_FIELDS}
+    }
+    assetDesktop {
+      ${FILE_ASSET_FIELDS}
+    }
+  }
+`;
+
+/** Card Image (`card_image_block`): mobile + desktop, 4:3–16:9. */
+const CARD_IMAGE_BLOCK_FIELDS = `
+  __typename
+  ... on CardImageBlockRecord {
+    id
+    assetMobile {
+      ${FILE_ASSET_FIELDS}
+    }
+    assetDesktop {
+      ${FILE_ASSET_FIELDS}
+    }
+  }
+`;
+
+/** Banner Image (`banner_image_block`): mobile + desktop, 21:9–3:1. */
+const BANNER_IMAGE_BLOCK_FIELDS = `
+  __typename
+  ... on BannerImageBlockRecord {
+    id
+    assetMobile {
+      ${FILE_ASSET_FIELDS}
+    }
+    assetDesktop {
+      ${FILE_ASSET_FIELDS}
+    }
   }
 `;
 
@@ -319,7 +361,7 @@ const CTA_BANNER_BLOCK = `
       ${LINK_HERO_CTA_FIELDS}
     }
     imageBanner {
-      ${IMAGE_BLOCK_RESPONSIVE}
+      ${BANNER_IMAGE_BLOCK_FIELDS}
     }
   }
 `;
@@ -386,10 +428,7 @@ const TABS_SECTION_BLOCK = `
           }
         }
         mediaImage {
-          __typename
-          ... on ImageBlockRecord {
-            ${IMAGE_BLOCK_RESPONSIVE}
-          }
+          ${CARD_IMAGE_BLOCK_FIELDS}
         }
       }
     }
@@ -419,10 +458,7 @@ const FEATURE_GRID_BLOCK = `
         descriptionCard
         hasImage
         imageCard {
-          __typename
-          ... on ImageBlockRecord {
-            ${IMAGE_BLOCK_RESPONSIVE}
-          }
+          ${CARD_IMAGE_BLOCK_FIELDS}
         }
         hasLink
         linkCard {
@@ -449,10 +485,7 @@ const STEPS_SECTION_BLOCK = `
         description
         hasImage
         mediaImage {
-          __typename
-          ... on ImageBlockRecord {
-            ${IMAGE_BLOCK_RESPONSIVE}
-          }
+          ${CARD_IMAGE_BLOCK_FIELDS}
         }
       }
     }
@@ -515,7 +548,7 @@ const POST_CARD_FIELDS = `
     }
   }
   coverImage {
-    ${IMAGE_BLOCK_RESPONSIVE}
+    ${CARD_IMAGE_BLOCK_FIELDS}
   }
 `;
 
@@ -666,11 +699,11 @@ const HERO_PAGE_FIELDS = `
           }
           showImageHero
           imageHero {
-            ${IMAGE_BLOCK_RESPONSIVE}
+            ${HERO_IMAGE_BLOCK_FIELDS}
           }
           showImageOverlay
           imageOverlay {
-            ${IMAGE_BLOCK_RESPONSIVE}
+            ${HERO_IMAGE_BLOCK_FIELDS}
           }
         }
       }
@@ -802,7 +835,7 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
         inlineBlocks
       }
       coverImage {
-        ${IMAGE_BLOCK_RESPONSIVE}
+        ${CARD_IMAGE_BLOCK_FIELDS}
       }
       postAuthor {
         id

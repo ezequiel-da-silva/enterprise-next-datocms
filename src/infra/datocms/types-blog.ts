@@ -4,7 +4,9 @@ import type { FileFieldLike, PageStructuredTextBlock, SeoSettingsSocial } from "
 
 export type ImageBlockResponsive = {
   id: string;
+  __typename?: string | null;
   asset?: FileFieldLike;
+  assetMobile?: FileFieldLike;
   assetDesktop?: FileFieldLike;
 };
 

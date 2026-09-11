@@ -3,7 +3,7 @@ import { Button } from "@/components/atoms/button";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { SmartLink } from "@/components/patterns/smart-link";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
-import type { FileFieldLike, HeroSectionRecord, LinkBlockRecord } from "@/infra/datocms/types-page";
+import type { HeroSectionRecord, LinkBlockRecord } from "@/infra/datocms/types-page";
 import {
   readCdaArray,
   readCdaBool,
@@ -13,24 +13,11 @@ import {
 } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 import { cn } from "@/lib/cn";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 
 type HeroLayout = "text" | "image_side" | "image_overlay";
-
-function imageBlockMobileAsset(
-  block: { asset?: FileFieldLike | null; image?: FileFieldLike | null } | null | undefined,
-): FileFieldLike | null {
-  if (!block) return null;
-  return block.asset?.url ? block.asset : block.image?.url ? block.image : null;
-}
-
-function imageBlockDesktopAsset(
-  block: { assetDesktop?: FileFieldLike | null; asset?: FileFieldLike | null } | null | undefined,
-): FileFieldLike | null | undefined {
-  if (!block) return undefined;
-  return block.assetDesktop?.url ? block.assetDesktop : undefined;
-}
 
 function readLayout(record: HeroSectionRecord): HeroLayout {
   const raw = readCdaStringForLogic(record, "layoutHero", "layout_hero").toLowerCase();
@@ -150,9 +137,9 @@ export function HeroSectionBlock({
   const title = readCdaString(record, "titleHero", "title_hero");
   const showHeroImg = readCdaBool(record, "showImageHero", "show_image_hero");
   const showOverlayImg = readCdaBool(record, "showImageOverlay", "show_image_overlay");
-  const heroImg = imageHero(record);
-  const overlayImg = imageOverlay(record);
-  const heroMobile = showHeroImg ? imageBlockMobileAsset(heroImg) : null;
+  const heroImg = resolveSpecializedImage(imageHero(record));
+  const overlayImg = resolveSpecializedImage(imageOverlay(record));
+  const heroMobile = showHeroImg ? heroImg.mobile : null;
 
   const textColumn = (
     <div className="min-w-0 flex-1">
@@ -174,7 +161,7 @@ export function HeroSectionBlock({
           <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
             <DatoResponsivePicture
               mobile={heroMobile}
-              desktop={imageBlockDesktopAsset(heroImg)}
+              desktop={heroImg.desktop}
               className="h-full w-full object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 496px"
               fallbackAlt={title || undefined}
@@ -189,7 +176,7 @@ export function HeroSectionBlock({
   }
 
   if (layout === "image_overlay") {
-    const overlayMobile = showOverlayImg ? imageBlockMobileAsset(overlayImg) : null;
+    const overlayMobile = showOverlayImg ? overlayImg.mobile : null;
     const hasOverlayBg = Boolean(overlayMobile?.url);
     const showHeroColumn = Boolean(showHeroImg && heroMobile);
 
@@ -206,7 +193,7 @@ export function HeroSectionBlock({
           <div className="absolute inset-0">
             <DatoResponsivePicture
               mobile={overlayMobile!}
-              desktop={imageBlockDesktopAsset(overlayImg)}
+              desktop={overlayImg.desktop}
               className="h-full w-full object-cover"
               sizes="(max-width: 1024px) 100vw, 992px"
               fallbackAlt={title || undefined}
@@ -257,7 +244,7 @@ export function HeroSectionBlock({
             <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
               <DatoResponsivePicture
                 mobile={heroMobile!}
-                desktop={imageBlockDesktopAsset(heroImg)}
+                desktop={heroImg.desktop}
                 className="h-full w-full object-cover"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 496px"
                 fallbackAlt={title || undefined}

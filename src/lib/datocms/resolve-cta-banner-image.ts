@@ -1,12 +1,11 @@
 import type { CtaBannerVariant } from "@/lib/datocms/resolve-cta-banner-options";
 import { readCdaArray, readCdaBool } from "@/lib/datocms/cda-field";
+import {
+  resolveSpecializedImage,
+  type SpecializedImageBlockLike,
+} from "@/lib/datocms/resolve-specialized-image";
 
-type ImageAssetLike = { url?: string | null } | null | undefined;
-
-export type CtaBannerImageBlockLike = {
-  asset?: ImageAssetLike;
-  assetDesktop?: ImageAssetLike;
-};
+export type CtaBannerImageBlockLike = NonNullable<SpecializedImageBlockLike>;
 
 export type ResolvedCtaBannerImage = {
   /** Variante permite imagem e `hasImage` está activo no CMS. */
@@ -28,7 +27,7 @@ function readImageBlocks(record: Record<string, unknown>): CtaBannerImageBlockLi
 }
 
 function firstBlockWithAsset(blocks: CtaBannerImageBlockLike[]): CtaBannerImageBlockLike | null {
-  return blocks.find((block) => Boolean(block?.asset?.url?.trim())) ?? null;
+  return blocks.find((block) => Boolean(resolveSpecializedImage(block).mobile?.url?.trim())) ?? null;
 }
 
 /** Resolve se o CTA Banner deve renderizar imagem (toggle CMS + variant + asset válido). */
@@ -46,7 +45,7 @@ export function resolveCtaBannerImage(
   }
 
   const block = firstBlockWithAsset(readImageBlocks(record));
-  const hasValidAsset = Boolean(block?.asset?.url?.trim());
+  const hasValidAsset = Boolean(resolveSpecializedImage(block).mobile?.url?.trim());
 
   return {
     enabled: true,
