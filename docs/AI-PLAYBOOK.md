@@ -6,7 +6,7 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 
 1. Read **AGENTS.md** (stack, commands, anti-patterns).
 2. Pick the **rule** for your file scope (see table below).
-3. For multi-step tasks, open the matching **skill** in `.cursor/skills/`.
+3. For multi-step tasks, open the matching **skill** in `.cursor/skills/` (repo conventions) or `.agents/skills/` (official DatoCMS CLI/CMA).
 4. Before finishing, run commands from [QUALITY-GATES.md](./QUALITY-GATES.md).
 5. Self-review against the PR checklist in QUALITY-GATES.
 
@@ -18,6 +18,7 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 | Page metadata / JSON-LD | `web-excellence.mdc` | `seo-aeo-feature` |
 | CSP, draft, API, forms | `security.mdc` | — |
 | Dato webhook / cache tags | `datocms-next.mdc` + [DATOCMS.md](./DATOCMS.md) | — |
+| Schema / migrations / CLI | [DATOCMS.md](./DATOCMS.md) (CLI passo a passo) | `.agents/skills/datocms-cli` |
 | RSC, error boundaries, client boundaries | `react-rsc.mdc` | — |
 | Layer / import boundaries | `architecture.mdc` | — |
 | Unit tests for resolvers | `testing.mdc` | — |
@@ -43,6 +44,8 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 | `add-datocms-block` | Adding or extending a Structured Text block |
 | `pre-merge-quality` | Before commit/PR — run gates |
 | `seo-aeo-feature` | Metadata, sitemap, JSON-LD, FAQ schema |
+
+Official DatoCMS CLI/CMA skills: [`.agents/skills/`](../.agents/skills/). Bootstrap: [DATOCMS.md](./DATOCMS.md).
 
 ## Do not edit
 

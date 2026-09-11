@@ -38,7 +38,9 @@ Full diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 | Full local gate | `npm run check-all` |
 | E2E smoke (needs build + Chromium) | `npm run build && npm run test:e2e` |
 
-Copy [`.env.example`](.env.example) to `.env` for CMS and codegen.
+Copy [`.env.example`](.env.example) to `.env` for CMS and codegen (CDA tokens).
+
+CLI / schema / Agent Skills: `npx datocms login` then `whoami`. Project is linked via [`datocms.config.json`](datocms.config.json) (`siteId` `201057`). Do not put a CMA token in `DATOCMS_API_TOKEN`. Official Dato skills live in [`.agents/skills/`](.agents/skills/). Playbook: [docs/DATOCMS.md](docs/DATOCMS.md).
 
 ## Cursor rules (`.cursor/rules/`)
 
@@ -56,6 +58,8 @@ Copy [`.env.example`](.env.example) to `.env` for CMS and codegen.
 - `add-datocms-block` — new Structured Text block workflow
 - `pre-merge-quality` — run quality gates before PR
 - `seo-aeo-feature` — metadata + JSON-LD
+
+Official DatoCMS skills: [`.agents/skills/`](.agents/skills/) (`datocms-cli`, `datocms-cma`, …).
 
 Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) · GitHub: [docs/GITHUB.md](docs/GITHUB.md)
 
