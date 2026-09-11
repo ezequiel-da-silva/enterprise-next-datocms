@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.14.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.3...next-dato-v0.14.0) (2026-09-11)
+
+
+### Features
+
+* **datocms:** introduce Text section with structured text support; add migrations for text header and body fields; update GraphQL queries and types to integrate new TextSectionRecord; enhance DATOCMS.md documentation for clarity on new section functionality ([d7445ff](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d7445fffa5430b63648c090261de634e09777a7f))
+
+
+### CI
+
+* **next:** fail lighthouse smoke on noindex pages ([2b2b5ea](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/2b2b5ea15566bc76e2775fde6e19be5941ea6a96))
+
 ## [0.13.3](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.2...next-dato-v0.13.3) (2026-09-11)
 
 
