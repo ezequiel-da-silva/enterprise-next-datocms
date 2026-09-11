@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.13.3](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.2...next-dato-v0.13.3) (2026-09-11)
+
+
+### Bug Fixes
+
+* **next.config:** adjust output configuration for standalone builds based on Vercel environment; add comment for clarity on Next.js behavior in production ([3664ce9](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/3664ce9626eeb94debcb0c03e19dce6e29f43849))
+
+
+### Chores
+
+* **datocms:** update .env.example with detailed DatoCMS configuration instructions; add datocms.config.json for CLI integration; enhance documentation in AGENTS.md, README.md, and DATOCMS.md for clarity on CDA and CMA token usage ([58d89c8](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/58d89c820f7c84d6fb3c8b24daf7c478b27d75fc))
+* **dependencies:** update Next.js to version 16.3.4 and sharp to version 0.35.4 in package.json and package-lock.json; update eslint-config-next to version 16.3.4 for improved linting support ([e99dfc6](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e99dfc6d33a2058251d78ac0bb50c562fd443e46))
+
 ## [0.13.2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.1...next-dato-v0.13.2) (2026-09-07)
 
 
