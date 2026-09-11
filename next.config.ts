@@ -2,8 +2,13 @@ import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === "production";
 
+/**
+ * Vercel injects an adapter; Next 16.3 + standalone then fails looking for
+ * next-server.js.nft.json. Keep standalone for local/CI Docker-style runs.
+ * @see https://github.com/vercel/next.js/issues/96646
+ */
 const nextConfig: NextConfig = {
-  output: "standalone",
+  output: process.env.VERCEL ? undefined : "standalone",
   poweredByHeader: false,
   experimental: {
     optimizePackageImports: [

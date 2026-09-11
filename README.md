@@ -16,7 +16,9 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Copy [`.env.example`](.env.example) to `.env` and configure DatoCMS tokens before fetching CMS content.
+Copy [`.env.example`](.env.example) to `.env` and configure DatoCMS **CDA** tokens before fetching CMS content. That is what Next.js, Vercel, and `npm run codegen` use.
+
+The DatoCMS **CLI** (schema, migrations, Agent Skills) is separate: OAuth on your machine plus committed [`datocms.config.json`](datocms.config.json). It does **not** add Vercel env vars. Setup: [docs/DATOCMS.md](docs/DATOCMS.md) (CLI passo a passo).
 
 ### DatoCMS cache revalidation
 
@@ -40,7 +42,7 @@ Never commit the generated value. Full webhook and cache-tag mapping: [docs/DATO
 
 Start with [AGENTS.md](AGENTS.md), then [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) and [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md).
 
-Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Cursor rules: `.cursor/rules/`. Skills: `.cursor/skills/`.
+Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Cursor rules: `.cursor/rules/`. Skills: `.cursor/skills/` (this repo) and `.agents/skills/` (official DatoCMS).
 
 Quality gate: `npm run check-all` (typecheck, test, lint, build). GraphQL drift: `npm run codegen:check`.
 
