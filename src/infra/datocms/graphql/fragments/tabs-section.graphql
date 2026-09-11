@@ -5,6 +5,7 @@
 # Depois: `#import` + `... on TabsSectionRecord` em `page-by-slug.graphql`,
 # `${TABS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
 #import "./text-header.graphql"
+#import "./specialized-image-blocks.graphql"
 
 fragment TabsSectionBlockFragment on TabsSectionRecord {
   id
@@ -49,24 +50,7 @@ fragment TabsSectionBlockFragment on TabsSectionRecord {
         }
       }
       mediaImage {
-        __typename
-        ... on ImageBlockRecord {
-          id
-          asset {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-          assetDesktop {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-        }
+        ...CardImageBlockFields
       }
     }
   }

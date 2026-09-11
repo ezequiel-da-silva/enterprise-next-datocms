@@ -2,6 +2,7 @@ schema:
   - https://graphql.datocms.com/:
       headers:
         Authorization: Bearer ${DATOCMS_API_TOKEN}
+        X-Environment: ${DATOCMS_ENVIRONMENT}
 documents:
   - "src/infra/datocms/graphql/**/*.graphql"
 generates:

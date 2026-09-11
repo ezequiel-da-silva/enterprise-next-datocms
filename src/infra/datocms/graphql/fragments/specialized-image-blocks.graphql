@@ -1,0 +1,43 @@
+# Blocos de imagem especializados (sandbox `develop`).
+# Runtime: `HERO_IMAGE_BLOCK_FIELDS` / `CARD_IMAGE_BLOCK_FIELDS` / `BANNER_IMAGE_BLOCK_FIELDS` em `queries.ts`.
+
+fragment FileAssetFields on FileField {
+  url
+  alt
+  width
+  height
+  blurUpThumb
+}
+
+fragment HeroImageBlockFields on HeroImageBlockRecord {
+  __typename
+  id
+  assetMobile {
+    ...FileAssetFields
+  }
+  assetDesktop {
+    ...FileAssetFields
+  }
+}
+
+fragment CardImageBlockFields on CardImageBlockRecord {
+  __typename
+  id
+  assetMobile {
+    ...FileAssetFields
+  }
+  assetDesktop {
+    ...FileAssetFields
+  }
+}
+
+fragment BannerImageBlockFields on BannerImageBlockRecord {
+  __typename
+  id
+  assetMobile {
+    ...FileAssetFields
+  }
+  assetDesktop {
+    ...FileAssetFields
+  }
+}

@@ -11,6 +11,7 @@ import type { FileFieldLike, TabItemBlockRecord, TabsSectionBlockRecord } from "
 import { readCdaArray, readCdaBlock, readCdaBool, readCdaString, readCdaToggledString } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 
 type TabsSectionBlockProps = {
@@ -24,6 +25,7 @@ const MAX_TABS = 8;
 type ImageBlockLike = {
   __typename?: string;
   asset?: FileFieldLike;
+  assetMobile?: FileFieldLike;
   assetDesktop?: FileFieldLike;
 };
 
@@ -36,9 +38,9 @@ const FALLBACK_SECTION_LABEL: Record<AppLocale, string> = {
 function readTabImage(card: TabItemBlockRecord): TabsSectionImage | null {
   if (!readCdaBool(card as Record<string, unknown>, "hasImage", "has_image")) return null;
   const block = readCdaBlock<ImageBlockLike>(card as Record<string, unknown>, "mediaImage", "media_image");
-  const asset = block?.asset;
-  if (!asset?.url?.trim()) return null;
-  return { asset, assetDesktop: block?.assetDesktop };
+  const resolved = resolveSpecializedImage(block);
+  if (!resolved.mobile?.url?.trim()) return null;
+  return { asset: resolved.mobile, assetDesktop: resolved.desktop };
 }
 
 function readTabCta(card: TabItemBlockRecord, locale: AppLocale): SmartLinkBlockRecord | null {

@@ -9,6 +9,7 @@ import {
 import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { schemaLanguage } from "@/lib/seo/locale-tags";
 import { getOrganizationId, getSiteBaseUrl } from "@/lib/seo/site-config";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 
 export function buildBlogPostJsonLdGraph(
   locale: AppLocale,
@@ -20,7 +21,7 @@ export function buildBlogPostJsonLdGraph(
   const url = `${base}${path}`;
   const blogIndexPath = `/${locale}/blog`;
 
-  const imageUrl = post.coverImage?.asset?.url ?? post.coverImage?.assetDesktop?.url ?? undefined;
+  const imageUrl = resolveSpecializedImage(post.coverImage).mobile?.url ?? undefined;
   const seoDescription = post.seoSettingsSocial?.description?.trim() || "";
   const excerpt = excerptPlainText(readPostExcerpt(post as Record<string, unknown>));
   const description = seoDescription || excerpt || undefined;

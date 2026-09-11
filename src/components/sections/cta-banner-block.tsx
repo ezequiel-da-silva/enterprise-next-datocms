@@ -3,10 +3,11 @@ import { Container } from "@/components/atoms/container";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { SmartLink } from "@/components/patterns/smart-link";
 import type { AppLocale } from "@/constants/i18n";
-import type { CtaBannerBlockRecord, FileFieldLike } from "@/infra/datocms/types-page";
+import type { CtaBannerBlockRecord } from "@/infra/datocms/types-page";
 import { readCdaArray, readCdaBool, readCdaString } from "@/lib/datocms/cda-field";
 import { resolveLinkBlock } from "@/lib/datocms/link-block";
 import { resolveCtaBannerImage } from "@/lib/datocms/resolve-cta-banner-image";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 import {
   resolveCtaBannerOptions,
   type CtaBannerBgTheme,
@@ -43,11 +44,6 @@ function readButtons(record: CtaBannerBlockRecord, locale: AppLocale): CtaLinkRe
       return label.length > 0 && resolveLinkBlock(link, locale) != null;
     })
     .slice(0, 2);
-}
-
-function imageMobileAsset(block: CtaImageBlock | null): FileFieldLike | null {
-  if (!block?.asset?.url) return null;
-  return block.asset;
 }
 
 function bgThemeClasses(theme: CtaBannerBgTheme): string {
@@ -148,14 +144,14 @@ function CtaBannerButtons({
 }
 
 function CtaBannerImage({ block, fallbackAlt }: { block: CtaImageBlock; fallbackAlt?: string }) {
-  const mobile = imageMobileAsset(block);
+  const { mobile, desktop } = resolveSpecializedImage(block);
   if (!mobile?.url) return null;
 
   return (
-    <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border/50 bg-background/50 shadow-sm [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
+    <figure className="aspect-[21/9] overflow-hidden rounded-2xl border border-border/50 bg-background/50 shadow-sm [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
       <DatoResponsivePicture
         mobile={mobile}
-        desktop={block.assetDesktop}
+        desktop={desktop}
         className="h-full w-full object-cover"
         sizes="(max-width: 1024px) 100vw, 496px"
         fallbackAlt={fallbackAlt || "Banner image"}
@@ -244,7 +240,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
 
   const image = resolveCtaBannerImage(record as Record<string, unknown>, options.variant);
   const imageBlock = image.block as CtaImageBlock | null;
-  const mobileAsset = imageMobileAsset(imageBlock);
+  const { mobile: mobileAsset, desktop: desktopAsset } = resolveSpecializedImage(imageBlock);
   const headingId = `cta-banner-${record.id}`;
   const landmark = sectionLandmarkProps(header, headingId, CTA_SECTION_LABEL[locale]);
 
@@ -271,7 +267,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
               <>
                 <DatoResponsivePicture
                   mobile={mobileAsset}
-                  desktop={imageBlock.assetDesktop}
+                  desktop={desktopAsset}
                   className="absolute inset-0 h-full w-full object-cover"
                   sizes="(max-width: 1024px) 100vw, 992px"
                   decorative

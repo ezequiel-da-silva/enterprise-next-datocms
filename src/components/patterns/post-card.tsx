@@ -3,6 +3,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
 import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
 import type { PostCardRecord } from "@/infra/datocms/types-blog";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 import Link from "next/link";
 
 type PostCardProps = {
@@ -20,9 +21,9 @@ export function PostCard({
   sizes = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px",
 }: PostCardProps) {
   const href = `/${locale}/blog/${post.postSlug}`;
-  const cover = post.coverImage;
-  const mobile = cover?.asset;
-  const desktop = cover?.assetDesktop;
+  const cover = resolveSpecializedImage(post.coverImage);
+  const mobile = cover.mobile;
+  const desktop = cover.desktop;
   const primaryCategory = post.postCategory[0];
   const dateLabel = formatPublishedAt(locale, post._firstPublishedAt);
   const colorHex = primaryCategory?.categoryColor?.hex;

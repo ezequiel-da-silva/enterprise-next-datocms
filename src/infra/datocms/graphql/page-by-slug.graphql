@@ -1,3 +1,4 @@
+#import "./fragments/specialized-image-blocks.graphql"
 #import "./fragments/cta-banner.graphql"
 #import "./fragments/logo-grid.graphql"
 #import "./fragments/reviews-section.graphql"
@@ -55,39 +56,11 @@ query PageBySlug($slug: String!, $locale: SiteLocale!) {
         }
         showImageHero
         imageHero {
-          id
-          asset {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-          assetDesktop {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
+          ...HeroImageBlockFields
         }
         showImageOverlay
         imageOverlay {
-          id
-          asset {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-          assetDesktop {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
+          ...HeroImageBlockFields
         }
       }
     }

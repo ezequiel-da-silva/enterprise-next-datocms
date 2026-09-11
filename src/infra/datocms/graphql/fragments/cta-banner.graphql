@@ -1,5 +1,6 @@
 # Fragmento do bloco CTA Banner — incluir em `page-by-slug.graphql` (blocks union).
 #import "./text-header.graphql"
+#import "./specialized-image-blocks.graphql"
 
 fragment CtaBannerBlockFields on CtaBannerRecord {
   id
@@ -38,20 +39,6 @@ fragment CtaBannerBlockFields on CtaBannerRecord {
     }
   }
   imageBanner {
-    id
-    asset {
-      url
-      alt
-      width
-      height
-      blurUpThumb
-    }
-    assetDesktop {
-      url
-      alt
-      width
-      height
-      blurUpThumb
-    }
+    ...BannerImageBlockFields
   }
 }

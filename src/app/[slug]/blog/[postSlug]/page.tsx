@@ -20,6 +20,7 @@ import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
 import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -90,8 +91,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       } satisfies CdaStructuredTextValue)
     : null;
 
-  const coverMobile = post.coverImage?.asset;
-  const coverDesktop = post.coverImage?.assetDesktop;
+  const cover = resolveSpecializedImage(post.coverImage);
+  const coverMobile = cover.mobile;
+  const coverDesktop = cover.desktop;
   const dateLabel = formatPublishedAt(locale, post._firstPublishedAt);
   const excerpt = readPostExcerpt(post as Record<string, unknown>);
   const excerptLead = excerptPlainText(excerpt);

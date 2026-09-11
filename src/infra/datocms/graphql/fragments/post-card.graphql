@@ -1,5 +1,7 @@
 # Campos de cartão do modelo Post (`post`).
 # Runtime: `POST_CARD_FIELDS` em `queries.ts`.
+#import "./specialized-image-blocks.graphql"
+
 fragment PostCardFields on PostRecord {
   id
   _firstPublishedAt
@@ -19,20 +21,6 @@ fragment PostCardFields on PostRecord {
     }
   }
   coverImage {
-    id
-    asset {
-      url
-      alt
-      width
-      height
-      blurUpThumb
-    }
-    assetDesktop {
-      url
-      alt
-      width
-      height
-      blurUpThumb
-    }
+    ...CardImageBlockFields
   }
 }

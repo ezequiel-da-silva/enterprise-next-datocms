@@ -5,6 +5,7 @@
 # Depois: `#import` + `... on StepsSectionRecord` em `page-by-slug.graphql`,
 # `${STEPS_SECTION_BLOCK}` em `queries.ts`, e `npm run codegen`.
 #import "./text-header.graphql"
+#import "./specialized-image-blocks.graphql"
 
 fragment StepsSectionBlockFragment on StepsSectionRecord {
   id
@@ -20,24 +21,7 @@ fragment StepsSectionBlockFragment on StepsSectionRecord {
       description
       hasImage
       mediaImage {
-        __typename
-        ... on ImageBlockRecord {
-          id
-          asset {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-          assetDesktop {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-        }
+        ...CardImageBlockFields
       }
     }
   }

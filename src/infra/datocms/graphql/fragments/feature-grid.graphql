@@ -5,6 +5,7 @@
 # Variantes: `cards` e `full_bleed`.
 #import "./carousel-setting.graphql"
 #import "./text-header.graphql"
+#import "./specialized-image-blocks.graphql"
 
 fragment FeatureGridBlockFragment on FeatureGridRecord {
   id
@@ -27,24 +28,7 @@ fragment FeatureGridBlockFragment on FeatureGridRecord {
       descriptionCard
       hasImage
       imageCard {
-        __typename
-        ... on ImageBlockRecord {
-          id
-          asset {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-          assetDesktop {
-            url
-            alt
-            width
-            height
-            blurUpThumb
-          }
-        }
+        ...CardImageBlockFields
       }
       hasLink
       linkCard {

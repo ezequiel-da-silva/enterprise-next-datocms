@@ -7,6 +7,7 @@ import { readCdaArray, readCdaBlock, readCdaBool, readCdaString, readCdaToggledS
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { cn } from "@/lib/cn";
 import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
+import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
 
 type StepsSectionBlockProps = {
   record: StepsSectionBlockRecord;
@@ -19,14 +20,20 @@ const MAX_STEPS = 8;
 type ImageBlockLike = {
   __typename?: string;
   asset?: FileFieldLike;
+  assetMobile?: FileFieldLike;
   assetDesktop?: FileFieldLike;
+};
+
+type ParsedStepImage = {
+  mobile: NonNullable<FileFieldLike>;
+  desktop: FileFieldLike;
 };
 
 type ParsedStep = {
   id: string;
   title: string;
   description: string;
-  image: ImageBlockLike | null;
+  image: ParsedStepImage | null;
 };
 
 const FALLBACK_SECTION_LABEL: Record<AppLocale, string> = {
@@ -35,11 +42,12 @@ const FALLBACK_SECTION_LABEL: Record<AppLocale, string> = {
   es: "Pasos",
 };
 
-function readStepImage(card: StepCardBlockRecord): ImageBlockLike | null {
+function readStepImage(card: StepCardBlockRecord): ParsedStepImage | null {
   if (!readCdaBool(card as Record<string, unknown>, "hasImage", "has_image")) return null;
   const block = readCdaBlock<ImageBlockLike>(card as Record<string, unknown>, "mediaImage", "media_image");
-  if (!block?.asset?.url?.trim()) return null;
-  return block;
+  const resolved = resolveSpecializedImage(block);
+  if (!resolved.mobile?.url?.trim()) return null;
+  return { mobile: resolved.mobile, desktop: resolved.desktop };
 }
 
 function readSteps(record: StepsSectionBlockRecord): ParsedStep[] {
@@ -130,11 +138,11 @@ function StepCard({ step, index, total }: { step: ParsedStep; index: number; tot
         {step.description ? (
           <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{step.description}</p>
         ) : null}
-        {step.image?.asset ? (
+        {step.image ? (
           <figure className="mt-4 overflow-hidden rounded-xl border border-border bg-muted/30">
             <DatoResponsivePicture
-              mobile={step.image.asset}
-              desktop={step.image.assetDesktop}
+              mobile={step.image.mobile}
+              desktop={step.image.desktop}
               fallbackAlt={step.title}
               decoding="async"
               className="h-auto w-full object-cover"
