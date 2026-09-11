@@ -3207,7 +3207,7 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
-export type PageModelContentPageField = BlogPostsSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord;
+export type PageModelContentPageField = BlogPostsSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
 
 export type PageModelContentPageFieldListListNonNullMultiLocaleField = {
   __typename?: 'PageModelContentPageFieldListListNonNullMultiLocaleField';
@@ -4571,7 +4571,17 @@ export type TextHeaderRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
-/** Block of type 🆕 Text section (text_section) */
+export type TextSectionModelBodyBlocksField = ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord;
+
+export type TextSectionModelBodyField = {
+  __typename?: 'TextSectionModelBodyField';
+  blocks: Array<TextSectionModelBodyBlocksField>;
+  inlineBlocks: Array<Scalars['String']['output']>;
+  links: Array<PageRecord>;
+  value: Scalars['JsonField']['output'];
+};
+
+/** Block of type 🅾️ Text section (text_section) */
 export type TextSectionRecord = RecordInterface & {
   __typename?: 'TextSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
@@ -4587,11 +4597,14 @@ export type TextSectionRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  body?: Maybe<TextSectionModelBodyField>;
+  hasTextHeader: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
+  textHeaderSection: Array<TextHeaderRecord>;
 };
 
 
-/** Block of type 🆕 Text section (text_section) */
+/** Block of type 🅾️ Text section (text_section) */
 export type TextSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
