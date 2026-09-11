@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.14.0...next-dato-v0.15.0) (2026-09-11)
+
+
+### Features
+
+* **datocms:** implement blog index page configuration; add migration to link global settings to blog page; update GraphQL queries and types for blog index retrieval; enhance documentation in DATOCMS.md for blog page setup and usage; refactor blog-related components to utilize new blog index structure ([339b973](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/339b97308857c728926f9d58f48e57a141997c0d))
+
 ## [0.14.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.13.3...next-dato-v0.14.0) (2026-09-11)
 
 
