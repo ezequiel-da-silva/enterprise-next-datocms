@@ -4,6 +4,11 @@ import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
+import {
+  blogIndexLabel,
+  blogIndexPath,
+  getBlogIndexPage,
+} from "@/infra/datocms/get-blog-index-page";
 import { getCategoryBySlug, getPostsByCategory } from "@/infra/datocms/get-blog";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsCategories } from "@/infra/datocms/static-params";
@@ -11,7 +16,6 @@ import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import {
-  blogBreadcrumbLabel,
   crumbsToNavItems,
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
@@ -23,6 +27,7 @@ import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { stripStega } from "react-datocms/stega";
 
 type CategoryPageProps = {
   params: Promise<{ slug: string; categorySlug: string }>;
@@ -68,7 +73,10 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const categoryResult = await getCategoryBySlug(toDatoSiteLocale(locale), categorySlug, isEnabled);
+  const [categoryResult, blogPage] = await Promise.all([
+    getCategoryBySlug(toDatoSiteLocale(locale), categorySlug, isEnabled),
+    getBlogIndexPage(locale, isEnabled),
+  ]);
 
   if ("errors" in categoryResult) {
     notFound();
@@ -98,12 +106,14 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
 
   const icon = category.categoryIcon;
   const colorHex = category.categoryColor?.hex;
+  const blogPath = blogIndexPath(locale, blogPage);
+  const blogLabel = blogIndexLabel(blogPage);
   const categoryPath = `/${locale}/blog/category/${categorySlug}`;
   const jsonLd = buildListingPageJsonLd(
     locale,
     categoryPath,
     category.categoryName,
-    [{ name: blogBreadcrumbLabel(), path: `/${locale}/blog` }],
+    [{ name: stripStega(blogLabel), path: blogPath }],
     posts.map((post) => postListingJsonLdItem(post as Record<string, unknown>, locale)),
   );
 
@@ -114,7 +124,7 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
         locale={locale}
         items={crumbsToNavItems([
           { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
-          { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+          { name: blogLabel, path: blogPath },
           { name: category.categoryName, path: categoryPath },
         ])}
       />

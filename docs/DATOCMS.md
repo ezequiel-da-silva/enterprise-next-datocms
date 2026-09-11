@@ -131,6 +131,19 @@ Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --in
 - GraphQL: após o schema no ambiente alvo, `npm run codegen` (usa `DATOCMS_API_TOKEN` + `DATOCMS_ENVIRONMENT`). Não editar `src/infra/datocms/generated/**` à mão.
 - CI (`codegen:check`) aponta a `DATOCMS_ENVIRONMENT=main`. Enquanto estes blocos existirem só em `develop`, o check em `main` falha até promoveres o schema (ou apontares o CI ao sandbox).
 
+## Página do blog
+
+O índice do blog é uma `Page` normal: Hero, SEO, título, `content_page` e slug vêm do
+registo selecionado em **Global setting → Blog page**. Para listar artigos, adicione
+`Blog posts section` ao conteúdo dessa Page.
+
+- A slug localizada da Page controla apenas o índice (por exemplo, `/pt/noticias`).
+- Artigos, categorias e autores mantêm os URLs estáveis em `/{locale}/blog/*`.
+- Breadcrumbs e o botão do 404 apontam para a Page configurada.
+- Enquanto a migration ainda não tiver sido aplicada ou o campo estiver vazio, o
+  fallback continua a ser `/{locale}/blog`.
+- Depois de mudar a slug, mantenha um `Redirect` da URL antiga para a nova.
+
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).

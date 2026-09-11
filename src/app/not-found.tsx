@@ -2,6 +2,7 @@ import { Button } from "@/components/atoms/button";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, appLocaleFromParam, type AppLocale } from "@/constants/i18n";
+import { blogIndexPath, getBlogIndexPage } from "@/infra/datocms/get-blog-index-page";
 import { getGlobalSettings, pickGlobalSetting } from "@/infra/datocms/get-global-settings";
 import { buildMetadata } from "@/lib/seo";
 import { getSiteName } from "@/lib/seo/site-config";
@@ -62,8 +63,16 @@ const getNotFoundCmsContext = cache(async () => {
   const headerStore = await headers();
   const locale = appLocaleFromParam(headerStore.get(REQUEST_LOCALE_HEADER) ?? "") ?? DEFAULT_APP_LOCALE;
   const { isEnabled } = await draftMode();
-  const result = await getGlobalSettings(locale, isEnabled);
-  return { locale, isEnabled, setting: pickGlobalSetting(result) };
+  const [result, blogPage] = await Promise.all([
+    getGlobalSettings(locale, isEnabled),
+    getBlogIndexPage(locale, isEnabled),
+  ]);
+  return {
+    locale,
+    isEnabled,
+    setting: pickGlobalSetting(result),
+    blogPath: blogIndexPath(locale, blogPage),
+  };
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -85,7 +94,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NotFound() {
-  const { locale, isEnabled, setting } = await getNotFoundCmsContext();
+  const { locale, isEnabled, setting, blogPath } = await getNotFoundCmsContext();
   const cmsTitle = setting?.title404?.trim();
   const displayTitle = cmsTitle && cmsTitle.length > 0 ? cmsTitle : notFoundMetaTitle(locale);
   const image = setting?.image404;
@@ -123,7 +132,7 @@ export default async function NotFound() {
           <Link href={`/${locale}`}>{homeLinkLabel(locale)}</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href={`/${locale}/blog`}>{blogLinkLabel(locale)}</Link>
+          <Link href={blogPath}>{blogLinkLabel(locale)}</Link>
         </Button>
       </div>
     </div>

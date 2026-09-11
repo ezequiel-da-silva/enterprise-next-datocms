@@ -5,6 +5,11 @@ import { StructuredTextRenderer } from "@/components/patterns/structured-text-re
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
+import {
+  blogIndexLabel,
+  blogIndexPath,
+  getBlogIndexPage,
+} from "@/infra/datocms/get-blog-index-page";
 import { getAuthorBySlug, getPostsByAuthor } from "@/infra/datocms/get-blog";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsAuthors } from "@/infra/datocms/static-params";
@@ -14,7 +19,6 @@ import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildListingPageJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { buildAuthorPersonJsonLd } from "@/lib/seo/build-author-person-jsonld";
 import {
-  blogBreadcrumbLabel,
   crumbsToNavItems,
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
@@ -25,6 +29,7 @@ import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { stripStega } from "react-datocms/stega";
 
 type AuthorPageProps = {
   params: Promise<{ slug: string; authorSlug: string }>;
@@ -70,7 +75,10 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const authorResult = await getAuthorBySlug(toDatoSiteLocale(locale), authorSlug, isEnabled);
+  const [authorResult, blogPage] = await Promise.all([
+    getAuthorBySlug(toDatoSiteLocale(locale), authorSlug, isEnabled),
+    getBlogIndexPage(locale, isEnabled),
+  ]);
 
   if ("errors" in authorResult) {
     notFound();
@@ -103,12 +111,14 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
   const social = author.authorSocialLinks[0];
   const socialHref = social?.url && isSafeExternalHref(social.url) ? social.url : null;
   const role = author.authorRole?.trim() ?? "";
+  const blogPath = blogIndexPath(locale, blogPage);
+  const blogLabel = blogIndexLabel(blogPage);
   const authorPath = `/${locale}/blog/author/${authorSlug}`;
   const listingLd = buildListingPageJsonLd(
     locale,
     authorPath,
     author.authorName,
-    [{ name: blogBreadcrumbLabel(), path: `/${locale}/blog` }],
+    [{ name: stripStega(blogLabel), path: blogPath }],
     posts.map((post) => postListingJsonLdItem(post as Record<string, unknown>, locale)),
   );
   const jsonLd = [...listingLd, buildAuthorPersonJsonLd(locale, authorSlug, author)];
@@ -120,7 +130,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
         locale={locale}
         items={crumbsToNavItems([
           { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
-          { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+          { name: blogLabel, path: blogPath },
           { name: author.authorName, path: authorPath },
         ])}
       />

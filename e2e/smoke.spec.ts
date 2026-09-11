@@ -8,9 +8,10 @@ test.describe("smoke", () => {
     await expect(page.locator("h1").first()).toBeVisible();
   });
 
-  test("blog index renders for default locale", async ({ page }) => {
+  test("CMS blog Page renders for default locale", async ({ page }) => {
     await page.goto("/en/blog");
-    await expect(page.getByRole("heading", { name: "Blog", level: 1 })).toBeVisible();
+    await expect(page.locator("main#conteudo-principal")).toBeVisible();
+    await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("draft API rejects unauthenticated enable", async ({ request }) => {

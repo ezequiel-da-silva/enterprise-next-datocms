@@ -74,16 +74,6 @@ function staticRoutes(base: URL): MetadataRoute.Sitemap {
   ];
 }
 
-function blogIndexRoutes(base: URL, pagesMerged: Map<string, Date>): MetadataRoute.Sitemap {
-  const homeUpdated = pagesMerged.get("home") ?? new Date();
-  return APP_LOCALES.map((locale) => ({
-    url: new URL(`/${locale}/blog`, base).toString(),
-    lastModified: homeUpdated,
-    changeFrequency: "daily" as const,
-    priority: 0.8,
-  }));
-}
-
 const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   const base = new URL(getSiteBaseUrl());
 
@@ -111,8 +101,6 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   const entries: MetadataRoute.Sitemap = [];
 
   /* Homes canónicas: só /{locale}, nunca `/` (redirect). */
-
-  entries.push(...blogIndexRoutes(base, pagesMerged));
 
   const pageBuckets: [DatoLocaleKey, SlugRow[]][] = [
     ["en", d.pagesEn],

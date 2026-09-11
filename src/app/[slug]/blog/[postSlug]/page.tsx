@@ -5,6 +5,11 @@ import { StructuredTextRenderer } from "@/components/patterns/structured-text-re
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale, toDatoSiteLocale } from "@/constants/i18n";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
+import {
+  blogIndexLabel,
+  blogIndexPath,
+  getBlogIndexPage,
+} from "@/infra/datocms/get-blog-index-page";
 import { getPostBySlug } from "@/infra/datocms/get-blog";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsBlogPosts } from "@/infra/datocms/static-params";
@@ -12,7 +17,6 @@ import { buildBlogPostJsonLdGraph } from "@/lib/seo/build-blog-post-jsonld";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import {
-  blogBreadcrumbLabel,
   crumbsToNavItems,
   homeBreadcrumbLabel,
 } from "@/lib/seo/breadcrumb-labels";
@@ -71,7 +75,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const result = await getPostBySlug(toDatoSiteLocale(locale), postSlug, isEnabled);
+  const [result, blogPage] = await Promise.all([
+    getPostBySlug(toDatoSiteLocale(locale), postSlug, isEnabled),
+    getBlogIndexPage(locale, isEnabled),
+  ]);
 
   if ("errors" in result) {
     notFound();
@@ -97,6 +104,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const dateLabel = formatPublishedAt(locale, post._firstPublishedAt);
   const excerpt = readPostExcerpt(post as Record<string, unknown>);
   const excerptLead = excerptPlainText(excerpt);
+  const blogPath = blogIndexPath(locale, blogPage);
+  const blogLabel = blogIndexLabel(blogPage);
 
   return (
     <article className="mx-auto w-full max-w-3xl px-4 py-12">
@@ -106,7 +115,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           locale={locale}
           items={crumbsToNavItems([
             { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
-            { name: blogBreadcrumbLabel(), path: `/${locale}/blog` },
+            { name: blogLabel, path: blogPath },
             { name: post.postTitle, path: `/${locale}/blog/${postSlug}` },
           ])}
         />

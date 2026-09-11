@@ -903,6 +903,7 @@ export type GlobalSettingRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  blogPage?: Maybe<PageRecord>;
   description404?: Maybe<GlobalSettingModelDescription404Field>;
   id: Scalars['ItemId']['output'];
   image404?: Maybe<ImageBlockRecord>;
