@@ -2,6 +2,7 @@ import { CmsPageArticle } from "@/components/patterns/cms-page-article";
 import { submitUserReview } from "@/app/actions/submit-user-review";
 import { isAppLocale, toDatoSiteLocale, type AppLocale } from "@/constants/i18n";
 import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
+import { blogIndexPath, getBlogIndexPage } from "@/infra/datocms/get-blog-index-page";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
@@ -12,7 +13,7 @@ import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { getStaticParamsLocaleCmsPages } from "@/infra/datocms/static-params";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 type PageProps = {
   params: Promise<{ slug: string; pageSlug: string }>;
@@ -68,6 +69,13 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
 
   const page = result.data.page;
   if (!page) {
+    if (pageSlug.toLowerCase() === "blog") {
+      const configuredBlogPage = await getBlogIndexPage(locale, isEnabled);
+      const configuredPath = blogIndexPath(locale, configuredBlogPage);
+      if (configuredBlogPage && configuredPath !== `/${locale}/blog`) {
+        permanentRedirect(configuredPath);
+      }
+    }
     notFound();
   }
 

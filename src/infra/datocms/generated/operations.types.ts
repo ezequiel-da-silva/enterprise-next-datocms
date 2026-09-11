@@ -177,6 +177,13 @@ export type TextSectionBlockFragmentFragment = { id: string, hasTextHeader: bool
       | { __typename: 'VideoBlockRecord', id: string, _editingUrl?: string | null, asset: { url: string, title: string | null, width: number | null, height: number | null, video: { muxPlaybackId: string, streamingUrl: string, mp4Url: string | null, thumbnailUrl: string, width: number, height: number, duration: number | null } | null } | null }
     > } | null };
 
+export type GetBlogIndexPageQueryVariables = Exact<{
+  locale: Types.SiteLocale;
+}>;
+
+
+export type GetBlogIndexPageQuery = { globalSetting: { blogPage: { id: string, title: string | null, slug: string | null } | null } | null };
+
 export type PageBySlugQueryVariables = Exact<{
   slug: string;
   locale: Types.SiteLocale;

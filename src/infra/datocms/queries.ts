@@ -1063,6 +1063,22 @@ export const GET_GLOBAL_SETTINGS = /* GraphQL */ `
   }
 `;
 
+/**
+ * Page escolhida como índice editorial do blog. Consulta separada para que a
+ * aplicação continue com fallback `/blog` antes de a migration ser aplicada.
+ */
+export const GET_BLOG_INDEX_PAGE = /* GraphQL */ `
+  query GetBlogIndexPage($locale: SiteLocale!) {
+    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      blogPage {
+        id
+        title
+        slug
+      }
+    }
+  }
+`;
+
 /** Slugs de categorias por locale (pré-renderização). */
 export const LIST_CATEGORY_SLUGS = /* GraphQL */ `
   query ListCategorySlugs($locale: SiteLocale!) {

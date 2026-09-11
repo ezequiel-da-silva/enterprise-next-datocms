@@ -1,0 +1,9 @@
+query GetBlogIndexPage($locale: SiteLocale!) {
+  globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+    blogPage {
+      id
+      title
+      slug
+    }
+  }
+}
