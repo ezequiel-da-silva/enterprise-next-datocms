@@ -5,12 +5,15 @@ import { GlobalHeader } from "@/components/patterns/global-header";
 import { SiteFooter } from "@/components/patterns/site-footer";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { buildThemeBootScript } from "@/lib/theme-boot-script";
-import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, appLocaleFromParam } from "@/constants/i18n";
+import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, REQUEST_SEARCH_HEADER, appLocaleFromParam } from "@/constants/i18n";
 import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
+import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { cn } from "@/lib/cn";
+import { appendLocaleSwitcherSearch } from "@/lib/i18n/locale-switch-href";
 import { resolveLocaleSwitcherHrefs } from "@/lib/i18n/resolve-locale-switcher-hrefs";
+import { readSearchQuery } from "@/lib/datocms/search-query";
 import { getNonce } from "@/lib/nonce";
 import { buildMetadata } from "@/lib/seo";
 import { schemaLanguage } from "@/lib/seo/locale-tags";
@@ -46,18 +49,22 @@ const loadLayoutChrome = cache(async () => {
   const appLocale = appLocaleFromParam(localeHeader ?? "") ?? DEFAULT_APP_LOCALE;
   const { isEnabled } = await draftMode();
   const pathname = headerStore.get(REQUEST_PATHNAME_HEADER) ?? `/${appLocale}`;
-  const [navigationResult, seoResult, localeHrefs] = await Promise.all([
+  const search = headerStore.get(REQUEST_SEARCH_HEADER) ?? "";
+  const query = readSearchQuery(new URLSearchParams(search.startsWith("?") ? search.slice(1) : search).get("q"));
+  const [navigationResult, seoResult, resolvedHrefs, searchPage] = await Promise.all([
     getNavigation(appLocale, isEnabled),
     getSiteSeo(appLocale, isEnabled),
     resolveLocaleSwitcherHrefs(pathname, appLocale, isEnabled),
+    getSearchPage(appLocale, isEnabled),
   ]);
+  const localeHrefs = appendLocaleSwitcherSearch(resolvedHrefs, query);
   const navigation = pickNavigationData(navigationResult);
   const identity = buildSiteIdentity({
     seo: pickSiteSeo(seoResult),
     logoUrl: navigation?.logo?.url,
     socialLinks: navigation?.socialLinks,
   });
-  return { appLocale, navigation, localeHrefs, identity };
+  return { appLocale, navigation, localeHrefs, identity, searchPath: searchPagePath(appLocale, searchPage) };
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -93,7 +100,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const nonce = await getNonce();
-  const { appLocale, navigation, localeHrefs, identity } = await loadLayoutChrome();
+  const { appLocale, navigation, localeHrefs, identity, searchPath } = await loadLayoutChrome();
 
   const cookieStore = await cookies();
   const themeCookie = cookieStore.get(THEME_COOKIE_NAME)?.value;
@@ -101,7 +108,7 @@ export default async function RootLayout({
   const serverDark = initialThemeMode === "dark";
   const themeCss = buildThemeCssVariables();
 
-  const siteJsonLd = buildSiteJsonLdGraph(identity);
+  const siteJsonLd = buildSiteJsonLdGraph(identity, searchPath);
 
   return (
     <html

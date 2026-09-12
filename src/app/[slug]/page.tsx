@@ -16,9 +16,17 @@ import {
   getContactPage,
   isContactPageAliasSlug,
 } from "@/infra/datocms/get-contact-page";
+import {
+  contentNeedsSearchResults,
+  getSearchPage,
+  isSearchPageAliasSlug,
+  searchPagePath,
+} from "@/infra/datocms/get-search-page";
+import { searchSite } from "@/infra/datocms/search";
+import { readSearchQuery, searchResultsPath } from "@/lib/datocms/search-query";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
-import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
+import { buildDatoPageMetadata, cmsContentOgImage, withSearchQueryNoIndex } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { getStaticParamsPages } from "@/infra/datocms/static-params";
@@ -30,6 +38,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ q?: string }>;
 };
 
 export async function generateStaticParams() {
@@ -38,7 +47,7 @@ export async function generateStaticParams() {
   return [...localeRoots, ...pages];
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const { isEnabled } = await draftMode();
   const headerStore = await headers();
@@ -58,8 +67,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { page, _site } = result.data;
   const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
-  return buildDatoPageMetadata({
-    path: cmsPageCanonicalPath(pageSlug, cmsLocale),
+  const path = cmsPageCanonicalPath(pageSlug, cmsLocale);
+  const meta = buildDatoPageMetadata({
+    path,
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: _site.faviconMetaTags,
     seoSettingsSocial: page.seoSettingsSocial,
@@ -69,9 +79,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       cmsPageCanonicalPath(s, l),
     ),
   });
+  const query = readSearchQuery((await searchParams).q);
+  if (!query) return meta;
+  const configuredSearchPage = await getSearchPage(cmsLocale, isEnabled);
+  if (configuredSearchPage?.id !== page.id) return meta;
+  return withSearchQueryNoIndex(meta, path, query);
 }
 
-export default async function DynamicPage({ params }: PageProps) {
+export default async function DynamicPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
   const { isEnabled } = await draftMode();
   const headerStore = await headers();
@@ -82,12 +97,7 @@ export default async function DynamicPage({ params }: PageProps) {
 
   const result = await getPageBySlug(pageSlug, isEnabled, cmsLocale);
 
-  if ("errors" in result) {
-    notFound();
-  }
-
-  const page = result.data.page;
-  if (!page) {
+  if ("errors" in result || !result.data.page) {
     if (isContactPageAliasSlug(pageSlug)) {
       const configuredContactPage = await getContactPage(cmsLocale, isEnabled);
       const configuredPath = contactPagePath(cmsLocale, configuredContactPage);
@@ -95,14 +105,42 @@ export default async function DynamicPage({ params }: PageProps) {
         permanentRedirect(configuredPath);
       }
     }
+    if (isSearchPageAliasSlug(pageSlug)) {
+      const configuredSearchPage = await getSearchPage(cmsLocale, isEnabled);
+      const configuredPath = searchPagePath(cmsLocale, configuredSearchPage);
+      if (configuredSearchPage && configuredPath !== cmsPageCanonicalPath(pageSlug, cmsLocale)) {
+        const query = readSearchQuery((await searchParams).q);
+        permanentRedirect(searchResultsPath(configuredPath, query));
+      }
+    }
+    if ("errors" in result) {
+      notFound();
+    }
+  }
+
+  const page = result.data.page;
+  if (!page) {
     notFound();
+  }
+
+  const configuredContactPage = await getContactPage(cmsLocale, isEnabled);
+  const configuredSearchPage = await getSearchPage(cmsLocale, isEnabled);
+  if (configuredSearchPage?.id === page.id) {
+    const canonical = cmsPageCanonicalPath(page.slug, cmsLocale);
+    const requested = cmsPageCanonicalPath(pageSlug, cmsLocale);
+    if (canonical !== requested) {
+      permanentRedirect(searchResultsPath(canonical, readSearchQuery((await searchParams).q)));
+    }
   }
 
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
     ? loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
     : undefined;
 
-  const configuredContactPage = await getContactPage(cmsLocale, isEnabled);
+  const query = contentNeedsSearchResults(page.contentPage)
+    ? readSearchQuery((await searchParams).q)
+    : "";
+  const searchResults = query ? searchSite(query, cmsLocale) : undefined;
 
   return (
     <CmsPageArticle
@@ -114,6 +152,8 @@ export default async function DynamicPage({ params }: PageProps) {
       submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
       jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
+      searchQuery={query || undefined}
+      searchResults={searchResults}
     />
   );
 }

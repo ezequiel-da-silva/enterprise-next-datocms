@@ -1,4 +1,5 @@
 import { getDefaultOpenGraphImage, getSiteBaseUrl } from "@/lib/seo/site-config";
+import { searchResultsPath } from "@/lib/datocms/search-query";
 import type { AppLocale } from "@/constants/i18n";
 import { buildHreflangAlternates } from "@/lib/seo/hreflang";
 import { appLocaleFromPath, openGraphAlternateLocales, openGraphLocale } from "@/lib/seo/locale-tags";
@@ -148,6 +149,27 @@ export function buildDatoPageMetadata({
     alternates: {
       canonical,
       ...hreflang,
+    },
+  };
+}
+
+/** Resultados `?q=` não devem ser indexados; o canonical inclui a query. */
+export function withSearchQueryNoIndex(meta: Metadata, canonicalPath: string, query: string): Metadata {
+  const path = searchResultsPath(canonicalPath, query);
+  const canonical = new URL(path, getSiteBaseUrl()).toString();
+  return {
+    ...meta,
+    robots: {
+      index: false,
+      follow: true,
+      googleBot: {
+        index: false,
+        follow: true,
+      },
+    },
+    alternates: {
+      ...meta.alternates,
+      canonical,
     },
   };
 }

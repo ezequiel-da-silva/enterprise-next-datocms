@@ -2,7 +2,7 @@ import { DEFAULT_APP_LOCALE, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
 import { SEARCH_SITE } from "@/infra/datocms/queries";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-import type { SearchHit } from "@/lib/datocms/search-hit";
+import type { SearchHit, SearchResultsPayload } from "@/lib/datocms/search-hit";
 
 type SearchSiteData = {
   pages: { id: string; title: string; slug: string | null }[];
@@ -14,11 +14,11 @@ type SearchSiteData = {
 
 const SEARCH_TAG = "datocms:search";
 
-function pageHref(slug: string): string {
-  return cmsPageCanonicalPath(slug, DEFAULT_APP_LOCALE);
+function pageHref(slug: string, locale: AppLocale): string {
+  return cmsPageCanonicalPath(slug, locale);
 }
 
-function mergeHits(data: SearchSiteData): SearchHit[] {
+function mergeHits(data: SearchSiteData, locale: AppLocale): SearchHit[] {
   const seen = new Set<string>();
   const out: SearchHit[] = [];
 
@@ -31,7 +31,7 @@ function mergeHits(data: SearchSiteData): SearchHit[] {
   for (const p of data.pages) {
     const slug = p.slug?.trim();
     if (!slug) continue;
-    push({ id: p.id, title: p.title, href: pageHref(slug), kind: "page" });
+    push({ id: p.id, title: p.title, href: pageHref(slug, locale), kind: "page" });
   }
 
   const postLocales: [AppLocale, keyof SearchSiteData][] = [
@@ -40,15 +40,15 @@ function mergeHits(data: SearchSiteData): SearchHit[] {
     ["es", "postsEs"],
   ];
 
-  for (const [locale, key] of postLocales) {
+  for (const [postLocale, key] of postLocales) {
     const rows = data[key] as SearchSiteData["postsEn"];
     for (const p of rows) {
       const slug = p.postSlug?.trim();
       if (!slug) continue;
       push({
-        id: `${p.id}-${locale}`,
+        id: `${p.id}-${postLocale}`,
         title: p.postTitle,
-        href: `/${locale}/blog/${slug}`,
+        href: `/${postLocale}/blog/${slug}`,
         kind: "post",
       });
     }
@@ -60,7 +60,7 @@ function mergeHits(data: SearchSiteData): SearchHit[] {
     push({
       id: a.id,
       title: a.authorName,
-      href: `/${DEFAULT_APP_LOCALE}/blog/author/${slug}`,
+      href: `/${locale}/blog/author/${slug}`,
       kind: "author",
     });
   }
@@ -68,7 +68,12 @@ function mergeHits(data: SearchSiteData): SearchHit[] {
   return out;
 }
 
-export async function searchSite(query: string): Promise<{ hits: SearchHit[]; error?: string }> {
+export type { SearchResultsPayload };
+
+export async function searchSite(
+  query: string,
+  locale: AppLocale = DEFAULT_APP_LOCALE,
+): Promise<SearchResultsPayload> {
   const q = query.trim();
   if (q.length < 2) {
     return { hits: [] };
@@ -85,7 +90,7 @@ export async function searchSite(query: string): Promise<{ hits: SearchHit[]; er
     return { hits: [], error: result.errors[0]?.message };
   }
 
-  return { hits: mergeHits(result.data) };
+  return { hits: mergeHits(result.data, locale) };
 }
 
 export function searchRevalidateTags(query: string): string[] {

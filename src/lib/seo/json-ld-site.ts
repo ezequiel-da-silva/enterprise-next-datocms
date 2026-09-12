@@ -7,9 +7,12 @@ import { schemaLanguages } from "@/lib/seo/locale-tags";
  * `inLanguage` / `availableLanguage` listam todos os locales da app; o `WebPage` de cada rota
  * continua a declarar o idioma da renderização.
  */
-export function buildSiteJsonLdGraph(identity: SiteIdentity): Record<string, unknown>[] {
+export function buildSiteJsonLdGraph(
+  identity: SiteIdentity,
+  searchPath: string = getSearchPath(),
+): Record<string, unknown>[] {
   const base = getSiteBaseUrl();
-  const searchUrl = new URL(getSearchPath(), `${base}/`).toString();
+  const searchUrl = new URL(searchPath, `${base}/`).toString();
   const languages = schemaLanguages();
 
   const organization: Record<string, unknown> = {

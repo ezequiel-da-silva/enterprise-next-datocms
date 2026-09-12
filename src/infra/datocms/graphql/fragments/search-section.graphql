@@ -1,0 +1,28 @@
+# Fragmento do organismo Search section (`search_section`).
+# O widget (GET ?q=) e a query GraphQL vivem no Next; o CMS só fornece copy e cabeçalho.
+#import "./text-header.graphql"
+
+fragment SearchSectionBlockFragment on SearchSectionRecord {
+  id
+  hasTextHeader
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
+  intro {
+    value
+    links {
+      __typename
+      ... on PageRecord {
+        id
+        title
+        slug
+      }
+    }
+    blocks
+    inlineBlocks
+  }
+  placeholder
+  submitLabel
+  emptyHint
+  noResults
+}

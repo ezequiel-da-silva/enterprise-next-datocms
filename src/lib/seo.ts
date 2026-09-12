@@ -14,7 +14,7 @@ export type SeoInput = {
   omitCanonical?: boolean;
   /** Sobrescreve o template de título do layout. */
   absoluteTitle?: boolean;
-  /** hreflang para páginas estáticas multilíngues (ex.: `/busca`). */
+  /** hreflang para páginas estáticas multilíngues. */
   hreflangPaths?: Partial<Record<AppLocale, string>>;
   /** Locale da página; se omitido, deriva do `path` ou usa o default da app. */
   locale?: AppLocale;

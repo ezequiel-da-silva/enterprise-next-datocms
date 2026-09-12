@@ -1,10 +1,8 @@
 import { type AppLocale, isAppLocale } from "@/constants/i18n";
 
-const APP_ROOT_ROUTES = new Set(["busca"]);
-
 /**
  * Ajusta hrefs internos ao locale: blog (`/blog/...` → `/[locale]/blog/...`) e páginas CMS
- * (`/page-slug` → `/[locale]/page-slug`). Rotas fixas à raiz (`/busca`) mantêm-se.
+ * (`/page-slug` → `/[locale]/page-slug`).
  */
 export function localizeInternalHref(href: string, locale: AppLocale): string {
   const raw = href.trim();
@@ -30,10 +28,6 @@ export function localizeInternalHref(href: string, locale: AppLocale): string {
 
   if (first === "blog") {
     return `/${locale}/${segments.join("/")}`;
-  }
-
-  if (APP_ROOT_ROUTES.has(first)) {
-    return path;
   }
 
   return `/${locale}/${segments.join("/")}`;

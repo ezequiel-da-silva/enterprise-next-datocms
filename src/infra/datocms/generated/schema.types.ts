@@ -946,6 +946,7 @@ export type GlobalSettingRecord = RecordInterface & {
   description404?: Maybe<GlobalSettingModelDescription404Field>;
   id: Scalars['ItemId']['output'];
   image404?: Maybe<ImageBlockRecord>;
+  searchPage?: Maybe<PageRecord>;
   title404?: Maybe<Scalars['String']['output']>;
 };
 
@@ -3247,7 +3248,7 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
-export type PageModelContentPageField = BlogPostsSectionRecord | ContactFormSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
+export type PageModelContentPageField = BlogPostsSectionRecord | ContactFormSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | SearchSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
 
 export type PageModelContentPageFieldListListNonNullMultiLocaleField = {
   __typename?: 'PageModelContentPageFieldListListNonNullMultiLocaleField';
@@ -4191,6 +4192,46 @@ export type SchemaMigrationRecord = RecordInterface & {
 
 /** Record of type Schema migration (schema_migration) */
 export type SchemaMigrationRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+export type SearchSectionModelIntroField = {
+  __typename?: 'SearchSectionModelIntroField';
+  blocks: Array<Scalars['String']['output']>;
+  inlineBlocks: Array<Scalars['String']['output']>;
+  links: Array<PageRecord>;
+  value: Scalars['JsonField']['output'];
+};
+
+/** Block of type Search section (search_section) */
+export type SearchSectionRecord = RecordInterface & {
+  __typename?: 'SearchSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  emptyHint?: Maybe<Scalars['String']['output']>;
+  hasTextHeader: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  intro?: Maybe<SearchSectionModelIntroField>;
+  noResults?: Maybe<Scalars['String']['output']>;
+  placeholder?: Maybe<Scalars['String']['output']>;
+  submitLabel?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
+};
+
+
+/** Block of type Search section (search_section) */
+export type SearchSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 

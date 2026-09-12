@@ -28,7 +28,7 @@ export function getDefaultOpenGraphImage(): string | undefined {
   return logo || undefined;
 }
 
-/** Caminho da busca interna (SearchAction / AEO). */
+/** Caminho da busca interna quando Global setting ainda não aponta para uma Page. */
 export function getSearchPath(): string {
   return "/busca";
 }

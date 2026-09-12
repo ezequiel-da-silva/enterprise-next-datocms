@@ -158,6 +158,22 @@ Slugs locais de exemplo: `contact` (en), `contato` (pt), `contacto` (es). `/cont
 - JSON-LD usa `@type: ContactPage` quando o id da Page coincide com `contact_page`.
 - Não promover este schema de `develop` para `main` até o front estar pronto no primary.
 
+## Página de busca
+
+A página de busca é uma `Page` normal: título, Hero, SEO, slug e `content_page` vêm do
+registo em **Global setting → Search page**. Inclua o bloco **Search section**.
+
+O widget (formulário GET `?q=`) e a query GraphQL `SEARCH_SITE` continuam no Next
+([`SearchForm`](../src/components/patterns/search-form.tsx) + [`searchSite`](../src/infra/datocms/search.ts)). O CMS só define cabeçalho, intro, placeholder, rótulo do botão e copy de vazio / sem resultados.
+
+Slugs locais de exemplo: `search` (en), `busca` (pt), `busqueda` (es). `/busca` (sem locale) redirecciona para a Page do locale por omissão, preservando `?q=`.
+
+- Enquanto a migration não existir ou o campo estiver vazio, o fallback é `/{locale}/busca`.
+- Sem query: metadata e SEO da Page (indexável, salvo o editor marcar `noIndex`).
+- Com `?q=`: `noIndex` + canonical com a query; JSON-LD `@type: SearchResultsPage`.
+- O `SearchAction` do layout aponta para o slug localizado da Page configurada.
+- Não promover este schema de `develop` para `main` até o front estar pronto no primary.
+
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).

@@ -88,6 +88,8 @@ export type ContactFormSectionBlockRecord = Extract<
   { __typename: "ContactFormSectionRecord" }
 >;
 
+export type SearchSectionBlockRecord = Extract<PageContentBlock, { __typename: "SearchSectionRecord" }>;
+
 export type CardRecord = FeatureGridRecord["itemsFeatureGrid"][number];
 
 export type HeroSectionRecord = NonNullable<PageQueryData["heroPage"]>;

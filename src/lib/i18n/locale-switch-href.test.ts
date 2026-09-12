@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  appendLocaleSwitcherSearch,
   buildLocaleSwitcherHrefs,
   hrefForLocale,
   isSafeLocalePath,
@@ -16,13 +17,13 @@ describe("parseLocalePath", () => {
     expect(parseLocalePath("/page-two")).toEqual({ kind: "cms", slug: "page-two" });
   });
 
-  it("parses blog routes and root static pages", () => {
+  it("parses blog routes and unprefixed CMS slugs", () => {
     expect(parseLocalePath("/en/blog")).toEqual({ kind: "blog" });
     expect(parseLocalePath("/es/blog/hello-world")).toEqual({ kind: "post", slug: "hello-world" });
     expect(parseLocalePath("/pt/blog/author/ada")).toEqual({ kind: "author", slug: "ada" });
     expect(parseLocalePath("/en/blog/category/news")).toEqual({ kind: "category", slug: "news" });
     expect(parseLocalePath("/contato")).toEqual({ kind: "cms", slug: "contato" });
-    expect(parseLocalePath("/busca")).toEqual({ kind: "root-static" });
+    expect(parseLocalePath("/busca")).toEqual({ kind: "cms", slug: "busca" });
   });
 });
 
@@ -40,8 +41,18 @@ describe("buildLocaleSwitcherHrefs", () => {
     });
   });
 
-  it("sends busca to locale homes", () => {
+  it("keeps CMS slug mapping for /busca until slugLocales resolve", () => {
     expect(hrefForLocale("/busca?q=foo", "es")).toBe("/es");
+  });
+
+  it("appends a safe q to every locale href", () => {
+    const hrefs = appendLocaleSwitcherSearch(
+      { en: "/en/search", pt: "/pt/busca", es: "/es/busqueda" },
+      "next js",
+    );
+    expect(hrefs.en).toBe("/en/search?q=next+js");
+    expect(hrefs.pt).toBe("/pt/busca?q=next+js");
+    expect(hrefs.es).toBe("/es/busqueda?q=next+js");
   });
 
   it("uses per-locale CMS slugs and falls back to home when missing", () => {
