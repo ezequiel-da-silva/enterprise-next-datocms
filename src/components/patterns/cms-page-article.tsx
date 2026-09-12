@@ -4,8 +4,9 @@ import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { PageContentBlocks } from "@/components/patterns/page-content-blocks";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
+import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
-import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
+import { buildPageWebPageJsonLd, type PageJsonLdType } from "@/lib/seo/build-page-webpage-jsonld";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1 } from "@/lib/datocms/hero-first-block";
@@ -19,7 +20,12 @@ type CmsPageArticleProps = {
   canonicalPath: string;
   contentLinkGroup: boolean;
   submitUserReview?: UserReviewSubmitAction;
+  submitContact?: (
+    prev: ContactActionState,
+    formData: FormData,
+  ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
+  jsonLdPageType?: PageJsonLdType;
 };
 
 export async function CmsPageArticle({
@@ -28,7 +34,9 @@ export async function CmsPageArticle({
   canonicalPath,
   contentLinkGroup,
   submitUserReview,
+  submitContact,
   latestPostsCatalog,
+  jsonLdPageType = "WebPage",
 }: CmsPageArticleProps) {
   const description = page.seoSettingsSocial?.description ?? null;
   const jsonLd = buildPageWebPageJsonLd({
@@ -36,6 +44,7 @@ export async function CmsPageArticle({
     title: page.title,
     description,
     locale,
+    pageType: jsonLdPageType,
   });
   const nonce = await getNonce();
   const heroH1 = heroFirstBlockSuppliesH1(page.heroPage);
@@ -72,6 +81,7 @@ export async function CmsPageArticle({
             contentLinkGroup={contentLinkGroup}
             locale={locale}
             submitUserReview={submitUserReview}
+            submitContact={submitContact}
             latestPostsCatalog={latestPostsCatalog}
           />
         </div>

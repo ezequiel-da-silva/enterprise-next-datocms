@@ -25,9 +25,13 @@ function toFormData(values: ContactFormClientValues): FormData {
 
 export type ContactFormProps = {
   action: (prev: ContactActionState, formData: FormData) => Promise<ContactActionState>;
+  /** Copy CMS após sucesso; vazio usa a mensagem da Server Action. */
+  successMessage?: string;
+  /** Nota de privacidade abaixo do botão (stega preservada). */
+  privacyNote?: string;
 };
 
-export function ContactForm({ action }: ContactFormProps) {
+export function ContactForm({ action, successMessage, privacyNote }: ContactFormProps) {
   const [state, formAction, isPending] = useActionState(action, { status: "idle" });
 
   const {
@@ -64,6 +68,7 @@ export function ContactForm({ action }: ContactFormProps) {
       className="mx-auto grid max-w-xl gap-6"
       noValidate
       aria-busy={isPending}
+      action={formAction}
       onSubmit={handleSubmit((values) => {
         startTransition(() => {
           formAction(toFormData(values));
@@ -127,13 +132,15 @@ export function ContactForm({ action }: ContactFormProps) {
 
       {state.status === "success" ? (
         <p role="status" className="text-sm text-muted-foreground">
-          {state.message}
+          {successMessage || state.message}
         </p>
       ) : null}
 
       <Button type="submit" disabled={isPending} variant="primary">
         {isPending ? "Enviando…" : "Enviar"}
       </Button>
+
+      {privacyNote ? <p className="text-sm text-muted-foreground">{privacyNote}</p> : null}
     </form>
   );
 }

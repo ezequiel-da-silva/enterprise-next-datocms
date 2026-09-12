@@ -21,7 +21,7 @@ describe("parseLocalePath", () => {
     expect(parseLocalePath("/es/blog/hello-world")).toEqual({ kind: "post", slug: "hello-world" });
     expect(parseLocalePath("/pt/blog/author/ada")).toEqual({ kind: "author", slug: "ada" });
     expect(parseLocalePath("/en/blog/category/news")).toEqual({ kind: "category", slug: "news" });
-    expect(parseLocalePath("/contato")).toEqual({ kind: "root-static" });
+    expect(parseLocalePath("/contato")).toEqual({ kind: "cms", slug: "contato" });
     expect(parseLocalePath("/busca")).toEqual({ kind: "root-static" });
   });
 });
@@ -40,8 +40,7 @@ describe("buildLocaleSwitcherHrefs", () => {
     });
   });
 
-  it("sends contato and busca to locale homes", () => {
-    expect(hrefForLocale("/contato", "en")).toBe("/en");
+  it("sends busca to locale homes", () => {
     expect(hrefForLocale("/busca?q=foo", "es")).toBe("/es");
   });
 

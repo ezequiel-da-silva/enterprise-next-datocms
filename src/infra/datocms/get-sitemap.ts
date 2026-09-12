@@ -62,18 +62,6 @@ function appLocaleFromDatoKey(key: DatoLocaleKey): AppLocale {
   return key;
 }
 
-function staticRoutes(base: URL): MetadataRoute.Sitemap {
-  const now = new Date();
-  return [
-    {
-      url: new URL("/contato", base).toString(),
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-  ];
-}
-
 const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   const base = new URL(getSiteBaseUrl());
 
@@ -92,7 +80,6 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
         changeFrequency: "daily" as const,
         priority: 1,
       })),
-      ...staticRoutes(base),
     ];
   }
 
@@ -194,8 +181,6 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
       });
     }
   }
-
-  entries.push(...staticRoutes(base));
 
   return entries;
 });

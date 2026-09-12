@@ -679,6 +679,27 @@ const TEXT_SECTION_BLOCK = `
   }
 `;
 
+/** Contact form section — copy CMS; o formulário fica no Next. @see fragments/contact-form-section.graphql */
+const CONTACT_FORM_SECTION_BLOCK = `
+  ... on ContactFormSectionRecord {
+    id
+    hasTextHeader
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
+    intro {
+      value
+      links {
+        ${ST_RECORD_LINKS_PAGE_ST}
+      }
+      blocks
+      inlineBlocks
+    }
+    successMessage
+    privacyNote
+  }
+`;
+
 /**
  * Modular Content **Page.contentPage**: secções de landing.
  * Image / Gallery / Video no Post e no corpo da Text section (`ST_BLOCKS_MEDIA_ONLY`).
@@ -700,6 +721,7 @@ const PAGE_CONTENT_BLOCKS = `
   ${TEAM_SECTION_BLOCK}
   ${BLOG_POSTS_SECTION_BLOCK}
   ${TEXT_SECTION_BLOCK}
+  ${CONTACT_FORM_SECTION_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
@@ -1071,6 +1093,22 @@ export const GET_BLOG_INDEX_PAGE = /* GraphQL */ `
   query GetBlogIndexPage($locale: SiteLocale!) {
     globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
       blogPage {
+        id
+        title
+        slug
+      }
+    }
+  }
+`;
+
+/**
+ * Page escolhida como contacto. Consulta separada para fallback `/contato`
+ * enquanto a migration ainda não existir no ambiente.
+ */
+export const GET_CONTACT_PAGE = /* GraphQL */ `
+  query GetContactPage($locale: SiteLocale!) {
+    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      contactPage {
         id
         title
         slug

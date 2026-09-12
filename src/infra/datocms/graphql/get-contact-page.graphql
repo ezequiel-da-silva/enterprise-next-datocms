@@ -1,0 +1,9 @@
+query GetContactPage($locale: SiteLocale!) {
+  globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+    contactPage {
+      id
+      title
+      slug
+    }
+  }
+}

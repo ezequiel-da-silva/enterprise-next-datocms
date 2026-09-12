@@ -9,7 +9,7 @@ import { buildMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-/** Rotas estáticas `/busca` e `/contato` usam copy PT; alinhar metadata/JSON-LD. */
+/** Rota estática `/busca` usa copy PT; alinhar metadata/JSON-LD. */
 const STATIC_CONTENT_LOCALE = "pt" as const;
 
 type BuscaPageProps = {

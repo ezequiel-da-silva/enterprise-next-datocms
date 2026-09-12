@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
+import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
@@ -15,6 +16,7 @@ import type {
   TabsSectionBlockRecord,
   TeamSectionBlockRecord,
   TextSectionBlockRecord,
+  ContactFormSectionBlockRecord,
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
@@ -27,6 +29,7 @@ import { StepsSectionBlock } from "@/components/sections/steps-section-block";
 import { TabsSectionBlock } from "@/components/sections/tabs-section-block";
 import { TeamSectionBlock } from "@/components/sections/team-section-block";
 import { TextSectionBlock } from "@/components/sections/text-section-block";
+import { ContactFormSectionBlock } from "@/components/sections/contact-form-section-block";
 import {
   BlogPostsSectionBlock,
   BlogPostsSectionFallback,
@@ -45,6 +48,10 @@ type StructuredTextBlockViewProps = {
   record: PageStructuredTextBlock;
   locale: AppLocale;
   submitUserReview?: UserReviewSubmitAction;
+  submitContact?: (
+    prev: ContactActionState,
+    formData: FormData,
+  ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
 };
 
@@ -143,6 +150,7 @@ export function StructuredTextBlockView({
   record,
   locale,
   submitUserReview,
+  submitContact,
   latestPostsCatalog,
 }: StructuredTextBlockViewProps) {
   switch (record.__typename) {
@@ -230,6 +238,16 @@ export function StructuredTextBlockView({
       return <TeamSectionBlock record={record as TeamSectionBlockRecord} locale={locale} />;
     case "TextSectionRecord":
       return <TextSectionBlock record={record as TextSectionBlockRecord} locale={locale} contentLinkGroup />;
+    case "ContactFormSectionRecord":
+      if (!submitContact) return unknownBlockFallback(record);
+      return (
+        <ContactFormSectionBlock
+          record={record as ContactFormSectionBlockRecord}
+          locale={locale}
+          contentLinkGroup
+          action={submitContact}
+        />
+      );
     case "BlogPostsSectionRecord":
       return (
         <Suspense

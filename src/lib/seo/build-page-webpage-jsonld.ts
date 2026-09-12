@@ -8,12 +8,15 @@ import { buildBreadcrumbListJsonLd } from "@/lib/seo/build-listing-page-jsonld";
 import { schemaLanguage } from "@/lib/seo/locale-tags";
 import { getOrganizationId, getSiteBaseUrl } from "@/lib/seo/site-config";
 
+export type PageJsonLdType = "WebPage" | "ContactPage";
+
 export type PageJsonLdInput = {
   path: string;
   title: string;
   description?: string | null;
   locale: AppLocale;
   breadcrumbTrail?: { name: string; path: string }[];
+  pageType?: PageJsonLdType;
 };
 
 export function buildPageWebPageJsonLd(input: PageJsonLdInput): Record<string, unknown>[] {
@@ -22,7 +25,7 @@ export function buildPageWebPageJsonLd(input: PageJsonLdInput): Record<string, u
   const url = new URL(pathname, `${base}/`).toString();
 
   const webPage: Record<string, unknown> = {
-    "@type": "WebPage",
+    "@type": input.pageType ?? "WebPage",
     "@id": `${url}#webpage`,
     url,
     name: input.title,
