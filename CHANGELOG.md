@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.16.0...next-dato-v0.17.0) (2026-09-12)
+
+
+### Features
+
+* **search:** implement search functionality with dedicated page and components; add search section block for structured search results; enhance search query handling and metadata integration; update documentation in DATOCMS.md for search setup and usage ([aedafa7](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/aedafa784c6059d7468c896059b93aaa159a5453))
+
 ## [0.16.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.15.0...next-dato-v0.16.0) (2026-09-12)
 
 
