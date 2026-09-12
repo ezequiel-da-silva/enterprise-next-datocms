@@ -18,5 +18,15 @@ describe("buildSiteJsonLdGraph", () => {
     expect(org?.name).toBe("Acme");
     expect(org?.logo).toEqual({ "@type": "ImageObject", url: "https://www.datocms-assets.com/logo.png" });
     expect(org?.sameAs).toEqual(["https://github.com/acme"]);
+    const action = website?.potentialAction as { target?: { urlTemplate?: string } };
+    expect(action?.target?.urlTemplate).toBe("http://localhost:3000/busca?q={search_term_string}");
+  });
+
+  it("points SearchAction at the configured CMS search path", () => {
+    const identity = buildSiteIdentity({ seo: { siteName: "Acme" } });
+    const graph = buildSiteJsonLdGraph(identity, "/en/search");
+    const website = graph.find((node) => node["@type"] === "WebSite");
+    const action = website?.potentialAction as { target?: { urlTemplate?: string } };
+    expect(action?.target?.urlTemplate).toBe("http://localhost:3000/en/search?q={search_term_string}");
   });
 });

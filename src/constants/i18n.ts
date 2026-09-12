@@ -4,6 +4,9 @@ export const REQUEST_LOCALE_HEADER = "x-nd-locale";
 /** Pathname da request, definido no proxy — não ler um header enviado pelo cliente. */
 export const REQUEST_PATHNAME_HEADER = "x-nd-pathname";
 
+/** Query string da request (`?q=`), definido no proxy — não ler um header enviado pelo cliente. */
+export const REQUEST_SEARCH_HEADER = "x-nd-search";
+
 /** Locales expostos na URL como primeiro segmento (`/en/...`, `/pt/...` — partilha `[slug]` com páginas CMS). */
 export type AppLocale = "en" | "pt" | "es";
 

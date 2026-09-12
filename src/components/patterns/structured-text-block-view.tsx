@@ -4,6 +4,7 @@ import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
+import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type {
   CtaBannerBlockRecord,
   FeatureGridRecord,
@@ -17,6 +18,7 @@ import type {
   TeamSectionBlockRecord,
   TextSectionBlockRecord,
   ContactFormSectionBlockRecord,
+  SearchSectionBlockRecord,
   VideoBlockWithCaptions,
 } from "@/infra/datocms/types-page";
 import { FeatureGridBlock } from "@/components/patterns/feature-grid-block";
@@ -30,6 +32,7 @@ import { TabsSectionBlock } from "@/components/sections/tabs-section-block";
 import { TeamSectionBlock } from "@/components/sections/team-section-block";
 import { TextSectionBlock } from "@/components/sections/text-section-block";
 import { ContactFormSectionBlock } from "@/components/sections/contact-form-section-block";
+import { SearchSectionBlock } from "@/components/sections/search-section-block";
 import {
   BlogPostsSectionBlock,
   BlogPostsSectionFallback,
@@ -53,6 +56,9 @@ type StructuredTextBlockViewProps = {
     formData: FormData,
   ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
+  searchQuery?: string;
+  searchFormAction?: string;
+  searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
 };
 
 function unknownBlockFallback(record: PageStructuredTextBlock): null {
@@ -152,6 +158,9 @@ export function StructuredTextBlockView({
   submitUserReview,
   submitContact,
   latestPostsCatalog,
+  searchQuery,
+  searchFormAction,
+  searchResults,
 }: StructuredTextBlockViewProps) {
   switch (record.__typename) {
     case "ImageBlockRecord": {
@@ -246,6 +255,17 @@ export function StructuredTextBlockView({
           locale={locale}
           contentLinkGroup
           action={submitContact}
+        />
+      );
+    case "SearchSectionRecord":
+      return (
+        <SearchSectionBlock
+          record={record as SearchSectionBlockRecord}
+          locale={locale}
+          contentLinkGroup
+          formAction={searchFormAction ?? `/${locale}/busca`}
+          query={searchQuery ?? ""}
+          results={searchResults}
         />
       );
     case "BlogPostsSectionRecord":

@@ -679,6 +679,29 @@ const TEXT_SECTION_BLOCK = `
   }
 `;
 
+/** Search section — copy CMS; o widget GET ?q= e SEARCH_SITE ficam no Next. @see fragments/search-section.graphql */
+const SEARCH_SECTION_BLOCK = `
+  ... on SearchSectionRecord {
+    id
+    hasTextHeader
+    textHeaderSection {
+      ${TEXT_HEADER_FIELDS}
+    }
+    intro {
+      value
+      links {
+        ${ST_RECORD_LINKS_PAGE_ST}
+      }
+      blocks
+      inlineBlocks
+    }
+    placeholder
+    submitLabel
+    emptyHint
+    noResults
+  }
+`;
+
 /** Contact form section — copy CMS; o formulário fica no Next. @see fragments/contact-form-section.graphql */
 const CONTACT_FORM_SECTION_BLOCK = `
   ... on ContactFormSectionRecord {
@@ -722,6 +745,7 @@ const PAGE_CONTENT_BLOCKS = `
   ${BLOG_POSTS_SECTION_BLOCK}
   ${TEXT_SECTION_BLOCK}
   ${CONTACT_FORM_SECTION_BLOCK}
+  ${SEARCH_SECTION_BLOCK}
 `;
 
 const HERO_PAGE_FIELDS = `
@@ -1109,6 +1133,22 @@ export const GET_CONTACT_PAGE = /* GraphQL */ `
   query GetContactPage($locale: SiteLocale!) {
     globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
       contactPage {
+        id
+        title
+        slug
+      }
+    }
+  }
+`;
+
+/**
+ * Page escolhida como busca. Consulta separada para fallback `/{locale}/busca`
+ * enquanto a migration ainda não existir no ambiente.
+ */
+export const GET_SEARCH_PAGE = /* GraphQL */ `
+  query GetSearchPage($locale: SiteLocale!) {
+    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      searchPage {
         id
         title
         slug

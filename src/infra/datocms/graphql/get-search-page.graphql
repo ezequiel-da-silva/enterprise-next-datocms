@@ -1,0 +1,9 @@
+query GetSearchPage($locale: SiteLocale!) {
+  globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+    searchPage {
+      id
+      title
+      slug
+    }
+  }
+}

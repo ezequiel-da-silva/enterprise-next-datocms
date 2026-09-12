@@ -12,6 +12,7 @@
 #import "./fragments/text-header.graphql"
 #import "./fragments/text-section.graphql"
 #import "./fragments/contact-form-section.graphql"
+#import "./fragments/search-section.graphql"
 
 query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
   page(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
@@ -126,6 +127,9 @@ query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!
       }
       ... on ContactFormSectionRecord {
         ...ContactFormSectionBlockFragment
+      }
+      ... on SearchSectionRecord {
+        ...SearchSectionBlockFragment
       }
     }
     seoSettingsSocial {

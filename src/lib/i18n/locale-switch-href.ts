@@ -1,10 +1,9 @@
 import { APP_LOCALES, isAppLocale, type AppLocale } from "@/constants/i18n";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
+import { readSearchQuery } from "@/lib/datocms/search-query";
 import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import type { DatoSlugLocaleEntry } from "@/lib/seo/hreflang";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
-
-const ROOT_STATIC = new Set(["busca"]);
 
 export type LocalePathKind =
   | { kind: "home" }
@@ -13,7 +12,6 @@ export type LocalePathKind =
   | { kind: "author"; slug: string }
   | { kind: "category"; slug: string }
   | { kind: "cms"; slug: string }
-  | { kind: "root-static" }
   | { kind: "other" };
 
 export function normalizeSwitcherPathname(pathname: string): string {
@@ -31,10 +29,6 @@ export function parseLocalePath(pathname: string): LocalePathKind {
   const [first, ...rest] = segments;
 
   if (!first) return { kind: "home" };
-
-  if (ROOT_STATIC.has(first) && rest.length === 0) {
-    return { kind: "root-static" };
-  }
 
   if (isAppLocale(first)) {
     return parseAfterLocale(rest);
@@ -111,7 +105,7 @@ export function buildLocaleSwitcherHrefs(
 ): Record<AppLocale, string> {
   const kind = parseLocalePath(pathname);
 
-  if (kind.kind === "home" || kind.kind === "root-static" || kind.kind === "other") {
+  if (kind.kind === "home" || kind.kind === "other") {
     return homeHrefs();
   }
 
@@ -153,4 +147,21 @@ export function slugPathsFromBlogRecord(
     slugLocales,
     (locale, slug) => `/${locale}/blog/${prefix}${slug}`,
   );
+}
+
+/** Preserva `?q=` nos hrefs do seletor (página de busca). */
+export function appendLocaleSwitcherSearch(
+  hrefs: Record<AppLocale, string>,
+  query?: string | null,
+): Record<AppLocale, string> {
+  const q = readSearchQuery(query);
+  if (!q) return hrefs;
+  const params = new URLSearchParams();
+  params.set("q", q);
+  const suffix = `?${params.toString()}`;
+  const out = { ...hrefs };
+  for (const locale of APP_LOCALES) {
+    out[locale] = `${hrefs[locale]}${suffix}`;
+  }
+  return out;
 }

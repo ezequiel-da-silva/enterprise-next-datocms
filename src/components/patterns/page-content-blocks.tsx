@@ -1,6 +1,7 @@
 import type { AppLocale } from "@/constants/i18n";
 import { StructuredTextBlockView } from "@/components/patterns/structured-text-block-view";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
+import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { PageContentBlock, PageStructuredTextBlock } from "@/infra/datocms/types-page";
@@ -17,6 +18,9 @@ type PageContentBlocksProps = {
   submitUserReview?: UserReviewSubmitAction;
   submitContact?: ContactSubmitAction;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
+  searchQuery?: string;
+  searchFormAction?: string;
+  searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
 };
 
 /**
@@ -29,6 +33,9 @@ export function PageContentBlocks({
   submitUserReview,
   submitContact,
   latestPostsCatalog,
+  searchQuery,
+  searchFormAction,
+  searchResults,
 }: PageContentBlocksProps) {
   if (records.length === 0) {
     return null;
@@ -42,6 +49,9 @@ export function PageContentBlocks({
       submitUserReview={submitUserReview}
       submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
+      searchQuery={searchQuery}
+      searchFormAction={searchFormAction}
+      searchResults={searchResults}
     />
   ));
 

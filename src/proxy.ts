@@ -3,6 +3,7 @@ import {
   DEFAULT_APP_LOCALE,
   REQUEST_LOCALE_HEADER,
   REQUEST_PATHNAME_HEADER,
+  REQUEST_SEARCH_HEADER,
   isAppLocale,
 } from "@/constants/i18n";
 import { NONCE_HEADER } from "@/constants/security";
@@ -116,6 +117,7 @@ export async function proxy(request: NextRequest) {
   const requestLocale = firstSegment && isAppLocale(firstSegment) ? firstSegment : DEFAULT_APP_LOCALE;
   requestHeaders.set(REQUEST_LOCALE_HEADER, requestLocale);
   requestHeaders.set(REQUEST_PATHNAME_HEADER, pathname);
+  requestHeaders.set(REQUEST_SEARCH_HEADER, request.nextUrl.search);
 
   const response = applySecurityHeaders(
     NextResponse.next({ request: { headers: requestHeaders } }),

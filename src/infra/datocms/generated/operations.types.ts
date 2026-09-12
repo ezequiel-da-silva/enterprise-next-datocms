@@ -29,6 +29,8 @@ export type PricingSectionBlockFragmentFragment = { id: string, textHeaderSectio
 
 export type ReviewsSectionBlockFragmentFragment = { id: string, allowSubmissions: boolean, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, reviews: Array<{ id: string, authorName: string | null, rating: number | null, comment: string | null, authorAvatar: { url: string, alt: string | null, width: number | null, height: number | null } | null }> };
 
+export type SearchSectionBlockFragmentFragment = { id: string, hasTextHeader: boolean, placeholder: string | null, submitLabel: string | null, emptyHint: string | null, noResults: string | null, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, intro: { value: unknown, blocks: Array<string>, inlineBlocks: Array<string>, links: Array<{ __typename: 'PageRecord', id: string, title: string | null, slug: string | null }> } | null };
+
 export type FileAssetFieldsFragment = { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null };
 
 export type HeroImageBlockFieldsFragment = { __typename: 'HeroImageBlockRecord', id: string, assetMobile: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null };
@@ -107,6 +109,8 @@ type TextSectionMediaBlocks_ReviewsSectionRecord_Fragment = { __typename: 'Revie
 
 type TextSectionMediaBlocks_SchemaMigrationRecord_Fragment = { __typename: 'SchemaMigrationRecord', id: string };
 
+type TextSectionMediaBlocks_SearchSectionRecord_Fragment = { __typename: 'SearchSectionRecord', id: string };
+
 type TextSectionMediaBlocks_SocialLinkRecord_Fragment = { __typename: 'SocialLinkRecord', id: string };
 
 type TextSectionMediaBlocks_StatCardRecord_Fragment = { __typename: 'StatCardRecord', id: string };
@@ -162,6 +166,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_RedirectRecord_Fragment
   | TextSectionMediaBlocks_ReviewsSectionRecord_Fragment
   | TextSectionMediaBlocks_SchemaMigrationRecord_Fragment
+  | TextSectionMediaBlocks_SearchSectionRecord_Fragment
   | TextSectionMediaBlocks_SocialLinkRecord_Fragment
   | TextSectionMediaBlocks_StatCardRecord_Fragment
   | TextSectionMediaBlocks_StatsSectionRecord_Fragment
@@ -196,6 +201,13 @@ export type GetContactPageQueryVariables = Exact<{
 
 export type GetContactPageQuery = { globalSetting: { contactPage: { id: string, title: string | null, slug: string | null } | null } | null };
 
+export type GetSearchPageQueryVariables = Exact<{
+  locale: Types.SiteLocale;
+}>;
+
+
+export type GetSearchPageQuery = { globalSetting: { searchPage: { id: string, title: string | null, slug: string | null } | null } | null };
+
 export type PageBySlugQueryVariables = Exact<{
   slug: string;
   locale: Types.SiteLocale;
@@ -212,6 +224,7 @@ export type PageBySlugQuery = { page: { id: string, title: string | null, slug: 
       | { __typename: 'LogoGridRecord', id: string, grayscale: boolean, layoutStyle: string | null, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, logos: Array<{ __typename: 'ImageBlockRecord', id: string, asset: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null }> }
       | { __typename: 'PricingSectionRecord', id: string, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, plans: Array<{ __typename: 'PricingCardRecord', id: string, name: string | null, hasDescription: boolean, description: string | null, priceType: string | null, currency: string | null, amount: number | null, billingPeriod: string | null, isPopular: boolean, features: string | null, hasButton: boolean, ctaButton: Array<{ __typename: 'LinkRecord', id: string, ctaLabel: string | null, typeContent: string | null, externalLink: string | null, openInNewTab: boolean, ctaLinkAria: string | null, internalLinkPage: { __typename: 'PageRecord', slug: string | null } | null, internalLinkPost: { __typename: 'PostRecord', postSlug: string | null } | null, internalLinkCategory: { __typename: 'CategoryRecord', categorySlug: string | null } | null, internalLinkAuthor: { __typename: 'AuthorRecord', authorSlug: string | null } | null }> }> }
       | { __typename: 'ReviewsSectionRecord', id: string, allowSubmissions: boolean, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, reviews: Array<{ id: string, authorName: string | null, rating: number | null, comment: string | null, authorAvatar: { url: string, alt: string | null, width: number | null, height: number | null } | null }> }
+      | { __typename: 'SearchSectionRecord', id: string, hasTextHeader: boolean, placeholder: string | null, submitLabel: string | null, emptyHint: string | null, noResults: string | null, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, intro: { value: unknown, blocks: Array<string>, inlineBlocks: Array<string>, links: Array<{ __typename: 'PageRecord', id: string, title: string | null, slug: string | null }> } | null }
       | { __typename: 'StatsSectionRecord', id: string, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, stats: Array<{ __typename: 'StatCardRecord', id: string, value: string | null, label: string | null, hasDescription: boolean, description: string | null }> }
       | { __typename: 'StepsSectionRecord', id: string, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, steps: Array<{ __typename: 'StepCardRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasImage: boolean, mediaImage: Array<{ __typename: 'CardImageBlockRecord', id: string, assetMobile: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null }> }> }
       | { __typename: 'TabsSectionRecord', id: string, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, tabs: Array<{ __typename: 'TabItemRecord', id: string, labelTab: string | null, title: string | null, hasDescription: boolean, description: string | null, hasLink: boolean, hasImage: boolean, ctaLink: { __typename: 'LinkRecord', id: string, ctaLabel: string | null, typeContent: string | null, externalLink: string | null, openInNewTab: boolean, ctaLinkAria: string | null, internalLinkPage: { __typename: 'PageRecord', slug: string | null } | null, internalLinkPost: { __typename: 'PostRecord', postSlug: string | null } | null, internalLinkCategory: { __typename: 'CategoryRecord', categorySlug: string | null } | null, internalLinkAuthor: { __typename: 'AuthorRecord', authorSlug: string | null } | null } | null, mediaImage: { __typename: 'CardImageBlockRecord', id: string, assetMobile: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null } | null }> }

@@ -1,93 +1,17 @@
-import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
-import { JsonLdScript } from "@/components/patterns/seo-manager";
-import { SearchResults } from "@/components/patterns/search-results";
-import { SearchSkeleton } from "@/components/patterns/search-skeleton";
-import { searchSite } from "@/infra/datocms/search";
-import { buildSearchPageJsonLd } from "@/lib/seo/build-search-jsonld";
-import { homeBreadcrumbLabel, homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
-import { buildMetadata } from "@/lib/seo";
-import type { Metadata } from "next";
-import { Suspense } from "react";
+import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
+import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
+import { readSearchQuery, searchResultsPath } from "@/lib/datocms/search-query";
+import { draftMode } from "next/headers";
+import { permanentRedirect } from "next/navigation";
 
-/** Rota estática `/busca` usa copy PT; alinhar metadata/JSON-LD. */
-const STATIC_CONTENT_LOCALE = "pt" as const;
-
-type BuscaPageProps = {
+type BuscaRedirectProps = {
   searchParams: Promise<{ q?: string }>;
 };
 
-export async function generateMetadata({ searchParams }: BuscaPageProps): Promise<Metadata> {
-  const { q } = await searchParams;
-  const term = q?.trim();
-  const hasQuery = Boolean(term);
-
-  return buildMetadata({
-    title: hasQuery ? `Busca: ${term}` : "Busca",
-    description: hasQuery
-      ? `Resultados de busca para «${term}» no site.`
-      : "Busca full-text via GraphQL no DatoCMS com tags de revalidação.",
-    path: hasQuery ? `/busca?q=${encodeURIComponent(term!)}` : "/busca",
-    noIndex: true,
-    locale: STATIC_CONTENT_LOCALE,
-  });
-}
-
-async function SearchShell({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
-  const { q = "" } = await searchParams;
-  const { hits, error } = await searchSite(q);
-  return <SearchResults query={q} hits={hits} error={error} />;
-}
-
-export default async function BuscaPage({ searchParams }: BuscaPageProps) {
-  const { q } = await searchParams;
-  const term = q?.trim();
-
-  return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-8 px-4 py-12">
-      <JsonLdScript graph={buildSearchPageJsonLd(STATIC_CONTENT_LOCALE, term)} />
-      <header className="space-y-3">
-        <BreadcrumbNav
-          locale={STATIC_CONTENT_LOCALE}
-          items={[
-            {
-              label: homeBreadcrumbLabel(STATIC_CONTENT_LOCALE),
-              href: homeBreadcrumbPath(STATIC_CONTENT_LOCALE),
-            },
-            { label: term ? `Busca: ${term}` : "Busca" },
-          ]}
-        />
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Busca</h1>
-        <p className="text-sm text-muted-foreground">
-          Requisição GraphQL com <code className="rounded bg-muted px-1 py-0.5">next: tags</code> para invalidação
-          granular.
-        </p>
-      </header>
-
-      <form className="flex flex-col gap-3 sm:flex-row" action="/busca" method="get" role="search">
-        <label className="sr-only" htmlFor="q">
-          Termo de busca
-        </label>
-        <input
-          id="q"
-          name="q"
-          type="search"
-          defaultValue={term ?? ""}
-          placeholder="Buscar páginas, artigos ou autores…"
-          autoComplete="off"
-          enterKeyHint="search"
-          className="min-h-12 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        />
-        <button
-          type="submit"
-          className="min-h-12 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        >
-          Buscar
-        </button>
-      </form>
-
-      <Suspense fallback={<SearchSkeleton />}>
-        <SearchShell searchParams={searchParams} />
-      </Suspense>
-    </div>
-  );
+/** Compat: `/busca` aponta para a Page configurada em Global setting. */
+export default async function BuscaRedirectPage({ searchParams }: BuscaRedirectProps) {
+  const { isEnabled } = await draftMode();
+  const page = await getSearchPage(DEFAULT_APP_LOCALE, isEnabled);
+  const query = readSearchQuery((await searchParams).q);
+  permanentRedirect(searchResultsPath(searchPagePath(DEFAULT_APP_LOCALE, page), query));
 }
