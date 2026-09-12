@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.15.0...next-dato-v0.16.0) (2026-09-12)
+
+
+### Features
+
+* **datocms:** add contact page functionality; implement contact form section with migration for CMS integration; update GraphQL queries and types for contact page retrieval; enhance DATOCMS.md documentation for contact page setup and usage; refactor components to support new contact form structure ([93a007e](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/93a007e7dc05c3dacb6c0181f32b4fa9cd3fad07))
+
 ## [0.15.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.14.0...next-dato-v0.15.0) (2026-09-11)
 
 
