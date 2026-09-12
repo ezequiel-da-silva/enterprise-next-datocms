@@ -1,0 +1,26 @@
+# Fragmento do organismo Contact form section (`contact_form_section`).
+# O formulário (campos + envio) vive no Next; o CMS só fornece copy e cabeçalho.
+#import "./text-header.graphql"
+
+fragment ContactFormSectionBlockFragment on ContactFormSectionRecord {
+  id
+  hasTextHeader
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
+  intro {
+    value
+    links {
+      __typename
+      ... on PageRecord {
+        id
+        title
+        slug
+      }
+    }
+    blocks
+    inlineBlocks
+  }
+  successMessage
+  privacyNote
+}

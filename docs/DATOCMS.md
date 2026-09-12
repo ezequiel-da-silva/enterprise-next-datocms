@@ -144,6 +144,20 @@ registo selecionado em **Global setting → Blog page**. Para listar artigos, ad
   fallback continua a ser `/{locale}/blog`.
 - Depois de mudar a slug, mantenha um `Redirect` da URL antiga para a nova.
 
+## Página de contacto
+
+A página de contacto é uma `Page` normal: título, Hero, SEO, slug e `content_page` vêm do
+registo em **Global setting → Contact page**. Inclua o bloco **Contact form section**.
+
+O formulário (nome, e-mail, mensagem, honeypot, rate limit, webhook) continua no Next
+([`ContactForm`](../src/components/patterns/contact-form.tsx) + [`submitContact`](../src/app/actions/contact.ts)). O CMS só define cabeçalho, intro, mensagem de sucesso e nota de privacidade.
+
+Slugs locais de exemplo: `contact` (en), `contato` (pt), `contacto` (es). `/contato` (sem locale) redirecciona para a Page do locale por omissão.
+
+- Enquanto a migration não existir ou o campo estiver vazio, o fallback é `/{locale}/contato`.
+- JSON-LD usa `@type: ContactPage` quando o id da Page coincide com `contact_page`.
+- Não promover este schema de `develop` para `main` até o front estar pronto no primary.
+
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).

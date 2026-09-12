@@ -1,4 +1,5 @@
 import { CmsPageArticle } from "@/components/patterns/cms-page-article";
+import { submitContact } from "@/app/actions/contact";
 import { submitUserReview } from "@/app/actions/submit-user-review";
 import {
   APP_LOCALES,
@@ -10,6 +11,11 @@ import {
   type AppLocale,
 } from "@/constants/i18n";
 import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
+import {
+  contactPagePath,
+  getContactPage,
+  isContactPageAliasSlug,
+} from "@/infra/datocms/get-contact-page";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
@@ -20,7 +26,7 @@ import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { draftMode, headers } from "next/headers";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -82,12 +88,21 @@ export default async function DynamicPage({ params }: PageProps) {
 
   const page = result.data.page;
   if (!page) {
+    if (isContactPageAliasSlug(pageSlug)) {
+      const configuredContactPage = await getContactPage(cmsLocale, isEnabled);
+      const configuredPath = contactPagePath(cmsLocale, configuredContactPage);
+      if (configuredContactPage && configuredPath !== cmsPageCanonicalPath(pageSlug, cmsLocale)) {
+        permanentRedirect(configuredPath);
+      }
+    }
     notFound();
   }
 
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
     ? loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
     : undefined;
+
+  const configuredContactPage = await getContactPage(cmsLocale, isEnabled);
 
   return (
     <CmsPageArticle
@@ -96,7 +111,9 @@ export default async function DynamicPage({ params }: PageProps) {
       canonicalPath={cmsPageCanonicalPath(pageSlug, cmsLocale)}
       contentLinkGroup={isEnabled}
       submitUserReview={submitUserReview}
+      submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
+      jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
     />
   );
 }

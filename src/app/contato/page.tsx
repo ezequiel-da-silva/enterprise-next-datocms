@@ -1,34 +1,11 @@
-import { ContactForm } from "@/components/patterns/contact-form";
-import { JsonLdScript } from "@/components/patterns/seo-manager";
-import { submitContact } from "@/app/actions/contact";
-import { buildMetadata } from "@/lib/seo";
-import { buildStaticPageJsonLd } from "@/lib/seo/build-static-page-jsonld";
-import type { Metadata } from "next";
+import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
+import { contactPagePath, getContactPage } from "@/infra/datocms/get-contact-page";
+import { draftMode } from "next/headers";
+import { permanentRedirect } from "next/navigation";
 
-const contactDescription =
-  "Formulário seguro com React Hook Form, Zod, honeypot e Server Actions.";
-
-export const metadata: Metadata = buildMetadata({
-  title: "Contato",
-  description: contactDescription,
-  path: "/contato",
-  locale: "pt",
-});
-
-export default function ContatoPage() {
-  const contactLd = buildStaticPageJsonLd("ContactPage", "Contato", "/contato", contactDescription, "pt");
-
-  return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-12">
-      <JsonLdScript graph={contactLd} />
-      <header className="max-w-2xl space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight text-foreground">Contato</h1>
-        <p className="text-sm text-muted-foreground">
-          Validação em camadas: Zod no núcleo, Honeypot na Server Action e UX acessível com
-          Radix-friendly patterns.
-        </p>
-      </header>
-      <ContactForm action={submitContact} />
-    </div>
-  );
+/** Compat: `/contato` aponta para a Page configurada em Global setting. */
+export default async function ContatoRedirectPage() {
+  const { isEnabled } = await draftMode();
+  const page = await getContactPage(DEFAULT_APP_LOCALE, isEnabled);
+  permanentRedirect(contactPagePath(DEFAULT_APP_LOCALE, page));
 }

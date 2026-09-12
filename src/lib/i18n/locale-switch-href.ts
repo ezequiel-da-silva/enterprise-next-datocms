@@ -4,7 +4,7 @@ import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import type { DatoSlugLocaleEntry } from "@/lib/seo/hreflang";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 
-const ROOT_STATIC = new Set(["contato", "busca"]);
+const ROOT_STATIC = new Set(["busca"]);
 
 export type LocalePathKind =
   | { kind: "home" }

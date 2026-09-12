@@ -1,10 +1,10 @@
 import { type AppLocale, isAppLocale } from "@/constants/i18n";
 
-const APP_ROOT_ROUTES = new Set(["contato", "busca"]);
+const APP_ROOT_ROUTES = new Set(["busca"]);
 
 /**
  * Ajusta hrefs internos ao locale: blog (`/blog/...` → `/[locale]/blog/...`) e páginas CMS
- * (`/page-slug` → `/[locale]/page-slug`). Rotas fixas à raiz (`/contato`, `/busca`) mantêm-se.
+ * (`/page-slug` → `/[locale]/page-slug`). Rotas fixas à raiz (`/busca`) mantêm-se.
  */
 export function localizeInternalHref(href: string, locale: AppLocale): string {
   const raw = href.trim();

@@ -90,7 +90,7 @@ Com HTTPS e domínio público:
 - [ ] `/api/draft` sem secret → 401 ou 500 (nunca preview aberto)
 - [ ] `/api/draft?secret=wrong` → 401 quando secret configurado
 - [ ] `/api/draft?secret=…&redirect=https://evil.com` → 422
-- [ ] Formulário `/contato`: honeypot `company_website` preenchido → sucesso genérico, sem leak
+- [ ] Formulário de contacto (Page CMS + bloco `contact_form_section`): honeypot `company_website` preenchido → sucesso genérico, sem leak
 - [ ] Links externos do CMS com `javascript:` não renderizam (`isSafeExternalHref`)
 - [ ] Tokens Dato **não** aparecem no bundle do browser (DevTools → Sources)
 - [ ] `.env` fora do git; produção com secrets no painel do host

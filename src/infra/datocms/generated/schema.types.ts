@@ -528,6 +528,44 @@ export type ColorThemeRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+export type ContactFormSectionModelIntroField = {
+  __typename?: 'ContactFormSectionModelIntroField';
+  blocks: Array<Scalars['String']['output']>;
+  inlineBlocks: Array<Scalars['String']['output']>;
+  links: Array<PageRecord>;
+  value: Scalars['JsonField']['output'];
+};
+
+/** Block of type ☎️ Contact form section (contact_form_section) */
+export type ContactFormSectionRecord = RecordInterface & {
+  __typename?: 'ContactFormSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  hasTextHeader: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  intro?: Maybe<ContactFormSectionModelIntroField>;
+  privacyNote?: Maybe<Scalars['String']['output']>;
+  successMessage?: Maybe<Scalars['String']['output']>;
+  textHeaderSection: Array<TextHeaderRecord>;
+};
+
+
+/** Block of type ☎️ Contact form section (contact_form_section) */
+export type ContactFormSectionRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
 /** Specifies how to filter by creation datetime */
 export type CreatedAtFilter = {
   /** Filter records with a value that's within the specified minute range. Seconds and milliseconds are truncated from the argument. */
@@ -904,6 +942,7 @@ export type GlobalSettingRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   blogPage?: Maybe<PageRecord>;
+  contactPage?: Maybe<PageRecord>;
   description404?: Maybe<GlobalSettingModelDescription404Field>;
   id: Scalars['ItemId']['output'];
   image404?: Maybe<ImageBlockRecord>;
@@ -3208,7 +3247,7 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
-export type PageModelContentPageField = BlogPostsSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
+export type PageModelContentPageField = BlogPostsSectionRecord | ContactFormSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
 
 export type PageModelContentPageFieldListListNonNullMultiLocaleField = {
   __typename?: 'PageModelContentPageFieldListListNonNullMultiLocaleField';

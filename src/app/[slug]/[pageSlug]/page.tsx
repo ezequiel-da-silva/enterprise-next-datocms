@@ -1,8 +1,14 @@
 import { CmsPageArticle } from "@/components/patterns/cms-page-article";
+import { submitContact } from "@/app/actions/contact";
 import { submitUserReview } from "@/app/actions/submit-user-review";
 import { isAppLocale, toDatoSiteLocale, type AppLocale } from "@/constants/i18n";
 import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
 import { blogIndexPath, getBlogIndexPage } from "@/infra/datocms/get-blog-index-page";
+import {
+  contactPagePath,
+  getContactPage,
+  isContactPageAliasSlug,
+} from "@/infra/datocms/get-contact-page";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
@@ -76,12 +82,21 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
         permanentRedirect(configuredPath);
       }
     }
+    if (isContactPageAliasSlug(pageSlug)) {
+      const configuredContactPage = await getContactPage(locale, isEnabled);
+      const configuredPath = contactPagePath(locale, configuredContactPage);
+      if (configuredContactPage && configuredPath !== cmsPageCanonicalPath(pageSlug, locale)) {
+        permanentRedirect(configuredPath);
+      }
+    }
     notFound();
   }
 
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
     ? loadLatestPostsCatalog(toDatoSiteLocale(locale), isEnabled)
     : undefined;
+
+  const configuredContactPage = await getContactPage(locale, isEnabled);
 
   return (
     <CmsPageArticle
@@ -90,7 +105,9 @@ export default async function LocalePrefixedCmsPage({ params }: PageProps) {
       canonicalPath={cmsPageCanonicalPath(pageSlug, locale)}
       contentLinkGroup={isEnabled}
       submitUserReview={submitUserReview}
+      submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
+      jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
     />
   );
 }
