@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.18.0...next-dato-v0.19.0) (2026-09-13)
+
+
+### Features
+
+* **datocms:** add migration to allow relative and absolute URLs for navigation item links; update field validators and hints for improved user guidance ([ab9ad73](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/ab9ad73939da0889c0c227b17fcffd64d62c807c))
+
 ## [0.18.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.17.0...next-dato-v0.18.0) (2026-09-13)
 
 
