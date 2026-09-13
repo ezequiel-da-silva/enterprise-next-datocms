@@ -4381,7 +4381,7 @@ export type SearchSectionModelIntroField = {
   value: Scalars['JsonField']['output'];
 };
 
-/** Block of type Search section (search_section) */
+/** Block of type 🔍 Search section (search_section) */
 export type SearchSectionRecord = RecordInterface & {
   __typename?: 'SearchSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
@@ -4408,7 +4408,7 @@ export type SearchSectionRecord = RecordInterface & {
 };
 
 
-/** Block of type Search section (search_section) */
+/** Block of type 🔍 Search section (search_section) */
 export type SearchSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
