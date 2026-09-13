@@ -182,7 +182,7 @@ URL: `/{locale}/{slug}`. O slug **não é localizado** (o mesmo segmento em en /
 
 No Dato: **Navigation → Legal links** com paths tipo `/privacy-policy` (o Next acrescenta o locale). Não é preciso um pointer em Global setting.
 
-SEO: campo `seo_settings_social` (título, descrição, noIndex). Se o corpo já tiver um heading nível 1, o Next não repete o título como `<h1>`.
+SEO: o mesmo fieldset **🚀 SEO settings** de Page / Post / Author / Category — `seo_settings_social` (título, descrição, imagem, noIndex, Twitter card) e `seo_analysis` (plugin SEO/Readability no admin). O Next só lê `seo_settings_social` + `_seoMetaTags`. Se o corpo já tiver um heading nível 1, o título do registo não se repete como `<h1>`.
 
 A query `LEGAL_PAGE_BY_SLUG` é independente de `PAGE_BY_SLUG`: em ambientes sem o modelo, a busca e o sitemap ignoram legais; páginas CMS continuam a funcionar.
 

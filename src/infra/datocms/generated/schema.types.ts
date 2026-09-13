@@ -2958,6 +2958,7 @@ export type LegalPageModelFilter = {
   _updatedAt?: InputMaybe<UpdatedAtFilter>;
   content?: InputMaybe<StructuredTextFilter>;
   id?: InputMaybe<ItemIdFilter>;
+  seoAnalysis?: InputMaybe<JsonFilter>;
   seoSettingsSocial?: InputMaybe<SeoFilter>;
   slug?: InputMaybe<SlugFilter>;
   title?: InputMaybe<StringFilter>;
@@ -2989,6 +2990,7 @@ export type LegalPageModelOrderBy =
 export type LegalPageRecord = RecordInterface & {
   __typename?: 'LegalPageRecord';
   _allContentLocales?: Maybe<Array<LegalPageModelContentFieldMultiLocaleField>>;
+  _allSeoAnalysisLocales?: Maybe<Array<JsonFieldMultiLocaleField>>;
   _allSeoSettingsSocialLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
@@ -3007,6 +3009,7 @@ export type LegalPageRecord = RecordInterface & {
   _updatedAt: Scalars['DateTime']['output'];
   content?: Maybe<LegalPageModelContentField>;
   id: Scalars['ItemId']['output'];
+  seoAnalysis?: Maybe<Scalars['JsonField']['output']>;
   seoSettingsSocial?: Maybe<SeoField>;
   slug?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
@@ -3015,6 +3018,12 @@ export type LegalPageRecord = RecordInterface & {
 
 /** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord_AllContentLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecord_AllSeoAnalysisLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -3039,6 +3048,13 @@ export type LegalPageRecord_SeoMetaTagsArgs = {
 
 /** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecordContentArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecordSeoAnalysisArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
