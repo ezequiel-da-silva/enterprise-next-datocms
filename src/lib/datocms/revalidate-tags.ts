@@ -17,6 +17,7 @@ export const DATOCMS_CACHE_TAGS = {
   sitemap: "datocms:sitemap",
   search: "datocms:search",
   redirects: "datocms:redirects",
+  legal: "datocms:legal",
 } as const;
 
 /** Famílias usadas em todos os fetches publicados (webhook CDA / payload desconhecido). */
@@ -39,6 +40,7 @@ export function coarseDatocmsCacheTags(): string[] {
     DATOCMS_CACHE_TAGS.sitemap,
     DATOCMS_CACHE_TAGS.search,
     DATOCMS_CACHE_TAGS.redirects,
+    DATOCMS_CACHE_TAGS.legal,
     ...localePairs,
   ]);
 }
@@ -181,6 +183,17 @@ function tagsForApiKey(
       return [DATOCMS_CACHE_TAGS.globalSettings, ...APP_LOCALES.map((locale) => `global-settings:${locale}`)];
     case "redirect":
       return [DATOCMS_CACHE_TAGS.redirects];
+    case "legal_page": {
+      const legalTags = readLocalizedSlugs(attrs, ["slug"]).map(
+        ({ locale, slug }) => `legal:${locale}:${slug}`,
+      );
+      return [
+        DATOCMS_CACHE_TAGS.legal,
+        DATOCMS_CACHE_TAGS.sitemap,
+        DATOCMS_CACHE_TAGS.search,
+        ...legalTags,
+      ];
+    }
     default:
       return [];
   }

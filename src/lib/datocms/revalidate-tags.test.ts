@@ -107,6 +107,19 @@ describe("tagsToRevalidateFromWebhook", () => {
     expect(settings).toContain(DATOCMS_CACHE_TAGS.globalSettings);
   });
 
+  it("maps legal_page to legal family + slug tag", () => {
+    const tags = tagsToRevalidateFromWebhook({
+      entity: {
+        attributes: { slug: "privacy-policy", locale: "en" },
+        relationships: { item_type: { data: { id: "t" } } },
+      },
+      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "legal_page" } }],
+    });
+    expect(tags).toContain(DATOCMS_CACHE_TAGS.legal);
+    expect(tags).toContain("legal:en:privacy-policy");
+    expect(tags).toContain(DATOCMS_CACHE_TAGS.sitemap);
+  });
+
   it("maps redirect records to datocms:redirects", () => {
     const tags = tagsToRevalidateFromWebhook({
       entity: { relationships: { item_type: { data: { id: "t" } } } },

@@ -10,6 +10,14 @@ describe("resolveStructuredTextRecordLink", () => {
     expect(result).toEqual({ href: "/en/about", label: "About us" });
   });
 
+  it("resolves LegalPageRecord", () => {
+    const result = resolveStructuredTextRecordLink(
+      { __typename: "LegalPageRecord", slug: "terms-of-service", title: "Terms" },
+      "en",
+    );
+    expect(result).toEqual({ href: "/en/terms-of-service", label: "Terms" });
+  });
+
   it("resolves PostRecord", () => {
     const result = resolveStructuredTextRecordLink(
       { __typename: "PostRecord", postSlug: "hello", postTitle: "Hello" },

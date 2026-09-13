@@ -1,11 +1,12 @@
-import { DEFAULT_APP_LOCALE, type AppLocale } from "@/constants/i18n";
+import { DEFAULT_APP_LOCALE, toDatoSiteLocale, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
-import { SEARCH_SITE } from "@/infra/datocms/queries";
+import { SEARCH_LEGAL_PAGES, SEARCH_SITE } from "@/infra/datocms/queries";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import type { SearchHit, SearchResultsPayload } from "@/lib/datocms/search-hit";
 
 type SearchSiteData = {
   pages: { id: string; title: string; slug: string | null }[];
+  legalPages?: { id: string; title: string; slug: string | null }[];
   postsEn: { id: string; postTitle: string; postSlug: string | null }[];
   postsPtBR: { id: string; postTitle: string; postSlug: string | null }[];
   postsEs: { id: string; postTitle: string; postSlug: string | null }[];
@@ -29,6 +30,12 @@ function mergeHits(data: SearchSiteData, locale: AppLocale): SearchHit[] {
   };
 
   for (const p of data.pages) {
+    const slug = p.slug?.trim();
+    if (!slug) continue;
+    push({ id: p.id, title: p.title, href: pageHref(slug, locale), kind: "page" });
+  }
+
+  for (const p of data.legalPages ?? []) {
     const slug = p.slug?.trim();
     if (!slug) continue;
     push({ id: p.id, title: p.title, href: pageHref(slug, locale), kind: "page" });
@@ -90,7 +97,18 @@ export async function searchSite(
     return { hits: [], error: result.errors[0]?.message };
   }
 
-  return { hits: mergeHits(result.data, locale) };
+  const legalResult = await datocmsFetch<{
+    allLegalPages: { id: string; title: string; slug: string | null }[];
+  }>({
+    query: SEARCH_LEGAL_PAGES,
+    variables: { q, locale: toDatoSiteLocale(locale) },
+    tags: [SEARCH_TAG, `search:${q.toLowerCase()}`],
+    revalidate: 120,
+  });
+
+  const legalPages = "errors" in legalResult ? [] : legalResult.data.allLegalPages;
+
+  return { hits: mergeHits({ ...result.data, legalPages }, locale) };
 }
 
 export function searchRevalidateTags(query: string): string[] {

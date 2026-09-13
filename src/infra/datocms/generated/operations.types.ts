@@ -85,6 +85,8 @@ type TextSectionMediaBlocks_ImageBlockRecord_Fragment = { __typename: 'ImageBloc
 
 type TextSectionMediaBlocks_ImageGalleryBlockRecord_Fragment = { __typename: 'ImageGalleryBlockRecord', id: string, assets: Array<{ url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null }> };
 
+type TextSectionMediaBlocks_LegalPageRecord_Fragment = { __typename: 'LegalPageRecord', id: string };
+
 type TextSectionMediaBlocks_LinkRecord_Fragment = { __typename: 'LinkRecord', id: string };
 
 type TextSectionMediaBlocks_LogoGridRecord_Fragment = { __typename: 'LogoGridRecord', id: string };
@@ -154,6 +156,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_HeroSectionRecord_Fragment
   | TextSectionMediaBlocks_ImageBlockRecord_Fragment
   | TextSectionMediaBlocks_ImageGalleryBlockRecord_Fragment
+  | TextSectionMediaBlocks_LegalPageRecord_Fragment
   | TextSectionMediaBlocks_LinkRecord_Fragment
   | TextSectionMediaBlocks_LogoGridRecord_Fragment
   | TextSectionMediaBlocks_NavItemModularRecord_Fragment
@@ -208,6 +211,22 @@ export type GetSearchPageQueryVariables = Exact<{
 
 export type GetSearchPageQuery = { globalSetting: { searchPage: { id: string, title: string | null, slug: string | null } | null } | null };
 
+export type LegalPageBySlugQueryVariables = Exact<{
+  slug: string;
+  locale: Types.SiteLocale;
+}>;
+
+
+export type LegalPageBySlugQuery = { legalPage: { id: string, title: string | null, slug: string | null, content: { value: unknown, blocks: Array<string>, inlineBlocks: Array<string>, links: Array<
+        | { __typename: 'LegalPageRecord', id: string, title: string | null, slug: string | null }
+        | { __typename: 'PageRecord', id: string, title: string | null, slug: string | null }
+      > } | null, seoSettingsSocial: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }> } | null, _site: { faviconMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }> } };
+
+export type ListLegalPageSlugsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListLegalPageSlugsQuery = { allLegalPages: Array<{ slug: string | null, _updatedAt: string, seoSettingsSocial: { noIndex: boolean | null } | null }> };
+
 export type PageBySlugQueryVariables = Exact<{
   slug: string;
   locale: Types.SiteLocale;
@@ -235,3 +254,11 @@ export type PageBySlugQuery = { page: { id: string, title: string | null, slug: 
             | { __typename: 'VideoBlockRecord', id: string, _editingUrl?: string | null, asset: { url: string, title: string | null, width: number | null, height: number | null, video: { muxPlaybackId: string, streamingUrl: string, mp4Url: string | null, thumbnailUrl: string, width: number, height: number, duration: number | null } | null } | null }
           > } | null }
     >, seoSettingsSocial: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }>, _allSlugLocales: Array<{ locale: Types.SiteLocale | null, value: string | null }> | null } | null, _site: { faviconMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }> } };
+
+export type SearchLegalPagesQueryVariables = Exact<{
+  q: string;
+  locale: Types.SiteLocale;
+}>;
+
+
+export type SearchLegalPagesQuery = { allLegalPages: Array<{ id: string, title: string | null, slug: string | null }> };

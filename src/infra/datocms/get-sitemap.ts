@@ -1,6 +1,6 @@
 import { APP_LOCALES, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
-import { SITEMAP_SOURCES } from "@/infra/datocms/queries";
+import { LIST_LEGAL_PAGE_SLUGS, SITEMAP_SOURCES } from "@/infra/datocms/queries";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import { cache } from "react";
@@ -179,6 +179,29 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
         changeFrequency: "monthly",
         priority: 0.5,
       });
+    }
+  }
+
+  const legalResult = await datocmsFetch<{
+    allLegalPages: SlugRow[];
+  }>({
+    query: LIST_LEGAL_PAGE_SLUGS,
+    tags: [SITEMAP_TAG],
+    revalidate: 3600,
+  });
+  if (!("errors" in legalResult)) {
+    for (const locale of APP_LOCALES) {
+      for (const row of legalResult.data.allLegalPages) {
+        if (!isIndexable(row)) continue;
+        const slug = row.slug?.trim();
+        if (!slug) continue;
+        entries.push({
+          url: new URL(cmsPageCanonicalPath(slug, locale), base).toString(),
+          lastModified: new Date(row._updatedAt),
+          changeFrequency: "monthly",
+          priority: 0.4,
+        });
+      }
     }
   }
 

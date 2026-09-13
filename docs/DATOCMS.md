@@ -174,6 +174,20 @@ Slugs locais de exemplo: `search` (en), `busca` (pt), `busqueda` (es). `/busca` 
 - O `SearchAction` do layout aponta para o slug localizado da Page configurada.
 - Não promover este schema de `develop` para `main` até o front estar pronto no primary.
 
+## Páginas legais (`legal_page`)
+
+Modelo de colecção (não singleton): privacy, terms, refund, etc. **Não** é uma `Page` de landing — o corpo é Structured Text sem blocos de secção.
+
+URL: `/{locale}/{slug}`. O slug **não é localizado** (o mesmo segmento em en / pt / es); título e conteúdo sim.
+
+No Dato: **Navigation → Legal links** com paths tipo `/privacy-policy` (o Next acrescenta o locale). Não é preciso um pointer em Global setting.
+
+SEO: o mesmo fieldset **🚀 SEO settings** de Page / Post / Author / Category — `seo_settings_social` (título, descrição, imagem, noIndex, Twitter card) e `seo_analysis` (plugin SEO/Readability no admin). O Next só lê `seo_settings_social` + `_seoMetaTags`. Se o corpo já tiver um heading nível 1, o título do registo não se repete como `<h1>`.
+
+A query `LEGAL_PAGE_BY_SLUG` é independente de `PAGE_BY_SLUG`: em ambientes sem o modelo, a busca e o sitemap ignoram legais; páginas CMS continuam a funcionar.
+
+Não promover este schema de `develop` para `main` até o front estar pronto no primary.
+
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).

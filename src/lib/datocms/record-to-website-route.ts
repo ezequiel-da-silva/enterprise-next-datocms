@@ -82,6 +82,11 @@ export function recordToWebsitePath(
       if (!slug) return null;
       return `/${appLocale}/blog/author/${slug}`;
     }
+    case "legal_page": {
+      const slug = readStringAttr(item, ["slug"]);
+      if (!slug) return null;
+      return `/${appLocale}/${slug}`;
+    }
     case "redirect": {
       const fromPath = readStringAttr(item, ["from_path_redirect", "fromPathRedirect"]);
       return fromPath ? fromPath : null;
@@ -111,6 +116,8 @@ export function recordToWebsiteRoute(
   switch (typename) {
     case "PageRecord":
       return s.toLowerCase() === "home" ? `/${locale}` : `/${locale}/${s}`;
+    case "LegalPageRecord":
+      return `/${locale}/${s}`;
     case "PostRecord":
       return `/${locale}/blog/${s}`;
     case "CategoryRecord":

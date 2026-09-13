@@ -7,6 +7,10 @@ describe("recordToWebsiteRoute", () => {
     expect(recordToWebsiteRoute("PageRecord", "home", "pt")).toBe("/pt");
   });
 
+  it("maps LegalPageRecord", () => {
+    expect(recordToWebsiteRoute("LegalPageRecord", "privacy-policy", "pt")).toBe("/pt/privacy-policy");
+  });
+
   it("maps blog entities", () => {
     expect(recordToWebsiteRoute("PostRecord", "post-slug", "en")).toBe("/en/blog/post-slug");
     expect(recordToWebsiteRoute("CategoryRecord", "news", "es")).toBe("/es/blog/category/news");
@@ -27,5 +31,15 @@ describe("recordToWebsitePath", () => {
         { attributes: { api_key: "redirect" } },
       ),
     ).toBe("/en/contact");
+  });
+
+  it("maps legal_page records", () => {
+    expect(
+      recordToWebsitePath(
+        { attributes: { slug: "privacy-policy" } },
+        { attributes: { api_key: "legal_page" } },
+        { locale: "pt_BR" },
+      ),
+    ).toBe("/pt/privacy-policy");
   });
 });

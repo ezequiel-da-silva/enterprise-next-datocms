@@ -1174,3 +1174,72 @@ export const LIST_AUTHOR_SLUGS = /* GraphQL */ `
     }
   }
 `;
+
+export const LEGAL_PAGE_BY_SLUG = /* GraphQL */ `
+  query LegalPageBySlug($slug: String!, $locale: SiteLocale!) {
+    legalPage(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
+      id
+      title
+      slug
+      content {
+        value
+        links {
+          __typename
+          ... on PageRecord {
+            id
+            title
+            slug
+          }
+          ... on LegalPageRecord {
+            id
+            title
+            slug
+          }
+        }
+        blocks
+        inlineBlocks
+      }
+      seoSettingsSocial {
+        ${SEO_SETTINGS_SOCIAL}
+      }
+      _seoMetaTags {
+        ${SEO_META_TAGS}
+      }
+    }
+    _site {
+      faviconMetaTags {
+        ${SEO_META_TAGS}
+      }
+    }
+  }
+`;
+
+export const LIST_LEGAL_PAGE_SLUGS = /* GraphQL */ `
+  query ListLegalPageSlugs {
+    allLegalPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 50, orderBy: _updatedAt_DESC) {
+      slug
+      _updatedAt
+      seoSettingsSocial {
+        noIndex
+      }
+    }
+  }
+`;
+
+/** Consulta isolada: em ambientes sem o modelo `legal_page` a SEARCH_SITE continua a funcionar. */
+export const SEARCH_LEGAL_PAGES = /* GraphQL */ `
+  query SearchLegalPages($q: String!, $locale: SiteLocale!) {
+    allLegalPages(
+      locale: $locale
+      first: 10
+      filter: {
+        OR: [{ title: { matches: { ${SEARCH_MATCH} } } }, { slug: { eq: $q } }]
+      }
+      orderBy: _updatedAt_DESC
+    ) {
+      id
+      title
+      slug
+    }
+  }
+`;

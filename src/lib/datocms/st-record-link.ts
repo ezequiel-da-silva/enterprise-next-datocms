@@ -13,7 +13,7 @@ export function resolveStructuredTextRecordLink(
 ): { href: string; label: string } | null {
   const t = record.__typename;
 
-  if (t === "PageRecord") {
+  if (t === "PageRecord" || t === "LegalPageRecord") {
     const slug = typeof record.slug === "string" ? record.slug.trim() : "";
     if (!slug) return null;
     return {
