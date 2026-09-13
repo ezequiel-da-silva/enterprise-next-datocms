@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.18.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.17.0...next-dato-v0.18.0) (2026-09-13)
+
+
+### Features
+
+* **datocms:** add SEO settings and analysis fields for legal page; implement migration to create and update fieldsets and fields for enhanced SEO management ([b1ed760](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b1ed7605446f453e51b100e4bbfb745865d0dc4f))
+* **datocms:** enhance legal page SEO settings; add migration for SEO fieldset and fields; update DATOCMS.md documentation to reflect new SEO configuration for legal pages ([52aa4b4](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/52aa4b46fa5779be2bb4822a8c7a03bbc6aa0e72))
+* **datocms:** implement legal page functionality; add migration for legal page schema and SEO settings; enhance GraphQL queries for legal page retrieval; update documentation in DATOCMS.md for legal page setup and usage; introduce components for rendering legal pages ([8247cca](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8247ccafc3d2fbf64035f52e227390fa512cdf1f))
+
 ## [0.17.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.16.0...next-dato-v0.17.0) (2026-09-12)
 
 
