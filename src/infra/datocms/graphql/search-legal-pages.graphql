@@ -1,0 +1,12 @@
+query SearchLegalPages($q: String!, $locale: SiteLocale!) {
+  allLegalPages(
+    locale: $locale
+    first: 10
+    filter: { OR: [{ title: { matches: { pattern: $q, regexp: false, caseSensitive: false } } }, { slug: { eq: $q } }] }
+    orderBy: _updatedAt_DESC
+  ) {
+    id
+    title
+    slug
+  }
+}

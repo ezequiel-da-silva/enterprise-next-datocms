@@ -1,0 +1,9 @@
+query ListLegalPageSlugs {
+  allLegalPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 50, orderBy: _updatedAt_DESC) {
+    slug
+    _updatedAt
+    seoSettingsSocial {
+      noIndex
+    }
+  }
+}

@@ -1,0 +1,49 @@
+query LegalPageBySlug($slug: String!, $locale: SiteLocale!) {
+  legalPage(locale: $locale, fallbackLocales: [en, pt_BR, es], filter: { slug: { eq: $slug } }) {
+    id
+    title
+    slug
+    content {
+      value
+      links {
+        __typename
+        ... on PageRecord {
+          id
+          title
+          slug
+        }
+        ... on LegalPageRecord {
+          id
+          title
+          slug
+        }
+      }
+      blocks
+      inlineBlocks
+    }
+    seoSettingsSocial {
+      title
+      description
+      twitterCard
+      noIndex
+      image {
+        url
+        alt
+        width
+        height
+      }
+    }
+    _seoMetaTags {
+      tag
+      attributes
+      content
+    }
+  }
+  _site {
+    faviconMetaTags {
+      tag
+      attributes
+      content
+    }
+  }
+}

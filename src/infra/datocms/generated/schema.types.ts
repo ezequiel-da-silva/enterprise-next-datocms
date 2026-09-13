@@ -2928,6 +2928,135 @@ export type JsonFilter = {
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+export type LegalPageModelContentField = {
+  __typename?: 'LegalPageModelContentField';
+  blocks: Array<Scalars['String']['output']>;
+  inlineBlocks: Array<Scalars['String']['output']>;
+  links: Array<LegalPageModelContentLinksField>;
+  value: Scalars['JsonField']['output'];
+};
+
+export type LegalPageModelContentFieldMultiLocaleField = {
+  __typename?: 'LegalPageModelContentFieldMultiLocaleField';
+  locale?: Maybe<SiteLocale>;
+  value?: Maybe<LegalPageModelContentField>;
+};
+
+export type LegalPageModelContentLinksField = LegalPageRecord | PageRecord;
+
+export type LegalPageModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<LegalPageModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<LegalPageModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _locales?: InputMaybe<LocalesFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  content?: InputMaybe<StructuredTextFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  seoSettingsSocial?: InputMaybe<SeoFilter>;
+  slug?: InputMaybe<SlugFilter>;
+  title?: InputMaybe<StringFilter>;
+};
+
+export type LegalPageModelOrderBy =
+  | '_createdAt_ASC'
+  | '_createdAt_DESC'
+  | '_firstPublishedAt_ASC'
+  | '_firstPublishedAt_DESC'
+  | '_isValid_ASC'
+  | '_isValid_DESC'
+  | '_publicationScheduledAt_ASC'
+  | '_publicationScheduledAt_DESC'
+  | '_publishedAt_ASC'
+  | '_publishedAt_DESC'
+  | '_status_ASC'
+  | '_status_DESC'
+  | '_unpublishingScheduledAt_ASC'
+  | '_unpublishingScheduledAt_DESC'
+  | '_updatedAt_ASC'
+  | '_updatedAt_DESC'
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'title_ASC'
+  | 'title_DESC';
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecord = RecordInterface & {
+  __typename?: 'LegalPageRecord';
+  _allContentLocales?: Maybe<Array<LegalPageModelContentFieldMultiLocaleField>>;
+  _allSeoSettingsSocialLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
+  _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _locales: Array<SiteLocale>;
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  content?: Maybe<LegalPageModelContentField>;
+  id: Scalars['ItemId']['output'];
+  seoSettingsSocial?: Maybe<SeoField>;
+  slug?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecord_AllContentLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecord_AllSeoSettingsSocialLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecord_AllTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecordContentArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecordSeoSettingsSocialArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🏛️ Legal Page (legal_page) */
+export type LegalPageRecordTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
 /** Specifies how to filter Single-link fields */
 export type LinkFilter = {
   /** Search for records with an exact match. The specified value must be a Record ID */
@@ -3690,6 +3819,8 @@ export type Query = {
   /** Returns meta information regarding a record collection */
   _allCategoriesMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
+  _allLegalPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allPagesMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
   _allPostsMeta: CollectionMetadata;
@@ -3708,6 +3839,8 @@ export type Query = {
   /** Returns a collection of records */
   allCategories: Array<CategoryRecord>;
   /** Returns a collection of records */
+  allLegalPages: Array<LegalPageRecord>;
+  /** Returns a collection of records */
   allPages: Array<PageRecord>;
   /** Returns a collection of records */
   allPosts: Array<PostRecord>;
@@ -3725,6 +3858,8 @@ export type Query = {
   category?: Maybe<CategoryRecord>;
   /** Returns the single instance record */
   globalSetting?: Maybe<GlobalSettingRecord>;
+  /** Returns a specific record */
+  legalPage?: Maybe<LegalPageRecord>;
   /** Returns the single instance record */
   navigation?: Maybe<NavigationRecord>;
   /** Returns a specific record */
@@ -3752,6 +3887,13 @@ export type Query_AllAuthorsMetaArgs = {
 /** The query root for this schema */
 export type Query_AllCategoriesMetaArgs = {
   filter?: InputMaybe<CategoryModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
+export type Query_AllLegalPagesMetaArgs = {
+  filter?: InputMaybe<LegalPageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3823,6 +3965,17 @@ export type QueryAllCategoriesArgs = {
   first?: InputMaybe<Scalars['IntType']['input']>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<CategoryModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+/** The query root for this schema */
+export type QueryAllLegalPagesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<LegalPageModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<LegalPageModelOrderBy>>>;
   skip?: InputMaybe<Scalars['IntType']['input']>;
 };
 
@@ -3915,6 +4068,15 @@ export type QueryCategoryArgs = {
 export type QueryGlobalSettingArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
+export type QueryLegalPageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<LegalPageModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<LegalPageModelOrderBy>>>;
 };
 
 

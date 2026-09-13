@@ -17,12 +17,14 @@ import {
 } from "@/infra/datocms/get-search-page";
 import { searchSite } from "@/infra/datocms/search";
 import { readSearchQuery, searchResultsPath } from "@/lib/datocms/search-query";
+import { getLegalPageBySlug, getLegalPageBySlugResult, legalPagePath } from "@/infra/datocms/get-legal-page";
+import { LegalPageArticle } from "@/components/patterns/legal-page-article";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { buildDatoPageMetadata, cmsContentOgImage, withSearchQueryNoIndex } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
+import { buildHreflangPathsFromSlugLocales, buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { getStaticParamsLocaleCmsPages } from "@/infra/datocms/static-params";
 import { draftMode } from "next/headers";
@@ -51,6 +53,20 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   ]);
 
   if ("errors" in result || !result.data.page) {
+    const legalResult = await getLegalPageBySlugResult(pageSlug, isEnabled, locale);
+    if (legalResult) {
+      const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
+      const path = legalPagePath(legalResult.page.slug, locale);
+      return buildDatoPageMetadata({
+        path,
+        seoMetaTags: legalResult.page._seoMetaTags,
+        faviconMetaTags: legalResult.faviconMetaTags,
+        seoSettingsSocial: legalResult.page.seoSettingsSocial,
+        fallbackTitle: legalResult.page.title,
+        fallbackOgImage: siteOg,
+        hreflangPaths: buildLocaleAlternatePaths((appLocale) => legalPagePath(legalResult.page.slug, appLocale)),
+      });
+    }
     return buildUnavailableMetadata("Página");
   }
 
@@ -107,9 +123,18 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
         permanentRedirect(searchResultsPath(configuredPath, query));
       }
     }
-    if ("errors" in result) {
-      notFound();
+    const legal = await getLegalPageBySlug(pageSlug, isEnabled, locale);
+    if (legal) {
+      return (
+        <LegalPageArticle
+          page={legal}
+          locale={locale}
+          canonicalPath={legalPagePath(legal.slug, locale)}
+          contentLinkGroup={isEnabled}
+        />
+      );
     }
+    notFound();
   }
 
   const page = result.data.page;

@@ -4,6 +4,7 @@ import { datocmsFetch } from "@/infra/datocms/client";
 import {
   LIST_AUTHOR_SLUGS,
   LIST_CATEGORY_SLUGS,
+  LIST_LEGAL_PAGE_SLUGS,
   SITEMAP_SOURCES,
 } from "@/infra/datocms/queries";
 
@@ -47,6 +48,12 @@ export async function getStaticParamsPages(): Promise<{ slug: string }[]> {
   for (const slug of merged.keys()) {
     if (slug.toLowerCase() === "home") continue;
     if (RESERVED_APP_LOCALE_SLUGS.has(slug)) continue;
+    out.push({ slug });
+  }
+  const legal = await listLegalPageSlugRows();
+  for (const row of legal) {
+    const slug = row.slug?.trim();
+    if (!slug || RESERVED_APP_LOCALE_SLUGS.has(slug) || merged.has(slug)) continue;
     out.push({ slug });
   }
   return out;
@@ -138,5 +145,28 @@ export async function getStaticParamsLocaleCmsPages(): Promise<{ slug: string; p
       out.push({ slug: locale, pageSlug: s });
     }
   }
+  const legal = await listLegalPageSlugRows();
+  const seen = new Set(out.map((row) => `${row.slug}:${row.pageSlug}`));
+  for (const locale of APP_LOCALES) {
+    for (const row of legal) {
+      const s = row.slug?.trim();
+      if (!s || RESERVED_APP_LOCALE_SLUGS.has(s)) continue;
+      const key = `${locale}:${s}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push({ slug: locale, pageSlug: s });
+    }
+  }
   return out;
+}
+
+type LegalSlugRow = { slug: string | null; _updatedAt: string; seoSettingsSocial?: { noIndex?: boolean | null } | null };
+
+async function listLegalPageSlugRows(): Promise<LegalSlugRow[]> {
+  const result = await datocmsFetch<{ allLegalPages: LegalSlugRow[] }>({
+    query: LIST_LEGAL_PAGE_SLUGS,
+    revalidate: 3600,
+  });
+  if ("errors" in result) return [];
+  return result.data.allLegalPages;
 }
