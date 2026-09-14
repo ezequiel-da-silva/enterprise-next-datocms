@@ -126,28 +126,26 @@ export function BlogPostsCarousel({ posts, locale, headingLevel, setting }: Blog
   return (
     <div
       role="region"
-      aria-roledescription="carousel"
+      aria-roledescription={copy.roleDescription}
       aria-label={copy.carousel}
       onKeyDown={onKeyDown}
       onMouseEnter={pauseForHover}
       onMouseLeave={resumeAfterHover}
     >
       <div ref={emblaRef} className="overflow-hidden">
-        <ul className="-ml-4 flex list-none p-0">
+        <div className="-ml-4 flex">
           {posts.map((post, index) => (
-            <li
+            <div
               key={post.id}
               role="group"
-              aria-roledescription="slide"
+              aria-roledescription={copy.slideRoleDescription}
               aria-label={`${index + 1} / ${posts.length}`}
-              className={cn(
-                "min-w-0 shrink-0 basis-full pl-4 md:basis-1/2 lg:basis-1/3",
-              )}
+              className="min-w-0 shrink-0 basis-full pl-4 md:basis-1/2 lg:basis-1/3"
             >
               <PostCard post={post} locale={locale} headingLevel={headingLevel} sizes={CARD_SIZES} />
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       {hasMultipleSnaps && (setting.showArrows || setting.showDots || setting.autoplay) ? (

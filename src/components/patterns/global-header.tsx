@@ -45,7 +45,7 @@ export function GlobalHeader({
   const showTheme = data?.showThemeToggle === true;
   const showSearch = data?.showHeaderSearch === true;
   const themeToggle = showTheme ? (
-    <ThemeToggle key="header-theme-toggle" initialMode={initialThemeMode} />
+    <ThemeToggle key="header-theme-toggle" locale={locale} initialMode={initialThemeMode} />
   ) : null;
   const searchToggle: ReactNode = showSearch ? (
     <HeaderSearch

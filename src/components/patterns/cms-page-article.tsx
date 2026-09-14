@@ -11,7 +11,7 @@ import { buildSearchPageJsonLd } from "@/lib/seo/build-search-jsonld";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type { PageRecord } from "@/infra/datocms/types-page";
-import { heroFirstBlockSuppliesH1 } from "@/lib/datocms/hero-first-block";
+import { heroFirstBlockSuppliesH1, resolveVisiblePageTitle } from "@/lib/datocms/hero-first-block";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { getNonce } from "@/lib/nonce";
 
@@ -46,16 +46,17 @@ export async function CmsPageArticle({
 }: CmsPageArticleProps) {
   const description = page.seoSettingsSocial?.description ?? null;
   const query = searchQuery?.trim();
+  const visibleTitle = resolveVisiblePageTitle(page);
   const jsonLd = query
     ? buildSearchPageJsonLd({
         locale,
         path: canonicalPath,
-        title: page.title,
+        title: visibleTitle,
         query,
       })
     : buildPageWebPageJsonLd({
         path: canonicalPath,
-        title: page.title,
+        title: visibleTitle,
         description,
         locale,
         pageType: jsonLdPageType,
@@ -69,7 +70,7 @@ export async function CmsPageArticle({
     : crumbsToNavItems([
         { name: homeBreadcrumbLabel(locale), path: `/${locale}` },
         {
-          name: query ? `${page.title}: ${query}` : page.title,
+          name: query ? `${visibleTitle}: ${query}` : visibleTitle,
           path: query ? `${canonicalPath}?q=${encodeURIComponent(query)}` : canonicalPath,
         },
       ]);
