@@ -3285,6 +3285,8 @@ export type NavigationRecord = RecordInterface & {
   __typename?: 'NavigationRecord';
   _allCopyrightTextLocales?: Maybe<Array<NavigationModelCopyrightTextFieldMultiLocaleField>>;
   _allFooterMenuLocales?: Maybe<Array<NavItemModularRecordListListNonNullMultiLocaleField>>;
+  _allHeaderSearchPlaceholderLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allHeaderSearchSubmitLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allLegalLinksLocales?: Maybe<Array<NavItemSimpleRecordListListNonNullMultiLocaleField>>;
   _allMenuLinksLocales?: Maybe<Array<NavItemModularRecordListListNonNullMultiLocaleField>>;
   _allSocialLinksLocales?: Maybe<Array<SocialLinkRecordListListNonNullMultiLocaleField>>;
@@ -3306,10 +3308,13 @@ export type NavigationRecord = RecordInterface & {
   defaultTheme?: Maybe<Scalars['String']['output']>;
   footerLogo?: Maybe<FileField>;
   footerMenu: Array<NavItemModularRecord>;
+  headerSearchPlaceholder?: Maybe<Scalars['String']['output']>;
+  headerSearchSubmitLabel?: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
   legalLinks: Array<NavItemSimpleRecord>;
   logo?: Maybe<FileField>;
   menuLinks: Array<NavItemModularRecord>;
+  showHeaderSearch: Scalars['BooleanType']['output'];
   showThemeToggle: Scalars['BooleanType']['output'];
   socialLinks: Array<SocialLinkRecord>;
 };
@@ -3323,6 +3328,18 @@ export type NavigationRecord_AllCopyrightTextLocalesArgs = {
 
 /** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllFooterMenuLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type ⛓️ Navigation (navigation) */
+export type NavigationRecord_AllHeaderSearchPlaceholderLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type ⛓️ Navigation (navigation) */
+export type NavigationRecord_AllHeaderSearchSubmitLabelLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -3360,6 +3377,20 @@ export type NavigationRecordCopyrightTextArgs = {
 
 /** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordFooterMenuArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type ⛓️ Navigation (navigation) */
+export type NavigationRecordHeaderSearchPlaceholderArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type ⛓️ Navigation (navigation) */
+export type NavigationRecordHeaderSearchSubmitLabelArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };

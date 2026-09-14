@@ -64,7 +64,14 @@ const loadLayoutChrome = cache(async () => {
     logoUrl: navigation?.logo?.url,
     socialLinks: navigation?.socialLinks,
   });
-  return { appLocale, navigation, localeHrefs, identity, searchPath: searchPagePath(appLocale, searchPage) };
+  return {
+    appLocale,
+    navigation,
+    localeHrefs,
+    identity,
+    searchPath: searchPagePath(appLocale, searchPage),
+    searchQuery: query,
+  };
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -100,7 +107,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const nonce = await getNonce();
-  const { appLocale, navigation, localeHrefs, identity, searchPath } = await loadLayoutChrome();
+  const { appLocale, navigation, localeHrefs, identity, searchPath, searchQuery } =
+    await loadLayoutChrome();
 
   const cookieStore = await cookies();
   const themeCookie = cookieStore.get(THEME_COOKIE_NAME)?.value;
@@ -131,12 +139,14 @@ export default async function RootLayout({
         />
         <SkipLink locale={appLocale} />
         <JsonLdScript graph={siteJsonLd} />
-        <div className="sticky top-0 z-50 overflow-visible">
+        <div className="site-chrome sticky top-0 z-50 overflow-visible">
           <DraftChrome />
           <GlobalHeader
             data={navigation}
             locale={appLocale}
             localeHrefs={localeHrefs}
+            searchPath={searchPath}
+            searchQuery={searchQuery}
             initialThemeMode={initialThemeMode}
           />
         </div>

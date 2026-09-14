@@ -1,5 +1,7 @@
 import { Container } from "@/components/atoms/container";
 import { HeaderNav } from "@/components/patterns/header-nav";
+import { HeaderSearch } from "@/components/patterns/header-search";
+import { HeaderSearchForm } from "@/components/patterns/header-search-form";
 import { LocaleSwitcher } from "@/components/patterns/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { NavigationData } from "@/infra/datocms/types-navigation";
@@ -24,16 +26,48 @@ type GlobalHeaderProps = {
   data: NavigationData | null;
   locale: AppLocale;
   localeHrefs: Record<AppLocale, string>;
+  searchPath: string;
+  searchQuery?: string;
   /** Cookie `nd-theme` no SSR — evita skeleton no ThemeToggle. */
   initialThemeMode?: ThemeMode;
 };
 
-export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: GlobalHeaderProps) {
+export function GlobalHeader({
+  data,
+  locale,
+  localeHrefs,
+  searchPath,
+  searchQuery,
+  initialThemeMode,
+}: GlobalHeaderProps) {
   const logo = data?.logo;
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
   const showTheme = data?.showThemeToggle === true;
+  const showSearch = data?.showHeaderSearch === true;
   const themeToggle = showTheme ? (
     <ThemeToggle key="header-theme-toggle" initialMode={initialThemeMode} />
+  ) : null;
+  const searchToggle: ReactNode = showSearch ? (
+    <HeaderSearch
+      key="header-search"
+      action={searchPath}
+      locale={locale}
+      query={searchQuery}
+      placeholder={data?.headerSearchPlaceholder}
+      submitLabel={data?.headerSearchSubmitLabel}
+    />
+  ) : null;
+  const searchBlock: ReactNode = showSearch ? (
+    <HeaderSearchForm
+      key="header-search-block"
+      action={searchPath}
+      locale={locale}
+      query={searchQuery}
+      placeholder={data?.headerSearchPlaceholder}
+      submitLabel={data?.headerSearchSubmitLabel}
+      variant="block"
+      inputId="header-search-query-menu"
+    />
   ) : null;
   const localeSwitcher: ReactNode = (
     <LocaleSwitcher key="header-locale-switcher" locale={locale} hrefs={localeHrefs} />
@@ -45,7 +79,7 @@ export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: Gl
   const homeLabel = homeAriaLabel(locale);
 
   return (
-    <header className="overflow-visible border-b border-border bg-background shadow-sm supports-[backdrop-filter]:bg-background/95 supports-[backdrop-filter]:backdrop-blur">
+    <header className="relative overflow-visible border-b border-border bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <Container
         size="lg"
         name="GlobalHeader"
@@ -86,11 +120,14 @@ export function GlobalHeader({ data, locale, localeHrefs, initialThemeMode }: Gl
               menuLinks={menuLinks}
               locale={locale}
               themeToggle={themeToggle}
+              searchToggle={searchToggle}
+              searchBlock={searchBlock}
               localeSwitcher={localeSwitcher}
               localeSwitcherBlock={localeSwitcherBlock}
             />
           ) : (
             <div className="flex shrink-0 items-center gap-2">
+              {searchToggle}
               {localeSwitcher}
               {themeToggle}
             </div>

@@ -24,6 +24,9 @@ export type NavigationData = {
   logo: FileFieldLike | null;
   menuLinks: NavItemRecord[];
   showThemeToggle: boolean;
+  showHeaderSearch?: boolean | null;
+  headerSearchPlaceholder?: string | null;
+  headerSearchSubmitLabel?: string | null;
   footerLogo: FileFieldLike | null;
   footerMenu: NavItemRecord[];
   socialLinks: SocialLinkNav[];

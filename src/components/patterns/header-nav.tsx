@@ -206,6 +206,10 @@ type HeaderNavProps = {
   menuLinks: NavItemRecord[];
   locale: AppLocale;
   themeToggle: ReactNode;
+  /** Lupa + painel de busca; o painel posiciona-se sobre o `<header>`. */
+  searchToggle: ReactNode;
+  /** Formulário já aberto no drawer: no móvel a lupa sairia do ecrã com o painel. */
+  searchBlock: ReactNode;
   localeSwitcher: ReactNode;
   /** Variante de largura total para o painel móvel. */
   localeSwitcherBlock: ReactNode;
@@ -215,6 +219,8 @@ export function HeaderNav({
   menuLinks,
   locale,
   themeToggle,
+  searchToggle,
+  searchBlock,
   localeSwitcher,
   localeSwitcherBlock,
 }: HeaderNavProps) {
@@ -309,6 +315,8 @@ export function HeaderNav({
             ))}
           </ul>
         </nav>
+        {/* Com o drawer aberto o painel da busca ficaria por baixo do backdrop. */}
+        {open ? null : searchToggle}
         {/* Um compacto no header; no drawer o block monta só depois do clique. */}
         {open ? null : localeSwitcher}
         {open ? null : themeToggle}
@@ -376,6 +384,7 @@ export function HeaderNav({
                     if (e.target instanceof HTMLAnchorElement) handleClose();
                   }}
                 >
+                  {searchBlock ? <div className="mb-4 border-b border-border pb-4">{searchBlock}</div> : null}
                   {/* Landmarks planos: o seletor de idioma é irmão da navegação, não filho. */}
                   <nav aria-label="Principal móvel">
                     <Link
