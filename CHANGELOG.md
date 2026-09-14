@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.23.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.22.0...next-dato-v0.23.0) (2026-09-14)
+
+
+### Features
+
+* **datocms:** enhance CMS page article component by resolving visible page titles; refactor feature grid block to conditionally render carousel; update global header theme toggle to support locale; improve blog posts carousel accessibility; add theme copy localization; implement tests for latest posts and theme copy ([b0adc09](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b0adc097aa6b9f14bbbae65fcb7a954fb3907f84))
+
+
+### CI
+
+* **e2e:** retry Playwright Chromium install on APT mirror flake ([0dbd648](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/0dbd6486ff99c7f4fec081aaa71fe35efa249a41))
+
 ## [0.22.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.21.0...next-dato-v0.22.0) (2026-09-14)
 
 
