@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.21.0...next-dato-v0.22.0) (2026-09-14)
+
+
+### Features
+
+* **shopify:** integrate Shopify product management; add webhook for product updates and create migration for product page schema; enhance documentation for Shopify integration and update environment variables in .env.example ([1627d88](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1627d880cdf130392cb572bc21f0b50aa975c5fa))
+
 ## [0.21.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.20.0...next-dato-v0.21.0) (2026-09-14)
 
 
