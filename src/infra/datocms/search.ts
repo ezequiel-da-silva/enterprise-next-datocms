@@ -7,9 +7,7 @@ import type { SearchHit, SearchResultsPayload } from "@/lib/datocms/search-hit";
 type SearchSiteData = {
   pages: { id: string; title: string; slug: string | null }[];
   legalPages?: { id: string; title: string; slug: string | null }[];
-  postsEn: { id: string; postTitle: string; postSlug: string | null }[];
-  postsPtBR: { id: string; postTitle: string; postSlug: string | null }[];
-  postsEs: { id: string; postTitle: string; postSlug: string | null }[];
+  posts: { id: string; postTitle: string; postSlug: string | null }[];
   authors: { id: string; authorName: string; authorSlug: string | null }[];
 };
 
@@ -41,24 +39,15 @@ function mergeHits(data: SearchSiteData, locale: AppLocale): SearchHit[] {
     push({ id: p.id, title: p.title, href: pageHref(slug, locale), kind: "page" });
   }
 
-  const postLocales: [AppLocale, keyof SearchSiteData][] = [
-    ["en", "postsEn"],
-    ["pt", "postsPtBR"],
-    ["es", "postsEs"],
-  ];
-
-  for (const [postLocale, key] of postLocales) {
-    const rows = data[key] as SearchSiteData["postsEn"];
-    for (const p of rows) {
-      const slug = p.postSlug?.trim();
-      if (!slug) continue;
-      push({
-        id: `${p.id}-${postLocale}`,
-        title: p.postTitle,
-        href: `/${postLocale}/blog/${slug}`,
-        kind: "post",
-      });
-    }
+  for (const p of data.posts) {
+    const slug = p.postSlug?.trim();
+    if (!slug) continue;
+    push({
+      id: p.id,
+      title: p.postTitle,
+      href: `/${locale}/blog/${slug}`,
+      kind: "post",
+    });
   }
 
   for (const a of data.authors) {
@@ -88,7 +77,7 @@ export async function searchSite(
 
   const result = await datocmsFetch<SearchSiteData>({
     query: SEARCH_SITE,
-    variables: { q },
+    variables: { q, locale: toDatoSiteLocale(locale) },
     tags: [SEARCH_TAG, `search:${q.toLowerCase()}`],
     revalidate: 120,
   });

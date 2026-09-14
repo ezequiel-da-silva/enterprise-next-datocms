@@ -2,12 +2,13 @@
 const SEARCH_MATCH = `pattern: $q, regexp: false, caseSensitive: false`;
 
 /**
- * Busca em Page (título), Post (título por locale) e Author (nome).
+ * Busca em Page (título), Post (título) e Author (nome) no locale atual.
  * O CDA não expõe `query` dentro de `PageModelFilter` — usa-se `matches` em campos string.
  */
 export const SEARCH_SITE = /* GraphQL */ `
-  query SearchSite($q: String!) {
+  query SearchSite($q: String!, $locale: SiteLocale!) {
     pages: allPages(
+      locale: $locale
       first: 15
       filter: {
         OR: [{ title: { matches: { ${SEARCH_MATCH} } } }, { slug: { eq: $q } }]
@@ -18,32 +19,8 @@ export const SEARCH_SITE = /* GraphQL */ `
       title
       slug
     }
-    postsEn: allPosts(
-      locale: en
-      first: 12
-      filter: {
-        OR: [{ postTitle: { matches: { ${SEARCH_MATCH} } } }, { postSlug: { eq: $q } }]
-      }
-      orderBy: _updatedAt_DESC
-    ) {
-      id
-      postTitle
-      postSlug
-    }
-    postsPtBR: allPosts(
-      locale: pt_BR
-      first: 12
-      filter: {
-        OR: [{ postTitle: { matches: { ${SEARCH_MATCH} } } }, { postSlug: { eq: $q } }]
-      }
-      orderBy: _updatedAt_DESC
-    ) {
-      id
-      postTitle
-      postSlug
-    }
-    postsEs: allPosts(
-      locale: es
+    posts: allPosts(
+      locale: $locale
       first: 12
       filter: {
         OR: [{ postTitle: { matches: { ${SEARCH_MATCH} } } }, { postSlug: { eq: $q } }]
@@ -55,6 +32,7 @@ export const SEARCH_SITE = /* GraphQL */ `
       postSlug
     }
     authors: allAuthors(
+      locale: $locale
       first: 10
       filter: {
         OR: [{ authorName: { matches: { ${SEARCH_MATCH} } } }, { authorSlug: { eq: $q } }]
