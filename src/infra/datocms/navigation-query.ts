@@ -66,6 +66,9 @@ export const GET_NAVIGATION = /* GraphQL */ `
         ${NAV_MENU_ROOT}
       }
       showThemeToggle
+      showHeaderSearch
+      headerSearchPlaceholder
+      headerSearchSubmitLabel
       footerLogo {
         ${FILE_FIELD}
       }

@@ -80,7 +80,19 @@ export async function CmsPageArticle({
   return (
     <>
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
-      <Container as="article" size={wideLayout ? "md" : "sm"} name="CmsPageArticle" className={page.heroPage ? (isHome ? "pb-12 pt-0" : "pb-12 pt-6") : "py-12"}>
+      <Container
+        as="article"
+        size={wideLayout ? "md" : "sm"}
+        name="CmsPageArticle"
+        data-page-leading-hero={page.heroPage ? "" : undefined}
+        className={
+          page.heroPage
+            ? isHome
+              ? "pb-12 pt-[var(--site-chrome-overlay-space)]"
+              : "pb-12 pt-[calc(var(--site-chrome-overlay-space)+1.5rem)]"
+            : "py-12"
+        }
+      >
         {isHome ? null : <BreadcrumbNav locale={locale} items={breadcrumbItems} />}
         <div className={isHome ? undefined : "mt-4"}>
           {page.heroPage ? (

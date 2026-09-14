@@ -42,8 +42,28 @@
 
   body {
     @apply min-h-dvh bg-background text-foreground font-sans antialiased;
+    --site-chrome-overlay-space: 0rem;
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * Quando a página começa com Hero, o chrome continua sticky, mas deixa de
+   * reservar altura no fluxo. A imagem/fundo da hero passa por baixo do header;
+   * o padding seguro mantém título e ações visíveis.
+   */
+  body:has(main [data-page-leading-hero]) {
+    --site-chrome-overlay-space: 6.5rem;
+  }
+
+  body:has(main [data-page-leading-hero]) .site-chrome {
+    height: 0;
+  }
+
+  @media (min-width: 640px) {
+    body:has(main [data-page-leading-hero]) {
+      --site-chrome-overlay-space: 6rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

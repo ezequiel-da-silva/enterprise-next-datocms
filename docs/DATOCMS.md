@@ -174,6 +174,18 @@ Slugs locais de exemplo: `search` (en), `busca` (pt), `busqueda` (es). `/busca` 
 - O `SearchAction` do layout aponta para o slug localizado da Page configurada.
 - Não promover este schema de `develop` para `main` até o front estar pronto no primary.
 
+## Busca no header
+
+Em **Navigation → 🧭 Header**:
+
+- `show_header_search`: mostra/oculta a segunda linha de busca;
+- `header_search_placeholder`: placeholder localizado;
+- `header_search_submit_label`: rótulo localizado do botão.
+
+O formulário usa GET `?q=` e aponta para a Search Page configurada em Global setting. Em páginas
+com Hero, o chrome sticky não reserva altura no fluxo: a hero passa por baixo do header translúcido,
+com uma área segura para que título e ações não fiquem encobertos.
+
 ## Páginas legais (`legal_page`)
 
 Modelo de colecção (não singleton): privacy, terms, refund, etc. **Não** é uma `Page` de landing — o corpo é Structured Text sem blocos de secção.
