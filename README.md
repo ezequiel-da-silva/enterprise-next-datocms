@@ -38,6 +38,10 @@ openssl rand -hex 32
 
 Never commit the generated value. Full webhook and cache-tag mapping: [docs/DATOCMS.md](docs/DATOCMS.md).
 
+### Shopify (catálogo / PDP)
+
+App no Dev Dashboard (webhooks) + canal Headless (Storefront). Variáveis `SHOPIFY_*` só no servidor (Vercel privadas). Guia: [docs/SHOPIFY.md](docs/SHOPIFY.md).
+
 ## For AI agents
 
 Start with [AGENTS.md](AGENTS.md), then [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) and [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md).

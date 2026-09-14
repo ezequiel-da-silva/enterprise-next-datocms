@@ -105,6 +105,8 @@ type TextSectionMediaBlocks_PricingCardRecord_Fragment = { __typename: 'PricingC
 
 type TextSectionMediaBlocks_PricingSectionRecord_Fragment = { __typename: 'PricingSectionRecord', id: string };
 
+type TextSectionMediaBlocks_ProductPageRecord_Fragment = { __typename: 'ProductPageRecord', id: string };
+
 type TextSectionMediaBlocks_RedirectRecord_Fragment = { __typename: 'RedirectRecord', id: string };
 
 type TextSectionMediaBlocks_ReviewsSectionRecord_Fragment = { __typename: 'ReviewsSectionRecord', id: string };
@@ -166,6 +168,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_PostRecord_Fragment
   | TextSectionMediaBlocks_PricingCardRecord_Fragment
   | TextSectionMediaBlocks_PricingSectionRecord_Fragment
+  | TextSectionMediaBlocks_ProductPageRecord_Fragment
   | TextSectionMediaBlocks_RedirectRecord_Fragment
   | TextSectionMediaBlocks_ReviewsSectionRecord_Fragment
   | TextSectionMediaBlocks_SchemaMigrationRecord_Fragment
@@ -204,6 +207,13 @@ export type GetContactPageQueryVariables = Exact<{
 
 export type GetContactPageQuery = { globalSetting: { contactPage: { id: string, title: string | null, slug: string | null } | null } | null };
 
+export type GetProductsIndexPageQueryVariables = Exact<{
+  locale: Types.SiteLocale;
+}>;
+
+
+export type GetProductsIndexPageQuery = { globalSetting: { productsPage: { id: string, title: string | null, slug: string | null } | null } | null };
+
 export type GetSearchPageQueryVariables = Exact<{
   locale: Types.SiteLocale;
 }>;
@@ -226,6 +236,11 @@ export type ListLegalPageSlugsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ListLegalPageSlugsQuery = { allLegalPages: Array<{ slug: string | null, _updatedAt: string, seoSettingsSocial: { noIndex: boolean | null } | null }> };
+
+export type ListProductHandlesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListProductHandlesQuery = { allProductPages: Array<{ shopifyHandle: string | null, _updatedAt: string }> };
 
 export type PageBySlugQueryVariables = Exact<{
   slug: string;
@@ -254,6 +269,14 @@ export type PageBySlugQuery = { page: { id: string, title: string | null, slug: 
             | { __typename: 'VideoBlockRecord', id: string, _editingUrl?: string | null, asset: { url: string, title: string | null, width: number | null, height: number | null, video: { muxPlaybackId: string, streamingUrl: string, mp4Url: string | null, thumbnailUrl: string, width: number, height: number, duration: number | null } | null } | null }
           > } | null }
     >, seoSettingsSocial: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }>, _allSlugLocales: Array<{ locale: Types.SiteLocale | null, value: string | null }> | null } | null, _site: { faviconMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }> } };
+
+export type ProductPageByHandleQueryVariables = Exact<{
+  handle: string;
+  locale: Types.SiteLocale;
+}>;
+
+
+export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, shopifyHandle: string | null, shopifyProductId: string | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
 
 export type SearchLegalPagesQueryVariables = Exact<{
   q: string;

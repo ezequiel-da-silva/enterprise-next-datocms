@@ -1,0 +1,6 @@
+query ListProductHandles {
+  allProductPages(first: 200, orderBy: _updatedAt_DESC) {
+    shopifyHandle
+    _updatedAt
+  }
+}

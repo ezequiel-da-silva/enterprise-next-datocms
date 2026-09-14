@@ -29,10 +29,12 @@ flowchart TB
 
   subgraph infra [infra/]
     Dato[datocms/ fetch, queries, adapters]
+    Shopify[shopify/ Storefront]
     Contact[contact/ integrations]
   end
 
   DatoCMS[(DatoCMS CDA)]
+  ShopifyAPI[(Shopify Storefront)]
 
   Pages --> Patterns
   Pages --> Sections
@@ -43,6 +45,7 @@ flowchart TB
   Patterns --> Atoms
   core --> Entities
   infra --> DatoCMS
+  infra --> ShopifyAPI
   lib --> core
 ```
 
@@ -57,7 +60,7 @@ flowchart TB
 | `src/components/sections/` | Full-width page sections (e.g. CTA Banner) when distinct from patterns |
 | `src/lib/` | Framework-agnostic helpers (SEO builders, `readCda*`, link resolution, nonce) |
 | `src/core/` | Domain entities and use-cases — **no React/Next imports** |
-| `src/infra/` | External I/O: DatoCMS client, GraphQL queries, email/CRM adapters |
+| `src/infra/` | External I/O: DatoCMS client, GraphQL queries, Shopify Storefront, email/CRM adapters |
 | `src/constants/` | Shared constants (i18n, theme, security headers) |
 | `src/config/` | App configuration (theme CSS variables) |
 | `src/proxy.ts` | CSP, nonce, locale header, security headers |
@@ -105,7 +108,7 @@ See [QUALITY-GATES.md](./QUALITY-GATES.md) (SEO/AEO pillars) and [AI-PLAYBOOK.md
 ## Security boundary
 
 - CSP and nonce: [`src/proxy.ts`](../src/proxy.ts)
-- Server-only tokens: `DATOCMS_*`, `DATOCMS_PREVIEW_SECRET`
+- Server-only tokens: `DATOCMS_*`, `DATOCMS_PREVIEW_SECRET`, `SHOPIFY_*` ([SHOPIFY.md](./SHOPIFY.md))
 - Draft mode: [`src/app/api/draft/`](../src/app/api/draft/)
 - Details: [SECURITY.md](./SECURITY.md), `.cursor/rules/security.mdc`
 

@@ -18,6 +18,7 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 | Page metadata / JSON-LD | `web-excellence.mdc` | `seo-aeo-feature` |
 | CSP, draft, API, forms | `security.mdc` | — |
 | Dato webhook / cache tags | `datocms-next.mdc` + [DATOCMS.md](./DATOCMS.md) | — |
+| Shopify webhooks / Headless / PDP | [SHOPIFY.md](./SHOPIFY.md) | — |
 | Schema / migrations / CLI | [DATOCMS.md](./DATOCMS.md) (CLI passo a passo) | `.agents/skills/datocms-cli` |
 | RSC, error boundaries, client boundaries | `react-rsc.mdc` | — |
 | Layer / import boundaries | `architecture.mdc` | — |

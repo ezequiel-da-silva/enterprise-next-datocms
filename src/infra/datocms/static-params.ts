@@ -5,6 +5,7 @@ import {
   LIST_AUTHOR_SLUGS,
   LIST_CATEGORY_SLUGS,
   LIST_LEGAL_PAGE_SLUGS,
+  LIST_PRODUCT_HANDLES,
   SITEMAP_SOURCES,
 } from "@/infra/datocms/queries";
 
@@ -155,6 +156,25 @@ export async function getStaticParamsLocaleCmsPages(): Promise<{ slug: string; p
       if (seen.has(key)) continue;
       seen.add(key);
       out.push({ slug: locale, pageSlug: s });
+    }
+  }
+  return out;
+}
+
+type ProductHandleRow = { shopifyHandle: string | null };
+
+/** PDPs por locale (`/[locale]/products/[handle]`). O handle não é localizado. */
+export async function getStaticParamsProductPages(): Promise<{ slug: string; handle: string }[]> {
+  const result = await datocmsFetch<{ allProductPages: ProductHandleRow[] }>({
+    query: LIST_PRODUCT_HANDLES,
+    revalidate: 3600,
+  });
+  if ("errors" in result) return [];
+  const out: { slug: string; handle: string }[] = [];
+  for (const locale of APP_LOCALES) {
+    for (const row of result.data.allProductPages) {
+      const handle = row.shopifyHandle?.trim();
+      if (handle) out.push({ slug: locale, handle });
     }
   }
   return out;

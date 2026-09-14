@@ -7,6 +7,10 @@ describe("recordToWebsiteRoute", () => {
     expect(recordToWebsiteRoute("PageRecord", "home", "pt")).toBe("/pt");
   });
 
+  it("maps ProductPageRecord", () => {
+    expect(recordToWebsiteRoute("ProductPageRecord", "hat", "pt")).toBe("/pt/products/hat");
+  });
+
   it("maps LegalPageRecord", () => {
     expect(recordToWebsiteRoute("LegalPageRecord", "privacy-policy", "pt")).toBe("/pt/privacy-policy");
   });
@@ -31,6 +35,16 @@ describe("recordToWebsitePath", () => {
         { attributes: { api_key: "redirect" } },
       ),
     ).toBe("/en/contact");
+  });
+
+  it("maps product_page records", () => {
+    expect(
+      recordToWebsitePath(
+        { attributes: { shopify_handle: "hat" } },
+        { attributes: { api_key: "product_page" } },
+        { locale: "en" },
+      ),
+    ).toBe("/en/products/hat");
   });
 
   it("maps legal_page records", () => {

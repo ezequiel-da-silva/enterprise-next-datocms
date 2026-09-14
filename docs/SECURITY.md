@@ -1,6 +1,6 @@
 # Segurança — next-dato
 
-Guia operacional para validar CSP, headers HTTP, dependências e rotas sensíveis. Regras do projeto: [`.cursor/rules/security.mdc`](../.cursor/rules/security.mdc).
+Guia operacional para validar CSP, headers HTTP, dependências e rotas sensíveis. Regras do projeto: [`.cursor/rules/security.mdc`](../.cursor/rules/security.mdc). Integração Shopify (env privadas, HMAC): [SHOPIFY.md](./SHOPIFY.md).
 
 ## Scripts npm
 
@@ -95,6 +95,7 @@ Com HTTPS e domínio público:
 - [ ] Tokens Dato **não** aparecem no bundle do browser (DevTools → Sources)
 - [ ] `.env` fora do git; produção com secrets no painel do host
 - [ ] Webhook Dato → `POST /api/revalidate` (200 com secret correcto; 401 sem)
+- [ ] Webhook Shopify → `POST /api/webhooks/shopify` (500 se faltar `SHOPIFY_CLIENT_ID` / `SHOPIFY_API_SECRET_KEY` / `SHOPIFY_STORE_DOMAIN` / `DATOCMS_USER_REVIEWS_CDA_TOKEN`; 401 HMAC inválido; 200 com HMAC + `products/update`)
 
 ## Limitações
 

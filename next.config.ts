@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
         hostname: "image.mux.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.shopify.com",
+        pathname: "/**",
+      },
     ],
   },
   async headers() {
