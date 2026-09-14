@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.20.0...next-dato-v0.21.0) (2026-09-14)
+
+
+### Features
+
+* **datocms:** update GraphQL queries to support dynamic locale for posts and authors; refactor search data structure to consolidate post retrieval ([1ae0c57](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1ae0c57cb984ac69b81e07f159fba2dc19b3f77d))
+
 ## [0.20.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.19.0...next-dato-v0.20.0) (2026-09-14)
 
 
