@@ -946,6 +946,7 @@ export type GlobalSettingRecord = RecordInterface & {
   description404?: Maybe<GlobalSettingModelDescription404Field>;
   id: Scalars['ItemId']['output'];
   image404?: Maybe<ImageBlockRecord>;
+  productsPage?: Maybe<PageRecord>;
   searchPage?: Maybe<PageRecord>;
   title404?: Maybe<Scalars['String']['output']>;
 };
@@ -3840,6 +3841,91 @@ export type PricingSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+export type ProductPageModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<ProductPageModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<ProductPageModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _locales?: InputMaybe<LocalesFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  shopifyHandle?: InputMaybe<SlugFilter>;
+  shopifyProductId?: InputMaybe<StringFilter>;
+  title?: InputMaybe<StringFilter>;
+};
+
+export type ProductPageModelOrderBy =
+  | '_createdAt_ASC'
+  | '_createdAt_DESC'
+  | '_firstPublishedAt_ASC'
+  | '_firstPublishedAt_DESC'
+  | '_isValid_ASC'
+  | '_isValid_DESC'
+  | '_publicationScheduledAt_ASC'
+  | '_publicationScheduledAt_DESC'
+  | '_publishedAt_ASC'
+  | '_publishedAt_DESC'
+  | '_status_ASC'
+  | '_status_DESC'
+  | '_unpublishingScheduledAt_ASC'
+  | '_unpublishingScheduledAt_DESC'
+  | '_updatedAt_ASC'
+  | '_updatedAt_DESC'
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'shopifyProductId_ASC'
+  | 'shopifyProductId_DESC'
+  | 'title_ASC'
+  | 'title_DESC';
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecord = RecordInterface & {
+  __typename?: 'ProductPageRecord';
+  _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _locales: Array<SiteLocale>;
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  id: Scalars['ItemId']['output'];
+  shopifyHandle?: Maybe<Scalars['String']['output']>;
+  shopifyProductId?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecord_AllTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecordTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
 /** Specifies how to filter by publication datetime */
 export type PublishedAtFilter = {
   /** Filter records with a value that's within the specified minute range. Seconds and milliseconds are truncated from the argument. */
@@ -3872,6 +3958,8 @@ export type Query = {
   /** Returns meta information regarding a record collection */
   _allPostsMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
+  _allProductPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allRedirectsMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
   _allSchemaMigrationsMeta: CollectionMetadata;
@@ -3891,6 +3979,8 @@ export type Query = {
   allPages: Array<PageRecord>;
   /** Returns a collection of records */
   allPosts: Array<PostRecord>;
+  /** Returns a collection of records */
+  allProductPages: Array<ProductPageRecord>;
   /** Returns a collection of records */
   allRedirects: Array<RedirectRecord>;
   /** Returns a collection of records */
@@ -3913,6 +4003,8 @@ export type Query = {
   page?: Maybe<PageRecord>;
   /** Returns a specific record */
   post?: Maybe<PostRecord>;
+  /** Returns a specific record */
+  productPage?: Maybe<ProductPageRecord>;
   /** Returns a specific record */
   redirect?: Maybe<RedirectRecord>;
   /** Returns a specific record */
@@ -3955,6 +4047,13 @@ export type Query_AllPagesMetaArgs = {
 /** The query root for this schema */
 export type Query_AllPostsMetaArgs = {
   filter?: InputMaybe<PostModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
+export type Query_AllProductPagesMetaArgs = {
+  filter?: InputMaybe<ProductPageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -4045,6 +4144,17 @@ export type QueryAllPostsArgs = {
   first?: InputMaybe<Scalars['IntType']['input']>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<PostModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+/** The query root for this schema */
+export type QueryAllProductPagesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<ProductPageModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<ProductPageModelOrderBy>>>;
   skip?: InputMaybe<Scalars['IntType']['input']>;
 };
 
@@ -4149,6 +4259,15 @@ export type QueryPostArgs = {
   filter?: InputMaybe<PostModelFilter>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<PostModelOrderBy>>>;
+};
+
+
+/** The query root for this schema */
+export type QueryProductPageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<ProductPageModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<ProductPageModelOrderBy>>>;
 };
 
 

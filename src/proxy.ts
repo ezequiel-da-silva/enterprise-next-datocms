@@ -46,7 +46,7 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
     /* Fontes via next/font: ficheiros em /_next/static — cobertos por font-src 'self'. Sem fonts.googleapis.com / gstatic. */
     ...styleDirectives,
     /* image.mux.com: posters de vídeo (thumbnailUrl). */
-    "img-src 'self' data: blob: https://www.datocms-assets.com https://image.mux.com",
+    "img-src 'self' data: blob: https://www.datocms-assets.com https://image.mux.com https://cdn.shopify.com",
     "font-src 'self' data:",
     /* *.mux.com: o Mux entrega por vários CDNs (stream.mux.com → *.fastly.mux.com) e os hosts mudam sem aviso. */
     `media-src 'self' https://www.datocms-assets.com https://*.mux.com`,

@@ -107,6 +107,19 @@ describe("tagsToRevalidateFromWebhook", () => {
     expect(settings).toContain(DATOCMS_CACHE_TAGS.globalSettings);
   });
 
+  it("maps product_page to product family + handle tag", () => {
+    const tags = tagsToRevalidateFromWebhook({
+      entity: {
+        attributes: { shopify_handle: "hat" },
+        relationships: { item_type: { data: { id: "t" } } },
+      },
+      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "product_page" } }],
+    });
+    expect(tags).toContain(DATOCMS_CACHE_TAGS.product);
+    expect(tags).toContain("product:hat");
+    expect(tags).toContain(DATOCMS_CACHE_TAGS.sitemap);
+  });
+
   it("maps legal_page to legal family + slug tag", () => {
     const tags = tagsToRevalidateFromWebhook({
       entity: {

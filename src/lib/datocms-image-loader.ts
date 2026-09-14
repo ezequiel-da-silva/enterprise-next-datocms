@@ -7,7 +7,19 @@ import type { ImageLoaderProps } from "next/image";
  */
 const DEFAULT_QUALITY = 75;
 
+function isDatoAssetSrc(src: string): boolean {
+  try {
+    const host = new URL(src, "https://www.datocms-assets.com").hostname;
+    return host === "www.datocms-assets.com";
+  } catch {
+    return false;
+  }
+}
+
 export default function datoImageLoader({ src, width, quality }: ImageLoaderProps): string {
+  if (!isDatoAssetSrc(src)) {
+    return src;
+  }
   const sep = src.includes("?") ? "&" : "?";
   const q = quality ?? DEFAULT_QUALITY;
   return `${src}${sep}auto=format,compress&fit=max&w=${width}&q=${q}`;

@@ -24,13 +24,15 @@ Não é preciso variável extra na Vercel para Skills/CLI. Mantém (Production e
 |----------|------|
 | `DATOCMS_API_TOKEN` | CDA publicado |
 | `DATOCMS_DRAFT_CDA_TOKEN` | CDA com rascunhos (Draft Mode) |
-| `DATOCMS_USER_REVIEWS_CDA_TOKEN` | CMA com permissão de `user_review` |
+| `DATOCMS_USER_REVIEWS_CDA_TOKEN` | CMA (`user_review` + `product_page` / webhook Shopify) |
 | `DATOCMS_PREVIEW_SECRET` | Web Previews / `/api/draft` |
 | `DATOCMS_REVALIDATE_SECRET` | Webhook `POST /api/revalidate` |
 | `NEXT_PUBLIC_SITE_URL` | URL canónica do deploy |
 | `NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL` | `https://boilerplate-dato.admin.datocms.com` |
 | `DATOCMS_ADMIN_FRAME_ANCESTOR` | Opcional, mesmo host do admin |
 | `DATOCMS_ENVIRONMENT` | Opcional; neste projeto o primary é `main` |
+
+Shopify (`SHOPIFY_*`): [SHOPIFY.md](./SHOPIFY.md) — também privadas na Vercel.
 
 Lista completa: [`.env.example`](../.env.example). Secrets de CI: [SECURITY.md](./SECURITY.md).
 
@@ -238,6 +240,15 @@ Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testa
 | `post` / `author` / `category` | famílias `datocms:blog` + slug (`post:…`, `author-posts:{id}`, …) |
 | `navigation` / `global_setting` | `datocms:navigation` / `datocms:global-settings` + por locale |
 | `redirect` | `datocms:redirects` |
+| `product_page` | `datocms:product`, `product:{handle}`, sitemap |
 | CDA `tags[]` ou modelo desconhecido | [famílias coarse](../src/lib/datocms/revalidate-tags.ts) |
 
 O ISR de 300s permanece como rede de segurança se o webhook falhar.
+
+## Shopify → `product_page`
+
+Passo a passo (Dev Dashboard, Headless, webhooks, Vercel): [SHOPIFY.md](./SHOPIFY.md).
+
+Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN` (CMA; o nome é histórico). **Não** uses `DATOCMS_API_TOKEN` (CDA). Sem Admin token legado.
+
+O catálogo é uma Page em Global settings (`products_page`); o PDP é `/{locale}/products/{handle}`. Preço, stock e imagem: Storefront no servidor (`SHOPIFY_STOREFRONT_ACCESS_TOKEN`).

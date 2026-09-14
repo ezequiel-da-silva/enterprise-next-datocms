@@ -1135,6 +1135,22 @@ export const GET_SEARCH_PAGE = /* GraphQL */ `
   }
 `;
 
+/**
+ * Page escolhida como catálogo. Consulta separada para fallback `/{locale}/products`
+ * enquanto a migration ainda não existir no ambiente.
+ */
+export const GET_PRODUCTS_INDEX_PAGE = /* GraphQL */ `
+  query GetProductsIndexPage($locale: SiteLocale!) {
+    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      productsPage {
+        id
+        title
+        slug
+      }
+    }
+  }
+`;
+
 /** Slugs de categorias por locale (pré-renderização). */
 export const LIST_CATEGORY_SLUGS = /* GraphQL */ `
   query ListCategorySlugs($locale: SiteLocale!) {
@@ -1218,6 +1234,38 @@ export const SEARCH_LEGAL_PAGES = /* GraphQL */ `
       id
       title
       slug
+    }
+  }
+`;
+
+export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
+  query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
+    productPage(
+      locale: $locale
+      fallbackLocales: [en, pt_BR, es]
+      filter: { shopifyHandle: { eq: $handle } }
+    ) {
+      id
+      title
+      shopifyHandle
+      shopifyProductId
+      _seoMetaTags {
+        ${SEO_META_TAGS}
+      }
+    }
+    _site {
+      faviconMetaTags {
+        ${SEO_META_TAGS}
+      }
+    }
+  }
+`;
+
+export const LIST_PRODUCT_HANDLES = /* GraphQL */ `
+  query ListProductHandles {
+    allProductPages(first: 200, orderBy: _updatedAt_DESC) {
+      shopifyHandle
+      _updatedAt
     }
   }
 `;
