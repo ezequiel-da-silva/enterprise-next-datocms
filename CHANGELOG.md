@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.19.0...next-dato-v0.20.0) (2026-09-14)
+
+
+### Features
+
+* **search:** implement header search functionality; add migration for header search settings and components; update DATOCMS.md documentation to include new header search options and behavior ([2144fe5](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/2144fe5d68ba79fb101cb80752685e4934576838))
+
 ## [0.19.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.18.0...next-dato-v0.19.0) (2026-09-13)
 
 
