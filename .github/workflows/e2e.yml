@@ -27,8 +27,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # `--with-deps` hits dl.google.com APT; that mirror sometimes serves a
+      # half-updated Packages.gz ("File has unexpected size") and exits 100.
       - name: Install Playwright Chromium
-        run: npx playwright install chromium --with-deps
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if npx playwright install chromium --with-deps; then
+              exit 0
+            fi
+            echo "::warning::Playwright Chromium install failed (attempt ${attempt}/3)"
+            if [ "${attempt}" -eq 3 ]; then
+              echo "::error::Playwright Chromium install failed after 3 attempts"
+              exit 1
+            fi
+            sleep $((attempt * 15))
+          done
 
       - name: Production build
         run: npm run build

@@ -1,8 +1,10 @@
 "use client";
 
 import { IconButton } from "@/components/atoms/icon-button";
+import type { AppLocale } from "@/constants/i18n";
 import { THEME_COOKIE_NAME, isThemeMode, type ThemeMode } from "@/constants/theme";
 import { cn } from "@/lib/cn";
+import { themeCopy } from "@/lib/i18n/theme-copy";
 import { useCallback, useEffect, useId, useState } from "react";
 
 /**
@@ -63,11 +65,12 @@ function MoonIcon({ className }: { className?: string }) {
 }
 
 type ThemeToggleProps = {
+  locale: AppLocale;
   /** Cookie lido no SSR: alinha o ARIA do primeiro render com o HTML do servidor. */
   initialMode?: ThemeMode;
 };
 
-export function ThemeToggle({ initialMode }: ThemeToggleProps) {
+export function ThemeToggle({ locale, initialMode }: ThemeToggleProps) {
   const baseId = useId();
   /*
    * Derivado só da prop: servidor e primeiro render do cliente produzem markup
@@ -107,6 +110,7 @@ export function ThemeToggle({ initialMode }: ThemeToggleProps) {
   }, []);
 
   const isDark = mode === "dark";
+  const copy = themeCopy(locale);
 
   return (
     <IconButton
@@ -114,7 +118,7 @@ export function ThemeToggle({ initialMode }: ThemeToggleProps) {
       id={`${baseId}-theme-toggle`}
       role="switch"
       aria-checked={isDark}
-      aria-label={isDark ? "Ativar tema claro" : "Ativar tema escuro"}
+      aria-label={isDark ? copy.activateLight : copy.activateDark}
       onClick={toggle}
       className="border-border bg-muted hover:bg-muted/80"
     >

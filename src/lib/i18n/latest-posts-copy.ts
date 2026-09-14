@@ -20,6 +20,9 @@ export type LatestPostsCopy = {
   previousPage: string;
   nextPage: string;
   carousel: string;
+  /** `aria-roledescription` do contentor — localizado, como no APG. */
+  roleDescription: string;
+  slideRoleDescription: string;
   previousSlide: string;
   nextSlide: string;
   goToSlide: (slide: number) => string;
@@ -45,6 +48,8 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     previousPage: "Previous page",
     nextPage: "Next page",
     carousel: "Blog posts carousel",
+    roleDescription: "carousel",
+    slideRoleDescription: "slide",
     previousSlide: "Previous posts",
     nextSlide: "Next posts",
     goToSlide: (slide) => `Go to slide ${slide}`,
@@ -68,6 +73,8 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     previousPage: "Página anterior",
     nextPage: "Próxima página",
     carousel: "Carrossel de artigos",
+    roleDescription: "carrossel",
+    slideRoleDescription: "slide",
     previousSlide: "Artigos anteriores",
     nextSlide: "Próximos artigos",
     goToSlide: (slide) => `Ir para o slide ${slide}`,
@@ -91,6 +98,8 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     previousPage: "Página anterior",
     nextPage: "Página siguiente",
     carousel: "Carrusel de artículos",
+    roleDescription: "carrusel",
+    slideRoleDescription: "diapositiva",
     previousSlide: "Artículos anteriores",
     nextSlide: "Artículos siguientes",
     goToSlide: (slide) => `Ir a la diapositiva ${slide}`,

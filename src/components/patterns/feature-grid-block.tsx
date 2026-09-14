@@ -33,6 +33,23 @@ export function FeatureGridBlock({ record, locale }: FeatureGridBlockProps) {
   const headingId = `feature-grid-${record.id}`;
   const cardHeading = header.title ? "h3" : "h2";
   const sectionLabel = FEATURE_GRID_COPY[locale].sectionLabel;
+  const items = cards.map((card) =>
+    options.variant === "cards" ? (
+      <CardItem
+        key={card.id}
+        card={card}
+        locale={locale}
+        heading={cardHeading}
+      />
+    ) : (
+      <FullBleedCard
+        key={card.id}
+        card={card}
+        locale={locale}
+        heading={cardHeading}
+      />
+    ),
+  );
 
   return (
     <section
@@ -50,29 +67,17 @@ export function FeatureGridBlock({ record, locale }: FeatureGridBlockProps) {
         descriptionClassName="mt-4 text-lg leading-relaxed"
       />
 
-      <FeatureGridCarousel
-        locale={locale}
-        options={options}
-        {...(header.title ? { labelledBy: headingId } : { label: sectionLabel })}
-      >
-        {cards.map((card) =>
-          options.variant === "cards" ? (
-            <CardItem
-              key={card.id}
-              card={card}
-              locale={locale}
-              heading={cardHeading}
-            />
-          ) : (
-            <FullBleedCard
-              key={card.id}
-              card={card}
-              locale={locale}
-              heading={cardHeading}
-            />
-          ),
-        )}
-      </FeatureGridCarousel>
+      {cards.length > 1 ? (
+        <FeatureGridCarousel
+          locale={locale}
+          options={options}
+          {...(header.title ? { labelledBy: headingId } : { label: sectionLabel })}
+        >
+          {items}
+        </FeatureGridCarousel>
+      ) : (
+        items
+      )}
     </section>
   );
 }
