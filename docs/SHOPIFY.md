@@ -76,16 +76,36 @@ Não precisas de Admin access token permanente no Next.
 
 ### 2. Webhooks `products/create` e `products/update`
 
-Configura os tópicos **na app** (Dev Dashboard / `shopify.app.toml` da app), **não** em Definições → Notificações da loja.
+Fonte de verdade: [`shopify.app.toml`](../shopify.app.toml) na raiz. **Não** configures isto em Definições da loja → Notificações, **nem** em Project settings → Webhooks do Dato, **nem** no campo **URL do app** no Dev Dashboard.
 
-Webhooks criados em **Definições da loja → Notificações** usam **outro** signing secret. Se os usares, o HMAC falha com a chave do Dev Dashboard.
+| Onde | O quê |
+|------|--------|
+| `application_url` | Site: `https://enterprise-next-datocms.vercel.app` |
+| `[[webhooks.subscriptions]]` | Tópicos + `uri` (relativo `/api/webhooks/shopify` ou URL absoluta HTTPS) |
+| `[webhooks] api_version` | Formato do payload (ex. `2026-07`) |
+
+O `link` pode reescrever a URI absoluta para o path relativo; a Shopify resolve contra `application_url`.
+
+```bash
+# Uma vez por clone (liga o repo à app Automação DatoCMS - NextJS)
+npx shopify app config link --client-id "$SHOPIFY_CLIENT_ID"
+
+# Sempre que mudares tópicos, URI ou scopes no toml
+npx shopify app deploy
+```
+
+O ecrã **Criar versão** no Dashboard só cobre URL da app e versão da API. Sem `deploy` do TOML, guardar um produto na Shopify **não** chama o Next.
+
+Webhooks em **Definições da loja → Notificações** usam **outro** signing secret → HMAC `401` com `SHOPIFY_API_SECRET_KEY`.
 
 | Campo | Valor |
 |-------|--------|
-| URL | `https://<domínio-público>/api/webhooks/shopify` (ex. produção: `https://enterprise-next-datocms.vercel.app/api/webhooks/shopify`). Local: só túnel HTTPS. |
+| URI | `/api/webhooks/shopify` (resolvido para `https://enterprise-next-datocms.vercel.app/api/webhooks/shopify`) |
 | Tópicos | `products/create`, `products/update` |
 | Formato | JSON |
-| Versão da API | alinhada com a app (ex. `2024-07` ou a que a app declarar) |
+| Versão da API | a do toml (`2026-07`) |
+
+Local: `localhost` só com túnel HTTPS **e** essa URL no toml + `deploy`.
 
 O endpoint exige HTTPS público. `localhost` só funciona atrás de um túnel (Cloudflare Tunnel, ngrok) **e** com essa URL registada na app.
 
@@ -122,6 +142,21 @@ O webhook preenche `title` em `en`, `pt-BR` e `es`. O handle não é localizado.
 
 Local: as mesmas chaves no `.env` (nunca commitado).
 
+**Não** configures `NODE_TLS_REJECT_UNAUTHORIZED` na Vercel, no Next, no `.env` da app, nem no CI. O site e o webhook **não** usam essa variável.
+
+### CLI Shopify — TLS local (`self-signed certificate in certificate chain`)
+
+Só o **Shopify CLI** (`npx shopify …`) no teu Mac, se um proxy/antivirus interceptar HTTPS para `accounts.shopify.com`. Não é setting do projeto.
+
+```bash
+NODE_TLS_REJECT_UNAUTHORIZED=0 npx shopify app config link --client-id "$SHOPIFY_CLIENT_ID"
+NODE_TLS_REJECT_UNAUTHORIZED=0 npx shopify app deploy
+```
+
+Prefixo **só nesse comando**. Não exportes a variável no shell de forma permanente. O caminho certo a médio prazo é instalar o certificado da cadeia (ou desligar a inspeção TLS) — `REJECT_UNAUTHORIZED=0` desliga a verificação SSL.
+
+`npx datocms`, `npm run dev`, testes e Vercel **não** precisam disto.
+
 ## Verificar
 
 1. Cria ou edita um produto na Shopify → no Dato (**main**, ou **develop** se `DATOCMS_ENVIRONMENT=develop`) deve aparecer/atualizar `product_page` (handle + id), publicado.
@@ -132,6 +167,7 @@ Local: as mesmas chaves no `.env` (nunca commitado).
 
 | Caminho | Função |
 |---------|--------|
+| `shopify.app.toml` | Versão da app + subscrições de webhook |
 | `src/app/api/webhooks/shopify/route.ts` | Webhook |
 | `src/lib/shopify/hmac.ts` | HMAC SHA-256 Base64, `timingSafeEqual` |
 | `src/lib/shopify/parse-product-webhook.ts` | Payload produto |
