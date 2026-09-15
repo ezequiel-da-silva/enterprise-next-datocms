@@ -10,37 +10,40 @@ Playbook Dato (modelo `product_page`, cache): [DATOCMS.md](./DATOCMS.md). Secret
 flowchart LR
   ShopifyStore[Shopify loja]
   AppWebhook[App Dev Dashboard]
-  NextWebhook["POST /api/webhooks/shopify"]
-  DatoCMA[Dato CMA product_page]
+  NextShopify["POST /api/webhooks/shopify"]
+  DatoCMA[Dato product_page]
+  NextDato["POST /api/webhooks/datocms/product-page"]
   NextPDP["/{locale}/products/{handle}"]
   Storefront[Storefront API]
-  Headless[Canal Headless]
 
-  ShopifyStore -->|products/create e update| AppWebhook
-  AppWebhook -->|HMAC SHA-256| NextWebhook
-  NextWebhook -->|upsert + publish| DatoCMA
-  DatoCMA -->|CDA título / handle| NextPDP
-  Headless -->|token privado shpat_| Storefront
-  Storefront -->|preço stock imagem| NextPDP
+  ShopifyStore -->|"create: id handle title"| AppWebhook
+  AppWebhook --> NextShopify
+  NextShopify -->|"create: title + keys; update: só keys"| DatoCMA
+  DatoCMA -->|"publish title en"| NextDato
+  NextDato -->|productUpdate title| ShopifyStore
+  DatoCMA -->|titulo editorial| NextPDP
+  Storefront -->|preco stock imagem| NextPDP
 ```
 
 | Peça | Papel |
 |------|--------|
 | App no **Dev Dashboard** | Client ID + chave secreta; **webhooks** assinados com essa chave |
 | Canal **Headless** | Tokens da Storefront API (público + privado) |
-| Dato `product_page` | Título + `shopify_handle` + `shopify_product_id` (webhook CMA) |
+| Dato `product_page` | Título editorial; `shopify_handle` + `shopify_product_id` (chaves Shopify) |
 | Page de catálogo | Ligada em Global settings (`products_page`) |
-| Next PDP | RSC: Dato + Storefront no **servidor** |
+| Next PDP | RSC: título Dato + Storefront no **servidor** |
+| Dato → Shopify | Só `title` locale **en** → Admin `productUpdate` |
 
-Fora de âmbito neste repo: `products/delete`, carrinho, checkout, token Admin legado (`SHOPIFY_ADMIN_ACCESS_TOKEN`), `NEXT_PUBLIC_*` Shopify.
+Fora de âmbito neste repo: `products/delete`, carrinho, checkout, `NEXT_PUBLIC_*` Shopify. Handle, preço, stock e imagem **não** vão do Dato para a Shopify.
 
 ## Duas superfícies Shopify (não misturar)
 
 | Superfície | Onde | O que copias |
 |------------|------|----------------|
-| **Dev Dashboard** (`dev.shopify.com`) | App custom (ex. Automação DatoCMS) | `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY` |
+| **Dev Dashboard** (`dev.shopify.com`) | App custom (ex. Automação DatoCMS) | `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, Admin API (`write_products`) |
 | **Admin da loja** | Canal de vendas **Headless** | `SHOPIFY_STOREFRONT_ACCESS_TOKEN` (privado) |
 | **Admin da loja** | Definições da loja | `SHOPIFY_STORE_DOMAIN` (`loja.myshopify.com`, sem `https://`) |
+| **Admin da loja / app** | Token **Admin API** (servidor) | `SHOPIFY_ADMIN_ACCESS_TOKEN` — Dato → título Shopify |
 
 A página de **instalação** do Headless (`…/app_installations/app/headless-storefronts`) **não** mostra tokens. Abre o canal (**Abrir app** ou pesquisa → Headless).
 
@@ -58,7 +61,9 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 | `SHOPIFY_API_SECRET_KEY` | Dev Dashboard → Chave secreta (`shpss_…`) | HMAC `x-shopify-hmac-sha256` |
 | `SHOPIFY_STORE_DOMAIN` | Loja (`*.myshopify.com`) | Storefront URL + header `x-shopify-shop-domain` |
 | `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Headless → API Storefront → **token privado** (`shpat_…`) | PDP: preço, stock, imagem |
+| `SHOPIFY_ADMIN_ACCESS_TOKEN` | App (Admin API, scope `write_products`) | Dato → `productUpdate` do título. **Não** uses no browser |
 | `DATOCMS_USER_REVIEWS_CDA_TOKEN` | Dato (token **CMA**) | Upsert de `product_page`. **Não** uses `DATOCMS_API_TOKEN` (CDA) |
+| `DATOCMS_REVALIDATE_SECRET` | Dato webhook Bearer | `/api/revalidate` **e** `/api/webhooks/datocms/product-page` |
 | `DATOCMS_ENVIRONMENT` | Dato | Escolhe o ambiente. Default **`main`**. `develop` = sandbox (fork). |
 
 O cliente Storefront envia `Shopify-Storefront-Private-Token` se o valor começar por `shpat_`; senão `X-Shopify-Storefront-Access-Token` (token público hex). Preferir o **privado** no servidor.
@@ -109,11 +114,11 @@ Local: `localhost` só com túnel HTTPS **e** essa URL no toml + `deploy`.
 
 O endpoint exige HTTPS público. `localhost` só funciona atrás de um túnel (Cloudflare Tunnel, ngrok) **e** com essa URL registada na app.
 
-A rota: HMAC do **corpo cru** → loja igual a `SHOPIFY_STORE_DOMAIN` → tópico produto → parse `id` / `handle` / `title` → CMA upsert + publish no ambiente `DATOCMS_ENVIRONMENT` (default `main`).
+A rota Shopify → Dato: HMAC do **corpo cru** → loja igual a `SHOPIFY_STORE_DOMAIN` → tópico produto → parse `id` / `handle` / `title` → CMA upsert + publish. **Create** preenche `title` nos 3 locales; **update** só `shopify_handle` + `shopify_product_id` (não sobrescreve o título editorial).
 
-Isto **não** é o webhook Dato em Project settings → Webhooks (`Next.js revalidate` / `POST /api/revalidate`). Esse só invalida cache. Produtos configuram-se na **app Shopify**.
+O webhook Dato **Next.js revalidate** (`POST /api/revalidate`) só invalida cache. O título Dato → Shopify é **outro** webhook (passo 4b).
 
-Respostas: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400** JSON/payload; **200** `{ "success": true }`.
+Respostas Shopify: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400** JSON/payload; **200** `{ "success": true }`.
 
 ### 2b. Backfill dos produtos já existentes
 
@@ -150,21 +155,34 @@ Não faz parte do fluxo de sincronização — o webhook não precisa dele. Serv
 
 `The API key seems to be invalid for the specified Shopify domain!` é quase sempre o **Shop ID** com o domínio inteiro, ou um token privado onde tem de ser o público.
 
-O `product_page` deste repo **não** tem campo `shopify_product` — tem `title`, `shopify_handle` e `shopify_product_id`, todos escritos pelo webhook. Se quiseres o seletor visual, cria um campo novo (string ou JSON) com esse API identifier; não substituas `shopify_handle`, que é a chave do upsert e da URL do PDP.
+O `product_page` deste repo **não** tem campo `shopify_product` — tem `title`, `shopify_handle` e `shopify_product_id`. Handle e ID são chaves; o editor não deve alterá-los (fieldset **Shopify identifiers**). Se quiseres o seletor visual, cria um campo novo com API identifier `shopify_product`; não substituas `shopify_handle`.
 
 ### 4. Dato (já no schema deste repo)
 
-- Modelo `product_page` (migration `1789399000_productPageAndProductsPageLink.ts`) no **main** (e no sandbox se o schema já estiver no fork).
+- Modelo `product_page` (migrations `1789399000_productPageAndProductsPageLink.ts` + `1789401000_productPageShopifyKeyHints.ts`) no **main**.
 - Singleton Global settings → `products_page` (link para a Page de catálogo).
 - Token CMA (`DATOCMS_USER_REVIEWS_CDA_TOKEN`): Content Management API + Editor a escrever/publicar `product_page` (não só `user_review`).
-- **`DATOCMS_ENVIRONMENT` escolhe o ambiente.** Produção e o destino normal: **`main`** (também o default se a variável não existir). Para escrever no sandbox: `DATOCMS_ENVIRONMENT=develop`. Se o sandbox não estiver disponível (token, permissões, modelo em falta), omite a variável ou usa `main`.
+- **`DATOCMS_ENVIRONMENT` escolhe o ambiente.** Produção e o destino normal: **`main`**. Para o sandbox: `DATOCMS_ENVIRONMENT=develop`.
+- **Create** Shopify → Dato: `title` em `en`, `pt-BR` e `es`. **Update** Shopify → Dato: não reescreve `title` (preserva edições `pt-BR` / `es`).
+- Handle não é localizado. URL do PDP: `/{locale}/products/{handle}`.
+- Opcional no Dato: Configuration → Roles → Editor → `product_page`: permitir editar só `title` (handle e ID read-only). O token CMA do webhook continua a poder escrever as chaves.
 
-O webhook preenche `title` em `en`, `pt-BR` e `es`. O handle não é localizado. URL do PDP: `/{locale}/products/{handle}` (`en`, `pt`, `es`).
+### 4b. Dato → Shopify (só título `en`)
+
+1. Na app Shopify: scope `write_products` em [`shopify.app.toml`](../shopify.app.toml) → `npx shopify app deploy` → **atualizar/reinstalar** a app na loja (scopes novos).
+2. Gera um token **Admin API** (`SHOPIFY_ADMIN_ACCESS_TOKEN`) com `write_products`. Só no servidor / Vercel (nunca `NEXT_PUBLIC_*`).
+3. **Project settings → Webhooks** (Dato) → **novo** webhook (não reutilizes o Next.js revalidate):
+   - URL: `https://enterprise-next-datocms.vercel.app/api/webhooks/datocms/product-page`
+   - Header: `Authorization` = `Bearer ` + `DATOCMS_REVALIDATE_SECRET`
+   - Triggers: entity **Record** `product_page` — eventos **update** e **publish**
+4. Publica um `product_page` com `title.en` diferente do título Shopify → a Admin Shopify deve atualizar. Se já for igual → `{ "success": true, "skipped": true }` (corta o eco do `products/update`).
+
+`pt-BR` e `es` ficam só no Dato (o produto Shopify tem um único `title`).
 
 ## Vercel
 
 1. Settings → Environment Variables.
-2. As quatro `SHOPIFY_*` + `DATOCMS_USER_REVIEWS_CDA_TOKEN`. `DATOCMS_ENVIRONMENT` só se quiseres o sandbox (`develop`); senão o CMA usa `main`.
+2. As quatro `SHOPIFY_*` + `SHOPIFY_ADMIN_ACCESS_TOKEN` + `DATOCMS_USER_REVIEWS_CDA_TOKEN` + `DATOCMS_REVALIDATE_SECRET`. `DATOCMS_ENVIRONMENT` só se quiseres o sandbox (`develop`); senão o CMA usa `main`.
 3. Production (e Preview).
 4. Redeploy. Variável nova não entra no deploy já feito.
 
@@ -187,20 +205,25 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 
 ## Verificar
 
-1. Cria ou edita um produto na Shopify → no Dato (**main**, ou **develop** se `DATOCMS_ENVIRONMENT=develop`) deve aparecer/atualizar `product_page` (handle + id), publicado.
-2. Abre `https://<site>/<locale>/products/<handle>`: título Dato; preço/imagem se o token Headless e a publicação no canal estiverem certos.
-3. Logs Vercel: HMAC 401 → secret da **app** vs webhook da **loja**; 500 `missing` → env; produto sem preço → Headless / publicação no canal.
+1. Cria um produto na Shopify → no Dato aparece `product_page` (handle + id + título), publicado.
+2. Edita o título **só no Dato** (`en`) e publica → o título na Admin Shopify atualiza; `pt-BR`/`es` no Dato não mudam.
+3. Edita o título **só na Shopify** num produto que já existe no Dato → o Dato **não** reescreve `title` (o PDP continua com o título Dato até o editor o mudar).
+4. Abre `https://<site>/<locale>/products/<handle>`: título Dato; preço/imagem se o token Headless e a publicação no canal estiverem certos.
+5. Logs Vercel: HMAC 401 → secret da **app** vs webhook da **loja**; 500 `missing` → env; produto sem preço → Headless / publicação no canal.
 
 ## Código
 
 | Caminho | Função |
 |---------|--------|
-| `shopify.app.toml` | Versão da app + subscrições de webhook |
+| `shopify.app.toml` | Versão da app + `write_products` + subscrições Shopify |
 | `scripts/backfill-shopify-products.mjs` | Backfill (`npm run shopify:backfill`) |
-| `src/app/api/webhooks/shopify/route.ts` | Webhook |
+| `src/app/api/webhooks/shopify/route.ts` | Shopify → Dato |
+| `src/app/api/webhooks/datocms/product-page/route.ts` | Dato → título Shopify |
 | `src/lib/shopify/hmac.ts` | HMAC SHA-256 Base64, `timingSafeEqual` |
-| `src/lib/shopify/parse-product-webhook.ts` | Payload produto |
-| `src/infra/datocms/sync-product-page.ts` | CMA upsert |
+| `src/lib/shopify/parse-product-webhook.ts` | Payload produto Shopify |
+| `src/lib/datocms/parse-product-page-title-sync.ts` | Payload Dato `product_page` |
+| `src/infra/datocms/sync-product-page.ts` | CMA upsert (title só no create) |
+| `src/infra/shopify/admin-product-title.ts` | Admin GraphQL `productUpdate` |
 | `src/infra/shopify/storefront.ts` | GraphQL Storefront `2024-07` |
 | `src/app/[slug]/products/[handle]/page.tsx` | PDP |
 

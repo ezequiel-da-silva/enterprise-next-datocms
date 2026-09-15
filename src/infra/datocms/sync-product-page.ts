@@ -65,6 +65,7 @@ export type SyncProductPageResult =
 
 /**
  * Upsert + publish de `product_page` a partir do webhook Shopify.
+ * Create: preenche `title` nos 3 locales. Update: só handle + id (título editorial no Dato).
  * Token: `DATOCMS_USER_REVIEWS_CDA_TOKEN` (CMA). Ambiente: `DATOCMS_ENVIRONMENT`
  * (`develop` para o sandbox; se faltar, primary `main`).
  */
@@ -82,8 +83,7 @@ export async function syncProductPageFromShopify(
     const existing =
       byId ?? (await findByField(client, itemTypeId, "shopify_handle", product.handle));
 
-    const payload = {
-      title: localizedTitle(product.title),
+    const keys = {
       shopify_handle: product.handle,
       shopify_product_id: product.id,
     };
@@ -91,12 +91,14 @@ export async function syncProductPageFromShopify(
     let id: string;
     let created = false;
     if (existing?.id) {
-      await client.items.update(existing.id, payload);
+      // Update: identificadores Shopify. Não tocar em `title` (editorial no Dato).
+      await client.items.update(existing.id, keys);
       id = existing.id;
     } else {
       const createdItem = await client.items.create({
         item_type: { type: "item_type", id: itemTypeId },
-        ...payload,
+        title: localizedTitle(product.title),
+        ...keys,
       });
       id = createdItem.id;
       created = true;
