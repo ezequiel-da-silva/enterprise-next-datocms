@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.28.0...next-dato-v0.29.0) (2026-09-15)
+
+
+### Features
+
+* **shopify:** enhance Admin API token handling for product title synchronization; update environment variable requirements and documentation for client credentials usage; improve webhook error handling ([200725a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/200725a56263b0141ee4c27ee1447ce30edf05de))
+
 ## [0.28.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.27.0...next-dato-v0.28.0) (2026-09-15)
 
 
