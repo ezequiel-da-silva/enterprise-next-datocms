@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.25.0...next-dato-v0.26.0) (2026-09-15)
+
+
+### Features
+
+* **shopify:** add shopify.app.toml configuration file; update .env.example and documentation for webhook setup and environment variables; enhance .gitignore for Shopify CLI cache ([18ec341](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/18ec341f03e29a504beaaa958fcc1d6ca4d741e7))
+
 ## [0.25.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.24.0...next-dato-v0.25.0) (2026-09-15)
 
 
