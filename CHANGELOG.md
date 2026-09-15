@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.23.0...next-dato-v0.24.0) (2026-09-15)
+
+
+### Features
+
+* **datocms:** update environment variable handling for Shopify integration; set DATOCMS_ENVIRONMENT as mandatory for webhooks and update related documentation ([32280ab](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/32280abd9d458d2e5ecfadd48c4a12bc8eac8d54))
+
 ## [0.23.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.22.0...next-dato-v0.23.0) (2026-09-14)
 
 
