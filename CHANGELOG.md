@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.29.0...next-dato-v0.30.0) (2026-09-15)
+
+
+### Features
+
+* **shopify:** enhance product title synchronization by adding support for multiple locales; update webhook handling to include translations for PT/ES; refine documentation for environment variable requirements and usage ([ed277f8](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/ed277f8ef569cdb2262c0c557f5893990cc0711e))
+
 ## [0.29.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.28.0...next-dato-v0.29.0) (2026-09-15)
 
 
