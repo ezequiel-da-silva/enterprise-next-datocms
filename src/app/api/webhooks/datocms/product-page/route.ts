@@ -22,7 +22,7 @@ function unauthorized(): NextResponse {
 }
 
 /**
- * Webhook Dato `product_page` (publish/update) → `productUpdate` do título `en` na Shopify.
+ * Webhook Dato `product_page` (publish/update) → títulos Shopify (EN + PT/ES).
  * Auth: mesmo secret que `/api/revalidate` (`DATOCMS_REVALIDATE_SECRET`).
  * Token Admin: client credentials (cache) ou `SHOPIFY_ADMIN_ACCESS_TOKEN` opcional.
  */
@@ -48,7 +48,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, skipped: true });
   }
 
-  const result = await pushShopifyProductTitle(sync.shopifyProductId, sync.titleEn);
+  const result = await pushShopifyProductTitle(sync.shopifyProductId, {
+    en: sync.titleEn,
+    ptBR: sync.titlePt,
+    es: sync.titleEs,
+  });
   if (!result.ok) {
     if (result.reason === "not_configured") {
       return NextResponse.json({ error: "Webhook not configured", missing: result.missing }, { status: 500 });

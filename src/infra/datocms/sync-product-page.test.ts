@@ -1,13 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+const { mockReadI18n } = vi.hoisted(() => ({
+  mockReadI18n: vi.fn(async () => ({ pt: null as string | null, es: null as string | null })),
+}));
+
+vi.mock("@/infra/shopify/admin-product-title", () => ({
+  readShopifyProductTranslations: mockReadI18n,
+}));
+
 const listItemTypes = vi.fn();
 const listItems = vi.fn();
+const findItem = vi.fn();
 const createItem = vi.fn();
 const updateItem = vi.fn();
 const publishItem = vi.fn();
 const buildClient = vi.fn(() => ({
   itemTypes: { list: listItemTypes },
-  items: { list: listItems, create: createItem, update: updateItem, publish: publishItem },
+  items: { list: listItems, find: findItem, create: createItem, update: updateItem, publish: publishItem },
 }));
 
 vi.mock("@datocms/cma-client-node", () => ({
@@ -19,10 +28,13 @@ describe("syncProductPageFromShopify", () => {
     vi.resetModules();
     listItemTypes.mockReset();
     listItems.mockReset();
+    findItem.mockReset();
     createItem.mockReset();
     updateItem.mockReset();
     publishItem.mockReset();
     buildClient.mockClear();
+    mockReadI18n.mockReset();
+    mockReadI18n.mockResolvedValue({ pt: null, es: null });
     process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN = "cma-test-token";
     process.env.DATOCMS_ENVIRONMENT = "develop";
   });
@@ -56,9 +68,13 @@ describe("syncProductPageFromShopify", () => {
     expect(publishItem).toHaveBeenCalledWith("rec-1");
   });
 
-  it("updates by shopify_product_id when the record exists", async () => {
+  it("updates handle and id without rewriting pt-BR or es when EN matches", async () => {
     listItemTypes.mockResolvedValue([{ id: "type-1", api_key: "product_page" }]);
-    listItems.mockResolvedValueOnce([{ id: "rec-9" }]);
+    listItems.mockResolvedValue([{ id: "rec-9" }]);
+    findItem.mockResolvedValue({
+      id: "rec-9",
+      title: { en: "Hat", "pt-BR": "Chapéu", es: "Sombrero" },
+    });
     updateItem.mockResolvedValue({});
     publishItem.mockResolvedValue({});
 
@@ -76,6 +92,55 @@ describe("syncProductPageFromShopify", () => {
     });
     expect(updateItem.mock.calls[0]?.[1]).not.toHaveProperty("title");
     expect(createItem).not.toHaveBeenCalled();
+  });
+
+  it("updates only title.en when the Shopify title changed", async () => {
+    listItemTypes.mockResolvedValue([{ id: "type-1", api_key: "product_page" }]);
+    listItems.mockResolvedValue([{ id: "rec-9" }]);
+    findItem.mockResolvedValue({
+      id: "rec-9",
+      title: { en: "Hat", "pt-BR": "Chapéu", es: "Sombrero" },
+    });
+    updateItem.mockResolvedValue({});
+    publishItem.mockResolvedValue({});
+
+    const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
+    await syncProductPageFromShopify({
+      id: "42",
+      handle: "hat",
+      title: "Hat v2",
+    });
+
+    expect(updateItem).toHaveBeenCalledWith("rec-9", {
+      shopify_product_id: "42",
+      shopify_handle: "hat",
+      title: { en: "Hat v2", "pt-BR": "Chapéu", es: "Sombrero" },
+    });
+  });
+
+  it("merges Shopify PT/ES translations without dropping Dato EN", async () => {
+    listItemTypes.mockResolvedValue([{ id: "type-1", api_key: "product_page" }]);
+    listItems.mockResolvedValue([{ id: "rec-9" }]);
+    findItem.mockResolvedValue({
+      id: "rec-9",
+      title: { en: "Hat", "pt-BR": "Chapéu", es: "Sombrero" },
+    });
+    mockReadI18n.mockResolvedValue({ pt: "Chapéu BR", es: "Sombrero" });
+    updateItem.mockResolvedValue({});
+    publishItem.mockResolvedValue({});
+
+    const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
+    await syncProductPageFromShopify({
+      id: "42",
+      handle: "hat",
+      title: "Hat",
+    });
+
+    expect(updateItem).toHaveBeenCalledWith("rec-9", {
+      shopify_product_id: "42",
+      shopify_handle: "hat",
+      title: { en: "Hat", "pt-BR": "Chapéu BR", es: "Sombrero" },
+    });
   });
 
   it("returns not_configured without a CMA token", async () => {

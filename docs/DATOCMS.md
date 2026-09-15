@@ -251,6 +251,6 @@ O ISR de 300s permanece como rede de segurança se o webhook falhar.
 
 Passo a passo (Dev Dashboard, Headless, webhooks, Vercel): [SHOPIFY.md](./SHOPIFY.md).
 
-Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN` no ambiente `DATOCMS_ENVIRONMENT` (`develop` se definido; senão **`main`**). Create preenche `title`; update não o sobrescreve. Dato → Shopify (só `title.en`): `POST /api/webhooks/datocms/product-page` com `DATOCMS_REVALIDATE_SECRET`; Admin API via client credentials (`SHOPIFY_CLIENT_ID` + `SHOPIFY_API_SECRET_KEY`, scope `write_products`). **Não** uses `DATOCMS_API_TOKEN` (CDA). O webhook Dato de revalidate só invalida cache.
+Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN`. Create preenche os 3 `title`; update só muda `en` (e PT/ES se a Translations API tiver valor novo). Dato → Shopify: `POST /api/webhooks/datocms/product-page` (`DATOCMS_REVALIDATE_SECRET`); `productUpdate` (EN) + `translationsRegister` (PT/ES). Client credentials (`write_products`, `read_translations`, `write_translations`). **Não** uses `DATOCMS_API_TOKEN` (CDA). O webhook Dato de revalidate só invalida cache.
 
 O catálogo é uma Page em Global settings (`products_page`); o PDP é `/{locale}/products/{handle}`. Preço, stock e imagem: Storefront no servidor (`SHOPIFY_STOREFRONT_ACCESS_TOKEN`).
