@@ -43,7 +43,6 @@ Fora de âmbito neste repo: `products/delete`, carrinho, checkout, `NEXT_PUBLIC_
 | **Dev Dashboard** (`dev.shopify.com`) | App custom (ex. Automação DatoCMS) | `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, Admin API (`write_products`) |
 | **Admin da loja** | Canal de vendas **Headless** | `SHOPIFY_STOREFRONT_ACCESS_TOKEN` (privado) |
 | **Admin da loja** | Definições da loja | `SHOPIFY_STORE_DOMAIN` (`loja.myshopify.com`, sem `https://`) |
-| **Admin da loja / app** | Token **Admin API** (servidor) | `SHOPIFY_ADMIN_ACCESS_TOKEN` — Dato → título Shopify |
 
 A página de **instalação** do Headless (`…/app_installations/app/headless-storefronts`) **não** mostra tokens. Abre o canal (**Abrir app** ou pesquisa → Headless).
 
@@ -57,11 +56,11 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 
 | Variável | Origem | Uso |
 |----------|--------|-----|
-| `SHOPIFY_CLIENT_ID` | Dev Dashboard → Configurações do app | Obrigatório; identidade da app |
-| `SHOPIFY_API_SECRET_KEY` | Dev Dashboard → Chave secreta (`shpss_…`) | HMAC `x-shopify-hmac-sha256` |
-| `SHOPIFY_STORE_DOMAIN` | Loja (`*.myshopify.com`) | Storefront URL + header `x-shopify-shop-domain` |
+| `SHOPIFY_CLIENT_ID` | Dev Dashboard → Configurações do app | Identidade da app; client credentials Admin |
+| `SHOPIFY_API_SECRET_KEY` | Dev Dashboard → Chave secreta (`shpss_…`) | HMAC webhook **e** client credentials Admin |
+| `SHOPIFY_STORE_DOMAIN` | Loja (`*.myshopify.com`) | Storefront URL + OAuth Admin + `x-shopify-shop-domain` |
 | `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Headless → API Storefront → **token privado** (`shpat_…`) | PDP: preço, stock, imagem |
-| `SHOPIFY_ADMIN_ACCESS_TOKEN` | App (Admin API, scope `write_products`) | Dato → `productUpdate` do título. **Não** uses no browser |
+| `SHOPIFY_ADMIN_ACCESS_TOKEN` | Opcional (teste) | Override estático. Em produção o Next pede o token sozinho (~24h, cache em memória) |
 | `DATOCMS_USER_REVIEWS_CDA_TOKEN` | Dato (token **CMA**) | Upsert de `product_page`. **Não** uses `DATOCMS_API_TOKEN` (CDA) |
 | `DATOCMS_REVALIDATE_SECRET` | Dato webhook Bearer | `/api/revalidate` **e** `/api/webhooks/datocms/product-page` |
 | `DATOCMS_ENVIRONMENT` | Dato | Escolhe o ambiente. Default **`main`**. `develop` = sandbox (fork). |
@@ -170,19 +169,20 @@ O `product_page` deste repo **não** tem campo `shopify_product` — tem `title`
 ### 4b. Dato → Shopify (só título `en`)
 
 1. Na app Shopify: scope `write_products` em [`shopify.app.toml`](../shopify.app.toml) → `npx shopify app deploy` → **atualizar/reinstalar** a app na loja (scopes novos).
-2. Gera um token **Admin API** (`SHOPIFY_ADMIN_ACCESS_TOKEN`) com `write_products`. Só no servidor / Vercel (nunca `NEXT_PUBLIC_*`).
-3. **Project settings → Webhooks** (Dato) → **novo** webhook (não reutilizes o Next.js revalidate):
+2. **Não** coloques um token Admin na Vercel. O Next usa `SHOPIFY_CLIENT_ID` + `SHOPIFY_API_SECRET_KEY` + `SHOPIFY_STORE_DOMAIN` (client credentials) e guarda o token em memória até ~24h. `SHOPIFY_ADMIN_ACCESS_TOKEN` só para testes locais. **Não** guardes o token no Global setting do Dato (iria para a CDA).
+3. Se o OAuth devolver `shop_not_permitted`, a app e a loja não estão na mesma organização do Dev Dashboard — client credentials não aplica.
+4. **Project settings → Webhooks** (Dato) → **novo** webhook (não reutilizes o Next.js revalidate):
    - URL: `https://enterprise-next-datocms.vercel.app/api/webhooks/datocms/product-page`
    - Header: `Authorization` = `Bearer ` + `DATOCMS_REVALIDATE_SECRET`
    - Triggers: entity **Record** `product_page` — eventos **update** e **publish**
-4. Publica um `product_page` com `title.en` diferente do título Shopify → a Admin Shopify deve atualizar. Se já for igual → `{ "success": true, "skipped": true }` (corta o eco do `products/update`).
+5. Publica um `product_page` com `title.en` diferente do título Shopify → a Admin Shopify deve atualizar. Se já for igual → `{ "success": true, "skipped": true }` (corta o eco do `products/update`).
 
 `pt-BR` e `es` ficam só no Dato (o produto Shopify tem um único `title`).
 
 ## Vercel
 
 1. Settings → Environment Variables.
-2. As quatro `SHOPIFY_*` + `SHOPIFY_ADMIN_ACCESS_TOKEN` + `DATOCMS_USER_REVIEWS_CDA_TOKEN` + `DATOCMS_REVALIDATE_SECRET`. `DATOCMS_ENVIRONMENT` só se quiseres o sandbox (`develop`); senão o CMA usa `main`.
+2. `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN` + `DATOCMS_USER_REVIEWS_CDA_TOKEN` + `DATOCMS_REVALIDATE_SECRET`. `SHOPIFY_ADMIN_ACCESS_TOKEN` não é preciso em produção. `DATOCMS_ENVIRONMENT` só se quiseres o sandbox (`develop`); senão o CMA usa `main`.
 3. Production (e Preview).
 4. Redeploy. Variável nova não entra no deploy já feito.
 
@@ -223,6 +223,7 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | `src/lib/shopify/parse-product-webhook.ts` | Payload produto Shopify |
 | `src/lib/datocms/parse-product-page-title-sync.ts` | Payload Dato `product_page` |
 | `src/infra/datocms/sync-product-page.ts` | CMA upsert (title só no create) |
+| `src/lib/shopify/admin-access-token.ts` | Client credentials + cache Admin |
 | `src/infra/shopify/admin-product-title.ts` | Admin GraphQL `productUpdate` |
 | `src/infra/shopify/storefront.ts` | GraphQL Storefront `2024-07` |
 | `src/app/[slug]/products/[handle]/page.tsx` | PDP |

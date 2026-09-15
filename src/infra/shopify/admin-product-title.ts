@@ -1,11 +1,12 @@
-import { logMissingShopifyAdminEnv, readShopifyAdminEnv } from "@/lib/shopify/admin-env";
+import { resolveAdminAccessToken } from "@/lib/shopify/admin-access-token";
 
 /** Alinhado com `shopify.app.toml` `[webhooks] api_version`. */
 export const SHOPIFY_ADMIN_API_VERSION = "2026-07";
 
 export type PushProductTitleResult =
   | { ok: true; skipped: boolean }
-  | { ok: false; reason: "not_configured" | "transport_error" | "shopify_error" };
+  | { ok: false; reason: "not_configured"; missing: string[] }
+  | { ok: false; reason: "transport_error" | "shopify_error" };
 
 function productGid(id: string): string {
   if (id.startsWith("gid://shopify/Product/")) return id;
@@ -82,10 +83,12 @@ export async function pushShopifyProductTitle(
   shopifyProductId: string,
   titleEn: string,
 ): Promise<PushProductTitleResult> {
-  const env = readShopifyAdminEnv();
-  if (!env.ok) {
-    logMissingShopifyAdminEnv(env.missing);
-    return { ok: false, reason: "not_configured" };
+  const auth = await resolveAdminAccessToken();
+  if (!auth.ok) {
+    if (auth.reason === "not_configured") {
+      return { ok: false, reason: "not_configured", missing: auth.missing };
+    }
+    return { ok: false, reason: "shopify_error" };
   }
 
   const id = productGid(shopifyProductId);
@@ -93,7 +96,7 @@ export async function pushShopifyProductTitle(
   if (!title) return { ok: false, reason: "shopify_error" };
 
   try {
-    const read = await adminGraphql(env.data.SHOPIFY_STORE_DOMAIN, env.data.SHOPIFY_ADMIN_ACCESS_TOKEN, PRODUCT_TITLE_QUERY, {
+    const read = await adminGraphql(auth.domain, auth.token, PRODUCT_TITLE_QUERY, {
       id,
     });
     const product = asRecord(asRecord(asRecord(read.json)?.data)?.product);
@@ -102,12 +105,9 @@ export async function pushShopifyProductTitle(
       return { ok: true, skipped: true };
     }
 
-    const write = await adminGraphql(
-      env.data.SHOPIFY_STORE_DOMAIN,
-      env.data.SHOPIFY_ADMIN_ACCESS_TOKEN,
-      PRODUCT_UPDATE_MUTATION,
-      { product: { id, title } },
-    );
+    const write = await adminGraphql(auth.domain, auth.token, PRODUCT_UPDATE_MUTATION, {
+      product: { id, title },
+    });
     const payload = asRecord(asRecord(asRecord(write.json)?.data)?.productUpdate);
     const errors = payload?.userErrors;
     if (
