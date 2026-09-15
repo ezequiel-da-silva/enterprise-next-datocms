@@ -19,6 +19,7 @@
     "security:audit:all": "npm audit --audit-level=high",
     "security:headers": "node scripts/check-security-headers.mjs",
     "security:check": "npm run security:audit && npm run security:headers",
+    "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
     "lighthouse:ci": "lhci autorun",
     "test:e2e": "playwright test",
     "prepare": "husky"

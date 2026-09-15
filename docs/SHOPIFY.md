@@ -115,6 +115,19 @@ Isto **não** é o webhook Dato em Project settings → Webhooks (`Next.js reval
 
 Respostas: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400** JSON/payload; **200** `{ "success": true }`.
 
+### 2b. Backfill dos produtos já existentes
+
+As subscrições só disparam em **alterações futuras**. Produtos criados antes do `deploy` não entram sozinhos — ou os editas um a um na Shopify, ou corres o backfill:
+
+```bash
+npm run shopify:backfill -- --url https://enterprise-next-datocms.vercel.app --dry-run
+npm run shopify:backfill -- --url https://enterprise-next-datocms.vercel.app
+```
+
+Lista os produtos pela Storefront API e reenvia cada um como webhook **assinado** para `/api/webhooks/shopify`. Mesmo caminho da Shopify, logo o mesmo upsert + publish — sem lógica CMA duplicada.
+
+Só entram produtos publicados no canal **Headless** (a Storefront API não vê os outros). Corre-o depois do passo 3.
+
 ### 3. Canal Headless (Storefront)
 
 1. Admin da loja → App Store → [Headless](https://apps.shopify.com/headless) → instalar.
@@ -123,6 +136,21 @@ Respostas: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400
 4. **Gerenciar acesso à API → API Storefront**.
 5. Copia o **token de acesso privado** (`shpat_…`) para `SHOPIFY_STOREFRONT_ACCESS_TOKEN`.
 6. Publica os produtos no canal **Headless** (igual à Loja virtual). Sem isto a API autentica e o produto vem vazio.
+
+### 3b. Plugin “Shopify product” no Dato (opcional)
+
+Não faz parte do fluxo de sincronização — o webhook não precisa dele. Serve só para um editor **escolher** um produto num campo (pré-visualização com imagem e preço no editor).
+
+| Campo do plugin | Valor |
+|-----------------|--------|
+| Use demo store? | desligado |
+| **Shop ID** | **só o subdomínio**: `teste-datocms-ezequiel` (⚠️ não o `*.myshopify.com` completo) |
+| Storefront access token | token **público** do canal Headless (hex). O privado `shpat_…` **não** serve: o plugin corre no browser |
+| Auto-apply to fields | regex do API identifier, ex. `shopify_product` |
+
+`The API key seems to be invalid for the specified Shopify domain!` é quase sempre o **Shop ID** com o domínio inteiro, ou um token privado onde tem de ser o público.
+
+O `product_page` deste repo **não** tem campo `shopify_product` — tem `title`, `shopify_handle` e `shopify_product_id`, todos escritos pelo webhook. Se quiseres o seletor visual, cria um campo novo (string ou JSON) com esse API identifier; não substituas `shopify_handle`, que é a chave do upsert e da URL do PDP.
 
 ### 4. Dato (já no schema deste repo)
 
@@ -168,6 +196,7 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | Caminho | Função |
 |---------|--------|
 | `shopify.app.toml` | Versão da app + subscrições de webhook |
+| `scripts/backfill-shopify-products.mjs` | Backfill (`npm run shopify:backfill`) |
 | `src/app/api/webhooks/shopify/route.ts` | Webhook |
 | `src/lib/shopify/hmac.ts` | HMAC SHA-256 Base64, `timingSafeEqual` |
 | `src/lib/shopify/parse-product-webhook.ts` | Payload produto |
