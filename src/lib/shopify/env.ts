@@ -7,6 +7,8 @@ const shopifyWebhookEnvSchema = z.object({
   SHOPIFY_API_SECRET_KEY: requiredString,
   SHOPIFY_STORE_DOMAIN: requiredString,
   DATOCMS_USER_REVIEWS_CDA_TOKEN: requiredString,
+  /** Sandbox/primary CMA. Sem isto o upsert ia para `main`. */
+  DATOCMS_ENVIRONMENT: requiredString,
 });
 
 export type ShopifyWebhookEnv = z.infer<typeof shopifyWebhookEnvSchema>;
@@ -23,6 +25,7 @@ function missingKeys(error: z.ZodError): string[] {
 /**
  * Env do webhook Dev Dashboard. CMA é `DATOCMS_USER_REVIEWS_CDA_TOKEN`
  * (nome histórico; o valor é um token CMA). `DATOCMS_API_TOKEN` é CDA.
+ * `DATOCMS_ENVIRONMENT` é obrigatório (ex. `develop` até promover para `main`).
  */
 export function readShopifyWebhookEnv():
   | { ok: true; data: ShopifyWebhookEnv }
@@ -32,6 +35,7 @@ export function readShopifyWebhookEnv():
     SHOPIFY_API_SECRET_KEY: process.env.SHOPIFY_API_SECRET_KEY,
     SHOPIFY_STORE_DOMAIN: process.env.SHOPIFY_STORE_DOMAIN,
     DATOCMS_USER_REVIEWS_CDA_TOKEN: process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN,
+    DATOCMS_ENVIRONMENT: process.env.DATOCMS_ENVIRONMENT,
   });
   if (parsed.success) {
     return { ok: true, data: parsed.data };

@@ -41,6 +41,10 @@ describe("syncProductPageFromShopify", () => {
     });
 
     expect(result).toEqual({ ok: true, id: "rec-1", created: true });
+    expect(buildClient).toHaveBeenCalledWith({
+      apiToken: "cma-test-token",
+      environment: "develop",
+    });
     expect(createItem).toHaveBeenCalledOnce();
     expect(publishItem).toHaveBeenCalledWith("rec-1");
   });
@@ -72,5 +76,15 @@ describe("syncProductPageFromShopify", () => {
     await expect(
       syncProductPageFromShopify({ id: "1", handle: "x", title: "X" }),
     ).resolves.toEqual({ ok: false, reason: "not_configured" });
+    expect(buildClient).not.toHaveBeenCalled();
+  });
+
+  it("returns not_configured without DATOCMS_ENVIRONMENT", async () => {
+    delete process.env.DATOCMS_ENVIRONMENT;
+    const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
+    await expect(
+      syncProductPageFromShopify({ id: "1", handle: "x", title: "X" }),
+    ).resolves.toEqual({ ok: false, reason: "not_configured" });
+    expect(buildClient).not.toHaveBeenCalled();
   });
 });
