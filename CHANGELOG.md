@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.27.0...next-dato-v0.28.0) (2026-09-15)
+
+
+### Features
+
+* **shopify:** implement product title synchronization from Dato to Shopify via webhook; enhance environment variable handling for Admin API; update documentation for new webhook and environment requirements ([13fe61b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/13fe61bef2cff952d847bed85a37c5b49e31dc7a))
+
 ## [0.27.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.26.0...next-dato-v0.27.0) (2026-09-15)
 
 
