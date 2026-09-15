@@ -95,7 +95,7 @@ Com HTTPS e domínio público:
 - [ ] Tokens Dato **não** aparecem no bundle do browser (DevTools → Sources)
 - [ ] `.env` fora do git; produção com secrets no painel do host
 - [ ] Webhook Dato → `POST /api/revalidate` (200 com secret correcto; 401 sem)
-- [ ] Webhook Dato `product_page` → `POST /api/webhooks/datocms/product-page` (401 sem secret; 200 skip se não for o modelo; 500 sem `SHOPIFY_ADMIN_ACCESS_TOKEN`)
+- [ ] Webhook Dato `product_page` → `POST /api/webhooks/datocms/product-page` (401 sem secret; 200 skip se não for o modelo; 500 se faltarem `SHOPIFY_CLIENT_ID` / `SHOPIFY_API_SECRET_KEY` / `SHOPIFY_STORE_DOMAIN`)
 - [ ] Webhook Shopify → `POST /api/webhooks/shopify` (500 se faltar `SHOPIFY_CLIENT_ID` / `SHOPIFY_API_SECRET_KEY` / `SHOPIFY_STORE_DOMAIN` / `DATOCMS_USER_REVIEWS_CDA_TOKEN`; 401 HMAC inválido; 200 com HMAC + `products/update`)
 
 ## Limitações
