@@ -46,6 +46,13 @@ describe("syncProductPageFromShopify", () => {
       environment: "develop",
     });
     expect(createItem).toHaveBeenCalledOnce();
+    expect(createItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: { en: "Hat", "pt-BR": "Hat", es: "Hat" },
+        shopify_handle: "hat",
+        shopify_product_id: "42",
+      }),
+    );
     expect(publishItem).toHaveBeenCalledWith("rec-1");
   });
 
@@ -63,10 +70,11 @@ describe("syncProductPageFromShopify", () => {
     });
 
     expect(result).toEqual({ ok: true, id: "rec-9", created: false });
-    expect(updateItem).toHaveBeenCalledWith(
-      "rec-9",
-      expect.objectContaining({ shopify_product_id: "42", shopify_handle: "hat" }),
-    );
+    expect(updateItem).toHaveBeenCalledWith("rec-9", {
+      shopify_product_id: "42",
+      shopify_handle: "hat",
+    });
+    expect(updateItem.mock.calls[0]?.[1]).not.toHaveProperty("title");
     expect(createItem).not.toHaveBeenCalled();
   });
 

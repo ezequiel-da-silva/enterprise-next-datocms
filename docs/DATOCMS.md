@@ -26,7 +26,7 @@ Não é preciso variável extra na Vercel para Skills/CLI. Mantém (Production e
 | `DATOCMS_DRAFT_CDA_TOKEN` | CDA com rascunhos (Draft Mode) |
 | `DATOCMS_USER_REVIEWS_CDA_TOKEN` | CMA (`user_review` + `product_page` / webhook Shopify) |
 | `DATOCMS_PREVIEW_SECRET` | Web Previews / `/api/draft` |
-| `DATOCMS_REVALIDATE_SECRET` | Webhook `POST /api/revalidate` |
+| `DATOCMS_REVALIDATE_SECRET` | Webhooks `POST /api/revalidate` e `POST /api/webhooks/datocms/product-page` |
 | `NEXT_PUBLIC_SITE_URL` | URL canónica do deploy |
 | `NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL` | `https://boilerplate-dato.admin.datocms.com` |
 | `DATOCMS_ADMIN_FRAME_ANCESTOR` | Opcional, mesmo host do admin |
@@ -226,6 +226,8 @@ Não é preciso Turso/Postgres: este repo não passa as tags opacas da CDA ao `f
    - Opcional: **CDA Cache Tags → Invalidate** — o handler trata `entity.attributes.tags` e revalida as famílias completas (`datocms:page`, nav, sitemap, …).
 5. Guardar e **Send a ping** / publicar um record. A resposta deve ser `{ "revalidated": true, "tags": [...] }` (200). Sem secret na Vercel → 500; token errado → 401.
 
+Título Dato → Shopify: **segundo** webhook, URL `https://enterprise-next-datocms.vercel.app/api/webhooks/datocms/product-page`, o mesmo `Authorization: Bearer`, triggers só `product_page` **update** + **publish**. Playbook: [SHOPIFY.md](./SHOPIFY.md) § 4b.
+
 Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testar o Dato contra o teu `next dev`.
 
 ### Vercel
@@ -249,6 +251,6 @@ O ISR de 300s permanece como rede de segurança se o webhook falhar.
 
 Passo a passo (Dev Dashboard, Headless, webhooks, Vercel): [SHOPIFY.md](./SHOPIFY.md).
 
-Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN` no ambiente `DATOCMS_ENVIRONMENT` (`develop` se definido; senão **`main`**). **Não** uses `DATOCMS_API_TOKEN` (CDA). Sem Admin token legado. Não uses o webhook Dato de revalidate para produtos.
+Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN` no ambiente `DATOCMS_ENVIRONMENT` (`develop` se definido; senão **`main`**). Create preenche `title`; update não o sobrescreve. Dato → Shopify (só `title.en`): `POST /api/webhooks/datocms/product-page` com `DATOCMS_REVALIDATE_SECRET` + `SHOPIFY_ADMIN_ACCESS_TOKEN` (`write_products`). **Não** uses `DATOCMS_API_TOKEN` (CDA). O webhook Dato de revalidate só invalida cache.
 
 O catálogo é uma Page em Global settings (`products_page`); o PDP é `/{locale}/products/{handle}`. Preço, stock e imagem: Storefront no servidor (`SHOPIFY_STOREFRONT_ACCESS_TOKEN`).

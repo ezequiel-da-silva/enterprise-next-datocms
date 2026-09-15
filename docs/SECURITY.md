@@ -70,7 +70,7 @@ Secrets opcionais no GitHub (**Settings → Secrets and variables → Actions**)
 | `DATOCMS_API_TOKEN` | Build/SSG com dados reais do CMS |
 | `DATOCMS_DRAFT_CDA_TOKEN` | Se o build precisar de rascunhos |
 | `DATOCMS_PREVIEW_SECRET` | Smoke tests 401/422 no draft (CI usa fallback se ausente) |
-| `DATOCMS_REVALIDATE_SECRET` | Não usado no CI; obrigatório em produção para `POST /api/revalidate` |
+| `DATOCMS_REVALIDATE_SECRET` | Não usado no CI; obrigatório em produção para `POST /api/revalidate` e `POST /api/webhooks/datocms/product-page` |
 
 ## Ferramentas externas (staging / produção)
 
@@ -95,6 +95,7 @@ Com HTTPS e domínio público:
 - [ ] Tokens Dato **não** aparecem no bundle do browser (DevTools → Sources)
 - [ ] `.env` fora do git; produção com secrets no painel do host
 - [ ] Webhook Dato → `POST /api/revalidate` (200 com secret correcto; 401 sem)
+- [ ] Webhook Dato `product_page` → `POST /api/webhooks/datocms/product-page` (401 sem secret; 200 skip se não for o modelo; 500 sem `SHOPIFY_ADMIN_ACCESS_TOKEN`)
 - [ ] Webhook Shopify → `POST /api/webhooks/shopify` (500 se faltar `SHOPIFY_CLIENT_ID` / `SHOPIFY_API_SECRET_KEY` / `SHOPIFY_STORE_DOMAIN` / `DATOCMS_USER_REVIEWS_CDA_TOKEN`; 401 HMAC inválido; 200 com HMAC + `products/update`)
 
 ## Limitações
