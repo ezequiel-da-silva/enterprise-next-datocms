@@ -79,12 +79,18 @@ describe("syncProductPageFromShopify", () => {
     expect(buildClient).not.toHaveBeenCalled();
   });
 
-  it("returns not_configured without DATOCMS_ENVIRONMENT", async () => {
+  it("defaults CMA environment to main when DATOCMS_ENVIRONMENT is unset", async () => {
     delete process.env.DATOCMS_ENVIRONMENT;
+    listItemTypes.mockResolvedValue([{ id: "type-1", api_key: "product_page" }]);
+    listItems.mockResolvedValue([]);
+    createItem.mockResolvedValue({ id: "rec-1" });
+    publishItem.mockResolvedValue({});
+
     const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
-    await expect(
-      syncProductPageFromShopify({ id: "1", handle: "x", title: "X" }),
-    ).resolves.toEqual({ ok: false, reason: "not_configured" });
-    expect(buildClient).not.toHaveBeenCalled();
+    await syncProductPageFromShopify({ id: "1", handle: "x", title: "X" });
+    expect(buildClient).toHaveBeenCalledWith({
+      apiToken: "cma-test-token",
+      environment: "main",
+    });
   });
 });

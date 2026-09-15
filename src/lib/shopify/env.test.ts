@@ -9,6 +9,13 @@ const KEYS = [
   "DATOCMS_ENVIRONMENT",
 ] as const;
 
+const REQUIRED = [
+  "SHOPIFY_CLIENT_ID",
+  "SHOPIFY_API_SECRET_KEY",
+  "SHOPIFY_STORE_DOMAIN",
+  "DATOCMS_USER_REVIEWS_CDA_TOKEN",
+] as const;
+
 const snapshot: Partial<Record<(typeof KEYS)[number], string | undefined>> = {};
 
 describe("readShopifyWebhookEnv", () => {
@@ -28,7 +35,7 @@ describe("readShopifyWebhookEnv", () => {
     const result = readShopifyWebhookEnv();
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.missing).toEqual([...KEYS].sort());
+      expect(result.missing).toEqual([...REQUIRED].sort());
     }
   });
 
@@ -48,6 +55,26 @@ describe("readShopifyWebhookEnv", () => {
         SHOPIFY_STORE_DOMAIN: "teste-datocms-ezequiel.myshopify.com",
         DATOCMS_USER_REVIEWS_CDA_TOKEN: "cma",
         DATOCMS_ENVIRONMENT: "develop",
+      },
+    });
+  });
+
+  it("defaults DATOCMS_ENVIRONMENT to main when unset", () => {
+    for (const key of KEYS) snapshot[key] = process.env[key];
+    process.env.SHOPIFY_CLIENT_ID = "client-id";
+    process.env.SHOPIFY_API_SECRET_KEY = "secret";
+    process.env.SHOPIFY_STORE_DOMAIN = "shop.myshopify.com";
+    process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN = "cma";
+    delete process.env.DATOCMS_ENVIRONMENT;
+    const result = readShopifyWebhookEnv();
+    expect(result).toEqual({
+      ok: true,
+      data: {
+        SHOPIFY_CLIENT_ID: "client-id",
+        SHOPIFY_API_SECRET_KEY: "secret",
+        SHOPIFY_STORE_DOMAIN: "shop.myshopify.com",
+        DATOCMS_USER_REVIEWS_CDA_TOKEN: "cma",
+        DATOCMS_ENVIRONMENT: "main",
       },
     });
   });

@@ -1,4 +1,5 @@
 import { buildClient, type Client } from "@datocms/cma-client-node";
+import { readDatoCmsEnvironment } from "@/lib/datocms/environment";
 import type { ShopifyProductWebhook } from "@/lib/shopify/parse-product-webhook";
 
 const PRODUCT_PAGE_API_KEY = "product_page";
@@ -11,19 +12,13 @@ function readCmaToken(): string | undefined {
   return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
 }
 
-function readCmaEnvironment(): string | undefined {
-  const raw = process.env.DATOCMS_ENVIRONMENT;
-  return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
-}
-
 function getClient(): Client | null {
   const token = readCmaToken();
-  const environment = readCmaEnvironment();
-  if (!token || !environment) return null;
+  if (!token) return null;
   if (!cachedClient) {
     cachedClient = buildClient({
       apiToken: token,
-      environment,
+      environment: readDatoCmsEnvironment(),
     });
   }
   return cachedClient;
@@ -71,7 +66,7 @@ export type SyncProductPageResult =
 /**
  * Upsert + publish de `product_page` a partir do webhook Shopify.
  * Token: `DATOCMS_USER_REVIEWS_CDA_TOKEN` (CMA). Ambiente: `DATOCMS_ENVIRONMENT`
- * (obrigatório — sem default para o primary `main`).
+ * (`develop` para o sandbox; se faltar, primary `main`).
  */
 export async function syncProductPageFromShopify(
   product: ShopifyProductWebhook,

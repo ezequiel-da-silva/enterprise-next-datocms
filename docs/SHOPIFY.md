@@ -59,7 +59,7 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 | `SHOPIFY_STORE_DOMAIN` | Loja (`*.myshopify.com`) | Storefront URL + header `x-shopify-shop-domain` |
 | `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Headless → API Storefront → **token privado** (`shpat_…`) | PDP: preço, stock, imagem |
 | `DATOCMS_USER_REVIEWS_CDA_TOKEN` | Dato (token **CMA**) | Upsert de `product_page`. **Não** uses `DATOCMS_API_TOKEN` (CDA) |
-| `DATOCMS_ENVIRONMENT` | Dato (sandbox) | Obrigatório no webhook. Até promoveres o sandbox: `develop` |
+| `DATOCMS_ENVIRONMENT` | Dato | Escolhe o ambiente. Default **`main`**. `develop` = sandbox (fork). |
 
 O cliente Storefront envia `Shopify-Storefront-Private-Token` se o valor começar por `shpat_`; senão `X-Shopify-Storefront-Access-Token` (token público hex). Preferir o **privado** no servidor.
 
@@ -89,7 +89,7 @@ Webhooks criados em **Definições da loja → Notificações** usam **outro** s
 
 O endpoint exige HTTPS público. `localhost` só funciona atrás de um túnel (Cloudflare Tunnel, ngrok) **e** com essa URL registada na app.
 
-A rota: HMAC do **corpo cru** → loja igual a `SHOPIFY_STORE_DOMAIN` → tópico produto → parse `id` / `handle` / `title` → CMA upsert + publish no ambiente `DATOCMS_ENVIRONMENT`.
+A rota: HMAC do **corpo cru** → loja igual a `SHOPIFY_STORE_DOMAIN` → tópico produto → parse `id` / `handle` / `title` → CMA upsert + publish no ambiente `DATOCMS_ENVIRONMENT` (default `main`).
 
 Isto **não** é o webhook Dato em Project settings → Webhooks (`Next.js revalidate` / `POST /api/revalidate`). Esse só invalida cache. Produtos configuram-se na **app Shopify**.
 
@@ -106,17 +106,17 @@ Respostas: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400
 
 ### 4. Dato (já no schema deste repo)
 
-- Modelo `product_page` (migration `1789399000_productPageAndProductsPageLink.ts`) no sandbox **develop**.
+- Modelo `product_page` (migration `1789399000_productPageAndProductsPageLink.ts`) no **main** (e no sandbox se o schema já estiver no fork).
 - Singleton Global settings → `products_page` (link para a Page de catálogo).
-- Token CMA (`DATOCMS_USER_REVIEWS_CDA_TOKEN`): Content Management API + Editor a escrever/publicar `product_page` (não só `user_review`), com o sandbox `develop` na allowlist.
-- **`DATOCMS_ENVIRONMENT=develop` é obrigatório** no Next que recebe o webhook. Sem a variável o endpoint devolve 500 e **não** escreve no primary `main`. Depois de promoveres develop → main, muda o valor para `main` (ou o nome do primary).
+- Token CMA (`DATOCMS_USER_REVIEWS_CDA_TOKEN`): Content Management API + Editor a escrever/publicar `product_page` (não só `user_review`).
+- **`DATOCMS_ENVIRONMENT` escolhe o ambiente.** Produção e o destino normal: **`main`** (também o default se a variável não existir). Para escrever no sandbox: `DATOCMS_ENVIRONMENT=develop`. Se o sandbox não estiver disponível (token, permissões, modelo em falta), omite a variável ou usa `main`.
 
 O webhook preenche `title` em `en`, `pt-BR` e `es`. O handle não é localizado. URL do PDP: `/{locale}/products/{handle}` (`en`, `pt`, `es`).
 
 ## Vercel
 
 1. Settings → Environment Variables.
-2. As quatro `SHOPIFY_*` + `DATOCMS_USER_REVIEWS_CDA_TOKEN` + `DATOCMS_ENVIRONMENT=develop`, **privadas**.
+2. As quatro `SHOPIFY_*` + `DATOCMS_USER_REVIEWS_CDA_TOKEN`. `DATOCMS_ENVIRONMENT` só se quiseres o sandbox (`develop`); senão o CMA usa `main`.
 3. Production (e Preview).
 4. Redeploy. Variável nova não entra no deploy já feito.
 
@@ -124,7 +124,7 @@ Local: as mesmas chaves no `.env` (nunca commitado).
 
 ## Verificar
 
-1. Cria ou edita um produto na Shopify → no Dato **ambiente develop** deve aparecer/atualizar `product_page` (handle + id), publicado.
+1. Cria ou edita um produto na Shopify → no Dato (**main**, ou **develop** se `DATOCMS_ENVIRONMENT=develop`) deve aparecer/atualizar `product_page` (handle + id), publicado.
 2. Abre `https://<site>/<locale>/products/<handle>`: título Dato; preço/imagem se o token Headless e a publicação no canal estiverem certos.
 3. Logs Vercel: HMAC 401 → secret da **app** vs webhook da **loja**; 500 `missing` → env; produto sem preço → Headless / publicação no canal.
 

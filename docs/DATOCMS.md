@@ -30,7 +30,7 @@ Não é preciso variável extra na Vercel para Skills/CLI. Mantém (Production e
 | `NEXT_PUBLIC_SITE_URL` | URL canónica do deploy |
 | `NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL` | `https://boilerplate-dato.admin.datocms.com` |
 | `DATOCMS_ADMIN_FRAME_ANCESTOR` | Opcional, mesmo host do admin |
-| `DATOCMS_ENVIRONMENT` | CDA + CMA do webhook Shopify; até promoveres o sandbox: `develop` |
+| `DATOCMS_ENVIRONMENT` | CDA + CMA Shopify; default `main`. `develop` = sandbox |
 
 Shopify (`SHOPIFY_*`): [SHOPIFY.md](./SHOPIFY.md) — também privadas na Vercel.
 
@@ -249,6 +249,6 @@ O ISR de 300s permanece como rede de segurança se o webhook falhar.
 
 Passo a passo (Dev Dashboard, Headless, webhooks, Vercel): [SHOPIFY.md](./SHOPIFY.md).
 
-Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN` no ambiente `DATOCMS_ENVIRONMENT` (ex. `develop` até promover). **Não** uses `DATOCMS_API_TOKEN` (CDA). Sem Admin token legado. Não uses o webhook Dato de revalidate para produtos.
+Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN` no ambiente `DATOCMS_ENVIRONMENT` (`develop` se definido; senão **`main`**). **Não** uses `DATOCMS_API_TOKEN` (CDA). Sem Admin token legado. Não uses o webhook Dato de revalidate para produtos.
 
 O catálogo é uma Page em Global settings (`products_page`); o PDP é `/{locale}/products/{handle}`. Preço, stock e imagem: Storefront no servidor (`SHOPIFY_STOREFRONT_ACCESS_TOKEN`).
