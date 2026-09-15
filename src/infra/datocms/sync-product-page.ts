@@ -1,4 +1,5 @@
 import { buildClient, type Client } from "@datocms/cma-client-node";
+import { readShopifyProductTranslations } from "@/infra/shopify/admin-product-title";
 import { readDatoCmsEnvironment } from "@/lib/datocms/environment";
 import type { ShopifyProductWebhook } from "@/lib/shopify/parse-product-webhook";
 
@@ -40,6 +41,23 @@ function localizedTitle(title: string): Record<string, string> {
   return { en: title, "pt-BR": title, es: title };
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  return null;
+}
+
+function readLocalizedTitle(value: unknown): Record<string, string> {
+  const nested = asRecord(value);
+  if (!nested) return {};
+  const out: Record<string, string> = {};
+  for (const [key, entry] of Object.entries(nested)) {
+    if (typeof entry === "string" && entry.trim()) out[key] = entry.trim();
+  }
+  return out;
+}
+
 async function findByField(
   client: Client,
   itemTypeId: string,
@@ -65,9 +83,8 @@ export type SyncProductPageResult =
 
 /**
  * Upsert + publish de `product_page` a partir do webhook Shopify.
- * Create: preenche `title` nos 3 locales. Update: só handle + id (título editorial no Dato).
- * Token: `DATOCMS_USER_REVIEWS_CDA_TOKEN` (CMA). Ambiente: `DATOCMS_ENVIRONMENT`
- * (`develop` para o sandbox; se faltar, primary `main`).
+ * Create: `title` nos 3 locales = título Shopify (EN). Update: handle + id;
+ * `title.en` só se mudou; `pt-BR`/`es` só se a Translations API trouxer valor diferente.
  */
 export async function syncProductPageFromShopify(
   product: ShopifyProductWebhook,
@@ -91,8 +108,22 @@ export async function syncProductPageFromShopify(
     let id: string;
     let created = false;
     if (existing?.id) {
-      // Update: identificadores Shopify. Não tocar em `title` (editorial no Dato).
-      await client.items.update(existing.id, keys);
+      const current = await client.items.find(existing.id);
+      const currentTitle = readLocalizedTitle(current.title);
+      const patch: Record<string, string> = {};
+      const shopifyEn = product.title.trim();
+      if (shopifyEn && shopifyEn !== (currentTitle.en ?? "")) {
+        patch.en = shopifyEn;
+      }
+      const i18n = await readShopifyProductTranslations(product.id);
+      if (i18n.pt && i18n.pt !== (currentTitle["pt-BR"] ?? "")) patch["pt-BR"] = i18n.pt;
+      if (i18n.es && i18n.es !== (currentTitle.es ?? "")) patch.es = i18n.es;
+
+      const payload: Record<string, unknown> = { ...keys };
+      if (Object.keys(patch).length > 0) {
+        payload.title = { ...currentTitle, ...patch };
+      }
+      await client.items.update(existing.id, payload);
       id = existing.id;
     } else {
       const createdItem = await client.items.create({

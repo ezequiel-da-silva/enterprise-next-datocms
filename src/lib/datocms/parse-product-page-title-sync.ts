@@ -9,6 +9,8 @@ const TITLE_SYNC_EVENTS = new Set(["update", "publish", "item.update", "item.pub
 export type ProductPageTitleSync = {
   shopifyProductId: string;
   titleEn: string;
+  titlePt: string | null;
+  titleEs: string | null;
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -39,17 +41,38 @@ function readShopifyProductId(attrs: Record<string, unknown>): string | null {
   return null;
 }
 
-/** Título Shopify = locale `en` do Dato (o produto Shopify não é localizado). */
+function readLocaleTitle(nested: Record<string, unknown>, keys: readonly string[]): string | null {
+  for (const key of keys) {
+    const value = nested[key];
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return null;
+}
+
+/** Título Shopify default = locale `en` do Dato. */
 export function readTitleEn(attrs: Record<string, unknown>): string | null {
   const raw = attrs.title;
   if (typeof raw === "string" && raw.trim()) return raw.trim();
   const nested = asRecord(raw);
   if (!nested) return null;
-  for (const key of ["en", "en-US"] as const) {
-    const value = nested[key];
-    if (typeof value === "string" && value.trim()) return value.trim();
+  return readLocaleTitle(nested, ["en", "en-US"]);
+}
+
+export function readLocalizedTitles(attrs: Record<string, unknown>): {
+  en: string | null;
+  pt: string | null;
+  es: string | null;
+} {
+  const raw = attrs.title;
+  if (typeof raw === "string" && raw.trim()) {
+    return { en: raw.trim(), pt: null, es: null };
   }
-  return null;
+  const nested = asRecord(raw) ?? {};
+  return {
+    en: readLocaleTitle(nested, ["en", "en-US"]),
+    pt: readLocaleTitle(nested, ["pt-BR", "pt_BR", "pt"]),
+    es: readLocaleTitle(nested, ["es", "es-ES"]),
+  };
 }
 
 export function isProductPageTitleSyncEvent(eventType: string | null): boolean {
@@ -57,8 +80,8 @@ export function isProductPageTitleSyncEvent(eventType: string | null): boolean {
 }
 
 /**
- * Payload Dato `item` `product_page` (publish/update) → id Shopify + título `en`.
- * Outros modelos, eventos ou campos em falta → `null` (a rota responde 200 skip).
+ * Payload Dato `item` `product_page` (publish/update) → id Shopify + títulos.
+ * Outros modelos, eventos ou `en` em falta → `null` (a rota responde 200 skip).
  */
 export function parseProductPageTitleSync(body: unknown): ProductPageTitleSync | null {
   const eventType = readDatoWebhookEventType(body);
@@ -71,8 +94,13 @@ export function parseProductPageTitleSync(body: unknown): ProductPageTitleSync |
   if (!attrs) return null;
 
   const shopifyProductId = readShopifyProductId(attrs);
-  const titleEn = readTitleEn(attrs);
-  if (!shopifyProductId || !titleEn) return null;
+  const titles = readLocalizedTitles(attrs);
+  if (!shopifyProductId || !titles.en) return null;
 
-  return { shopifyProductId, titleEn };
+  return {
+    shopifyProductId,
+    titleEn: titles.en,
+    titlePt: titles.pt,
+    titleEs: titles.es,
+  };
 }

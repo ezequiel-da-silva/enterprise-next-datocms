@@ -25,6 +25,8 @@ describe("parseProductPageTitleSync", () => {
     expect(parseProductPageTitleSync(productPageWebhook)).toEqual({
       shopifyProductId: "42",
       titleEn: "Hat EN",
+      titlePt: "Chapéu",
+      titleEs: "Sombrero",
     });
   });
 
