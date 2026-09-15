@@ -11,14 +11,19 @@ function readCmaToken(): string | undefined {
   return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
 }
 
+function readCmaEnvironment(): string | undefined {
+  const raw = process.env.DATOCMS_ENVIRONMENT;
+  return typeof raw === "string" && raw.trim() !== "" ? raw.trim() : undefined;
+}
+
 function getClient(): Client | null {
   const token = readCmaToken();
-  if (!token) return null;
+  const environment = readCmaEnvironment();
+  if (!token || !environment) return null;
   if (!cachedClient) {
-    const environment = process.env.DATOCMS_ENVIRONMENT?.trim();
     cachedClient = buildClient({
       apiToken: token,
-      ...(environment ? { environment } : {}),
+      environment,
     });
   }
   return cachedClient;
@@ -65,7 +70,8 @@ export type SyncProductPageResult =
 
 /**
  * Upsert + publish de `product_page` a partir do webhook Shopify.
- * Token: `DATOCMS_USER_REVIEWS_CDA_TOKEN` (CMA; o mesmo das user reviews).
+ * Token: `DATOCMS_USER_REVIEWS_CDA_TOKEN` (CMA). Ambiente: `DATOCMS_ENVIRONMENT`
+ * (obrigatório — sem default para o primary `main`).
  */
 export async function syncProductPageFromShopify(
   product: ShopifyProductWebhook,

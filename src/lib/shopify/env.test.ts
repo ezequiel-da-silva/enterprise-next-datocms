@@ -6,6 +6,7 @@ const KEYS = [
   "SHOPIFY_API_SECRET_KEY",
   "SHOPIFY_STORE_DOMAIN",
   "DATOCMS_USER_REVIEWS_CDA_TOKEN",
+  "DATOCMS_ENVIRONMENT",
 ] as const;
 
 const snapshot: Partial<Record<(typeof KEYS)[number], string | undefined>> = {};
@@ -37,6 +38,7 @@ describe("readShopifyWebhookEnv", () => {
     process.env.SHOPIFY_API_SECRET_KEY = " secret ";
     process.env.SHOPIFY_STORE_DOMAIN = " teste-datocms-ezequiel.myshopify.com ";
     process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN = " cma ";
+    process.env.DATOCMS_ENVIRONMENT = " develop ";
     const result = readShopifyWebhookEnv();
     expect(result).toEqual({
       ok: true,
@@ -45,6 +47,7 @@ describe("readShopifyWebhookEnv", () => {
         SHOPIFY_API_SECRET_KEY: "secret",
         SHOPIFY_STORE_DOMAIN: "teste-datocms-ezequiel.myshopify.com",
         DATOCMS_USER_REVIEWS_CDA_TOKEN: "cma",
+        DATOCMS_ENVIRONMENT: "develop",
       },
     });
   });
