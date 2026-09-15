@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
   const result = await syncProductPageFromShopify(product);
   if (!result.ok) {
     if (result.reason === "not_configured") {
-      return missingEnvResponse(["DATOCMS_USER_REVIEWS_CDA_TOKEN", "DATOCMS_ENVIRONMENT"]);
+      return missingEnvResponse(["DATOCMS_USER_REVIEWS_CDA_TOKEN"]);
     }
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });
   }
