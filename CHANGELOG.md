@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.26.0...next-dato-v0.27.0) (2026-09-15)
+
+
+### Features
+
+* **shopify:** add backfill script for existing Shopify products; update documentation with backfill instructions and usage ([43c8953](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/43c89535fe40dd43ccc9a29878a8718f6bac9baa))
+
 ## [0.26.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.25.0...next-dato-v0.26.0) (2026-09-15)
 
 
