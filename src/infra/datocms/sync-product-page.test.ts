@@ -159,6 +159,32 @@ describe("syncProductPageFromShopify", () => {
     });
   });
 
+  it("keeps empty pt-BR and es keys so the CMA does not read a locale removal", async () => {
+    listItemTypes.mockResolvedValue([{ id: "type-1", api_key: "product_page" }]);
+    listItems.mockResolvedValue([{ id: "rec-9" }]);
+    findItem.mockResolvedValue({
+      id: "rec-9",
+      title: { en: "Hat", "pt-BR": "Chapéu", es: "Sombrero" },
+      description: { en: "Warm hat.", "pt-BR": "", es: "" },
+    });
+    updateItem.mockResolvedValue({});
+    publishItem.mockResolvedValue({});
+
+    const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
+    await syncProductPageFromShopify({
+      id: "42",
+      handle: "hat",
+      title: "Hat",
+      description: "Warm wool hat.",
+    });
+
+    expect(updateItem).toHaveBeenCalledWith("rec-9", {
+      shopify_product_id: "42",
+      shopify_handle: "hat",
+      description: { en: "Warm wool hat.", "pt-BR": "", es: "" },
+    });
+  });
+
   it("returns not_configured without a CMA token", async () => {
     delete process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN;
     const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
