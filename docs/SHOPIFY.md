@@ -171,12 +171,26 @@ O `product_page` deste repo **não** tem campo `shopify_product` — tem `title`
 
 Criar produto **sempre na Shopify** (gera `shopify_product_id` + `shopify_handle`). Não cries `product_page` à mão sem esses campos.
 
-1. Scopes em [`shopify.app.toml`](../shopify.app.toml): `write_products`, `read_translations`, `write_translations` → `npx shopify app deploy` → **atualizar/reinstalar** a app na loja.
+1. Scopes em [`shopify.app.toml`](../shopify.app.toml): `write_products`, `read_locales`, `read_translations`, `write_translations` → `npx shopify app deploy` → **atualizar/reinstalar** a app na loja. Sem o `deploy` **e** o update na loja, o token continua com os scopes antigos (só leitura) e o `productUpdate` é recusado.
 2. **Não** coloques um token Admin na Vercel. Client credentials com `SHOPIFY_CLIENT_ID` + `SHOPIFY_API_SECRET_KEY` + `SHOPIFY_STORE_DOMAIN`. `SHOPIFY_ADMIN_ACCESS_TOKEN` só para testes. **Não** guardes o token no Global setting.
 3. Se o OAuth devolver `shop_not_permitted`, app e loja não estão na mesma organização do Dev Dashboard.
 4. Webhook Dato (já criado): URL `…/api/webhooks/datocms/product-page`, Bearer `DATOCMS_REVALIDATE_SECRET`, Record **update** + **publish**, condition Product page.
 5. **EN:** Dato `title.en` ↔ Shopify `product.title` (Market US). **PT:** Dato `pt-BR` ↔ translation locale `pt` (Market BR). **ES:** Dato `es` ↔ `es` (Market ES). Sem tradução automática — o editor escreve cada idioma.
 6. Publicar no Dato com títulos iguais aos da Shopify → `{ "success": true, "skipped": true }`.
+7. EN é obrigatório; PT/ES são best-effort. Se faltarem os scopes de tradução, a resposta é `200` com `warnings` (o EN passa na mesma e o Dato não fica a repetir o webhook).
+
+#### Webhook Dato em “Rescheduled” / `500 {"error":"Sync failed"}`
+
+`detail` na resposta traz a mensagem da Shopify. `Access denied … write_products` = scopes concedidos desatualizados. Confirma os scopes **do token**, não os do TOML:
+
+```bash
+curl -s -X POST "https://$SHOPIFY_STORE_DOMAIN/admin/oauth/access_token" \
+  -d grant_type=client_credentials \
+  -d client_id="$SHOPIFY_CLIENT_ID" \
+  -d client_secret="$SHOPIFY_API_SECRET_KEY" | jq '.scope'
+```
+
+Se o `scope` não incluir `write_products`, `read_locales`, `read_translations` e `write_translations`: `npx shopify app deploy` e depois **Apps → a app → atualizar** na loja (a Shopify pede a aprovação dos scopes novos). Só depois é que o Dato → Shopify funciona.
 
 ## Vercel
 
