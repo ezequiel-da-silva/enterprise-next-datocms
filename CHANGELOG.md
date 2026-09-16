@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.30.0...next-dato-v0.31.0) (2026-09-16)
+
+
+### Features
+
+* **shopify:** update access scopes in shopify.app.toml to include read_locales; enhance webhook response to include warnings and error details; refine tests to handle missing translation scopes and improve error reporting ([ce6d50c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/ce6d50c2474814d8f3d1ba29203974858c0e388f))
+
 ## [0.30.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.29.0...next-dato-v0.30.0) (2026-09-15)
 
 
