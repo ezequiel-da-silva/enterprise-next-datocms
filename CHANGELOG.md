@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.32.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.31.0...next-dato-v0.32.0) (2026-09-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cms:** product_page.lead foi renomeado para description e product_page.body foi removido em PRODUCT_PAGE_BY_HANDLE.
+
+### Features
+
+* **cms:** rename product_page lead to description and drop body ([374ddb4](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/374ddb4242cc4862f8b17568764ec74b43e57fa1))
+
 ## [0.31.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.30.0...next-dato-v0.31.0) (2026-09-16)
 
 
