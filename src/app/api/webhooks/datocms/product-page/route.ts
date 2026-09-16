@@ -57,8 +57,12 @@ export async function POST(request: NextRequest) {
     if (result.reason === "not_configured") {
       return NextResponse.json({ error: "Webhook not configured", missing: result.missing }, { status: 500 });
     }
-    return NextResponse.json({ error: "Sync failed" }, { status: 500 });
+    return NextResponse.json({ error: "Sync failed", detail: result.detail }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, skipped: result.skipped });
+  return NextResponse.json({
+    success: true,
+    skipped: result.skipped,
+    ...(result.warnings.length > 0 ? { warnings: result.warnings } : {}),
+  });
 }
