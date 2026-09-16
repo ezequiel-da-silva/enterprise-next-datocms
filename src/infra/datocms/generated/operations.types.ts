@@ -276,7 +276,7 @@ export type ProductPageByHandleQueryVariables = Exact<{
 }>;
 
 
-export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, shopifyHandle: string | null, shopifyProductId: string | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
+export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, description: string | null, shopifyHandle: string | null, shopifyProductId: string | null, seo: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
 
 export type SearchLegalPagesQueryVariables = Exact<{
   q: string;

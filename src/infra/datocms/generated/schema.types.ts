@@ -3853,7 +3853,9 @@ export type ProductPageModelFilter = {
   _status?: InputMaybe<StatusFilter>;
   _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
   _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  description?: InputMaybe<TextFilter>;
   id?: InputMaybe<ItemIdFilter>;
+  seo?: InputMaybe<SeoFilter>;
   shopifyHandle?: InputMaybe<SlugFilter>;
   shopifyProductId?: InputMaybe<StringFilter>;
   title?: InputMaybe<StringFilter>;
@@ -3886,6 +3888,8 @@ export type ProductPageModelOrderBy =
 /** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord = RecordInterface & {
   __typename?: 'ProductPageRecord';
+  _allDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allSeoLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
   /** Editing URL */
@@ -3901,10 +3905,25 @@ export type ProductPageRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
+  seo?: Maybe<SeoField>;
   shopifyHandle?: Maybe<Scalars['String']['output']>;
   shopifyProductId?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecord_AllDescriptionLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecord_AllSeoLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
@@ -3916,6 +3935,21 @@ export type ProductPageRecord_AllTitleLocalesArgs = {
 
 /** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecordDescriptionArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecordSeoArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 

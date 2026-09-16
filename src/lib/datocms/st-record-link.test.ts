@@ -18,6 +18,21 @@ describe("resolveStructuredTextRecordLink", () => {
     expect(result).toEqual({ href: "/en/terms-of-service", label: "Terms" });
   });
 
+  it("resolves ProductPageRecord", () => {
+    const result = resolveStructuredTextRecordLink(
+      {
+        __typename: "ProductPageRecord",
+        shopifyHandle: "the-multi-managed-snowboard",
+        title: "Snowboard",
+      },
+      "pt",
+    );
+    expect(result).toEqual({
+      href: "/pt/products/the-multi-managed-snowboard",
+      label: "Snowboard",
+    });
+  });
+
   it("resolves PostRecord", () => {
     const result = resolveStructuredTextRecordLink(
       { __typename: "PostRecord", postSlug: "hello", postTitle: "Hello" },

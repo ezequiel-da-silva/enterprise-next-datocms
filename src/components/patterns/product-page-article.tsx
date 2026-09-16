@@ -12,6 +12,7 @@ type ProductPageArticleProps = {
   locale: AppLocale;
   handle: string;
   title: string;
+  description: string | null;
   catalogPath: string;
   catalogLabel: string;
   storefront: StorefrontProduct | null;
@@ -38,6 +39,7 @@ export async function ProductPageArticle({
   locale,
   handle,
   title,
+  description,
   catalogPath,
   catalogLabel,
   storefront,
@@ -47,6 +49,7 @@ export async function ProductPageArticle({
     locale,
     path,
     title,
+    description,
     catalog: { name: catalogLabel, path: catalogPath },
     storefront,
   });
@@ -67,6 +70,9 @@ export async function ProductPageArticle({
           ])}
         />
         <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{title}</h1>
+        {description ? (
+          <p className="whitespace-pre-line text-lg text-muted-foreground">{description}</p>
+        ) : null}
         {price ? (
           <p className="text-lg font-medium text-foreground">
             {formatMoney(locale, price.amount, price.currencyCode)}

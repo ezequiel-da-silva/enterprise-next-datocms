@@ -37,8 +37,8 @@ async function resolveProductPageItemTypeId(client: Client): Promise<string> {
 }
 
 /** CMA REST neste projecto usa `pt-BR`; o CDA GraphQL continua `pt_BR`. */
-function localizedTitle(title: string): Record<string, string> {
-  return { en: title, "pt-BR": title, es: title };
+function localizedCopy(value: string): Record<string, string> {
+  return { en: value, "pt-BR": value, es: value };
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -48,7 +48,7 @@ function asRecord(value: unknown): Record<string, unknown> | null {
   return null;
 }
 
-function readLocalizedTitle(value: unknown): Record<string, string> {
+function readLocalizedCopy(value: unknown): Record<string, string> {
   const nested = asRecord(value);
   if (!nested) return {};
   const out: Record<string, string> = {};
@@ -56,6 +56,19 @@ function readLocalizedTitle(value: unknown): Record<string, string> {
     if (typeof entry === "string" && entry.trim()) out[key] = entry.trim();
   }
   return out;
+}
+
+function patchLocalized(
+  current: Record<string, string>,
+  shopifyEn: string,
+  translated: { pt: string | null; es: string | null },
+): Record<string, string> | null {
+  const patch: Record<string, string> = {};
+  if (shopifyEn && shopifyEn !== (current.en ?? "")) patch.en = shopifyEn;
+  if (translated.pt && translated.pt !== (current["pt-BR"] ?? "")) patch["pt-BR"] = translated.pt;
+  if (translated.es && translated.es !== (current.es ?? "")) patch.es = translated.es;
+  if (Object.keys(patch).length === 0) return null;
+  return { ...current, ...patch };
 }
 
 async function findByField(
@@ -83,8 +96,9 @@ export type SyncProductPageResult =
 
 /**
  * Upsert + publish de `product_page` a partir do webhook Shopify.
- * Create: `title` nos 3 locales = título Shopify (EN). Update: handle + id;
- * `title.en` só se mudou; `pt-BR`/`es` só se a Translations API trouxer valor diferente.
+ * Create: `title` e `description` nos 3 locales = copy EN da Shopify.
+ * Update: handle + id; `title.en` / `description.en` só se mudou; `pt-BR`/`es` só se a
+ * Translations API trouxer valor diferente.
  */
 export async function syncProductPageFromShopify(
   product: ShopifyProductWebhook,
@@ -109,26 +123,26 @@ export async function syncProductPageFromShopify(
     let created = false;
     if (existing?.id) {
       const current = await client.items.find(existing.id);
-      const currentTitle = readLocalizedTitle(current.title);
-      const patch: Record<string, string> = {};
-      const shopifyEn = product.title.trim();
-      if (shopifyEn && shopifyEn !== (currentTitle.en ?? "")) {
-        patch.en = shopifyEn;
-      }
+      const currentRecord = asRecord(current) ?? {};
       const i18n = await readShopifyProductTranslations(product.id);
-      if (i18n.pt && i18n.pt !== (currentTitle["pt-BR"] ?? "")) patch["pt-BR"] = i18n.pt;
-      if (i18n.es && i18n.es !== (currentTitle.es ?? "")) patch.es = i18n.es;
-
       const payload: Record<string, unknown> = { ...keys };
-      if (Object.keys(patch).length > 0) {
-        payload.title = { ...currentTitle, ...patch };
-      }
+      const nextTitle = patchLocalized(readLocalizedCopy(currentRecord.title), product.title.trim(), i18n.title);
+      if (nextTitle) payload.title = nextTitle;
+      const nextDescription = patchLocalized(
+        readLocalizedCopy(currentRecord.description ?? currentRecord.lead),
+        product.description.trim(),
+        i18n.description,
+      );
+      if (nextDescription) payload.description = nextDescription;
       await client.items.update(existing.id, payload);
       id = existing.id;
     } else {
       const createdItem = await client.items.create({
         item_type: { type: "item_type", id: itemTypeId },
-        title: localizedTitle(product.title),
+        title: localizedCopy(product.title),
+        ...(product.description.trim()
+          ? { description: localizedCopy(product.description.trim()) }
+          : {}),
         ...keys,
       });
       id = createdItem.id;

@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { mockReadI18n } = vi.hoisted(() => ({
-  mockReadI18n: vi.fn(async () => ({ pt: null as string | null, es: null as string | null })),
+  mockReadI18n: vi.fn(async () => ({
+    title: { pt: null as string | null, es: null as string | null },
+    description: { pt: null as string | null, es: null as string | null },
+  })),
 }));
 
 vi.mock("@/infra/shopify/admin-product-title", () => ({
@@ -34,7 +37,10 @@ describe("syncProductPageFromShopify", () => {
     publishItem.mockReset();
     buildClient.mockClear();
     mockReadI18n.mockReset();
-    mockReadI18n.mockResolvedValue({ pt: null, es: null });
+    mockReadI18n.mockResolvedValue({
+      title: { pt: null, es: null },
+      description: { pt: null, es: null },
+    });
     process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN = "cma-test-token";
     process.env.DATOCMS_ENVIRONMENT = "develop";
   });
@@ -50,6 +56,7 @@ describe("syncProductPageFromShopify", () => {
       id: "42",
       handle: "hat",
       title: "Hat",
+      description: "A wool hat.",
     });
 
     expect(result).toEqual({ ok: true, id: "rec-1", created: true });
@@ -61,6 +68,7 @@ describe("syncProductPageFromShopify", () => {
     expect(createItem).toHaveBeenCalledWith(
       expect.objectContaining({
         title: { en: "Hat", "pt-BR": "Hat", es: "Hat" },
+        description: { en: "A wool hat.", "pt-BR": "A wool hat.", es: "A wool hat." },
         shopify_handle: "hat",
         shopify_product_id: "42",
       }),
@@ -83,6 +91,7 @@ describe("syncProductPageFromShopify", () => {
       id: "42",
       handle: "hat",
       title: "Hat",
+      description: "",
     });
 
     expect(result).toEqual({ ok: true, id: "rec-9", created: false });
@@ -109,6 +118,7 @@ describe("syncProductPageFromShopify", () => {
       id: "42",
       handle: "hat",
       title: "Hat v2",
+      description: "",
     });
 
     expect(updateItem).toHaveBeenCalledWith("rec-9", {
@@ -124,8 +134,12 @@ describe("syncProductPageFromShopify", () => {
     findItem.mockResolvedValue({
       id: "rec-9",
       title: { en: "Hat", "pt-BR": "Chapéu", es: "Sombrero" },
+      description: { en: "Warm hat.", "pt-BR": "Chapéu quente.", es: "Sombrero" },
     });
-    mockReadI18n.mockResolvedValue({ pt: "Chapéu BR", es: "Sombrero" });
+    mockReadI18n.mockResolvedValue({
+      title: { pt: "Chapéu BR", es: "Sombrero" },
+      description: { pt: "Chapéu de lã.", es: null },
+    });
     updateItem.mockResolvedValue({});
     publishItem.mockResolvedValue({});
 
@@ -134,12 +148,14 @@ describe("syncProductPageFromShopify", () => {
       id: "42",
       handle: "hat",
       title: "Hat",
+      description: "Warm hat.",
     });
 
     expect(updateItem).toHaveBeenCalledWith("rec-9", {
       shopify_product_id: "42",
       shopify_handle: "hat",
       title: { en: "Hat", "pt-BR": "Chapéu BR", es: "Sombrero" },
+      description: { en: "Warm hat.", "pt-BR": "Chapéu de lã.", es: "Sombrero" },
     });
   });
 
@@ -147,7 +163,7 @@ describe("syncProductPageFromShopify", () => {
     delete process.env.DATOCMS_USER_REVIEWS_CDA_TOKEN;
     const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
     await expect(
-      syncProductPageFromShopify({ id: "1", handle: "x", title: "X" }),
+      syncProductPageFromShopify({ id: "1", handle: "x", title: "X", description: "" }),
     ).resolves.toEqual({ ok: false, reason: "not_configured" });
     expect(buildClient).not.toHaveBeenCalled();
   });
@@ -160,7 +176,7 @@ describe("syncProductPageFromShopify", () => {
     publishItem.mockResolvedValue({});
 
     const { syncProductPageFromShopify } = await import("@/infra/datocms/sync-product-page");
-    await syncProductPageFromShopify({ id: "1", handle: "x", title: "X" });
+    await syncProductPageFromShopify({ id: "1", handle: "x", title: "X", description: "" });
     expect(buildClient).toHaveBeenCalledWith({
       apiToken: "cma-test-token",
       environment: "main",

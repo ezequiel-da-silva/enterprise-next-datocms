@@ -18,10 +18,10 @@ flowchart LR
 
   ShopifyStore -->|"create: id handle title"| AppWebhook
   AppWebhook --> NextShopify
-  NextShopify -->|"create: 3 locales; update: en se mudou"| DatoCMA
-  DatoCMA -->|"publish en pt-BR es"| NextDato
+  NextShopify -->|"create: 3 locales title+description; update: en se mudou"| DatoCMA
+  DatoCMA -->|"publish title+description en pt-BR es"| NextDato
   NextDato -->|productUpdate + translationsRegister| ShopifyStore
-  DatoCMA -->|titulo editorial| NextPDP
+  DatoCMA -->|title description seo| NextPDP
   Storefront -->|preco stock imagem| NextPDP
 ```
 
@@ -29,10 +29,10 @@ flowchart LR
 |------|--------|
 | App no **Dev Dashboard** | Client ID + chave secreta; **webhooks** assinados com essa chave |
 | Canal **Headless** | Tokens da Storefront API (público + privado) |
-| Dato `product_page` | Título editorial; `shopify_handle` + `shopify_product_id` (chaves Shopify) |
+| Dato `product_page` | `title`, `description`, `seo` (por idioma); `shopify_handle` + `shopify_product_id` (chaves) |
 | Page de catálogo | Ligada em Global settings (`products_page`) |
-| Next PDP | RSC: título Dato + Storefront no **servidor** |
-| Dato → Shopify | `title.en` → `product.title`; `pt-BR`/`es` → Translations API (Markets PT/ES) |
+| Next PDP | RSC: copy/SEO Dato + preço/stock/imagem Storefront no **servidor** |
+| Dato → Shopify | `title` + `description`: EN no produto; PT/ES na Translations API |
 
 Fora de âmbito neste repo: `products/delete`, carrinho, checkout, `NEXT_PUBLIC_*` Shopify. Handle, preço, stock e imagem **não** vão do Dato para a Shopify.
 
@@ -154,20 +154,20 @@ Não faz parte do fluxo de sincronização — o webhook não precisa dele. Serv
 
 `The API key seems to be invalid for the specified Shopify domain!` é quase sempre o **Shop ID** com o domínio inteiro, ou um token privado onde tem de ser o público.
 
-O `product_page` deste repo **não** tem campo `shopify_product` — tem `title`, `shopify_handle` e `shopify_product_id`. Handle e ID são chaves; o editor não deve alterá-los (fieldset **Shopify identifiers**). Se quiseres o seletor visual, cria um campo novo com API identifier `shopify_product`; não substituas `shopify_handle`.
+O `product_page` tem `title`, `description`, `seo`, `shopify_handle` e `shopify_product_id`. Handle e ID são chaves; o editor não deve alterá-los (fieldset **Shopify identifiers**). Title e description (fieldset **Shopify content**) sincronizam com a Shopify. Se quiseres o seletor visual, cria um campo novo com API identifier `shopify_product`; não substituas `shopify_handle`.
 
 ### 4. Dato (já no schema deste repo)
 
-- Modelo `product_page` (migrations `1789399000_productPageAndProductsPageLink.ts` + `1789401000_productPageShopifyKeyHints.ts`) no **main**.
+- Modelo `product_page` (migrations até `1789570457_productPageDropBodyRenameLeadToDescription.ts`) no **main**.
 - Singleton Global settings → `products_page` (link para a Page de catálogo).
 - Token CMA (`DATOCMS_USER_REVIEWS_CDA_TOKEN`): Content Management API + Editor a escrever/publicar `product_page` (não só `user_review`).
 - **`DATOCMS_ENVIRONMENT` escolhe o ambiente.** Produção e o destino normal: **`main`**. Para o sandbox: `DATOCMS_ENVIRONMENT=develop`.
-- **Create** Shopify → Dato: `title` em `en`, `pt-BR` e `es` = título EN da Shopify (depois cada locale edita-se à parte).
-- **Update** Shopify → Dato: `title.en` só se o título default mudou; `pt-BR`/`es` só se a Translations API tiver um valor diferente. Não se pisa uma tradução só porque o EN mudou.
+- **Create** Shopify → Dato: `title` e `description` (texto simples a partir do HTML) nos 3 locales = copy EN da Shopify. `seo` não vem da Shopify.
+- **Update** Shopify → Dato: `title.en` / `description.en` só se o default mudou; `pt-BR`/`es` só se a Translations API tiver valor diferente (`title` e `body_html`).
 - Handle não é localizado. URL do PDP: `/{locale}/products/{handle}`.
-- Opcional no Dato: Configuration → Roles → Editor → `product_page`: permitir editar só `title` (handle e ID read-only). O token CMA do webhook continua a poder escrever as chaves.
+- Opcional no Dato: Configuration → Roles → Editor → `product_page`: permitir editar `title`/`description`/`seo` (handle e ID read-only). O token CMA do webhook continua a poder escrever as chaves.
 
-### 4b. Dato ↔ Shopify (títulos EN / PT / ES)
+### 4b. Dato ↔ Shopify (título e descrição EN / PT / ES)
 
 Criar produto **sempre na Shopify** (gera `shopify_product_id` + `shopify_handle`). Não cries `product_page` à mão sem esses campos.
 
@@ -175,8 +175,8 @@ Criar produto **sempre na Shopify** (gera `shopify_product_id` + `shopify_handle
 2. **Não** coloques um token Admin na Vercel. Client credentials com `SHOPIFY_CLIENT_ID` + `SHOPIFY_API_SECRET_KEY` + `SHOPIFY_STORE_DOMAIN`. `SHOPIFY_ADMIN_ACCESS_TOKEN` só para testes. **Não** guardes o token no Global setting.
 3. Se o OAuth devolver `shop_not_permitted`, app e loja não estão na mesma organização do Dev Dashboard.
 4. Webhook Dato (já criado): URL `…/api/webhooks/datocms/product-page`, Bearer `DATOCMS_REVALIDATE_SECRET`, Record **update** + **publish**, condition Product page.
-5. **EN:** Dato `title.en` ↔ Shopify `product.title` (Market US). **PT:** Dato `pt-BR` ↔ translation locale `pt` (Market BR). **ES:** Dato `es` ↔ `es` (Market ES). Sem tradução automática — o editor escreve cada idioma.
-6. Publicar no Dato com títulos iguais aos da Shopify → `{ "success": true, "skipped": true }`.
+5. **EN:** Dato `title.en` ↔ Shopify `product.title`; Dato `description.en` ↔ descrição (`descriptionHtml` / `body_html`). **PT/ES:** Dato `pt-BR`/`es` ↔ translations `pt`/`es` (título + `body_html`). Sem tradução automática. HTML da Shopify é achatado a texto no campo `description`.
+6. Publicar no Dato com títulos e descrições iguais aos da Shopify → `{ "success": true, "skipped": true }`.
 7. EN é obrigatório; PT/ES são best-effort. Se faltarem os scopes de tradução, a resposta é `200` com `warnings` (o EN passa na mesma e o Dato não fica a repetir o webhook).
 
 #### Webhook Dato em “Rescheduled” / `500 {"error":"Sync failed"}`
@@ -219,10 +219,11 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 ## Verificar
 
 1. Cria um produto na Shopify → no Dato aparece `product_page` (handle + id + título EN nos 3 locales), publicado.
-2. Edita `title` **en** no Dato e publica → o título default na Admin Shopify atualiza.
-3. Edita `pt-BR` / `es` no Dato e publica → aparece em Translate & Adapt / Markets PT e ES (não no campo Título da Admin, que é o EN).
+2. Edita `title` **en** no Dato e publica → o título default na Admin Shopify atualiza. O mesmo para `description` ↔ Descrição.
+3. Edita `pt-BR` / `es` no Dato e publica → título e descrição aparecem em Translate & Adapt / Markets PT e ES.
 4. Edita o título default **na Shopify** → o Dato atualiza só `en`; `pt-BR` e `es` mantêm-se.
 5. Abre `https://<site>/<locale>/products/<handle>`: título Dato desse locale; preço/imagem da Storefront.
+6. Preenche `description` / `seo` num locale no Dato e publica → o PDP desse idioma mostra a copy; preço e foto continuam da Shopify.
 
 ## Código
 
@@ -231,7 +232,7 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | `shopify.app.toml` | `write_products`, `read_translations`, `write_translations` |
 | `scripts/backfill-shopify-products.mjs` | Backfill (`npm run shopify:backfill`) |
 | `src/app/api/webhooks/shopify/route.ts` | Shopify → Dato |
-| `src/app/api/webhooks/datocms/product-page/route.ts` | Dato → título Shopify |
+| `src/app/api/webhooks/datocms/product-page/route.ts` | Dato → título + descrição Shopify |
 | `src/lib/shopify/hmac.ts` | HMAC SHA-256 Base64, `timingSafeEqual` |
 | `src/lib/shopify/parse-product-webhook.ts` | Payload produto Shopify |
 | `src/lib/datocms/parse-product-page-title-sync.ts` | Payload Dato `product_page` |

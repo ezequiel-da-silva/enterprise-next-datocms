@@ -19,6 +19,7 @@ describe("Shopify product webhook parsing", () => {
       id: "99",
       handle: "hat",
       title: "Hat",
+      description: "",
     });
     expect(
       parseShopifyProductWebhook({
@@ -26,7 +27,23 @@ describe("Shopify product webhook parsing", () => {
         handle: " mug ",
         title: "Mug",
       }),
-    ).toEqual({ id: "77", handle: "mug", title: "Mug" });
+    ).toEqual({ id: "77", handle: "mug", title: "Mug", description: "" });
+  });
+
+  it("reads body_html as plain description", () => {
+    expect(
+      parseShopifyProductWebhook({
+        id: 1,
+        handle: "board",
+        title: "Board",
+        body_html: "<p>Carves well.</p>",
+      }),
+    ).toEqual({
+      id: "1",
+      handle: "board",
+      title: "Board",
+      description: "Carves well.",
+    });
   });
 
   it("rejects missing id or handle", () => {

@@ -1247,6 +1247,10 @@ export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
     ) {
       id
       title
+      description
+      seo {
+        ${SEO_SETTINGS_SOCIAL}
+      }
       shopifyHandle
       shopifyProductId
       _seoMetaTags {
