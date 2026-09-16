@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.32.0...next-dato-v0.32.1) (2026-09-16)
+
+
+### Bug Fixes
+
+* **cms:** keep empty locales when syncing product copy from Shopify ([41f53aa](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/41f53aab8491b514041e58d93f9897c533d9fcbd))
+
 ## [0.32.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.31.0...next-dato-v0.32.0) (2026-09-16)
 
 
