@@ -5,6 +5,7 @@ import {
   pickShopifyLocale,
   translationValue,
 } from "@/lib/shopify/locale-map";
+import { plainTextToShopifyHtml, shopifyHtmlToPlainText } from "@/lib/shopify/product-description-html";
 
 /** Alinhado com `shopify.app.toml` `[webhooks] api_version`. */
 export const SHOPIFY_ADMIN_API_VERSION = "2026-07";
@@ -13,6 +14,9 @@ export type ShopifyProductTitles = {
   en: string;
   ptBR?: string | null;
   es?: string | null;
+  descriptionEn?: string | null;
+  descriptionPt?: string | null;
+  descriptionEs?: string | null;
 };
 
 export type PushProductTitleResult =
@@ -20,9 +24,14 @@ export type PushProductTitleResult =
   | { ok: false; reason: "not_configured"; missing: string[] }
   | { ok: false; reason: "transport_error" | "shopify_error"; detail?: string };
 
-export type ShopifyTitleTranslations = {
-  pt: string | null;
-  es: string | null;
+export type ShopifyCopyTranslations = {
+  title: { pt: string | null; es: string | null };
+  description: { pt: string | null; es: string | null };
+};
+
+const EMPTY_COPY: ShopifyCopyTranslations = {
+  title: { pt: null, es: null },
+  description: { pt: null, es: null },
 };
 
 function productGid(id: string): string {
@@ -90,6 +99,7 @@ const PRODUCT_TITLE_QUERY = /* GraphQL */ `
     product(id: $id) {
       id
       title
+      descriptionHtml
     }
   }
 `;
@@ -141,6 +151,7 @@ const PRODUCT_UPDATE_MUTATION = /* GraphQL */ `
       product {
         id
         title
+        descriptionHtml
       }
       userErrors {
         field
@@ -188,29 +199,48 @@ function shopLocaleCodes(data: Record<string, unknown> | null): string[] {
     .filter(Boolean);
 }
 
-function titleDigest(resource: Record<string, unknown> | null): string | null {
+function contentDigest(resource: Record<string, unknown> | null, key: string): string | null {
   const content = resource?.translatableContent;
   if (!Array.isArray(content)) return null;
-  const title = content.find((entry) => asRecord(entry)?.key === "title");
-  const digest = asRecord(title)?.digest;
+  const entry = content.find((row) => asRecord(row)?.key === key);
+  const digest = asRecord(entry)?.digest;
   return typeof digest === "string" && digest.trim() ? digest.trim() : null;
 }
 
-function readTranslations(resource: Record<string, unknown> | null): ShopifyTitleTranslations {
+function readKeyedTranslations(
+  resource: Record<string, unknown> | null,
+  key: string,
+): { pt: string | null; es: string | null } {
+  const ptRaw =
+    translationValue(translationRows(resource?.ptBR), key) ??
+    translationValue(translationRows(resource?.pt), key);
+  const esRaw =
+    translationValue(translationRows(resource?.es), key) ??
+    translationValue(translationRows(resource?.esES), key);
+  const normalize = (raw: string | null): string | null => {
+    if (!raw) return null;
+    if (key !== "body_html") return raw;
+    return shopifyHtmlToPlainText(raw) || null;
+  };
+  return { pt: normalize(ptRaw), es: normalize(esRaw) };
+}
+
+function readCopyTranslations(resource: Record<string, unknown> | null): ShopifyCopyTranslations {
   return {
-    pt: translationValue(translationRows(resource?.ptBR)) ?? translationValue(translationRows(resource?.pt)),
-    es: translationValue(translationRows(resource?.es)) ?? translationValue(translationRows(resource?.esES)),
+    title: readKeyedTranslations(resource, "title"),
+    description: readKeyedTranslations(resource, "body_html"),
   };
 }
 
 /**
- * Traduções Shopify do título (Markets PT/ES) para o CMA Dato `pt-BR` / `es`.
+ * Traduções Shopify de título e descrição (`body_html`) para o CMA Dato `pt-BR` / `es`.
  * Sem credenciais ou sem `read_translations` → vazio (o EN continua a sincronizar).
  */
-export async function readShopifyProductTranslations(shopifyProductId: string): Promise<ShopifyTitleTranslations> {
-  const empty: ShopifyTitleTranslations = { pt: null, es: null };
+export async function readShopifyProductTranslations(
+  shopifyProductId: string,
+): Promise<ShopifyCopyTranslations> {
   const auth = await resolveAdminAccessToken();
-  if (!auth.ok) return empty;
+  if (!auth.ok) return EMPTY_COPY;
 
   try {
     const read = await adminGraphql(auth.domain, auth.token, PRODUCT_I18N_QUERY, {
@@ -220,15 +250,15 @@ export async function readShopifyProductTranslations(shopifyProductId: string): 
       logAdminFailure("[readShopifyProductTranslations] Shopify rejected the i18n query", read.errors.join("; "));
     }
     const data = asRecord(asRecord(read.json)?.data);
-    return readTranslations(asRecord(data?.translatableResource));
+    return readCopyTranslations(asRecord(data?.translatableResource));
   } catch (err) {
     logAdminFailure("[readShopifyProductTranslations] failed", String(err));
-    return empty;
+    return EMPTY_COPY;
   }
 }
 
 /**
- * Empurra títulos Dato → Shopify: `en` no produto; `pt-BR`/`es` via translationsRegister.
+ * Empurra título + descrição Dato → Shopify: `en` no produto; `pt-BR`/`es` via translationsRegister.
  * Skip por campo se já for igual (corta o eco dos webhooks). PT/ES em falha não
  * invalidam o EN — devolvem `warnings` (o webhook Dato não fica a repetir).
  */
@@ -248,24 +278,34 @@ export async function pushShopifyProductTitle(
   const titleEn = titles.en.trim();
   if (!titleEn) return { ok: false, reason: "shopify_error", detail: "Empty en title" };
 
-  const nextPt = titles.ptBR?.trim() ?? "";
-  const nextEs = titles.es?.trim() ?? "";
+  const nextTitlePt = titles.ptBR?.trim() ?? "";
+  const nextTitleEs = titles.es?.trim() ?? "";
+  const nextDescEn = titles.descriptionEn?.trim() ?? "";
+  const nextDescPt = titles.descriptionPt?.trim() ?? "";
+  const nextDescEs = titles.descriptionEs?.trim() ?? "";
   const warnings: string[] = [];
 
   try {
     const read = await adminGraphql(auth.domain, auth.token, PRODUCT_TITLE_QUERY, { id });
     const product = asRecord(asRecord(asRecord(read.json)?.data)?.product);
-    /** `null` = título atual desconhecido → escreve para não perder a edição. */
     const currentEn = typeof product?.title === "string" ? product.title.trim() : null;
+    const currentDesc = shopifyHtmlToPlainText(
+      typeof product?.descriptionHtml === "string" ? product.descriptionHtml : "",
+    );
     if (read.errors.length > 0) {
       logAdminFailure("[pushShopifyProductTitle] product read failed", read.errors.join("; "));
     }
 
     let wrote = false;
+    const productInput: Record<string, string> = { id };
+    if (currentEn !== titleEn) productInput.title = titleEn;
+    if (nextDescEn && nextDescEn !== currentDesc) {
+      productInput.descriptionHtml = plainTextToShopifyHtml(nextDescEn);
+    }
 
-    if (currentEn !== titleEn) {
+    if (Object.keys(productInput).length > 1) {
       const write = await adminGraphql(auth.domain, auth.token, PRODUCT_UPDATE_MUTATION, {
-        product: { id, title: titleEn },
+        product: productInput,
       });
       const payload = asRecord(asRecord(asRecord(write.json)?.data)?.productUpdate);
       const problems = [...write.errors, ...readUserErrors(payload)];
@@ -277,24 +317,26 @@ export async function pushShopifyProductTitle(
       wrote = true;
     }
 
-    if (!nextPt && !nextEs) {
+    const hasLocaleCopy = Boolean(nextTitlePt || nextTitleEs || nextDescPt || nextDescEs);
+    if (!hasLocaleCopy) {
       return { ok: true, skipped: !wrote, warnings };
     }
 
     const i18n = await adminGraphql(auth.domain, auth.token, PRODUCT_I18N_QUERY, { id });
     const i18nData = asRecord(asRecord(i18n.json)?.data);
     const resource = asRecord(i18nData?.translatableResource);
-    const digest = titleDigest(resource);
-    if (!digest) {
+    const titleDigest = contentDigest(resource, "title");
+    const bodyDigest = contentDigest(resource, "body_html");
+    if (!titleDigest && !bodyDigest) {
       const detail =
-        i18n.errors.join("; ") || "translatableResource without a title digest (produto sem traduções?)";
+        i18n.errors.join("; ") || "translatableResource without title/body_html digest";
       logAdminFailure("[pushShopifyProductTitle] translations unavailable", detail);
       warnings.push(`translations skipped: ${detail}`);
       return { ok: true, skipped: !wrote, warnings };
     }
 
     const locales = shopLocaleCodes(i18nData);
-    const current = readTranslations(resource);
+    const current = readCopyTranslations(resource);
     const ptLocale = pickShopifyLocale(locales, DATO_PT_SHOPIFY_CANDIDATES);
     const esLocale = pickShopifyLocale(locales, DATO_ES_SHOPIFY_CANDIDATES);
     const translations: Array<{
@@ -304,12 +346,34 @@ export async function pushShopifyProductTitle(
       translatableContentDigest: string;
     }> = [];
 
-    if (ptLocale && nextPt && nextPt !== (current.pt ?? "")) {
-      translations.push({ key: "title", locale: ptLocale, value: nextPt, translatableContentDigest: digest });
-    }
-    if (esLocale && nextEs && nextEs !== (current.es ?? "")) {
-      translations.push({ key: "title", locale: esLocale, value: nextEs, translatableContentDigest: digest });
-    }
+    const pushLocale = (
+      locale: string | null,
+      titleValue: string,
+      descValue: string,
+      currentTitle: string | null,
+      currentDesc: string | null,
+    ) => {
+      if (!locale) return;
+      if (titleDigest && titleValue && titleValue !== (currentTitle ?? "")) {
+        translations.push({
+          key: "title",
+          locale,
+          value: titleValue,
+          translatableContentDigest: titleDigest,
+        });
+      }
+      if (bodyDigest && descValue && descValue !== (currentDesc ?? "")) {
+        translations.push({
+          key: "body_html",
+          locale,
+          value: plainTextToShopifyHtml(descValue),
+          translatableContentDigest: bodyDigest,
+        });
+      }
+    };
+
+    pushLocale(ptLocale, nextTitlePt, nextDescPt, current.title.pt, current.description.pt);
+    pushLocale(esLocale, nextTitleEs, nextDescEs, current.title.es, current.description.es);
 
     if (translations.length > 0) {
       const register = await adminGraphql(auth.domain, auth.token, TRANSLATIONS_REGISTER, {

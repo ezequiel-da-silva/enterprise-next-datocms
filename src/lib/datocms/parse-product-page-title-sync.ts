@@ -11,6 +11,9 @@ export type ProductPageTitleSync = {
   titleEn: string;
   titlePt: string | null;
   titleEs: string | null;
+  descriptionEn: string | null;
+  descriptionPt: string | null;
+  descriptionEs: string | null;
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -49,21 +52,15 @@ function readLocaleTitle(nested: Record<string, unknown>, keys: readonly string[
   return null;
 }
 
-/** Título Shopify default = locale `en` do Dato. */
-export function readTitleEn(attrs: Record<string, unknown>): string | null {
-  const raw = attrs.title;
-  if (typeof raw === "string" && raw.trim()) return raw.trim();
-  const nested = asRecord(raw);
-  if (!nested) return null;
-  return readLocaleTitle(nested, ["en", "en-US"]);
-}
-
-export function readLocalizedTitles(attrs: Record<string, unknown>): {
+function readLocalizedField(
+  attrs: Record<string, unknown>,
+  field: "title" | "description" | "lead",
+): {
   en: string | null;
   pt: string | null;
   es: string | null;
 } {
-  const raw = attrs.title;
+  const raw = attrs[field];
   if (typeof raw === "string" && raw.trim()) {
     return { en: raw.trim(), pt: null, es: null };
   }
@@ -75,12 +72,25 @@ export function readLocalizedTitles(attrs: Record<string, unknown>): {
   };
 }
 
+/** Título Shopify default = locale `en` do Dato. */
+export function readTitleEn(attrs: Record<string, unknown>): string | null {
+  return readLocalizedField(attrs, "title").en;
+}
+
+export function readLocalizedTitles(attrs: Record<string, unknown>): {
+  en: string | null;
+  pt: string | null;
+  es: string | null;
+} {
+  return readLocalizedField(attrs, "title");
+}
+
 export function isProductPageTitleSyncEvent(eventType: string | null): boolean {
   return eventType !== null && TITLE_SYNC_EVENTS.has(eventType);
 }
 
 /**
- * Payload Dato `item` `product_page` (publish/update) → id Shopify + títulos.
+ * Payload Dato `item` `product_page` (publish/update) → id Shopify + título + descrição.
  * Outros modelos, eventos ou `en` em falta → `null` (a rota responde 200 skip).
  */
 export function parseProductPageTitleSync(body: unknown): ProductPageTitleSync | null {
@@ -94,7 +104,9 @@ export function parseProductPageTitleSync(body: unknown): ProductPageTitleSync |
   if (!attrs) return null;
 
   const shopifyProductId = readShopifyProductId(attrs);
-  const titles = readLocalizedTitles(attrs);
+  const titles = readLocalizedField(attrs, "title");
+  const description = readLocalizedField(attrs, "description");
+  const leadFallback = readLocalizedField(attrs, "lead");
   if (!shopifyProductId || !titles.en) return null;
 
   return {
@@ -102,5 +114,8 @@ export function parseProductPageTitleSync(body: unknown): ProductPageTitleSync |
     titleEn: titles.en,
     titlePt: titles.pt,
     titleEs: titles.es,
+    descriptionEn: description.en ?? leadFallback.en,
+    descriptionPt: description.pt ?? leadFallback.pt,
+    descriptionEs: description.es ?? leadFallback.es,
   };
 }

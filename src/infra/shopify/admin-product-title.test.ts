@@ -11,20 +11,23 @@ const KEYS = [
 
 const snapshot: Partial<Record<(typeof KEYS)[number], string | undefined>> = {};
 
-function productPayload(title: string) {
+function productPayload(title: string, descriptionHtml = "") {
   return {
     ok: true,
     json: async () => ({
-      data: { product: { id: "gid://shopify/Product/1", title } },
+      data: { product: { id: "gid://shopify/Product/1", title, descriptionHtml } },
     }),
   };
 }
 
 function i18nPayload(options: {
   digest?: string;
+  bodyDigest?: string;
   shopLocales?: string[];
   pt?: string | null;
   es?: string | null;
+  ptBody?: string | null;
+  esBody?: string | null;
 }) {
   return {
     ok: true,
@@ -35,10 +38,24 @@ function i18nPayload(options: {
           published: true,
         })),
         translatableResource: {
-          translatableContent: [{ key: "title", value: "Hat EN", digest: options.digest ?? "digest-1", locale: "en" }],
-          pt: options.pt ? [{ key: "title", value: options.pt }] : [],
+          translatableContent: [
+            { key: "title", value: "Hat EN", digest: options.digest ?? "digest-1", locale: "en" },
+            {
+              key: "body_html",
+              value: "<p>Warm.</p>",
+              digest: options.bodyDigest ?? "digest-body",
+              locale: "en",
+            },
+          ],
+          pt: [
+            ...(options.pt ? [{ key: "title", value: options.pt }] : []),
+            ...(options.ptBody ? [{ key: "body_html", value: options.ptBody }] : []),
+          ],
           ptBR: [],
-          es: options.es ? [{ key: "title", value: options.es }] : [],
+          es: [
+            ...(options.es ? [{ key: "title", value: options.es }] : []),
+            ...(options.esBody ? [{ key: "body_html", value: options.esBody }] : []),
+          ],
           esES: [],
         },
       },
@@ -141,6 +158,34 @@ describe("pushShopifyProductTitle", () => {
     expect(updateBody.variables.product).toEqual({
       id: "gid://shopify/Product/9",
       title: "New",
+    });
+  });
+
+  it("updates descriptionHtml when the Dato description differs", async () => {
+    useAdminToken();
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(productPayload("Hat EN", "<p>Old copy.</p>"))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: {
+            productUpdate: {
+              product: { id: "gid://shopify/Product/1", title: "Hat EN", descriptionHtml: "<p>New copy.</p>" },
+              userErrors: [],
+            },
+          },
+        }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      pushShopifyProductTitle("1", { en: "Hat EN", descriptionEn: "New copy." }),
+    ).resolves.toEqual({ ok: true, skipped: false, warnings: [] });
+    const updateBody = JSON.parse(String(fetchMock.mock.calls[1]?.[1]?.body));
+    expect(updateBody.variables.product).toEqual({
+      id: "gid://shopify/Product/1",
+      descriptionHtml: "<p>New copy.</p>",
     });
   });
 

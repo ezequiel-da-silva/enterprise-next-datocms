@@ -12,6 +12,7 @@ const productPageWebhook = {
     type: "item",
     attributes: {
       title: { en: "Hat EN", "pt-BR": "Chapéu", es: "Sombrero" },
+      description: { en: "Warm hat.", "pt-BR": "Chapéu quente.", es: "Sombrero caliente." },
       shopify_product_id: "42",
       shopify_handle: "hat",
     },
@@ -27,6 +28,9 @@ describe("parseProductPageTitleSync", () => {
       titleEn: "Hat EN",
       titlePt: "Chapéu",
       titleEs: "Sombrero",
+      descriptionEn: "Warm hat.",
+      descriptionPt: "Chapéu quente.",
+      descriptionEs: "Sombrero caliente.",
     });
   });
 

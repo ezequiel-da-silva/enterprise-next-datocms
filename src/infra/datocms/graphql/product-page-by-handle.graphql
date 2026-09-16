@@ -6,6 +6,19 @@ query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
   ) {
     id
     title
+    description
+    seo {
+      title
+      description
+      twitterCard
+      noIndex
+      image {
+        url
+        alt
+        width
+        height
+      }
+    }
     shopifyHandle
     shopifyProductId
     _seoMetaTags {

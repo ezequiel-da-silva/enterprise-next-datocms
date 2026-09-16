@@ -1,9 +1,13 @@
+import { shopifyHtmlToPlainText } from "@/lib/shopify/product-description-html";
+
 const PRODUCT_TOPICS = new Set(["products/create", "products/update"]);
 
 export type ShopifyProductWebhook = {
   id: string;
   handle: string;
   title: string;
+  /** Texto simples da descrição Shopify (`body_html`). Vazio se a Admin não tiver copy. */
+  description: string;
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -52,5 +56,8 @@ export function parseShopifyProductWebhook(body: unknown): ShopifyProductWebhook
   const handle = typeof record.handle === "string" ? record.handle.trim() : "";
   const title = typeof record.title === "string" ? record.title.trim() : "";
   if (!id || !handle) return null;
-  return { id, handle, title: title || handle };
+  const description = shopifyHtmlToPlainText(
+    typeof record.body_html === "string" ? record.body_html : "",
+  );
+  return { id, handle, title: title || handle, description };
 }

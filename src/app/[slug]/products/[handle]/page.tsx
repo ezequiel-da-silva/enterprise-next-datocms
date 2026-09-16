@@ -44,8 +44,9 @@ export async function generateMetadata({ params }: ProductPdpProps): Promise<Met
     path: productPagePath(locale, handle),
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: result.data._site.faviconMetaTags,
+    seoSettingsSocial: page.seo,
     fallbackTitle: page.title,
-    fallbackOgImage: storefront?.featuredImage?.url ?? siteOg,
+    fallbackOgImage: page.seo?.image?.url ?? storefront?.featuredImage?.url ?? siteOg,
     hreflangPaths: buildLocaleAlternatePaths((l) => productPagePath(l, handle)),
   });
 }
@@ -73,6 +74,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       locale={locale}
       handle={page.shopifyHandle?.trim() || handle}
       title={page.title?.trim() || handle}
+      description={page.description?.trim() || null}
       catalogPath={productsIndexPath(locale, catalog)}
       catalogLabel={productsIndexLabel(catalog)}
       storefront={storefront}

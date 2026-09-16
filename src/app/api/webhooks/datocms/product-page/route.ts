@@ -22,7 +22,7 @@ function unauthorized(): NextResponse {
 }
 
 /**
- * Webhook Dato `product_page` (publish/update) → títulos Shopify (EN + PT/ES).
+ * Webhook Dato `product_page` (publish/update) → título e descrição Shopify (EN + PT/ES).
  * Auth: mesmo secret que `/api/revalidate` (`DATOCMS_REVALIDATE_SECRET`).
  * Token Admin: client credentials (cache) ou `SHOPIFY_ADMIN_ACCESS_TOKEN` opcional.
  */
@@ -52,6 +52,9 @@ export async function POST(request: NextRequest) {
     en: sync.titleEn,
     ptBR: sync.titlePt,
     es: sync.titleEs,
+    descriptionEn: sync.descriptionEn,
+    descriptionPt: sync.descriptionPt,
+    descriptionEs: sync.descriptionEs,
   });
   if (!result.ok) {
     if (result.reason === "not_configured") {

@@ -7,12 +7,15 @@ export function buildProductPageJsonLd(input: {
   locale: AppLocale;
   path: string;
   title: string;
+  description?: string | null;
   catalog: { name: string; path: string };
   storefront: StorefrontProduct | null;
 }): Record<string, unknown>[] {
+  const description = input.description?.trim() || undefined;
   const pageGraph = buildPageWebPageJsonLd({
     path: input.path,
     title: input.title,
+    description: description ?? null,
     locale: input.locale,
     breadcrumbTrail: [{ name: input.catalog.name, path: input.catalog.path }],
   });
@@ -33,6 +36,7 @@ export function buildProductPageJsonLd(input: {
     "@type": "Product",
     name: input.storefront?.title ?? input.title,
     url: new URL(input.path, `${getSiteBaseUrl()}/`).toString(),
+    ...(description ? { description } : {}),
     ...(input.storefront?.featuredImage?.url ? { image: input.storefront.featuredImage.url } : {}),
     ...(offer ? { offers: offer } : {}),
   };

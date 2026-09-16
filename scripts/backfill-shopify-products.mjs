@@ -80,7 +80,7 @@ async function listStorefrontProducts(domain, token) {
     query BackfillProducts($cursor: String) {
       products(first: ${PAGE_SIZE}, after: $cursor) {
         pageInfo { hasNextPage endCursor }
-        nodes { id handle title }
+        nodes { id handle title descriptionHtml }
       }
     }
   `;
@@ -110,7 +110,12 @@ async function listStorefrontProducts(domain, token) {
     for (const node of page?.nodes ?? []) {
       const id = String(node.id).match(/\/Product\/(\d+)/)?.[1];
       if (id && node.handle) {
-        products.push({ id: Number(id), handle: node.handle, title: node.title ?? node.handle });
+        products.push({
+          id: Number(id),
+          handle: node.handle,
+          title: node.title ?? node.handle,
+          body_html: node.descriptionHtml ?? "",
+        });
       }
     }
 
