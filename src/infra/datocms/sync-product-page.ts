@@ -48,12 +48,16 @@ function asRecord(value: unknown): Record<string, unknown> | null {
   return null;
 }
 
+/**
+ * Mantém os locales vazios: omitir uma chave existente faz a CMA ler o update
+ * como remoção de tradução (`INVALID_LOCALES`) e rejeitar o registo inteiro.
+ */
 function readLocalizedCopy(value: unknown): Record<string, string> {
   const nested = asRecord(value);
   if (!nested) return {};
   const out: Record<string, string> = {};
   for (const [key, entry] of Object.entries(nested)) {
-    if (typeof entry === "string" && entry.trim()) out[key] = entry.trim();
+    if (typeof entry === "string") out[key] = entry;
   }
   return out;
 }
@@ -64,9 +68,9 @@ function patchLocalized(
   translated: { pt: string | null; es: string | null },
 ): Record<string, string> | null {
   const patch: Record<string, string> = {};
-  if (shopifyEn && shopifyEn !== (current.en ?? "")) patch.en = shopifyEn;
-  if (translated.pt && translated.pt !== (current["pt-BR"] ?? "")) patch["pt-BR"] = translated.pt;
-  if (translated.es && translated.es !== (current.es ?? "")) patch.es = translated.es;
+  if (shopifyEn && shopifyEn !== (current.en ?? "").trim()) patch.en = shopifyEn;
+  if (translated.pt && translated.pt !== (current["pt-BR"] ?? "").trim()) patch["pt-BR"] = translated.pt;
+  if (translated.es && translated.es !== (current.es ?? "").trim()) patch.es = translated.es;
   if (Object.keys(patch).length === 0) return null;
   return { ...current, ...patch };
 }
