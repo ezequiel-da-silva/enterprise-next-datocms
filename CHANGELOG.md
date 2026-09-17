@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.32.1...next-dato-v0.33.0) (2026-09-17)
+
+
+### Features
+
+* **shopify:** implement collection page synchronization with Shopify ([c68d758](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/c68d7586a6ab7cdbf79a0c35bc1f483a5e8e223d))
+
 ## [0.32.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.32.0...next-dato-v0.32.1) (2026-09-16)
 
 
