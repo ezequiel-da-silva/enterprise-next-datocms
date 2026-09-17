@@ -468,6 +468,125 @@ export type CollectionMetadata = {
   count: Scalars['IntType']['output'];
 };
 
+export type CollectionPageModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<CollectionPageModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<CollectionPageModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _locales?: InputMaybe<LocalesFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  description?: InputMaybe<TextFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  seo?: InputMaybe<SeoFilter>;
+  shopifyCollectionId?: InputMaybe<StringFilter>;
+  shopifyHandle?: InputMaybe<SlugFilter>;
+  title?: InputMaybe<StringFilter>;
+};
+
+export type CollectionPageModelOrderBy =
+  | '_createdAt_ASC'
+  | '_createdAt_DESC'
+  | '_firstPublishedAt_ASC'
+  | '_firstPublishedAt_DESC'
+  | '_isValid_ASC'
+  | '_isValid_DESC'
+  | '_publicationScheduledAt_ASC'
+  | '_publicationScheduledAt_DESC'
+  | '_publishedAt_ASC'
+  | '_publishedAt_DESC'
+  | '_status_ASC'
+  | '_status_DESC'
+  | '_unpublishingScheduledAt_ASC'
+  | '_unpublishingScheduledAt_DESC'
+  | '_updatedAt_ASC'
+  | '_updatedAt_DESC'
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'shopifyCollectionId_ASC'
+  | 'shopifyCollectionId_DESC'
+  | 'title_ASC'
+  | 'title_DESC';
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecord = RecordInterface & {
+  __typename?: 'CollectionPageRecord';
+  _allDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allSeoLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
+  _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _locales: Array<SiteLocale>;
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  seo?: Maybe<SeoField>;
+  shopifyCollectionId?: Maybe<Scalars['String']['output']>;
+  shopifyHandle?: Maybe<Scalars['String']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecord_AllDescriptionLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecord_AllSeoLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecord_AllTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecordDescriptionArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecordSeoArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🛍️ Collection page (collection_page) */
+export type CollectionPageRecordTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
 export type ColorBucketType =
   | 'black'
   | 'blue'
@@ -942,6 +1061,7 @@ export type GlobalSettingRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   blogPage?: Maybe<PageRecord>;
+  collectionsPage?: Maybe<PageRecord>;
   contactPage?: Maybe<PageRecord>;
   description404?: Maybe<GlobalSettingModelDescription404Field>;
   id: Scalars['ItemId']['output'];
@@ -3986,6 +4106,8 @@ export type Query = {
   /** Returns meta information regarding a record collection */
   _allCategoriesMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
+  _allCollectionPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allLegalPagesMeta: CollectionMetadata;
   /** Returns meta information regarding a record collection */
   _allPagesMeta: CollectionMetadata;
@@ -4008,6 +4130,8 @@ export type Query = {
   /** Returns a collection of records */
   allCategories: Array<CategoryRecord>;
   /** Returns a collection of records */
+  allCollectionPages: Array<CollectionPageRecord>;
+  /** Returns a collection of records */
   allLegalPages: Array<LegalPageRecord>;
   /** Returns a collection of records */
   allPages: Array<PageRecord>;
@@ -4027,6 +4151,8 @@ export type Query = {
   author?: Maybe<AuthorRecord>;
   /** Returns a specific record */
   category?: Maybe<CategoryRecord>;
+  /** Returns a specific record */
+  collectionPage?: Maybe<CollectionPageRecord>;
   /** Returns the single instance record */
   globalSetting?: Maybe<GlobalSettingRecord>;
   /** Returns a specific record */
@@ -4060,6 +4186,13 @@ export type Query_AllAuthorsMetaArgs = {
 /** The query root for this schema */
 export type Query_AllCategoriesMetaArgs = {
   filter?: InputMaybe<CategoryModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
+export type Query_AllCollectionPagesMetaArgs = {
+  filter?: InputMaybe<CollectionPageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -4145,6 +4278,17 @@ export type QueryAllCategoriesArgs = {
   first?: InputMaybe<Scalars['IntType']['input']>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<CategoryModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+/** The query root for this schema */
+export type QueryAllCollectionPagesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<CollectionPageModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<CollectionPageModelOrderBy>>>;
   skip?: InputMaybe<Scalars['IntType']['input']>;
 };
 
@@ -4252,6 +4396,15 @@ export type QueryCategoryArgs = {
   filter?: InputMaybe<CategoryModelFilter>;
   locale?: InputMaybe<SiteLocale>;
   orderBy?: InputMaybe<Array<InputMaybe<CategoryModelOrderBy>>>;
+};
+
+
+/** The query root for this schema */
+export type QueryCollectionPageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<CollectionPageModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<CollectionPageModelOrderBy>>>;
 };
 
 

@@ -4,6 +4,7 @@ import { datocmsFetch } from "@/infra/datocms/client";
 import {
   LIST_AUTHOR_SLUGS,
   LIST_CATEGORY_SLUGS,
+  LIST_COLLECTION_HANDLES,
   LIST_LEGAL_PAGE_SLUGS,
   LIST_PRODUCT_HANDLES,
   SITEMAP_SOURCES,
@@ -173,6 +174,23 @@ export async function getStaticParamsProductPages(): Promise<{ slug: string; han
   const out: { slug: string; handle: string }[] = [];
   for (const locale of APP_LOCALES) {
     for (const row of result.data.allProductPages) {
+      const handle = row.shopifyHandle?.trim();
+      if (handle) out.push({ slug: locale, handle });
+    }
+  }
+  return out;
+}
+
+/** PLPs por locale (`/[locale]/collections/[handle]`). O handle não é localizado. */
+export async function getStaticParamsCollectionPages(): Promise<{ slug: string; handle: string }[]> {
+  const result = await datocmsFetch<{ allCollectionPages: ProductHandleRow[] }>({
+    query: LIST_COLLECTION_HANDLES,
+    revalidate: 3600,
+  });
+  if ("errors" in result) return [];
+  const out: { slug: string; handle: string }[] = [];
+  for (const locale of APP_LOCALES) {
+    for (const row of result.data.allCollectionPages) {
       const handle = row.shopifyHandle?.trim();
       if (handle) out.push({ slug: locale, handle });
     }

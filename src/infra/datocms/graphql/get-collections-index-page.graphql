@@ -1,0 +1,9 @@
+query GetCollectionsIndexPage($locale: SiteLocale!) {
+  globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+    collectionsPage {
+      id
+      title
+      slug
+    }
+  }
+}

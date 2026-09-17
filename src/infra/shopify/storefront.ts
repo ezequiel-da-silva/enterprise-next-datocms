@@ -154,6 +154,95 @@ function mapProduct(value: unknown): StorefrontProduct | null {
  * Storefront GraphQL no servidor. Falha de rede ou token ausente → `null`
  * (o PDP continua com o título Dato).
  */
+export type StorefrontCollectionProduct = {
+  handle: string;
+  title: string;
+  availableForSale: boolean;
+  featuredImage: StorefrontProductImage | null;
+  priceRange: { minVariantPrice: StorefrontMoney };
+};
+
+export type StorefrontCollection = {
+  id: string;
+  handle: string;
+  title: string;
+  image: StorefrontProductImage | null;
+  products: StorefrontCollectionProduct[];
+};
+
+const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
+  query CollectionByHandle($handle: String!) {
+    collection(handle: $handle) {
+      id
+      handle
+      title
+      image {
+        url
+        altText
+        width
+        height
+      }
+      products(first: 50) {
+        nodes {
+          title
+          handle
+          availableForSale
+          featuredImage {
+            url
+            altText
+            width
+            height
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+function mapCollectionProduct(value: unknown): StorefrontCollectionProduct | null {
+  const record = asRecord(value);
+  if (!record) return null;
+  if (typeof record.handle !== "string" || typeof record.title !== "string") return null;
+  const minPrice = readMoney(asRecord(record.priceRange)?.minVariantPrice);
+  if (!minPrice) return null;
+  return {
+    handle: record.handle,
+    title: record.title,
+    availableForSale: record.availableForSale === true,
+    featuredImage: readImage(record.featuredImage),
+    priceRange: { minVariantPrice: minPrice },
+  };
+}
+
+function mapCollection(value: unknown): StorefrontCollection | null {
+  const record = asRecord(value);
+  if (!record) return null;
+  if (typeof record.id !== "string" || typeof record.handle !== "string" || typeof record.title !== "string") {
+    return null;
+  }
+  const productNodes = asRecord(record.products)?.nodes;
+  const products = Array.isArray(productNodes)
+    ? productNodes.map(mapCollectionProduct).filter((p): p is StorefrontCollectionProduct => p !== null)
+    : [];
+  return {
+    id: record.id,
+    handle: record.handle,
+    title: record.title,
+    image: readImage(record.image),
+    products,
+  };
+}
+
+/**
+ * Storefront GraphQL no servidor. Falha de rede ou token ausente → `null`
+ * (o PDP continua com o título Dato).
+ */
 export async function getStorefrontProductByHandle(handle: string): Promise<StorefrontProduct | null> {
   const shop = shopDomain();
   const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
@@ -174,6 +263,33 @@ export async function getStorefrontProductByHandle(handle: string): Promise<Stor
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { product?: unknown } };
     return mapProduct(json.data?.product);
+  } catch {
+    return null;
+  }
+}
+
+export async function getStorefrontCollectionByHandle(
+  handle: string,
+): Promise<StorefrontCollection | null> {
+  const shop = shopDomain();
+  const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
+  const trimmed = handle.trim();
+  if (!shop || !token || !trimmed) return null;
+
+  const url = `https://${shop}/api/${STOREFRONT_API_VERSION}/graphql.json`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...storefrontAuthHeaders(token),
+      },
+      body: JSON.stringify({ query: COLLECTION_BY_HANDLE_QUERY, variables: { handle: trimmed } }),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { collection?: unknown } };
+    return mapCollection(json.data?.collection);
   } catch {
     return null;
   }

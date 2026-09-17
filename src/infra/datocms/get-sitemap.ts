@@ -1,6 +1,11 @@
 import { APP_LOCALES, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
-import { LIST_LEGAL_PAGE_SLUGS, LIST_PRODUCT_HANDLES, SITEMAP_SOURCES } from "@/infra/datocms/queries";
+import {
+  LIST_COLLECTION_HANDLES,
+  LIST_LEGAL_PAGE_SLUGS,
+  LIST_PRODUCT_HANDLES,
+  SITEMAP_SOURCES,
+} from "@/infra/datocms/queries";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import { cache } from "react";
@@ -222,6 +227,28 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
           lastModified: new Date(row._updatedAt),
           changeFrequency: "weekly",
           priority: 0.6,
+        });
+      }
+    }
+  }
+
+  const collectionResult = await datocmsFetch<{
+    allCollectionPages: { shopifyHandle: string | null; _updatedAt: string }[];
+  }>({
+    query: LIST_COLLECTION_HANDLES,
+    tags: [SITEMAP_TAG],
+    revalidate: 3600,
+  });
+  if (!("errors" in collectionResult)) {
+    for (const locale of APP_LOCALES) {
+      for (const row of collectionResult.data.allCollectionPages) {
+        const handle = row.shopifyHandle?.trim();
+        if (!handle) continue;
+        entries.push({
+          url: new URL(`/${locale}/collections/${handle}`, base).toString(),
+          lastModified: new Date(row._updatedAt),
+          changeFrequency: "weekly",
+          priority: 0.55,
         });
       }
     }

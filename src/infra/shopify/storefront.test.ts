@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getStorefrontProductByHandle, storefrontAuthHeaders } from "@/infra/shopify/storefront";
+import { getStorefrontCollectionByHandle, getStorefrontProductByHandle, storefrontAuthHeaders } from "@/infra/shopify/storefront";
 
 describe("getStorefrontProductByHandle", () => {
   it("returns null when env is missing", async () => {
@@ -46,6 +46,42 @@ describe("getStorefrontProductByHandle", () => {
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "X-Shopify-Storefront-Access-Token": "token",
     });
+    vi.unstubAllGlobals();
+  });
+
+  it("maps a collection payload from Storefront GraphQL", async () => {
+    process.env.SHOPIFY_STORE_DOMAIN = "shop.myshopify.com";
+    process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN = "token";
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        data: {
+          collection: {
+            id: "gid://shopify/Collection/1",
+            title: "Hydrogen",
+            handle: "hydrogen",
+            image: null,
+            products: {
+              nodes: [
+                {
+                  title: "Hat",
+                  handle: "hat",
+                  availableForSale: true,
+                  featuredImage: null,
+                  priceRange: { minVariantPrice: { amount: "19.00", currencyCode: "BRL" } },
+                },
+              ],
+            },
+          },
+        },
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const collection = await getStorefrontCollectionByHandle("hydrogen");
+    expect(collection?.handle).toBe("hydrogen");
+    expect(collection?.products).toHaveLength(1);
+    expect(collection?.products[0]?.handle).toBe("hat");
     vi.unstubAllGlobals();
   });
 

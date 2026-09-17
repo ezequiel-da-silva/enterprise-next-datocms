@@ -1151,6 +1151,18 @@ export const GET_PRODUCTS_INDEX_PAGE = /* GraphQL */ `
   }
 `;
 
+export const GET_COLLECTIONS_INDEX_PAGE = /* GraphQL */ `
+  query GetCollectionsIndexPage($locale: SiteLocale!) {
+    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      collectionsPage {
+        id
+        title
+        slug
+      }
+    }
+  }
+`;
+
 /** Slugs de categorias por locale (pré-renderização). */
 export const LIST_CATEGORY_SLUGS = /* GraphQL */ `
   query ListCategorySlugs($locale: SiteLocale!) {
@@ -1268,6 +1280,42 @@ export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
 export const LIST_PRODUCT_HANDLES = /* GraphQL */ `
   query ListProductHandles {
     allProductPages(first: 200, orderBy: _updatedAt_DESC) {
+      shopifyHandle
+      _updatedAt
+    }
+  }
+`;
+
+export const COLLECTION_PAGE_BY_HANDLE = /* GraphQL */ `
+  query CollectionPageByHandle($handle: String!, $locale: SiteLocale!) {
+    collectionPage(
+      locale: $locale
+      fallbackLocales: [en, pt_BR, es]
+      filter: { shopifyHandle: { eq: $handle } }
+    ) {
+      id
+      title
+      description
+      seo {
+        ${SEO_SETTINGS_SOCIAL}
+      }
+      shopifyHandle
+      shopifyCollectionId
+      _seoMetaTags {
+        ${SEO_META_TAGS}
+      }
+    }
+    _site {
+      faviconMetaTags {
+        ${SEO_META_TAGS}
+      }
+    }
+  }
+`;
+
+export const LIST_COLLECTION_HANDLES = /* GraphQL */ `
+  query ListCollectionHandles {
+    allCollectionPages(first: 200, orderBy: _updatedAt_DESC) {
       shopifyHandle
       _updatedAt
     }

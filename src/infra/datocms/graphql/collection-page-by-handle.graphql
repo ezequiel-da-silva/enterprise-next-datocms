@@ -1,0 +1,37 @@
+query CollectionPageByHandle($handle: String!, $locale: SiteLocale!) {
+  collectionPage(
+    locale: $locale
+    fallbackLocales: [en, pt_BR, es]
+    filter: { shopifyHandle: { eq: $handle } }
+  ) {
+    id
+    title
+    description
+    seo {
+      title
+      description
+      twitterCard
+      noIndex
+      image {
+        url
+        alt
+        width
+        height
+      }
+    }
+    shopifyHandle
+    shopifyCollectionId
+    _seoMetaTags {
+      attributes
+      content
+      tag
+    }
+  }
+  _site {
+    faviconMetaTags {
+      attributes
+      content
+      tag
+    }
+  }
+}
