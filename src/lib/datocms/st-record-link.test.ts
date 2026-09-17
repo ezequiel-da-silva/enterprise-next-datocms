@@ -18,6 +18,21 @@ describe("resolveStructuredTextRecordLink", () => {
     expect(result).toEqual({ href: "/en/terms-of-service", label: "Terms" });
   });
 
+  it("resolves CollectionPageRecord", () => {
+    const result = resolveStructuredTextRecordLink(
+      {
+        __typename: "CollectionPageRecord",
+        shopifyHandle: "hydrogen",
+        title: "Hydrogen",
+      },
+      "pt",
+    );
+    expect(result).toEqual({
+      href: "/pt/collections/hydrogen",
+      label: "Hydrogen",
+    });
+  });
+
   it("resolves ProductPageRecord", () => {
     const result = resolveStructuredTextRecordLink(
       {

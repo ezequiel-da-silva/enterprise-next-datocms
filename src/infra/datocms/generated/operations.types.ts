@@ -9,6 +9,14 @@ export type AllRedirectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type AllRedirectsQuery = { allRedirects: Array<{ id: string, fromPathRedirect: string | null, toPathRedirect: string | null, statusRedirect: string | null }> };
 
+export type CollectionPageByHandleQueryVariables = Exact<{
+  handle: string;
+  locale: Types.SiteLocale;
+}>;
+
+
+export type CollectionPageByHandleQuery = { collectionPage: { id: string, title: string | null, description: string | null, shopifyHandle: string | null, shopifyCollectionId: string | null, seo: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
+
 export type AuthorCardFragmentFragment = { id: string, authorName: string | null, authorSlug: string | null, authorRole: string | null, avatarBio: { __typename: 'ImageBlockRecord', id: string, asset: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null } | null, authorSocialLinks: Array<{ id: string, plataforma: string | null, url: string | null, openInNewTab: boolean, linkAria: string | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null }> };
 
 export type BlogPostsSectionBlockFragmentFragment = { id: string, fetchMode: string | null, allCategoriesLabel: string | null, categoryDisplay: string | null, showSortTabs: boolean, hasLimit: boolean, limit: number | null, displayType: string | null, initialCount: number | null, loadMoreStep: number | null, loadMoreLabel: string | null, textHeaderSection: Array<{ __typename: 'TextHeaderRecord', id: string, title: string | null, hasDescription: boolean, description: string | null, hasSectionId: boolean, sectionId: string | null }>, carouselOptions: Array<{ __typename: 'CarouselSettingRecord', id: string, autoplay: boolean, autoplayInterval: number | null, showArrows: boolean, showDots: boolean, loop: boolean }>, selectedCategories: Array<{ id: string, categoryName: string | null, categorySlug: string | null, categoryColor: { hex: string } | null }>, manualPosts: Array<{ id: string, _firstPublishedAt: string, _updatedAt: string, postTitle: string | null, postSlug: string | null, excerpt: string | null, postAuthor: { authorName: string | null } | null, postCategory: Array<{ id: string, categoryName: string | null, categorySlug: string | null, categoryColor: { hex: string } | null }>, coverImage: { __typename: 'CardImageBlockRecord', id: string, assetMobile: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null, assetDesktop: { url: string, alt: string | null, width: number | null, height: number | null, blurUpThumb: string | null } | null } | null }> };
@@ -62,6 +70,8 @@ type TextSectionMediaBlocks_CardRecord_Fragment = { __typename: 'CardRecord', id
 type TextSectionMediaBlocks_CarouselSettingRecord_Fragment = { __typename: 'CarouselSettingRecord', id: string };
 
 type TextSectionMediaBlocks_CategoryRecord_Fragment = { __typename: 'CategoryRecord', id: string };
+
+type TextSectionMediaBlocks_CollectionPageRecord_Fragment = { __typename: 'CollectionPageRecord', id: string };
 
 type TextSectionMediaBlocks_ColorThemeRecord_Fragment = { __typename: 'ColorThemeRecord', id: string };
 
@@ -147,6 +157,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_CardRecord_Fragment
   | TextSectionMediaBlocks_CarouselSettingRecord_Fragment
   | TextSectionMediaBlocks_CategoryRecord_Fragment
+  | TextSectionMediaBlocks_CollectionPageRecord_Fragment
   | TextSectionMediaBlocks_ColorThemeRecord_Fragment
   | TextSectionMediaBlocks_ContactFormSectionRecord_Fragment
   | TextSectionMediaBlocks_CtaBannerRecord_Fragment
@@ -200,6 +211,13 @@ export type GetBlogIndexPageQueryVariables = Exact<{
 
 export type GetBlogIndexPageQuery = { globalSetting: { blogPage: { id: string, title: string | null, slug: string | null } | null } | null };
 
+export type GetCollectionsIndexPageQueryVariables = Exact<{
+  locale: Types.SiteLocale;
+}>;
+
+
+export type GetCollectionsIndexPageQuery = { globalSetting: { collectionsPage: { id: string, title: string | null, slug: string | null } | null } | null };
+
 export type GetContactPageQueryVariables = Exact<{
   locale: Types.SiteLocale;
 }>;
@@ -231,6 +249,11 @@ export type LegalPageBySlugQuery = { legalPage: { id: string, title: string | nu
         | { __typename: 'LegalPageRecord', id: string, title: string | null, slug: string | null }
         | { __typename: 'PageRecord', id: string, title: string | null, slug: string | null }
       > } | null, seoSettingsSocial: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }> } | null, _site: { faviconMetaTags: Array<{ tag: string, attributes: Record<string, string> | null, content: string | null }> } };
+
+export type ListCollectionHandlesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListCollectionHandlesQuery = { allCollectionPages: Array<{ shopifyHandle: string | null, _updatedAt: string }> };
 
 export type ListLegalPageSlugsQueryVariables = Exact<{ [key: string]: never; }>;
 

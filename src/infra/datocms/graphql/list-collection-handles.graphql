@@ -1,0 +1,6 @@
+query ListCollectionHandles {
+  allCollectionPages(first: 200, orderBy: _updatedAt_DESC) {
+    shopifyHandle
+    _updatedAt
+  }
+}

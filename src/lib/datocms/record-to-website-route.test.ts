@@ -7,6 +7,12 @@ describe("recordToWebsiteRoute", () => {
     expect(recordToWebsiteRoute("PageRecord", "home", "pt")).toBe("/pt");
   });
 
+  it("maps CollectionPageRecord", () => {
+    expect(recordToWebsiteRoute("CollectionPageRecord", "hydrogen", "pt")).toBe(
+      "/pt/collections/hydrogen",
+    );
+  });
+
   it("maps ProductPageRecord", () => {
     expect(recordToWebsiteRoute("ProductPageRecord", "hat", "pt")).toBe("/pt/products/hat");
   });
@@ -35,6 +41,16 @@ describe("recordToWebsitePath", () => {
         { attributes: { api_key: "redirect" } },
       ),
     ).toBe("/en/contact");
+  });
+
+  it("maps collection_page records", () => {
+    expect(
+      recordToWebsitePath(
+        { attributes: { shopify_handle: "hydrogen" } },
+        { attributes: { api_key: "collection_page" } },
+        { locale: "en" },
+      ),
+    ).toBe("/en/collections/hydrogen");
   });
 
   it("maps product_page records", () => {

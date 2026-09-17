@@ -1,6 +1,11 @@
+import { syncCollectionPageFromShopify } from "@/infra/datocms/sync-collection-page";
 import { syncProductPageFromShopify } from "@/infra/datocms/sync-product-page";
 import { logMissingShopifyWebhookEnv, readShopifyWebhookEnv } from "@/lib/shopify/env";
 import { isShopifyHmacValid } from "@/lib/shopify/hmac";
+import {
+  isCollectionWebhookTopic,
+  parseShopifyCollectionWebhook,
+} from "@/lib/shopify/parse-collection-webhook";
 import {
   isProductWebhookTopic,
   normalizeShopDomain,
@@ -24,7 +29,7 @@ function missingEnvResponse(missing: string[]): NextResponse {
 }
 
 /**
- * Shopify `products/create` e `products/update` → upsert CMA de `product_page`.
+ * Shopify `products/*` e `collections/*` → upsert CMA de `product_page` / `collection_page`.
  * HMAC no corpo cru (`x-shopify-hmac-sha256`) com `SHOPIFY_API_SECRET_KEY`
  * (chave secreta do Dev Dashboard; o client id não entra no HMAC).
  */
@@ -52,7 +57,9 @@ export async function POST(request: NextRequest) {
   }
 
   const topic = normalizeShopifyTopic(request.headers.get("x-shopify-topic"));
-  if (!isProductWebhookTopic(topic)) {
+  const isProduct = isProductWebhookTopic(topic);
+  const isCollection = isCollectionWebhookTopic(topic);
+  if (!isProduct && !isCollection) {
     return unauthorized();
   }
 
@@ -61,6 +68,24 @@ export async function POST(request: NextRequest) {
     parsed = rawBody.trim() ? JSON.parse(rawBody) : null;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (isCollection) {
+    const collection = parseShopifyCollectionWebhook(parsed);
+    if (!collection) {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
+    const result = await syncCollectionPageFromShopify(collection);
+    if (!result.ok) {
+      if (result.reason === "not_configured") {
+        return missingEnvResponse(["DATOCMS_USER_REVIEWS_CDA_TOKEN"]);
+      }
+      return NextResponse.json({ error: "Sync failed" }, { status: 500 });
+    }
+    if ("skipped" in result && result.skipped) {
+      return NextResponse.json({ success: true, skipped: true });
+    }
+    return NextResponse.json({ success: true });
   }
 
   const product = parseShopifyProductWebhook(parsed);

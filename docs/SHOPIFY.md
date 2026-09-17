@@ -11,27 +11,28 @@ flowchart LR
   ShopifyStore[Shopify loja]
   AppWebhook[App Dev Dashboard]
   NextShopify["POST /api/webhooks/shopify"]
-  DatoCMA[Dato product_page]
-  NextDato["POST /api/webhooks/datocms/product-page"]
-  NextPDP["/{locale}/products/{handle}"]
+  DatoCMA[Dato product_page / collection_page]
+  NextDato["POST /api/webhooks/datocms/product-page|collection-page"]
+  NextPDP["/{locale}/products|collections/{handle}"]
   Storefront[Storefront API]
 
   ShopifyStore -->|"create: id handle title"| AppWebhook
   AppWebhook --> NextShopify
-  NextShopify -->|"create: 3 locales title+description; update: en se mudou"| DatoCMA
-  DatoCMA -->|"publish title+description en pt-BR es"| NextDato
-  NextDato -->|productUpdate + translationsRegister| ShopifyStore
+  NextShopify -->|"product_page / collection_page"| DatoCMA
+  DatoCMA -->|"publish title+description"| NextDato
+  NextDato -->|productUpdate / collectionUpdate + translationsRegister| ShopifyStore
   DatoCMA -->|title description seo| NextPDP
-  Storefront -->|preco stock imagem| NextPDP
+  Storefront -->|preco stock imagem produtos| NextPDP
 ```
 
 | Peça | Papel |
 |------|--------|
 | App no **Dev Dashboard** | Client ID + chave secreta; **webhooks** assinados com essa chave |
 | Canal **Headless** | Tokens da Storefront API (público + privado) |
-| Dato `product_page` | `title`, `description`, `seo` (por idioma); `shopify_handle` + `shopify_product_id` (chaves) |
-| Page de catálogo | Ligada em Global settings (`products_page`) |
-| Next PDP | RSC: copy/SEO Dato + preço/stock/imagem Storefront no **servidor** |
+| Dato `product_page` | `title`, `description`, `seo`; chaves `shopify_handle` + `shopify_product_id` |
+| Dato `collection_page` | Igual, com `shopify_collection_id`. Sem links para produtos. Grelha: Storefront |
+| Page de catálogo | Global settings `products_page` e `collections_page` |
+| Next PDP / PLP | RSC: copy/SEO Dato + Storefront no **servidor** |
 | Dato → Shopify | `title` + `description`: EN no produto; PT/ES na Translations API |
 
 Fora de âmbito neste repo: `products/delete`, carrinho, checkout, `NEXT_PUBLIC_*` Shopify. Handle, preço, stock e imagem **não** vão do Dato para a Shopify.
@@ -105,7 +106,7 @@ Webhooks em **Definições da loja → Notificações** usam **outro** signing s
 | Campo | Valor |
 |-------|--------|
 | URI | `/api/webhooks/shopify` (resolvido para `https://enterprise-next-datocms.vercel.app/api/webhooks/shopify`) |
-| Tópicos | `products/create`, `products/update` |
+| Tópicos | `products/create`, `products/update`, `collections/create`, `collections/update` |
 | Formato | JSON |
 | Versão da API | a do toml (`2026-07`) |
 
@@ -126,6 +127,8 @@ As subscrições só disparam em **alterações futuras**. Produtos criados ante
 ```bash
 npm run shopify:backfill -- --url https://enterprise-next-datocms.vercel.app --dry-run
 npm run shopify:backfill -- --url https://enterprise-next-datocms.vercel.app
+npm run shopify:backfill:collections -- --url https://enterprise-next-datocms.vercel.app --dry-run
+npm run shopify:backfill:collections -- --url https://enterprise-next-datocms.vercel.app
 ```
 
 Lista os produtos pela Storefront API e reenvia cada um como webhook **assinado** para `/api/webhooks/shopify`. Mesmo caminho da Shopify, logo o mesmo upsert + publish — sem lógica CMA duplicada.
@@ -158,14 +161,13 @@ O `product_page` tem `title`, `description`, `seo`, `shopify_handle` e `shopify_
 
 ### 4. Dato (já no schema deste repo)
 
-- Modelo `product_page` (migrations até `1789570457_productPageDropBodyRenameLeadToDescription.ts`) no **main**.
-- Singleton Global settings → `products_page` (link para a Page de catálogo).
-- Token CMA (`DATOCMS_USER_REVIEWS_CDA_TOKEN`): Content Management API + Editor a escrever/publicar `product_page` (não só `user_review`).
-- **`DATOCMS_ENVIRONMENT` escolhe o ambiente.** Produção e o destino normal: **`main`**. Para o sandbox: `DATOCMS_ENVIRONMENT=develop`.
-- **Create** Shopify → Dato: `title` e `description` (texto simples a partir do HTML) nos 3 locales = copy EN da Shopify. `seo` não vem da Shopify.
-- **Update** Shopify → Dato: `title.en` / `description.en` só se o default mudou; `pt-BR`/`es` só se a Translations API tiver valor diferente (`title` e `body_html`).
-- Handle não é localizado. URL do PDP: `/{locale}/products/{handle}`.
-- Opcional no Dato: Configuration → Roles → Editor → `product_page`: permitir editar `title`/`description`/`seo` (handle e ID read-only). O token CMA do webhook continua a poder escrever as chaves.
+- Modelo `product_page` (migrations até `1789570457_…`) e `collection_page` (`1789600000_collectionPageShopifyCopySeo.ts`) no sandbox **`develop`** até o promote.
+- Singleton Global settings → `products_page` e `collections_page`.
+- Token CMA: Editor a escrever/publicar `product_page` **e** `collection_page`.
+- **`DATOCMS_ENVIRONMENT` escolhe o ambiente.** Schema de catálogo neste ciclo: **`develop`**. Se omitires, o código cai em `main`.
+- **Create** Shopify → Dato: `title` e `description` nos 3 locales = copy EN. Handles `frontpage` / `home-page` não criam `collection_page`.
+- **Update** Shopify → Dato: `title.en` / `description.en` só se mudou; `pt-BR`/`es` só via Translations. Locales vazios mantêm-se no payload CMA.
+- URLs: `/{locale}/products/{handle}` e `/{locale}/collections/{handle}`. Produtos da coleção: Storefront, não links no Dato.
 
 ### 4b. Dato ↔ Shopify (título e descrição EN / PT / ES)
 
@@ -174,7 +176,7 @@ Criar produto **sempre na Shopify** (gera `shopify_product_id` + `shopify_handle
 1. Scopes em [`shopify.app.toml`](../shopify.app.toml): `write_products`, `read_locales`, `read_translations`, `write_translations` → `npx shopify app deploy` → **atualizar/reinstalar** a app na loja. Sem o `deploy` **e** o update na loja, o token continua com os scopes antigos (só leitura) e o `productUpdate` é recusado.
 2. **Não** coloques um token Admin na Vercel. Client credentials com `SHOPIFY_CLIENT_ID` + `SHOPIFY_API_SECRET_KEY` + `SHOPIFY_STORE_DOMAIN`. `SHOPIFY_ADMIN_ACCESS_TOKEN` só para testes. **Não** guardes o token no Global setting.
 3. Se o OAuth devolver `shop_not_permitted`, app e loja não estão na mesma organização do Dev Dashboard.
-4. Webhook Dato (já criado): URL `…/api/webhooks/datocms/product-page`, Bearer `DATOCMS_REVALIDATE_SECRET`, Record **update** + **publish**, condition Product page.
+4. Webhooks Dato: URL `…/api/webhooks/datocms/product-page` (Product page) e `…/api/webhooks/datocms/collection-page` (Collection page), Bearer `DATOCMS_REVALIDATE_SECRET`, Record **update** + **publish**.
 5. **EN:** Dato `title.en` ↔ Shopify `product.title`; Dato `description.en` ↔ descrição (`descriptionHtml` / `body_html`). **PT/ES:** Dato `pt-BR`/`es` ↔ translations `pt`/`es` (título + `body_html`). Sem tradução automática. HTML da Shopify é achatado a texto no campo `description`.
 6. Publicar no Dato com títulos e descrições iguais aos da Shopify → `{ "success": true, "skipped": true }`.
 7. EN é obrigatório; PT/ES são best-effort. Se faltarem os scopes de tradução, a resposta é `200` com `warnings` (o EN passa na mesma e o Dato não fica a repetir o webhook).
@@ -195,7 +197,7 @@ Se o `scope` não incluir `write_products`, `read_locales`, `read_translations` 
 ## Vercel
 
 1. Settings → Environment Variables.
-2. `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN` + `DATOCMS_USER_REVIEWS_CDA_TOKEN` + `DATOCMS_REVALIDATE_SECRET`. `SHOPIFY_ADMIN_ACCESS_TOKEN` não é preciso em produção. `DATOCMS_ENVIRONMENT` só se quiseres o sandbox (`develop`); senão o CMA usa `main`.
+2. `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, `SHOPIFY_STORE_DOMAIN`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN` + `DATOCMS_USER_REVIEWS_CDA_TOKEN` + `DATOCMS_REVALIDATE_SECRET`. `SHOPIFY_ADMIN_ACCESS_TOKEN` não é preciso em produção. `DATOCMS_ENVIRONMENT=develop` enquanto o schema de catálogo viver no sandbox.
 3. Production (e Preview).
 4. Redeploy. Variável nova não entra no deploy já feito.
 
@@ -229,10 +231,15 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 
 | Caminho | Função |
 |---------|--------|
-| `shopify.app.toml` | `write_products`, `read_translations`, `write_translations` |
-| `scripts/backfill-shopify-products.mjs` | Backfill (`npm run shopify:backfill`) |
-| `src/app/api/webhooks/shopify/route.ts` | Shopify → Dato |
-| `src/app/api/webhooks/datocms/product-page/route.ts` | Dato → título + descrição Shopify |
+| `shopify.app.toml` | tópicos produto + coleção; `write_products`, translations |
+| `scripts/backfill-shopify-products.mjs` | Backfill produtos |
+| `scripts/backfill-shopify-collections.mjs` | Backfill coleções (`npm run shopify:backfill:collections`) |
+| `src/app/api/webhooks/shopify/route.ts` | Shopify → Dato (produto e coleção) |
+| `src/app/api/webhooks/datocms/product-page/route.ts` | Dato → produto Shopify |
+| `src/app/api/webhooks/datocms/collection-page/route.ts` | Dato → coleção Shopify |
+| `src/infra/datocms/sync-collection-page.ts` | CMA upsert `collection_page` |
+| `src/infra/shopify/admin-collection-copy.ts` | `collectionUpdate` + `translationsRegister` |
+| `src/app/[slug]/collections/[handle]/page.tsx` | PLP |
 | `src/lib/shopify/hmac.ts` | HMAC SHA-256 Base64, `timingSafeEqual` |
 | `src/lib/shopify/parse-product-webhook.ts` | Payload produto Shopify |
 | `src/lib/datocms/parse-product-page-title-sync.ts` | Payload Dato `product_page` |

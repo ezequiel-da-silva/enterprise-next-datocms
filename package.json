@@ -20,6 +20,7 @@
     "security:headers": "node scripts/check-security-headers.mjs",
     "security:check": "npm run security:audit && npm run security:headers",
     "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
+    "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",
     "test:e2e": "playwright test",
     "prepare": "husky"

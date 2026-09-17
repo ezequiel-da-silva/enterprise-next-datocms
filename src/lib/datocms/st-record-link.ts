@@ -25,6 +25,20 @@ export function resolveStructuredTextRecordLink(
     };
   }
 
+  if (t === "CollectionPageRecord") {
+    const handle = typeof record.shopifyHandle === "string" ? record.shopifyHandle.trim() : "";
+    if (!handle) return null;
+    const href = recordToWebsiteRoute("CollectionPageRecord", handle, locale);
+    if (!href) return null;
+    return {
+      href,
+      label:
+        typeof record.title === "string" && record.title.trim() !== ""
+          ? record.title.trim()
+          : handle,
+    };
+  }
+
   if (t === "ProductPageRecord") {
     const handle = typeof record.shopifyHandle === "string" ? record.shopifyHandle.trim() : "";
     if (!handle) return null;

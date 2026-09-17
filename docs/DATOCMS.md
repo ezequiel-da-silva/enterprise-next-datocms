@@ -24,13 +24,13 @@ Não é preciso variável extra na Vercel para Skills/CLI. Mantém (Production e
 |----------|------|
 | `DATOCMS_API_TOKEN` | CDA publicado |
 | `DATOCMS_DRAFT_CDA_TOKEN` | CDA com rascunhos (Draft Mode) |
-| `DATOCMS_USER_REVIEWS_CDA_TOKEN` | CMA (`user_review` + `product_page` / webhook Shopify) |
+| `DATOCMS_USER_REVIEWS_CDA_TOKEN` | CMA (`user_review` + `product_page` / `collection_page` / webhook Shopify) |
 | `DATOCMS_PREVIEW_SECRET` | Web Previews / `/api/draft` |
-| `DATOCMS_REVALIDATE_SECRET` | Webhooks `POST /api/revalidate` e `POST /api/webhooks/datocms/product-page` |
+| `DATOCMS_REVALIDATE_SECRET` | `POST /api/revalidate` e webhooks Dato `product-page` / `collection-page` |
 | `NEXT_PUBLIC_SITE_URL` | URL canónica do deploy |
 | `NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL` | `https://boilerplate-dato.admin.datocms.com` |
 | `DATOCMS_ADMIN_FRAME_ANCESTOR` | Opcional, mesmo host do admin |
-| `DATOCMS_ENVIRONMENT` | CDA + CMA Shopify; default `main`. `develop` = sandbox |
+| `DATOCMS_ENVIRONMENT` | CDA + CMA Shopify; default `main`. Catálogo neste ciclo: `develop` até o promote. |
 
 Shopify (`SHOPIFY_*`): [SHOPIFY.md](./SHOPIFY.md) — também privadas na Vercel.
 
@@ -226,7 +226,7 @@ Não é preciso Turso/Postgres: este repo não passa as tags opacas da CDA ao `f
    - Opcional: **CDA Cache Tags → Invalidate** — o handler trata `entity.attributes.tags` e revalida as famílias completas (`datocms:page`, nav, sitemap, …).
 5. Guardar e **Send a ping** / publicar um record. A resposta deve ser `{ "revalidated": true, "tags": [...] }` (200). Sem secret na Vercel → 500; token errado → 401.
 
-Título Dato → Shopify: **segundo** webhook, URL `https://enterprise-next-datocms.vercel.app/api/webhooks/datocms/product-page`, o mesmo `Authorization: Bearer`, triggers só `product_page` **update** + **publish**. Playbook: [SHOPIFY.md](./SHOPIFY.md) § 4b.
+Título Dato → Shopify: webhooks `…/api/webhooks/datocms/product-page` e `…/collection-page`, o mesmo Bearer, triggers **update** + **publish**. Playbook: [SHOPIFY.md](./SHOPIFY.md) § 4b.
 
 Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testar o Dato contra o teu `next dev`.
 
@@ -243,14 +243,15 @@ Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testa
 | `navigation` / `global_setting` | `datocms:navigation` / `datocms:global-settings` + por locale |
 | `redirect` | `datocms:redirects` |
 | `product_page` | `datocms:product`, `product:{handle}`, sitemap |
+| `collection_page` | `datocms:collection`, `collection:{handle}`, sitemap |
 | CDA `tags[]` ou modelo desconhecido | [famílias coarse](../src/lib/datocms/revalidate-tags.ts) |
 
 O ISR de 300s permanece como rede de segurança se o webhook falhar.
 
-## Shopify → `product_page`
+## Shopify → `product_page` / `collection_page`
 
-Passo a passo (Dev Dashboard, Headless, webhooks, Vercel): [SHOPIFY.md](./SHOPIFY.md).
+Passo a passo: [SHOPIFY.md](./SHOPIFY.md).
 
-Resumo: `POST /api/webhooks/shopify` valida HMAC com `SHOPIFY_API_SECRET_KEY` e faz upsert CMA de `product_page` com `DATOCMS_USER_REVIEWS_CDA_TOKEN`. Create preenche os 3 `title` e `description`; update só muda `en` (e PT/ES se a Translations API tiver valor novo, título + `body_html`). Dato → Shopify: `productUpdate` (título + `descriptionHtml`) + `translationsRegister` (`title` e `body_html`). Client credentials (`write_products`, `read_translations`, `write_translations`). **Não** uses `DATOCMS_API_TOKEN` (CDA). O webhook Dato de revalidate só invalida cache.
+`POST /api/webhooks/shopify` faz upsert CMA de `product_page` ou `collection_page`. Coleções `frontpage` / `home-page` são ignoradas. Dato → Shopify: `productUpdate` / `collectionUpdate` + `translationsRegister`. Webhook Dato de revalidate só invalida cache.
 
-O catálogo é uma Page em Global settings (`products_page`); o PDP é `/{locale}/products/{handle}`. Preço, stock e imagem: Storefront. Copy (`title`, `description`) e SEO: Dato, por idioma.
+Índices: Global settings `products_page` e `collections_page`. PDP `/{locale}/products/{handle}`; PLP `/{locale}/collections/{handle}` (produtos da Storefront).

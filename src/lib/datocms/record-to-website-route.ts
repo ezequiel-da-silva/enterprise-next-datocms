@@ -92,6 +92,11 @@ export function recordToWebsitePath(
       if (!handle) return null;
       return `/${appLocale}/products/${handle}`;
     }
+    case "collection_page": {
+      const handle = readStringAttr(item, ["shopify_handle", "shopifyHandle"]);
+      if (!handle) return null;
+      return `/${appLocale}/collections/${handle}`;
+    }
     case "redirect": {
       const fromPath = readStringAttr(item, ["from_path_redirect", "fromPathRedirect"]);
       return fromPath ? fromPath : null;
@@ -125,6 +130,8 @@ export function recordToWebsiteRoute(
       return `/${locale}/${s}`;
     case "ProductPageRecord":
       return `/${locale}/products/${s}`;
+    case "CollectionPageRecord":
+      return `/${locale}/collections/${s}`;
     case "PostRecord":
       return `/${locale}/blog/${s}`;
     case "CategoryRecord":

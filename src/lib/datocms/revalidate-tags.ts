@@ -19,6 +19,7 @@ export const DATOCMS_CACHE_TAGS = {
   redirects: "datocms:redirects",
   legal: "datocms:legal",
   product: "datocms:product",
+  collection: "datocms:collection",
 } as const;
 
 /** Famílias usadas em todos os fetches publicados (webhook CDA / payload desconhecido). */
@@ -43,6 +44,7 @@ export function coarseDatocmsCacheTags(): string[] {
     DATOCMS_CACHE_TAGS.redirects,
     DATOCMS_CACHE_TAGS.legal,
     DATOCMS_CACHE_TAGS.product,
+    DATOCMS_CACHE_TAGS.collection,
     ...localePairs,
   ]);
 }
@@ -202,6 +204,14 @@ function tagsForApiKey(
         DATOCMS_CACHE_TAGS.product,
         DATOCMS_CACHE_TAGS.sitemap,
         ...(handle ? [`product:${handle}`] : []),
+      ]);
+    }
+    case "collection_page": {
+      const handle = readLocalizedSlugs(attrs, ["shopify_handle", "shopifyHandle"])[0]?.slug;
+      return uniqueTags([
+        DATOCMS_CACHE_TAGS.collection,
+        DATOCMS_CACHE_TAGS.sitemap,
+        ...(handle ? [`collection:${handle}`] : []),
       ]);
     }
     default:

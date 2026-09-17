@@ -16,7 +16,7 @@ api_version = "2026-07"
 
   [[webhooks.subscriptions]]
   uri = "/api/webhooks/shopify"
-  topics = [ "products/create", "products/update" ]
+  topics = [ "products/create", "products/update", "collections/create", "collections/update" ]
 
 [auth]
 redirect_urls = [ ]

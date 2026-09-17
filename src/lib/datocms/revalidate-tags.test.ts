@@ -120,6 +120,19 @@ describe("tagsToRevalidateFromWebhook", () => {
     expect(tags).toContain(DATOCMS_CACHE_TAGS.sitemap);
   });
 
+  it("maps collection_page to collection family + handle tag", () => {
+    const tags = tagsToRevalidateFromWebhook({
+      entity: {
+        attributes: { shopify_handle: "hydrogen" },
+        relationships: { item_type: { data: { id: "t" } } },
+      },
+      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "collection_page" } }],
+    });
+    expect(tags).toContain(DATOCMS_CACHE_TAGS.collection);
+    expect(tags).toContain("collection:hydrogen");
+    expect(tags).toContain(DATOCMS_CACHE_TAGS.sitemap);
+  });
+
   it("maps legal_page to legal family + slug tag", () => {
     const tags = tagsToRevalidateFromWebhook({
       entity: {
