@@ -37,6 +37,16 @@ fragment CtaBannerBlockFields on CtaBannerRecord {
       __typename
       authorSlug
     }
+    internalLinkProduct {
+      __typename
+      shopifyHandle
+      title
+    }
+    internalLinkCollection {
+      __typename
+      shopifyHandle
+      title
+    }
   }
   imageBanner {
     ...BannerImageBlockFields

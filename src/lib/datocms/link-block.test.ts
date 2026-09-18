@@ -42,6 +42,46 @@ describe("resolveLinkBlock", () => {
     }
   });
 
+  it("resolves product_page via shopifyHandle", () => {
+    const result = resolveLinkBlock(
+      {
+        typeContent: "product",
+        internalLinkProduct: { __typename: "ProductPageRecord", shopifyHandle: "the-complete-snowboard" },
+      },
+      "en",
+    );
+    expect(result?.kind).toBe("internal");
+    if (result?.kind === "internal") {
+      expect(result.href).toBe("/en/products/the-complete-snowboard");
+    }
+  });
+
+  it("resolves collection_page from snake_case fields", () => {
+    const result = resolveLinkBlock(
+      {
+        type_content: "collection",
+        internal_link_collection: { __typename: "CollectionPageRecord", shopify_handle: "hydrogen" },
+      },
+      "pt",
+    );
+    expect(result?.kind).toBe("internal");
+    if (result?.kind === "internal") {
+      expect(result.href).toBe("/pt/collections/hydrogen");
+    }
+  });
+
+  it("returns null when product handle is missing", () => {
+    expect(
+      resolveLinkBlock(
+        {
+          typeContent: "product",
+          internalLinkProduct: { __typename: "ProductPageRecord", shopifyHandle: "" },
+        },
+        "en",
+      ),
+    ).toBeNull();
+  });
+
   it("blocks unsafe external links", () => {
     const result = resolveLinkBlock(
       {

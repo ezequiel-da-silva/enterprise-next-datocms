@@ -33,6 +33,7 @@ flowchart LR
 | Dato `collection_page` | Igual, com `shopify_collection_id`. Sem links para produtos. Grelha da PLP: Storefront |
 | Page de catálogo | Global settings `products_page` e `collections_page` |
 | Bloco `content_listing_section` | Fonte Blog/Shopify; Shopify automático usa `category_display` (`all`/`selected`/`none`) e `source_collection` só em `selected`. Preço/imagem: Storefront com `@inContext(country)` (EN=`US`/USD, PT=`BR`/BRL, ES=`ES`/EUR) |
+| Bloco Link (`type_content`) | Product / Collection apontam a `product_page` / `collection_page` (Hero, CTA, tabs, feature grid, pricing). Sem fetch Storefront no botão. |
 | Next PDP / PLP | RSC: copy/SEO Dato + Storefront no **servidor** |
 | Dato → Shopify | `title` + `description`: EN no produto; PT/ES na Translations API |
 

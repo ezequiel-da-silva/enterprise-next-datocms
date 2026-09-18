@@ -47,6 +47,16 @@ fragment TabsSectionBlockFragment on TabsSectionRecord {
             __typename
             authorSlug
           }
+          internalLinkProduct {
+            __typename
+            shopifyHandle
+            title
+          }
+          internalLinkCollection {
+            __typename
+            shopifyHandle
+            title
+          }
         }
       }
       mediaImage {
