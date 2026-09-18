@@ -1,4 +1,5 @@
 import { Container } from "@/components/atoms/container";
+import Image from "next/image";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
@@ -6,7 +7,7 @@ import type { StorefrontProduct } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
-import Image from "next/image";
+import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 
 type ProductPageArticleProps = {
   locale: AppLocale;
@@ -17,17 +18,6 @@ type ProductPageArticleProps = {
   catalogLabel: string;
   storefront: StorefrontProduct | null;
 };
-
-function formatMoney(locale: AppLocale, amount: string, currency: string): string {
-  const value = Number.parseFloat(amount);
-  const tag = locale === "pt" ? "pt-BR" : locale;
-  if (!Number.isFinite(value)) return `${amount} ${currency}`;
-  try {
-    return new Intl.NumberFormat(tag, { style: "currency", currency }).format(value);
-  } catch {
-    return `${amount} ${currency}`;
-  }
-}
 
 function availabilityLabel(locale: AppLocale, available: boolean): string {
   if (locale === "pt") return available ? "Em stock" : "Esgotado";
@@ -75,7 +65,7 @@ export async function ProductPageArticle({
         ) : null}
         {price ? (
           <p className="text-lg font-medium text-foreground">
-            {formatMoney(locale, price.amount, price.currencyCode)}
+            {formatStorefrontMoney(locale, price.amount, price.currencyCode)}
           </p>
         ) : null}
         {storefront ? (

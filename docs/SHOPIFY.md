@@ -32,7 +32,7 @@ flowchart LR
 | Dato `product_page` | `title`, `description`, `seo`; chaves `shopify_handle` + `shopify_product_id` |
 | Dato `collection_page` | Igual, com `shopify_collection_id`. Sem links para produtos. Grelha da PLP: Storefront |
 | Page de catálogo | Global settings `products_page` e `collections_page` |
-| Bloco `content_listing_section` | Fonte Blog/Shopify; Shopify automático usa `category_display` (`all`/`selected`/`none`) e `source_collection` só em `selected`. Preço/imagem: Storefront |
+| Bloco `content_listing_section` | Fonte Blog/Shopify; Shopify automático usa `category_display` (`all`/`selected`/`none`) e `source_collection` só em `selected`. Preço/imagem: Storefront com `@inContext(country)` (EN=`US`/USD, PT=`BR`/BRL, ES=`ES`/EUR) |
 | Next PDP / PLP | RSC: copy/SEO Dato + Storefront no **servidor** |
 | Dato → Shopify | `title` + `description`: EN no produto; PT/ES na Translations API |
 
@@ -227,8 +227,9 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 2. Edita `title` **en** no Dato e publica → o título default na Admin Shopify atualiza. O mesmo para `description` ↔ Descrição.
 3. Edita `pt-BR` / `es` no Dato e publica → título e descrição aparecem em Translate & Adapt / Markets PT e ES.
 4. Edita o título default **na Shopify** → o Dato atualiza só `en`; `pt-BR` e `es` mantêm-se.
-5. Abre `https://<site>/<locale>/products/<handle>`: título Dato desse locale; preço/imagem da Storefront.
-6. Preenche `description` / `seo` num locale no Dato e publica → o PDP desse idioma mostra a copy; preço e foto continuam da Shopify.
+5. Abre `/{locale}/products` e um PDP: EN mostra USD, PT BRL, ES EUR (Markets US/BR/ES na Storefront `@inContext(country)`). Sem Market para o país, a API devolve a moeda default da loja.
+6. Abre `https://<site>/<locale>/products/<handle>`: título Dato desse locale; preço/imagem da Storefront.
+7. Preenche `description` / `seo` num locale no Dato e publica → o PDP desse idioma mostra a copy; preço e foto continuam da Shopify.
 
 ## Código
 

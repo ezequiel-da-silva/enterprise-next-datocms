@@ -1,6 +1,17 @@
+import type { AppLocale } from "@/constants/i18n";
+
 /** Dato CMA `pt-BR` / `es` → locales Shopify (Markets BR/ES). */
 export const DATO_PT_SHOPIFY_CANDIDATES = ["pt", "pt-BR"] as const;
 export const DATO_ES_SHOPIFY_CANDIDATES = ["es", "es-ES"] as const;
+
+/** Storefront `@inContext(country:)` alinhado aos Markets da loja. */
+export type ShopifyCountryCode = "US" | "BR" | "ES";
+
+export function shopifyCountryFromLocale(locale: AppLocale): ShopifyCountryCode {
+  if (locale === "pt") return "BR";
+  if (locale === "es") return "ES";
+  return "US";
+}
 
 export function pickShopifyLocale(
   shopLocales: readonly string[],

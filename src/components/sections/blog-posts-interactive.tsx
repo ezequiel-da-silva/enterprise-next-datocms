@@ -219,6 +219,7 @@ export function BlogPostsInteractive({
           </p>
         ) : displayType === "carousel" ? (
           <BlogPostsCarousel
+            key={`${categoryId ?? "all"}-${sort}`}
             posts={visiblePosts}
             locale={locale}
             headingLevel={headingLevel}

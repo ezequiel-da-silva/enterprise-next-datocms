@@ -1,3 +1,6 @@
+import type { AppLocale } from "@/constants/i18n";
+import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
+
 const STOREFRONT_API_VERSION = "2024-07";
 
 export type StorefrontMoney = {
@@ -31,7 +34,7 @@ export type StorefrontProduct = {
 };
 
 const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
-  query ProductByHandle($handle: String!) {
+  query ProductByHandle($handle: String!, $country: CountryCode!) @inContext(country: $country) {
     product(handle: $handle) {
       id
       title
@@ -189,7 +192,7 @@ const COLLECTION_PRODUCT_FIELDS = `
 `;
 
 const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
-  query CollectionByHandle($handle: String!) {
+  query CollectionByHandle($handle: String!, $country: CountryCode!) @inContext(country: $country) {
     collection(handle: $handle) {
       id
       handle
@@ -210,7 +213,7 @@ const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
 `;
 
 const PRODUCTS_QUERY = /* GraphQL */ `
-  query StorefrontProducts {
+  query StorefrontProducts($country: CountryCode!) @inContext(country: $country) {
     products(first: 50) {
       nodes {
         ${COLLECTION_PRODUCT_FIELDS}
@@ -257,7 +260,10 @@ function mapCollection(value: unknown): StorefrontCollection | null {
  * Storefront GraphQL no servidor. Falha de rede ou token ausente → `null`
  * (o PDP continua com o título Dato).
  */
-export async function getStorefrontProductByHandle(handle: string): Promise<StorefrontProduct | null> {
+export async function getStorefrontProductByHandle(
+  handle: string,
+  locale: AppLocale,
+): Promise<StorefrontProduct | null> {
   const shop = shopDomain();
   const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
   const trimmed = handle.trim();
@@ -271,7 +277,10 @@ export async function getStorefrontProductByHandle(handle: string): Promise<Stor
         "Content-Type": "application/json",
         ...storefrontAuthHeaders(token),
       },
-      body: JSON.stringify({ query: PRODUCT_BY_HANDLE_QUERY, variables: { handle: trimmed } }),
+      body: JSON.stringify({
+        query: PRODUCT_BY_HANDLE_QUERY,
+        variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
+      }),
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -284,6 +293,7 @@ export async function getStorefrontProductByHandle(handle: string): Promise<Stor
 
 export async function getStorefrontCollectionByHandle(
   handle: string,
+  locale: AppLocale,
 ): Promise<StorefrontCollection | null> {
   const shop = shopDomain();
   const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
@@ -298,7 +308,10 @@ export async function getStorefrontCollectionByHandle(
         "Content-Type": "application/json",
         ...storefrontAuthHeaders(token),
       },
-      body: JSON.stringify({ query: COLLECTION_BY_HANDLE_QUERY, variables: { handle: trimmed } }),
+      body: JSON.stringify({
+        query: COLLECTION_BY_HANDLE_QUERY,
+        variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
+      }),
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -309,7 +322,7 @@ export async function getStorefrontCollectionByHandle(
   }
 }
 
-export async function getStorefrontProducts(): Promise<StorefrontCollectionProduct[]> {
+export async function getStorefrontProducts(locale: AppLocale): Promise<StorefrontCollectionProduct[]> {
   const shop = shopDomain();
   const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
   if (!shop || !token) return [];
@@ -322,7 +335,10 @@ export async function getStorefrontProducts(): Promise<StorefrontCollectionProdu
         "Content-Type": "application/json",
         ...storefrontAuthHeaders(token),
       },
-      body: JSON.stringify({ query: PRODUCTS_QUERY }),
+      body: JSON.stringify({
+        query: PRODUCTS_QUERY,
+        variables: { country: shopifyCountryFromLocale(locale) },
+      }),
       cache: "no-store",
     });
     if (!res.ok) return [];
@@ -339,10 +355,11 @@ export async function getStorefrontProducts(): Promise<StorefrontCollectionProdu
 
 export async function getStorefrontProductsByHandles(
   handles: string[],
+  locale: AppLocale,
 ): Promise<StorefrontCollectionProduct[]> {
   const unique = [...new Set(handles.map((handle) => handle.trim()).filter(Boolean))];
   if (unique.length === 0) return [];
-  const cards = await Promise.all(unique.map((handle) => getStorefrontProductByHandle(handle)));
+  const cards = await Promise.all(unique.map((handle) => getStorefrontProductByHandle(handle, locale)));
   const byHandle = new Map(
     cards
       .filter((product): product is StorefrontProduct => product !== null)

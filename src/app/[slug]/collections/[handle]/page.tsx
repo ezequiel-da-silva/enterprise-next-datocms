@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: CollectionPlpProps): Promise<
   const [result, seoResult, storefront] = await Promise.all([
     getCollectionPageByHandle(locale, handle, isEnabled),
     getSiteSeo(locale, isEnabled),
-    getStorefrontCollectionByHandle(handle),
+    getStorefrontCollectionByHandle(handle, locale),
   ]);
   if ("errors" in result || !result.data.collectionPage) {
     return buildUnavailableMetadata("Collection");
@@ -65,7 +65,7 @@ export default async function CollectionPlpPage({ params }: CollectionPlpProps) 
   const [result, catalog, storefront] = await Promise.all([
     getCollectionPageByHandle(locale, handle, isEnabled),
     getCollectionsIndexPage(locale, isEnabled),
-    getStorefrontCollectionByHandle(handle),
+    getStorefrontCollectionByHandle(handle, locale),
   ]);
 
   if ("errors" in result || !result.data.collectionPage) {

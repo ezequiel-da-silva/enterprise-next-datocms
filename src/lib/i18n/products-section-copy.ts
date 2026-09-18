@@ -15,6 +15,7 @@ export type ProductsSectionCopy = {
   previousSlide: string;
   nextSlide: string;
   goToSlide: (slide: number) => string;
+  position: (slide: number, total: number) => string;
   pause: string;
   play: string;
   reducedMotion: string;
@@ -36,6 +37,7 @@ export const PRODUCTS_SECTION_COPY: Record<AppLocale, ProductsSectionCopy> = {
     previousSlide: "Previous products",
     nextSlide: "Next products",
     goToSlide: (slide) => `Go to slide ${slide}`,
+    position: (slide, total) => `${slide} / ${total}`,
     pause: "Pause carousel",
     play: "Play carousel",
     reducedMotion: "Autoplay is off because reduced motion is enabled.",
@@ -55,6 +57,7 @@ export const PRODUCTS_SECTION_COPY: Record<AppLocale, ProductsSectionCopy> = {
     previousSlide: "Produtos anteriores",
     nextSlide: "Produtos seguintes",
     goToSlide: (slide) => `Ir para o diapositivo ${slide}`,
+    position: (slide, total) => `${slide} / ${total}`,
     pause: "Pausar carrossel",
     play: "Reproduzir carrossel",
     reducedMotion: "A reprodução automática está desligada porque o movimento reduzido está ativo.",
@@ -74,6 +77,7 @@ export const PRODUCTS_SECTION_COPY: Record<AppLocale, ProductsSectionCopy> = {
     previousSlide: "Productos anteriores",
     nextSlide: "Productos siguientes",
     goToSlide: (slide) => `Ir a la diapositiva ${slide}`,
+    position: (slide, total) => `${slide} / ${total}`,
     pause: "Pausar carrusel",
     play: "Reproducir carrusel",
     reducedMotion: "La reproducción automática está desactivada porque el movimiento reducido está activo.",

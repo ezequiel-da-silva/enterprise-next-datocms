@@ -5,7 +5,7 @@ describe("getStorefrontProductByHandle", () => {
   it("returns null when env is missing", async () => {
     delete process.env.SHOPIFY_STORE_DOMAIN;
     delete process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
-    await expect(getStorefrontProductByHandle("hat")).resolves.toBeNull();
+    await expect(getStorefrontProductByHandle("hat", "en")).resolves.toBeNull();
   });
 
   it("maps a product payload from Storefront GraphQL", async () => {
@@ -39,10 +39,14 @@ describe("getStorefrontProductByHandle", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const product = await getStorefrontProductByHandle("hat");
+    const product = await getStorefrontProductByHandle("hat", "pt");
     expect(product?.handle).toBe("hat");
     expect(product?.priceRange.minVariantPrice.currencyCode).toBe("BRL");
     expect(product?.variants).toHaveLength(1);
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      variables: { country: string };
+    };
+    expect(body.variables.country).toBe("BR");
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "X-Shopify-Storefront-Access-Token": "token",
     });
@@ -78,10 +82,14 @@ describe("getStorefrontProductByHandle", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const collection = await getStorefrontCollectionByHandle("hydrogen");
+    const collection = await getStorefrontCollectionByHandle("hydrogen", "es");
     expect(collection?.handle).toBe("hydrogen");
     expect(collection?.products).toHaveLength(1);
     expect(collection?.products[0]?.handle).toBe("hat");
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
+      variables: { country: string };
+    };
+    expect(body.variables.country).toBe("ES");
     vi.unstubAllGlobals();
   });
 
@@ -93,7 +101,7 @@ describe("getStorefrontProductByHandle", () => {
       json: async () => ({ data: { product: null } }),
     });
     vi.stubGlobal("fetch", fetchMock);
-    await getStorefrontProductByHandle("hat");
+    await getStorefrontProductByHandle("hat", "en");
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "Shopify-Storefront-Private-Token": "shpat_test",
     });
