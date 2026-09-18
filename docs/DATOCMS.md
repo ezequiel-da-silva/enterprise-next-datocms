@@ -264,4 +264,6 @@ Listagens em páginas CMS usam um único bloco **Content listing section** (`con
 - **Content source = Shopify**: automático usa o mesmo `category_display` (`all` / `selected` / `none`). `selected` filtra por `source_collection` e só mostra produtos com `product_page` (evita PDP 404); `all` e `none` listam todos os `product_page` publicados. Manual usa `selected_products`. Uma listagem vazia continua visível.
 - Limite e apresentação (grid, carrossel, paginação, carregar mais) são partilhados.
 
+O bloco **Link** (`type_content` Product / Collection) liga CTAs internos (Hero, CTA banner, tabs, feature grid, pricing) a `product_page` ou `collection_page` pelo `shopify_handle`. Structured Text já resolvia estes modelos; o header (`navItemLink`) continua a ser um path em texto.
+
 Preço e imagem dos produtos continuam na Storefront. Não há links produto↔coleção no Dato.

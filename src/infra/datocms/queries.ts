@@ -320,6 +320,16 @@ const LINK_HERO_CTA_FIELDS = `
     __typename
     authorSlug
   }
+  internalLinkProduct {
+    __typename
+    shopifyHandle
+    title
+  }
+  internalLinkCollection {
+    __typename
+    shopifyHandle
+    title
+  }
 `;
 
 /** CTA Banner — bloco de chamada para ação (`CtaBannerRecord`). */

@@ -56,6 +56,16 @@ query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!
             __typename
             authorSlug
           }
+          internalLinkProduct {
+            __typename
+            shopifyHandle
+            title
+          }
+          internalLinkCollection {
+            __typename
+            shopifyHandle
+            title
+          }
         }
         showImageHero
         imageHero {

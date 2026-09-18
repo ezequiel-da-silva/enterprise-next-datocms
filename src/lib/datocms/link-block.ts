@@ -2,7 +2,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { recordToWebsiteRoute } from "@/lib/datocms/record-to-website-route";
 import { stripStega } from "react-datocms/stega";
 
-export type LinkTypeContent = "external" | "page" | "post" | "category" | "author";
+export type LinkTypeContent = "external" | "page" | "post" | "category" | "author" | "product" | "collection";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -66,6 +66,11 @@ function slugFromLinked(type: LinkTypeContent, linked: UnknownRecord): string | 
       const s = linked.authorSlug ?? linked.author_slug;
       return typeof s === "string" && s.trim() !== "" ? s.trim() : null;
     }
+    case "product":
+    case "collection": {
+      const s = linked.shopifyHandle ?? linked.shopify_handle;
+      return typeof s === "string" && s.trim() !== "" ? s.trim() : null;
+    }
     default:
       return null;
   }
@@ -95,7 +100,14 @@ export function resolveLinkBlock(record: UnknownRecord, locale: AppLocale): Reso
   }
 
   const type = typeRaw as LinkTypeContent;
-  if (type !== "page" && type !== "post" && type !== "category" && type !== "author") {
+  if (
+    type !== "page" &&
+    type !== "post" &&
+    type !== "category" &&
+    type !== "author" &&
+    type !== "product" &&
+    type !== "collection"
+  ) {
     return null;
   }
 
@@ -106,7 +118,11 @@ export function resolveLinkBlock(record: UnknownRecord, locale: AppLocale): Reso
         ? readLinked(record, "internalLinkPost", "internal_link_post")
         : type === "category"
           ? readLinked(record, "internalLinkCategory", "internal_link_category")
-          : readLinked(record, "internalLinkAuthor", "internal_link_author");
+          : type === "author"
+            ? readLinked(record, "internalLinkAuthor", "internal_link_author")
+            : type === "product"
+              ? readLinked(record, "internalLinkProduct", "internal_link_product")
+              : readLinked(record, "internalLinkCollection", "internal_link_collection");
 
   if (!linked) return null;
 

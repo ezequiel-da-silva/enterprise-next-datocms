@@ -49,6 +49,16 @@ fragment PricingSectionBlockFragment on PricingSectionRecord {
           __typename
           authorSlug
         }
+        internalLinkProduct {
+          __typename
+          shopifyHandle
+          title
+        }
+        internalLinkCollection {
+          __typename
+          shopifyHandle
+          title
+        }
       }
     }
   }

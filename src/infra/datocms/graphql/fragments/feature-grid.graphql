@@ -56,6 +56,16 @@ fragment FeatureGridBlockFragment on FeatureGridRecord {
             __typename
             authorSlug
           }
+          internalLinkProduct {
+            __typename
+            shopifyHandle
+            title
+          }
+          internalLinkCollection {
+            __typename
+            shopifyHandle
+            title
+          }
         }
       }
     }

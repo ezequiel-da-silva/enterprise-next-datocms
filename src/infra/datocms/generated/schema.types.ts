@@ -646,7 +646,7 @@ export type ContactFormSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
-/** Block of type Content listing section (content_listing_section) */
+/** Block of type 👨‍👨‍👦‍👦 Content listing section (content_listing_section) */
 export type ContentListingSectionRecord = RecordInterface & {
   __typename?: 'ContentListingSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
@@ -683,7 +683,7 @@ export type ContentListingSectionRecord = RecordInterface & {
 };
 
 
-/** Block of type Content listing section (content_listing_section) */
+/** Block of type 👨‍👨‍👦‍👦 Content listing section (content_listing_section) */
 export type ContentListingSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3233,8 +3233,10 @@ export type LinkRecord = RecordInterface & {
   id: Scalars['ItemId']['output'];
   internalLinkAuthor?: Maybe<AuthorRecord>;
   internalLinkCategory?: Maybe<CategoryRecord>;
+  internalLinkCollection?: Maybe<CollectionPageRecord>;
   internalLinkPage?: Maybe<PageRecord>;
   internalLinkPost?: Maybe<PostRecord>;
+  internalLinkProduct?: Maybe<ProductPageRecord>;
   openInNewTab: Scalars['BooleanType']['output'];
   typeContent?: Maybe<Scalars['String']['output']>;
 };
