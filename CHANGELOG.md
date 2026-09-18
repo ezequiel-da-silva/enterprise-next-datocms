@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.35.0...next-dato-v0.36.0) (2026-09-18)
+
+
+### Features
+
+* **datocms:** add internal link support for product and collection pages ([07eccff](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/07eccfff769583740c55d00907703e620e52d158))
+
 ## [0.35.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.34.0...next-dato-v0.35.0) (2026-09-18)
 
 
