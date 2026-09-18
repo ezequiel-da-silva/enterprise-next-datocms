@@ -170,6 +170,24 @@ export type StorefrontCollection = {
   products: StorefrontCollectionProduct[];
 };
 
+const COLLECTION_PRODUCT_FIELDS = `
+  title
+  handle
+  availableForSale
+  featuredImage {
+    url
+    altText
+    width
+    height
+  }
+  priceRange {
+    minVariantPrice {
+      amount
+      currencyCode
+    }
+  }
+`;
+
 const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
   query CollectionByHandle($handle: String!) {
     collection(handle: $handle) {
@@ -184,22 +202,18 @@ const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
       }
       products(first: 50) {
         nodes {
-          title
-          handle
-          availableForSale
-          featuredImage {
-            url
-            altText
-            width
-            height
-          }
-          priceRange {
-            minVariantPrice {
-              amount
-              currencyCode
-            }
-          }
+          ${COLLECTION_PRODUCT_FIELDS}
         }
+      }
+    }
+  }
+`;
+
+const PRODUCTS_QUERY = /* GraphQL */ `
+  query StorefrontProducts {
+    products(first: 50) {
+      nodes {
+        ${COLLECTION_PRODUCT_FIELDS}
       }
     }
   }
@@ -293,4 +307,58 @@ export async function getStorefrontCollectionByHandle(
   } catch {
     return null;
   }
+}
+
+export async function getStorefrontProducts(): Promise<StorefrontCollectionProduct[]> {
+  const shop = shopDomain();
+  const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
+  if (!shop || !token) return [];
+
+  const url = `https://${shop}/api/${STOREFRONT_API_VERSION}/graphql.json`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...storefrontAuthHeaders(token),
+      },
+      body: JSON.stringify({ query: PRODUCTS_QUERY }),
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { products?: { nodes?: unknown } } };
+    const nodes = json.data?.products?.nodes;
+    if (!Array.isArray(nodes)) return [];
+    return nodes
+      .map(mapCollectionProduct)
+      .filter((product): product is StorefrontCollectionProduct => product !== null);
+  } catch {
+    return [];
+  }
+}
+
+export async function getStorefrontProductsByHandles(
+  handles: string[],
+): Promise<StorefrontCollectionProduct[]> {
+  const unique = [...new Set(handles.map((handle) => handle.trim()).filter(Boolean))];
+  if (unique.length === 0) return [];
+  const cards = await Promise.all(unique.map((handle) => getStorefrontProductByHandle(handle)));
+  const byHandle = new Map(
+    cards
+      .filter((product): product is StorefrontProduct => product !== null)
+      .map((product) => [
+        product.handle,
+        {
+          handle: product.handle,
+          title: product.title,
+          availableForSale: product.availableForSale,
+          featuredImage: product.featuredImage,
+          priceRange: product.priceRange,
+        } satisfies StorefrontCollectionProduct,
+      ]),
+  );
+  return unique.flatMap((handle) => {
+    const card = byHandle.get(handle);
+    return card ? [card] : [];
+  });
 }

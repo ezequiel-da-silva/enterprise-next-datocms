@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
+import type { ProductsListingCatalog } from "@/lib/datocms/resolve-products-section";
 import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
@@ -8,7 +9,7 @@ import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type {
   CtaBannerBlockRecord,
   FeatureGridRecord,
-  BlogPostsSectionBlockRecord,
+  ContentListingSectionBlockRecord,
   PageStructuredTextBlock,
   PricingSectionBlockRecord,
   ReviewsSectionBlockRecord,
@@ -34,9 +35,9 @@ import { TextSectionBlock } from "@/components/sections/text-section-block";
 import { ContactFormSectionBlock } from "@/components/sections/contact-form-section-block";
 import { SearchSectionBlock } from "@/components/sections/search-section-block";
 import {
-  BlogPostsSectionBlock,
-  BlogPostsSectionFallback,
-} from "@/components/sections/blog-posts-section-block";
+  ContentListingSectionBlock,
+  ContentListingSectionFallback,
+} from "@/components/sections/content-listing-section-block";
 import { FaqGroupBlock } from "@/components/patterns/faq-group-block";
 import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
@@ -56,6 +57,7 @@ type StructuredTextBlockViewProps = {
     formData: FormData,
   ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
+  productsCatalog?: ProductsListingCatalog | Promise<ProductsListingCatalog>;
   searchQuery?: string;
   searchFormAction?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
@@ -158,6 +160,7 @@ export function StructuredTextBlockView({
   submitUserReview,
   submitContact,
   latestPostsCatalog,
+  productsCatalog,
   searchQuery,
   searchFormAction,
   searchResults,
@@ -268,17 +271,21 @@ export function StructuredTextBlockView({
           results={searchResults}
         />
       );
-    case "BlogPostsSectionRecord":
+    case "ContentListingSectionRecord":
       return (
         <Suspense
           fallback={
-            <BlogPostsSectionFallback locale={locale} record={record as BlogPostsSectionBlockRecord} />
+            <ContentListingSectionFallback
+              locale={locale}
+              record={record as ContentListingSectionBlockRecord}
+            />
           }
         >
-          <BlogPostsSectionBlock
-            record={record as BlogPostsSectionBlockRecord}
+          <ContentListingSectionBlock
+            record={record as ContentListingSectionBlockRecord}
             locale={locale}
-            catalog={latestPostsCatalog}
+            blogCatalog={latestPostsCatalog}
+            productsCatalog={productsCatalog}
           />
         </Suspense>
       );

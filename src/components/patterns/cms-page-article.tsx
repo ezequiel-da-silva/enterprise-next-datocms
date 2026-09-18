@@ -9,6 +9,7 @@ import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { buildPageWebPageJsonLd, type PageJsonLdType } from "@/lib/seo/build-page-webpage-jsonld";
 import { buildSearchPageJsonLd } from "@/lib/seo/build-search-jsonld";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
+import type { ProductsListingCatalog } from "@/lib/datocms/resolve-products-section";
 import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1, resolveVisiblePageTitle } from "@/lib/datocms/hero-first-block";
@@ -27,6 +28,7 @@ type CmsPageArticleProps = {
     formData: FormData,
   ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
+  productsCatalog?: ProductsListingCatalog | Promise<ProductsListingCatalog>;
   jsonLdPageType?: PageJsonLdType;
   searchQuery?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
@@ -40,6 +42,7 @@ export async function CmsPageArticle({
   submitUserReview,
   submitContact,
   latestPostsCatalog,
+  productsCatalog,
   jsonLdPageType = "WebPage",
   searchQuery,
   searchResults,
@@ -113,6 +116,7 @@ export async function CmsPageArticle({
             submitUserReview={submitUserReview}
             submitContact={submitContact}
             latestPostsCatalog={latestPostsCatalog}
+            productsCatalog={productsCatalog}
             searchQuery={searchQuery}
             searchFormAction={canonicalPath}
             searchResults={searchResults}

@@ -3,6 +3,10 @@ import { submitContact } from "@/app/actions/contact";
 import { submitUserReview } from "@/app/actions/submit-user-review";
 import { isAppLocale, toDatoSiteLocale, type AppLocale } from "@/constants/i18n";
 import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
+import {
+  contentNeedsProductsCatalog,
+  loadProductsListingCatalog,
+} from "@/infra/datocms/get-product-pages";
 import { blogIndexPath, getBlogIndexPage } from "@/infra/datocms/get-blog-index-page";
 import {
   contactPagePath,
@@ -154,6 +158,9 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
     ? loadLatestPostsCatalog(toDatoSiteLocale(locale), isEnabled)
     : undefined;
+  const productsCatalog = contentNeedsProductsCatalog(page.contentPage)
+    ? loadProductsListingCatalog(page.contentPage, locale, isEnabled)
+    : undefined;
 
   const configuredContactPage = await getContactPage(locale, isEnabled);
   const query = contentNeedsSearchResults(page.contentPage)
@@ -170,6 +177,7 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
       submitUserReview={submitUserReview}
       submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
+      productsCatalog={productsCatalog}
       jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
       searchQuery={query || undefined}
       searchResults={searchResults}

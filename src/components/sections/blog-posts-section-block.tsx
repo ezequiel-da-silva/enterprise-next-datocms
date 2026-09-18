@@ -4,7 +4,7 @@ import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import { BlogPostsInteractive } from "@/components/sections/blog-posts-interactive";
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog, PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
-import type { BlogPostsSectionBlockRecord } from "@/infra/datocms/types-page";
+import type { ContentListingSectionBlockRecord } from "@/infra/datocms/types-page";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import {
   categoriesWithPosts,
@@ -17,7 +17,7 @@ import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolv
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 
 type BlogPostsSectionBlockProps = {
-  record: BlogPostsSectionBlockRecord;
+  record: ContentListingSectionBlockRecord;
   locale: AppLocale;
   catalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
 };
@@ -36,7 +36,7 @@ export function BlogPostsSectionFallback({
   record,
 }: {
   locale: AppLocale;
-  record: BlogPostsSectionBlockRecord;
+  record: ContentListingSectionBlockRecord;
 }) {
   const copy = latestPostsCopy(locale);
   const header = textHeaderFromRecord(record as Record<string, unknown>);
@@ -104,8 +104,6 @@ export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPos
     options.categoryDisplay === "selected" ? postsInCategories(posts, categories.map((c) => c.id)) : posts;
 
   const chips = categoriesWithPosts(categories, dataset);
-
-  if (dataset.length === 0 && !header.title && !header.description) return null;
 
   const headingId = `latest-posts-${record.id}`;
   const showCategoryBar = options.categoryDisplay !== "none" && chips.length > 0;

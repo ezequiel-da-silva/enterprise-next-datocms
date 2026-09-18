@@ -1,5 +1,5 @@
 /**
- * Blog posts section (`blog_posts_section`).
+ * Opções específicas de Blog no `content_listing_section`.
  *
  * | Campo                 | API key                | Default                         |
  * |-----------------------|------------------------|---------------------------------|
@@ -26,13 +26,21 @@
  * CDA. Follow-up: integer `view_count` via Plausible/GA4/Vercel Analytics.
  */
 import type { PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-blog";
-import { readCdaArray, readCdaBool, readCdaString, readCdaStringForLogic } from "@/lib/datocms/cda-field";
-import { resolveCarouselSetting, type CarouselSetting } from "@/lib/datocms/resolve-carousel-setting";
+import { readCdaArray, readCdaString } from "@/lib/datocms/cda-field";
+import {
+  CONTENT_LISTING_DEFAULTS,
+  readContentListingFilterDisplay,
+  resolveContentListingOptions,
+  type ContentListingDisplayType,
+  type ContentListingFetchMode,
+  type ContentListingFilterDisplay,
+} from "@/lib/datocms/resolve-content-listing-section";
+import type { CarouselSetting } from "@/lib/datocms/resolve-carousel-setting";
 
-export type LatestPostsFetchMode = "auto" | "manual";
-export type LatestPostsCategoryDisplay = "all" | "selected" | "none";
+export type LatestPostsFetchMode = ContentListingFetchMode;
+export type LatestPostsCategoryDisplay = ContentListingFilterDisplay;
 export type LatestPostsSort = "newest" | "oldest" | "popular";
-export type BlogPostsDisplayType = "grid" | "carousel" | "pagination" | "load_more";
+export type BlogPostsDisplayType = ContentListingDisplayType;
 
 export type LatestPostsOptions = {
   fetchMode: LatestPostsFetchMode;
@@ -49,14 +57,14 @@ export type LatestPostsOptions = {
 };
 
 export const LATEST_POSTS_DEFAULTS = {
-  fetchMode: "auto",
-  categoryDisplay: "all",
+  fetchMode: CONTENT_LISTING_DEFAULTS.fetchMode,
+  categoryDisplay: CONTENT_LISTING_DEFAULTS.filterDisplay,
   showSortTabs: true,
-  hasLimit: false,
-  limit: 6,
-  displayType: "grid",
-  initialCount: 6,
-  loadMoreStep: 3,
+  hasLimit: CONTENT_LISTING_DEFAULTS.hasLimit,
+  limit: CONTENT_LISTING_DEFAULTS.limit,
+  displayType: CONTENT_LISTING_DEFAULTS.displayType,
+  initialCount: CONTENT_LISTING_DEFAULTS.initialCount,
+  loadMoreStep: CONTENT_LISTING_DEFAULTS.loadMoreStep,
 } as const satisfies Pick<
   LatestPostsOptions,
   | "fetchMode"
@@ -69,9 +77,6 @@ export const LATEST_POSTS_DEFAULTS = {
   | "loadMoreStep"
 >;
 
-const MIN_LIMIT = 1;
-const MAX_LIMIT = 100;
-
 function readOptionalBool(record: Record<string, unknown>, camel: string, snake: string): boolean | undefined {
   const raw = record[camel] ?? record[snake];
   if (raw === true) return true;
@@ -79,77 +84,25 @@ function readOptionalBool(record: Record<string, unknown>, camel: string, snake:
   return undefined;
 }
 
-function readOptionalNumber(record: Record<string, unknown>, camel: string, snake: string): number | undefined {
-  const raw = record[camel] ?? record[snake];
-  const value = typeof raw === "number" ? raw : typeof raw === "string" ? Number(raw) : Number.NaN;
-  return Number.isFinite(value) ? value : undefined;
-}
-
-function clampCount(value: number | undefined, fallback: number): number {
-  if (value == null) return fallback;
-  return Math.min(MAX_LIMIT, Math.max(MIN_LIMIT, Math.round(value)));
-}
-
-function parseDisplayType(raw: string): BlogPostsDisplayType {
-  const value = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
-  if (value === "carousel" || value.includes("carross") || value.includes("carrus")) return "carousel";
-  if (value === "pagination" || value.includes("pagin")) return "pagination";
-  if (value === "load_more" || value.includes("load") || value.includes("carregar")) return "load_more";
-  return "grid";
-}
-
-function parseFetchMode(raw: string): LatestPostsFetchMode {
-  const value = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
-  if (value === "manual" || value.includes("manual") || value.includes("curad")) {
-    return "manual";
-  }
-  return "auto";
-}
-
-function parseCategoryDisplay(raw: string): LatestPostsCategoryDisplay {
-  const value = raw.trim().toLowerCase().replace(/[\s-]+/g, "_");
-  if (value === "none" || value.includes("none") || value.includes("nenhum") || value.includes("ocult")) {
-    return "none";
-  }
-  if (
-    value === "selected" ||
-    value.includes("selected") ||
-    value.includes("selecion") ||
-    value.includes("escolhid")
-  ) {
-    return "selected";
-  }
-  return "all";
-}
-
 export function resolveLatestPostsOptions(
   record: Record<string, unknown>,
   fallbackAllLabel: string,
   fallbackLoadMoreLabel = "Load more posts",
 ): LatestPostsOptions {
-  const fetchRaw = readCdaStringForLogic(record, "fetchMode", "fetch_mode");
-  const displayRaw = readCdaStringForLogic(record, "categoryDisplay", "category_display");
+  const shared = resolveContentListingOptions(record, fallbackLoadMoreLabel);
   const cmsAllLabel = readCdaString(record, "allCategoriesLabel", "all_categories_label");
-  const displayTypeRaw = readCdaStringForLogic(record, "displayType", "display_type");
-  const loadMoreLabel = readCdaString(record, "loadMoreLabel", "load_more_label");
 
   return {
-    fetchMode: fetchRaw ? parseFetchMode(fetchRaw) : LATEST_POSTS_DEFAULTS.fetchMode,
-    categoryDisplay: displayRaw ? parseCategoryDisplay(displayRaw) : LATEST_POSTS_DEFAULTS.categoryDisplay,
+    fetchMode: shared.fetchMode,
+    categoryDisplay: readContentListingFilterDisplay(record),
     showSortTabs: readOptionalBool(record, "showSortTabs", "show_sort_tabs") ?? LATEST_POSTS_DEFAULTS.showSortTabs,
-    hasLimit: readCdaBool(record, "hasLimit", "has_limit"),
-    limit: clampCount(readOptionalNumber(record, "limit", "limit"), LATEST_POSTS_DEFAULTS.limit),
-    displayType: displayTypeRaw ? parseDisplayType(displayTypeRaw) : LATEST_POSTS_DEFAULTS.displayType,
-    initialCount: clampCount(
-      readOptionalNumber(record, "initialCount", "initial_count"),
-      LATEST_POSTS_DEFAULTS.initialCount,
-    ),
-    loadMoreStep: clampCount(
-      readOptionalNumber(record, "loadMoreStep", "load_more_step"),
-      LATEST_POSTS_DEFAULTS.loadMoreStep,
-    ),
-    loadMoreLabel: loadMoreLabel || fallbackLoadMoreLabel,
-    carousel: resolveCarouselSetting(record.carouselOptions ?? record.carousel_options),
+    hasLimit: shared.hasLimit,
+    limit: shared.limit,
+    displayType: shared.displayType,
+    initialCount: shared.initialCount,
+    loadMoreStep: shared.loadMoreStep,
+    loadMoreLabel: shared.loadMoreLabel,
+    carousel: shared.carousel,
     allCategoriesLabel: cmsAllLabel || fallbackAllLabel,
   };
 }
@@ -282,5 +235,5 @@ export function filterSortLimitPosts(
     return sorted;
   }
 
-  return sorted.slice(0, Math.max(MIN_LIMIT, Math.min(MAX_LIMIT, limit)));
+  return sorted.slice(0, Math.max(1, Math.min(100, limit)));
 }

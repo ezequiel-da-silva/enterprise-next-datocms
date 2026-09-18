@@ -530,10 +530,11 @@ const POST_CARD_FIELDS = `
   }
 `;
 
-/** Blog posts section — listagem filtrável (`BlogPostsSectionRecord`). @see fragments/blog-posts-section.graphql */
-const BLOG_POSTS_SECTION_BLOCK = `
-  ... on BlogPostsSectionRecord {
+/** Listagem Blog/Shopify (`ContentListingSectionRecord`). */
+const CONTENT_LISTING_SECTION_BLOCK = `
+  ... on ContentListingSectionRecord {
     id
+    contentSource
     textHeaderSection {
       ${TEXT_HEADER_FIELDS}
     }
@@ -560,6 +561,13 @@ const BLOG_POSTS_SECTION_BLOCK = `
     }
     manualPosts {
       ${POST_CARD_FIELDS}
+    }
+    sourceCollection {
+      shopifyHandle
+    }
+    selectedProducts {
+      title
+      shopifyHandle
     }
   }
 `;
@@ -720,7 +728,7 @@ const PAGE_CONTENT_BLOCKS = `
   ${TABS_SECTION_BLOCK}
   ${FEATURE_GRID_BLOCK}
   ${TEAM_SECTION_BLOCK}
-  ${BLOG_POSTS_SECTION_BLOCK}
+  ${CONTENT_LISTING_SECTION_BLOCK}
   ${TEXT_SECTION_BLOCK}
   ${CONTACT_FORM_SECTION_BLOCK}
   ${SEARCH_SECTION_BLOCK}
@@ -1282,6 +1290,15 @@ export const LIST_PRODUCT_HANDLES = /* GraphQL */ `
     allProductPages(first: 200, orderBy: _updatedAt_DESC) {
       shopifyHandle
       _updatedAt
+    }
+  }
+`;
+
+export const LIST_PRODUCT_PAGES = /* GraphQL */ `
+  query ListProductPages($locale: SiteLocale!) {
+    allProductPages(locale: $locale, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      title
+      shopifyHandle
     }
   }
 `;

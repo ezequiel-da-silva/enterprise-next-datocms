@@ -1,0 +1,6 @@
+query ListProductPages($locale: SiteLocale!) {
+  allProductPages(locale: $locale, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+    title
+    shopifyHandle
+  }
+}
