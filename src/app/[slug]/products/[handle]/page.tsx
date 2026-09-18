@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: ProductPdpProps): Promise<Met
   const [result, seoResult, storefront] = await Promise.all([
     getProductPageByHandle(locale, handle, isEnabled),
     getSiteSeo(locale, isEnabled),
-    getStorefrontProductByHandle(handle),
+    getStorefrontProductByHandle(handle, locale),
   ]);
   if ("errors" in result || !result.data.productPage) {
     return buildUnavailableMetadata("Product");
@@ -61,7 +61,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
   const [result, catalog, storefront] = await Promise.all([
     getProductPageByHandle(locale, handle, isEnabled),
     getProductsIndexPage(locale, isEnabled),
-    getStorefrontProductByHandle(handle),
+    getStorefrontProductByHandle(handle, locale),
   ]);
 
   if ("errors" in result || !result.data.productPage) {

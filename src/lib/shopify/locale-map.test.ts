@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { pickShopifyLocale, translationValue } from "@/lib/shopify/locale-map";
+import { pickShopifyLocale, shopifyCountryFromLocale, translationValue } from "@/lib/shopify/locale-map";
 
 describe("pickShopifyLocale", () => {
   it("prefers pt-BR when the shop publishes it", () => {
@@ -12,6 +12,14 @@ describe("pickShopifyLocale", () => {
 
   it("uses the first candidate when shop locales are unknown", () => {
     expect(pickShopifyLocale([], ["pt", "pt-BR"])).toBe("pt");
+  });
+});
+
+describe("shopifyCountryFromLocale", () => {
+  it("maps site locales to Shopify Markets countries", () => {
+    expect(shopifyCountryFromLocale("en")).toBe("US");
+    expect(shopifyCountryFromLocale("pt")).toBe("BR");
+    expect(shopifyCountryFromLocale("es")).toBe("ES");
   });
 });
 

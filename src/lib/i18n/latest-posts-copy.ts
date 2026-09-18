@@ -26,6 +26,7 @@ export type LatestPostsCopy = {
   previousSlide: string;
   nextSlide: string;
   goToSlide: (slide: number) => string;
+  position: (slide: number, total: number) => string;
   pause: string;
   play: string;
   reducedMotion: string;
@@ -53,6 +54,7 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     previousSlide: "Previous posts",
     nextSlide: "Next posts",
     goToSlide: (slide) => `Go to slide ${slide}`,
+    position: (slide, total) => `${slide} / ${total}`,
     pause: "Pause carousel",
     play: "Play carousel",
     reducedMotion: "Autoplay disabled due to reduced motion preference",
@@ -78,6 +80,7 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     previousSlide: "Artigos anteriores",
     nextSlide: "Próximos artigos",
     goToSlide: (slide) => `Ir para o slide ${slide}`,
+    position: (slide, total) => `${slide} / ${total}`,
     pause: "Pausar carrossel",
     play: "Reproduzir carrossel",
     reducedMotion: "Autoplay desativado pela preferência de movimento reduzido",
@@ -103,6 +106,7 @@ export const LATEST_POSTS_COPY: Record<AppLocale, LatestPostsCopy> = {
     previousSlide: "Artículos anteriores",
     nextSlide: "Artículos siguientes",
     goToSlide: (slide) => `Ir a la diapositiva ${slide}`,
+    position: (slide, total) => `${slide} / ${total}`,
     pause: "Pausar carrusel",
     play: "Reproducir carrusel",
     reducedMotion: "Reproducción automática desactivada por la preferencia de movimiento reducido",

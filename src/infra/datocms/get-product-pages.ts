@@ -57,18 +57,21 @@ export async function loadProductsListingCatalog(
       const options = resolveProductsSectionOptions(block);
       if (options.fetchMode === "manual") {
         const selected = readProductPageCards(block, "selectedProducts", "selected_products");
-        const products = await getStorefrontProductsByHandles(selected.map((page) => page.handle));
+        const products = await getStorefrontProductsByHandles(
+          selected.map((page) => page.handle),
+          locale,
+        );
         return [block.id, overlayDatoTitles(products, selected)] as const;
       }
 
       if (options.filterDisplay === "selected") {
         const collectionHandle = autoSourceCollectionHandle(block, options.filterDisplay);
         if (!collectionHandle) return [block.id, []] as const;
-        const collection = await getStorefrontCollectionByHandle(collectionHandle);
+        const collection = await getStorefrontCollectionByHandle(collectionHandle, locale);
         return [block.id, publishedStorefrontProducts(collection?.products ?? [], pages)] as const;
       }
 
-      const products = await getStorefrontProducts();
+      const products = await getStorefrontProducts(locale);
       return [block.id, publishedStorefrontProducts(products, pages)] as const;
     }),
   );

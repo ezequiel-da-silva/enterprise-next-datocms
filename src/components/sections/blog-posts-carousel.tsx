@@ -176,23 +176,29 @@ export function BlogPostsCarousel({ posts, locale, headingLevel, setting }: Blog
           ) : <span />}
 
           {setting.showDots ? (
-            <div className="flex flex-wrap justify-center gap-2">
-              {Array.from({ length: snapCount }, (_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  className={cn(
-                    "touch-target cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring after:block after:h-2.5 after:rounded-full",
-                    index === selectedIndex
-                      ? "after:w-7 after:bg-foreground"
-                      : "after:w-2.5 after:bg-muted-foreground",
-                  )}
-                  aria-label={copy.goToSlide(index + 1)}
-                  aria-current={index === selectedIndex ? "true" : undefined}
-                  onClick={() => emblaApi?.scrollTo(index)}
-                />
-              ))}
-            </div>
+            snapCount <= 7 ? (
+              <div className="flex flex-wrap justify-center gap-2">
+                {Array.from({ length: snapCount }, (_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    className={cn(
+                      "touch-target cursor-pointer rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring after:block after:h-2.5 after:rounded-full",
+                      index === selectedIndex
+                        ? "after:w-7 after:bg-foreground"
+                        : "after:w-2.5 after:bg-muted-foreground",
+                    )}
+                    aria-label={copy.goToSlide(index + 1)}
+                    aria-current={index === selectedIndex ? "true" : undefined}
+                    onClick={() => emblaApi?.scrollTo(index)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm tabular-nums text-muted-foreground" aria-hidden>
+                {copy.position(selectedIndex + 1, snapCount)}
+              </p>
+            )
           ) : null}
 
           {setting.autoplay ? (
@@ -212,7 +218,7 @@ export function BlogPostsCarousel({ posts, locale, headingLevel, setting }: Blog
       ) : null}
 
       <p className="sr-only" aria-live={isPlaying ? "off" : "polite"}>
-        {`${selectedIndex + 1} / ${Math.max(snapCount, 1)}`}
+        {copy.position(selectedIndex + 1, Math.max(snapCount, 1))}
       </p>
     </div>
   );
