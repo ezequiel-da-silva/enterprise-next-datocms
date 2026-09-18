@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.34.0...next-dato-v0.35.0) (2026-09-18)
+
+
+### Features
+
+* **shopify:** enhance storefront integration with locale support ([20b3a0c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/20b3a0ca28cd3c963fc9b5452e09021fc3497139))
+
 ## [0.34.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.33.0...next-dato-v0.34.0) (2026-09-18)
 
 
