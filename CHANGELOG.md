@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.33.0...next-dato-v0.34.0) (2026-09-18)
+
+
+### Features
+
+* **cms:** unify content listing section for blog and Shopify ([dbea5a2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/dbea5a2642c9234e52ddf45e3ca71292a47ef2fa))
+
 ## [0.33.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.32.1...next-dato-v0.33.0) (2026-09-17)
 
 
