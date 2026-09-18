@@ -12,6 +12,10 @@ import {
 } from "@/constants/i18n";
 import { contentNeedsLatestPostsCatalog, loadLatestPostsCatalog } from "@/infra/datocms/get-blog";
 import {
+  contentNeedsProductsCatalog,
+  loadProductsListingCatalog,
+} from "@/infra/datocms/get-product-pages";
+import {
   contactPagePath,
   getContactPage,
   isContactPageAliasSlug,
@@ -161,6 +165,9 @@ export default async function DynamicPage({ params, searchParams }: PageProps) {
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
     ? loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
     : undefined;
+  const productsCatalog = contentNeedsProductsCatalog(page.contentPage)
+    ? loadProductsListingCatalog(page.contentPage, cmsLocale, isEnabled)
+    : undefined;
 
   const query = contentNeedsSearchResults(page.contentPage)
     ? readSearchQuery((await searchParams).q)
@@ -176,6 +183,7 @@ export default async function DynamicPage({ params, searchParams }: PageProps) {
       submitUserReview={submitUserReview}
       submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
+      productsCatalog={productsCatalog}
       jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
       searchQuery={query || undefined}
       searchResults={searchResults}

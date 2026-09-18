@@ -1,0 +1,45 @@
+# Listagem editorial unificada: Blog ou Shopify, automática ou manual.
+# Dados globais de posts/produtos são carregados no RSC; este fragmento guarda
+# apenas a configuração e os itens escolhidos no CMS.
+#import "./post-card.graphql"
+#import "./carousel-setting.graphql"
+#import "./text-header.graphql"
+
+fragment ContentListingSectionBlockFragment on ContentListingSectionRecord {
+  id
+  contentSource
+  textHeaderSection {
+    ...TextHeaderBlockFragment
+  }
+  fetchMode
+  allCategoriesLabel
+  categoryDisplay
+  showSortTabs
+  selectedCategories {
+    id
+    categoryName
+    categorySlug
+    categoryColor {
+      hex
+    }
+  }
+  manualPosts {
+    ...PostCardFields
+  }
+  sourceCollection {
+    shopifyHandle
+  }
+  selectedProducts {
+    title
+    shopifyHandle
+  }
+  hasLimit
+  limit
+  displayType
+  initialCount
+  loadMoreStep
+  loadMoreLabel
+  carouselOptions {
+    ...CarouselSettingBlockFragment
+  }
+}

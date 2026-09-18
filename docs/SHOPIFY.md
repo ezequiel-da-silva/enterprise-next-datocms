@@ -30,8 +30,9 @@ flowchart LR
 | App no **Dev Dashboard** | Client ID + chave secreta; **webhooks** assinados com essa chave |
 | Canal **Headless** | Tokens da Storefront API (público + privado) |
 | Dato `product_page` | `title`, `description`, `seo`; chaves `shopify_handle` + `shopify_product_id` |
-| Dato `collection_page` | Igual, com `shopify_collection_id`. Sem links para produtos. Grelha: Storefront |
+| Dato `collection_page` | Igual, com `shopify_collection_id`. Sem links para produtos. Grelha da PLP: Storefront |
 | Page de catálogo | Global settings `products_page` e `collections_page` |
+| Bloco `content_listing_section` | Fonte Blog/Shopify; Shopify automático usa `category_display` (`all`/`selected`/`none`) e `source_collection` só em `selected`. Preço/imagem: Storefront |
 | Next PDP / PLP | RSC: copy/SEO Dato + Storefront no **servidor** |
 | Dato → Shopify | `title` + `description`: EN no produto; PT/ES na Translations API |
 
@@ -168,6 +169,8 @@ O `product_page` tem `title`, `description`, `seo`, `shopify_handle` e `shopify_
 - **Create** Shopify → Dato: `title` e `description` nos 3 locales = copy EN. Handles `frontpage` / `home-page` não criam `collection_page`.
 - **Update** Shopify → Dato: `title.en` / `description.en` só se mudou; `pt-BR`/`es` só via Translations. Locales vazios mantêm-se no payload CMA.
 - URLs: `/{locale}/products/{handle}` e `/{locale}/collections/{handle}`. Produtos da coleção: Storefront, não links no Dato.
+- Listagem em landing/páginas: bloco modular **Content listing section**. Escolha `content_source=shopify`, depois `fetch_mode=auto` e `category_display`: `all`/`none` = catálogo; `selected` = `source_collection`. Manual usa `selected_products`. A mesma secção usa `content_source=blog` para posts/categorias.
+- Não alargar as fichas com galeria, preço ou tags.
 
 ### 4b. Dato ↔ Shopify (título e descrição EN / PT / ES)
 

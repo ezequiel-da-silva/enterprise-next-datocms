@@ -76,9 +76,9 @@ export type TabItemBlockRecord = TabsSectionBlockRecord["tabs"][number];
 export type TeamSectionBlockRecord = Extract<PageContentBlock, { __typename: "TeamSectionRecord" }>;
 export type TeamSectionMemberRecord = TeamSectionBlockRecord["members"][number];
 
-export type BlogPostsSectionBlockRecord = Extract<
+export type ContentListingSectionBlockRecord = Extract<
   PageContentBlock,
-  { __typename: "BlogPostsSectionRecord" }
+  { __typename: "ContentListingSectionRecord" }
 >;
 
 export type TextSectionBlockRecord = Extract<PageContentBlock, { __typename: "TextSectionRecord" }>;

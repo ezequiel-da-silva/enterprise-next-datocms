@@ -180,45 +180,6 @@ export type BannerImageBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
-/** Block of type 🗞️ Blog posts section (blog_posts_section) */
-export type BlogPostsSectionRecord = RecordInterface & {
-  __typename?: 'BlogPostsSectionRecord';
-  _createdAt: Scalars['DateTime']['output'];
-  /** Editing URL */
-  _editingUrl?: Maybe<Scalars['String']['output']>;
-  _firstPublishedAt: Scalars['DateTime']['output'];
-  _isValid: Scalars['BooleanType']['output'];
-  _modelApiKey: Scalars['String']['output'];
-  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
-  _publishedAt: Scalars['DateTime']['output'];
-  /** Generates SEO and Social card meta tags to be used in your frontend */
-  _seoMetaTags: Array<Tag>;
-  _status: ItemStatus;
-  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
-  _updatedAt: Scalars['DateTime']['output'];
-  allCategoriesLabel?: Maybe<Scalars['String']['output']>;
-  carouselOptions: Array<CarouselSettingRecord>;
-  categoryDisplay?: Maybe<Scalars['String']['output']>;
-  displayType?: Maybe<Scalars['String']['output']>;
-  fetchMode?: Maybe<Scalars['String']['output']>;
-  hasLimit: Scalars['BooleanType']['output'];
-  id: Scalars['ItemId']['output'];
-  initialCount?: Maybe<Scalars['IntType']['output']>;
-  limit?: Maybe<Scalars['IntType']['output']>;
-  loadMoreLabel?: Maybe<Scalars['String']['output']>;
-  loadMoreStep?: Maybe<Scalars['IntType']['output']>;
-  manualPosts: Array<PostRecord>;
-  selectedCategories: Array<CategoryRecord>;
-  showSortTabs: Scalars['BooleanType']['output'];
-  textHeaderSection: Array<TextHeaderRecord>;
-};
-
-
-/** Block of type 🗞️ Blog posts section (blog_posts_section) */
-export type BlogPostsSectionRecord_SeoMetaTagsArgs = {
-  locale?: InputMaybe<SiteLocale>;
-};
-
 /** Specifies how to filter Boolean fields */
 export type BooleanFilter = {
   /** Search for records with an exact match */
@@ -682,6 +643,48 @@ export type ContactFormSectionRecord = RecordInterface & {
 
 /** Block of type ☎️ Contact form section (contact_form_section) */
 export type ContactFormSectionRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+/** Block of type Content listing section (content_listing_section) */
+export type ContentListingSectionRecord = RecordInterface & {
+  __typename?: 'ContentListingSectionRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  allCategoriesLabel?: Maybe<Scalars['String']['output']>;
+  carouselOptions: Array<CarouselSettingRecord>;
+  categoryDisplay?: Maybe<Scalars['String']['output']>;
+  contentSource?: Maybe<Scalars['String']['output']>;
+  displayType?: Maybe<Scalars['String']['output']>;
+  fetchMode?: Maybe<Scalars['String']['output']>;
+  hasLimit: Scalars['BooleanType']['output'];
+  id: Scalars['ItemId']['output'];
+  initialCount?: Maybe<Scalars['IntType']['output']>;
+  limit?: Maybe<Scalars['IntType']['output']>;
+  loadMoreLabel?: Maybe<Scalars['String']['output']>;
+  loadMoreStep?: Maybe<Scalars['IntType']['output']>;
+  manualPosts: Array<PostRecord>;
+  selectedCategories: Array<CategoryRecord>;
+  selectedProducts: Array<ProductPageRecord>;
+  showSortTabs: Scalars['BooleanType']['output'];
+  sourceCollection?: Maybe<CollectionPageRecord>;
+  textHeaderSection: Array<TextHeaderRecord>;
+};
+
+
+/** Block of type Content listing section (content_listing_section) */
+export type ContentListingSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -3545,7 +3548,7 @@ export type OrientationFilter = {
   neq?: InputMaybe<UploadOrientation>;
 };
 
-export type PageModelContentPageField = BlogPostsSectionRecord | ContactFormSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | SearchSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
+export type PageModelContentPageField = ContactFormSectionRecord | ContentListingSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | SearchSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord;
 
 export type PageModelContentPageFieldListListNonNullMultiLocaleField = {
   __typename?: 'PageModelContentPageFieldListListNonNullMultiLocaleField';
@@ -3755,7 +3758,7 @@ export type PostModelOrderBy =
   | 'postTitle_ASC'
   | 'postTitle_DESC';
 
-export type PostModelPostContentBlocksField = BlogPostsSectionRecord | ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord;
+export type PostModelPostContentBlocksField = ContentListingSectionRecord | ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord;
 
 export type PostModelPostContentField = {
   __typename?: 'PostModelPostContentField';

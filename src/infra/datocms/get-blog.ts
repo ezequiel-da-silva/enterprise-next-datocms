@@ -25,6 +25,7 @@ import {
   normalizePostBySlugResult,
 } from "@/infra/datocms/types-blog";
 import { cache } from "react";
+import { readContentListingSource } from "@/lib/datocms/resolve-content-listing-section";
 
 function baseEditingOptions(includeDrafts: boolean) {
   const baseEditingUrl = process.env.NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL;
@@ -213,8 +214,14 @@ export async function loadLatestPostsCatalog(
   };
 }
 
-export function contentNeedsLatestPostsCatalog(blocks: { __typename?: string }[]): boolean {
-  return blocks.some((block) => block.__typename === "BlogPostsSectionRecord");
+export function contentNeedsLatestPostsCatalog(
+  blocks: ({ __typename?: string } & Record<string, unknown>)[],
+): boolean {
+  return blocks.some(
+    (block) =>
+      block.__typename === "ContentListingSectionRecord" &&
+      readContentListingSource(block) === "blog",
+  );
 }
 
 export function getPostBySlug(locale: DatoSiteLocale, slug: string, includeDrafts: boolean) {

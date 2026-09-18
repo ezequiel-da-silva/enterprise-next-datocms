@@ -8,7 +8,7 @@
 #import "./fragments/tabs-section.graphql"
 #import "./fragments/feature-grid.graphql"
 #import "./fragments/team-section.graphql"
-#import "./fragments/blog-posts-section.graphql"
+#import "./fragments/content-listing-section.graphql"
 #import "./fragments/text-header.graphql"
 #import "./fragments/text-section.graphql"
 #import "./fragments/contact-form-section.graphql"
@@ -119,8 +119,8 @@ query PageBySlug($slug: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!
       ... on TeamSectionRecord {
         ...TeamSectionBlockFragment
       }
-      ... on BlogPostsSectionRecord {
-        ...BlogPostsSectionBlockFragment
+      ... on ContentListingSectionRecord {
+        ...ContentListingSectionBlockFragment
       }
       ... on TextSectionRecord {
         ...TextSectionBlockFragment

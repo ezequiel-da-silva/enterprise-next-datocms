@@ -137,7 +137,7 @@ Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --in
 
 O índice do blog é uma `Page` normal: Hero, SEO, título, `content_page` e slug vêm do
 registo selecionado em **Global setting → Blog page**. Para listar artigos, adicione
-`Blog posts section` ao conteúdo dessa Page.
+`Content listing section` ao conteúdo dessa Page e escolha **Content source = Blog**.
 
 - A slug localizada da Page controla apenas o índice (por exemplo, `/pt/noticias`).
 - Artigos, categorias e autores mantêm os URLs estáveis em `/{locale}/blog/*`.
@@ -255,3 +255,13 @@ Passo a passo: [SHOPIFY.md](./SHOPIFY.md).
 `POST /api/webhooks/shopify` faz upsert CMA de `product_page` ou `collection_page`. Coleções `frontpage` / `home-page` são ignoradas. Dato → Shopify: `productUpdate` / `collectionUpdate` + `translationsRegister`. Webhook Dato de revalidate só invalida cache.
 
 Índices: Global settings `products_page` e `collections_page`. PDP `/{locale}/products/{handle}`; PLP `/{locale}/collections/{handle}` (produtos da Storefront).
+
+Nas fichas `product_page` / `collection_page` o editor só mexe em **copy** (`title`, `description`) e **SEO**. Preço, stock, imagens, membership da coleção e checkout ficam na Shopify; `shopify_handle` e IDs não se editam.
+
+Listagens em páginas CMS usam um único bloco **Content listing section** (`content_listing_section`):
+
+- **Content source = Blog**: automático com categorias (todas/selecionadas/ocultas) ou posts manuais.
+- **Content source = Shopify**: automático usa o mesmo `category_display` (`all` / `selected` / `none`). `selected` filtra por `source_collection` e só mostra produtos com `product_page` (evita PDP 404); `all` e `none` listam todos os `product_page` publicados. Manual usa `selected_products`. Uma listagem vazia continua visível.
+- Limite e apresentação (grid, carrossel, paginação, carregar mais) são partilhados.
+
+Preço e imagem dos produtos continuam na Storefront. Não há links produto↔coleção no Dato.
