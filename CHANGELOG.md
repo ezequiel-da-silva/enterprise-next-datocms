@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.36.0...next-dato-v0.37.0) (2026-09-20)
+
+
+### Features
+
+* **cms:** enhance content listing configuration for blog and Shopify ([48fc2b6](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/48fc2b6fef2ed22a1a6af5e518d3050be0ed7bc4))
+
 ## [0.36.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.35.0...next-dato-v0.36.0) (2026-09-18)
 
 
