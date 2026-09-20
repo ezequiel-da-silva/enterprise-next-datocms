@@ -173,6 +173,27 @@ export type StorefrontCollection = {
   products: StorefrontCollectionProduct[];
 };
 
+export type StorefrontCollectionMeta = {
+  handle: string;
+  title: string;
+  image: StorefrontProductImage | null;
+};
+
+const COLLECTION_META_QUERY = /* GraphQL */ `
+  query CollectionMeta($handle: String!, $country: CountryCode!) @inContext(country: $country) {
+    collection(handle: $handle) {
+      handle
+      title
+      image {
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+`;
+
 const COLLECTION_PRODUCT_FIELDS = `
   title
   handle
@@ -317,6 +338,43 @@ export async function getStorefrontCollectionByHandle(
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { collection?: unknown } };
     return mapCollection(json.data?.collection);
+  } catch {
+    return null;
+  }
+}
+
+export async function getStorefrontCollectionMeta(
+  handle: string,
+  locale: AppLocale,
+): Promise<StorefrontCollectionMeta | null> {
+  const shop = shopDomain();
+  const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
+  const trimmed = handle.trim();
+  if (!shop || !token || !trimmed) return null;
+
+  const url = `https://${shop}/api/${STOREFRONT_API_VERSION}/graphql.json`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...storefrontAuthHeaders(token),
+      },
+      body: JSON.stringify({
+        query: COLLECTION_META_QUERY,
+        variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
+      }),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { collection?: unknown } };
+    const record = asRecord(json.data?.collection);
+    if (!record || typeof record.handle !== "string" || typeof record.title !== "string") return null;
+    return {
+      handle: record.handle,
+      title: record.title,
+      image: readImage(record.image),
+    };
   } catch {
     return null;
   }

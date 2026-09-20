@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  readCardCatalogTarget,
+  readCardSource,
   readCardIconJson,
   readFeatureGridCardContent,
   resolveCardLinkRecord,
@@ -42,6 +44,28 @@ describe("resolve-feature-grid-card", () => {
     expect(link?.__typename).toBe("LinkRecord");
   });
 
+  it("defaults card_source to editorial", () => {
+    expect(readCardSource({})).toBe("editorial");
+    expect(readCardSource({ cardSource: "product" })).toBe("product");
+    expect(readCardSource({ card_source: "collection" })).toBe("collection");
+  });
+
+  it("reads a catalog target only when the handle is present", () => {
+    expect(
+      readCardCatalogTarget({
+        cardSource: "product",
+        sourceProduct: { shopifyHandle: "hat", title: "Chapéu" },
+      }),
+    ).toEqual({ source: "product", handle: "hat", title: "Chapéu" });
+    expect(readCardCatalogTarget({ cardSource: "product" })).toBeNull();
+    expect(
+      readCardCatalogTarget({
+        card_source: "collection",
+        source_collection: [{ shopify_handle: "summer", title: "Summer" }],
+      }),
+    ).toEqual({ source: "collection", handle: "summer", title: "Summer" });
+  });
+
   it("readFeatureGridCardContent applies all CARD toggles together", () => {
     const filled = {
       __typename: "CardRecord",
@@ -70,25 +94,27 @@ describe("resolve-feature-grid-card", () => {
     } as unknown as CardRecord;
 
     const shown = readFeatureGridCardContent(filled, "pt");
-    expect(shown.title).toBe("Título");
-    expect(shown.description).toBe("Descrição");
-    expect(shown.icon).toEqual({ prefix: "fas", iconName: "star" });
-    expect(shown.image?.url).toContain("a.jpg");
-    expect(shown.desktopImage?.url).toContain("b.jpg");
-    expect(shown.linkLabel).toBe("Saber mais");
-    expect(shown.link?.id).toBe("link-1");
+    expect(shown?.title).toBe("Título");
+    expect(shown?.description).toBe("Descrição");
+    expect(shown?.icon).toEqual({ prefix: "fas", iconName: "star" });
+    expect(shown?.image?.url).toContain("a.jpg");
+    expect(shown?.desktopImage?.url).toContain("b.jpg");
+    expect(shown?.linkLabel).toBe("Saber mais");
+    expect(shown?.link?.id).toBe("link-1");
+    expect(shown?.source).toBe("editorial");
+    expect(shown?.href).toBeNull();
 
     const hidden = readFeatureGridCardContent(
       { ...filled, hasIcon: false, hasDescription: false, hasImage: false, hasLink: false },
       "pt",
     );
-    expect(hidden.title).toBe("Título");
-    expect(hidden.description).toBe("");
-    expect(hidden.icon).toBeNull();
-    expect(hidden.image).toBeNull();
-    expect(hidden.desktopImage).toBeNull();
-    expect(hidden.link).toBeNull();
-    expect(hidden.linkLabel).toBe("");
+    expect(hidden?.title).toBe("Título");
+    expect(hidden?.description).toBe("");
+    expect(hidden?.icon).toBeNull();
+    expect(hidden?.image).toBeNull();
+    expect(hidden?.desktopImage).toBeNull();
+    expect(hidden?.link).toBeNull();
+    expect(hidden?.linkLabel).toBe("");
   });
 
   it("readFeatureGridCardContent treats empty optional description as blank", () => {
@@ -101,8 +127,91 @@ describe("resolve-feature-grid-card", () => {
       descriptionCard: null,
       hasImage: false,
       hasLink: false,
-    } as CardRecord;
+    } as unknown as CardRecord;
 
-    expect(readFeatureGridCardContent(card, "en").description).toBe("");
+    expect(readFeatureGridCardContent(card, "en")?.description).toBe("");
+  });
+
+  it("omits catalog cards without a handle or Storefront payload", () => {
+    expect(
+      readFeatureGridCardContent(
+        { __typename: "CardRecord", id: "p", cardSource: "product" } as unknown as CardRecord,
+        "en",
+      ),
+    ).toBeNull();
+    expect(
+      readFeatureGridCardContent(
+        {
+          __typename: "CardRecord",
+          id: "p2",
+          cardSource: "product",
+          sourceProduct: { shopifyHandle: "hat", title: "Chapéu" },
+        } as unknown as CardRecord,
+        "en",
+        { products: {}, collections: {} },
+      ),
+    ).toBeNull();
+  });
+
+  it("fills product and collection cards from the catalog", () => {
+    const product = readFeatureGridCardContent(
+      {
+        __typename: "CardRecord",
+        id: "p",
+        cardSource: "product",
+        sourceProduct: { shopifyHandle: "hat", title: "Chapéu" },
+        hasDescription: true,
+        descriptionCard: "Lã merino",
+      } as unknown as CardRecord,
+      "pt",
+      {
+        products: {
+          hat: {
+            handle: "hat",
+            title: "Hat",
+            availableForSale: true,
+            featuredImage: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
+            priceRange: { minVariantPrice: { amount: "19.00", currencyCode: "BRL" } },
+          },
+        },
+        collections: {},
+      },
+    );
+    expect(product).toMatchObject({
+      source: "product",
+      title: "Chapéu",
+      description: "Lã merino",
+      href: "/pt/products/hat",
+      priceLabel: expect.stringMatching(/19/),
+    });
+    expect(product?.catalogImage?.url).toContain("hat.jpg");
+    expect(product?.link).toBeNull();
+
+    const collection = readFeatureGridCardContent(
+      {
+        __typename: "CardRecord",
+        id: "c",
+        card_source: "collection",
+        source_collection: { shopify_handle: "summer", title: "Verão" },
+      } as unknown as CardRecord,
+      "en",
+      {
+        products: {},
+        collections: {
+          summer: {
+            handle: "summer",
+            title: "Summer",
+            image: { url: "https://cdn.shopify.com/summer.jpg", altText: null, width: 600, height: 400 },
+          },
+        },
+      },
+    );
+    expect(collection).toMatchObject({
+      source: "collection",
+      title: "Verão",
+      href: "/en/collections/summer",
+      priceLabel: null,
+    });
+    expect(collection?.catalogImage?.url).toContain("summer.jpg");
   });
 });

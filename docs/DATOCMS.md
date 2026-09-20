@@ -269,4 +269,6 @@ Listagens em páginas CMS usam um único bloco **Content listing section** (`con
 
 O bloco **Link** (`type_content` Product / Collection) liga CTAs internos (Hero, CTA banner, tabs, feature grid, pricing) a `product_page` ou `collection_page` pelo `shopify_handle`. Structured Text já resolvia estes modelos; o header (`navItemLink`) continua a ser um path em texto.
 
+No **Feature GRID**, cada CARD tem `card_source`: editorial (título/imagem/CTA no bloco) ou produto/coleção. Catálogo preenche título (Dato), imagem e href (PDP/PLP) a partir da Storefront; produto mostra preço. Sem handle ou sem Storefront o card é omitido. Isto não substitui o Content listing.
+
 Preço e imagem dos produtos continuam na Storefront. Não há links produto↔coleção no Dato.
