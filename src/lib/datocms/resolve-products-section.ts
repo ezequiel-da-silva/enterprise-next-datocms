@@ -3,9 +3,10 @@
  *
  * | Campo              | API key             | Default                         |
  * |--------------------|---------------------|---------------------------------|
- * | fetch_mode         | fetch_mode          | auto                            |
- * | category_display   | category_display    | all — source_collection só em selected |
- * | selected_products  | selected_products   | só no modo manual               |
+ * | listing_config.fetch_mode | fetch_mode     | auto                            |
+ * | listing_config.collection_filter | collection_filter | auto: all (catálogo) ou selected |
+ * | listing_config.source_collection | source_collection | só com collection_filter=selected |
+ * | listing_config.selected_products | selected_products | só no modo manual       |
  * | has_limit          | has_limit           | false — `limit` só se true      |
  * | limit              | limit               | 6 (clamp 1–100)                 |
  * | display_type       | display_type        | grid                            |
@@ -15,8 +16,8 @@
  * | carousel_options   | carousel_options    | defaults de `carousel_setting`  |
  * | text_header_section| text_header_section | title / description / âncora    |
  *
- * Auto + all/none: product_page publicados ∩ Storefront (`source_collection` ignorado).
- * Auto + selected: coleção Shopify ∩ product_page; sem coleção → lista vazia.
+ * Shopify auto all (`collection_filter=all`): product_page publicados ∩ Storefront.
+ * Shopify selected: coleção Shopify ∩ product_page; sem coleção → lista vazia.
  * Manual: ordem dos links `selected_products`.
  */
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";

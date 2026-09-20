@@ -3,8 +3,8 @@
  *
  * | Campo                 | API key                | Default                         |
  * |-----------------------|------------------------|---------------------------------|
- * | fetch_mode            | fetch_mode             | auto                            |
- * | category_display      | category_display       | all                             |
+ * | listing_config.fetch_mode | fetch_mode          | auto                            |
+ * | listing_config.filter_display | filter_display  | all                             |
  * | show_sort_tabs        | show_sort_tabs         | true (só `false` explícito off) |
  * | has_limit             | has_limit              | false — `limit` só aplica se true |
  * | limit                 | limit                  | 6 (clamp 1–100)                 |
@@ -29,6 +29,7 @@ import type { PostCardRecord, PostCategorySummary } from "@/infra/datocms/types-
 import { readCdaArray, readCdaString } from "@/lib/datocms/cda-field";
 import {
   CONTENT_LISTING_DEFAULTS,
+  readContentListingConfig,
   readContentListingFilterDisplay,
   resolveContentListingOptions,
   type ContentListingDisplayType,
@@ -90,12 +91,14 @@ export function resolveLatestPostsOptions(
   fallbackLoadMoreLabel = "Load more posts",
 ): LatestPostsOptions {
   const shared = resolveContentListingOptions(record, fallbackLoadMoreLabel);
-  const cmsAllLabel = readCdaString(record, "allCategoriesLabel", "all_categories_label");
+  const config = readContentListingConfig(record) ?? record;
+  const cmsAllLabel = readCdaString(config, "allCategoriesLabel", "all_categories_label");
 
   return {
     fetchMode: shared.fetchMode,
     categoryDisplay: readContentListingFilterDisplay(record),
-    showSortTabs: readOptionalBool(record, "showSortTabs", "show_sort_tabs") ?? LATEST_POSTS_DEFAULTS.showSortTabs,
+    showSortTabs:
+      readOptionalBool(config, "showSortTabs", "show_sort_tabs") ?? LATEST_POSTS_DEFAULTS.showSortTabs,
     hasLimit: shared.hasLimit,
     limit: shared.limit,
     displayType: shared.displayType,

@@ -7,31 +7,41 @@
 
 fragment ContentListingSectionBlockFragment on ContentListingSectionRecord {
   id
-  contentSource
   textHeaderSection {
     ...TextHeaderBlockFragment
   }
-  fetchMode
-  allCategoriesLabel
-  categoryDisplay
-  showSortTabs
-  selectedCategories {
-    id
-    categoryName
-    categorySlug
-    categoryColor {
-      hex
+  listingConfig {
+    __typename
+    ... on BlogListingConfigRecord {
+      id
+      fetchMode
+      filterDisplay
+      allCategoriesLabel
+      showSortTabs
+      selectedCategories {
+        id
+        categoryName
+        categorySlug
+        categoryColor {
+          hex
+        }
+      }
+      manualPosts {
+        ...PostCardFields
+      }
     }
-  }
-  manualPosts {
-    ...PostCardFields
-  }
-  sourceCollection {
-    shopifyHandle
-  }
-  selectedProducts {
-    title
-    shopifyHandle
+    ... on ShopifyListingConfigRecord {
+      id
+      fetchMode
+      collectionFilter
+      sourceCollection {
+        shopifyHandle
+      }
+      selectedProducts {
+        title
+        shopifyHandle
+      }
+    }
   }
   hasLimit
   limit

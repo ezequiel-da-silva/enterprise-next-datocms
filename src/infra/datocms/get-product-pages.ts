@@ -16,7 +16,10 @@ import {
   type ProductPageCard,
   type ProductsListingCatalog,
 } from "@/lib/datocms/resolve-products-section";
-import { readContentListingSource } from "@/lib/datocms/resolve-content-listing-section";
+import {
+  readContentListingConfig,
+  readContentListingSource,
+} from "@/lib/datocms/resolve-content-listing-section";
 import { cache } from "react";
 
 type ProductPageRow = { title: string | null; shopifyHandle: string | null };
@@ -55,8 +58,9 @@ export async function loadProductsListingCatalog(
   const entries = await Promise.all(
     listings.map(async (block) => {
       const options = resolveProductsSectionOptions(block);
+      const config = readContentListingConfig(block) ?? block;
       if (options.fetchMode === "manual") {
-        const selected = readProductPageCards(block, "selectedProducts", "selected_products");
+        const selected = readProductPageCards(config, "selectedProducts", "selected_products");
         const products = await getStorefrontProductsByHandles(
           selected.map((page) => page.handle),
           locale,
@@ -65,7 +69,7 @@ export async function loadProductsListingCatalog(
       }
 
       if (options.filterDisplay === "selected") {
-        const collectionHandle = autoSourceCollectionHandle(block, options.filterDisplay);
+        const collectionHandle = autoSourceCollectionHandle(config, options.filterDisplay);
         if (!collectionHandle) return [block.id, []] as const;
         const collection = await getStorefrontCollectionByHandle(collectionHandle, locale);
         return [block.id, publishedStorefrontProducts(collection?.products ?? [], pages)] as const;

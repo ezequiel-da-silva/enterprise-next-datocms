@@ -544,14 +544,42 @@ const POST_CARD_FIELDS = `
 const CONTENT_LISTING_SECTION_BLOCK = `
   ... on ContentListingSectionRecord {
     id
-    contentSource
     textHeaderSection {
       ${TEXT_HEADER_FIELDS}
     }
-    fetchMode
-    allCategoriesLabel
-    categoryDisplay
-    showSortTabs
+    listingConfig {
+      __typename
+      ... on BlogListingConfigRecord {
+        id
+        fetchMode
+        filterDisplay
+        allCategoriesLabel
+        showSortTabs
+        selectedCategories {
+          id
+          categoryName
+          categorySlug
+          categoryColor {
+            hex
+          }
+        }
+        manualPosts {
+          ${POST_CARD_FIELDS}
+        }
+      }
+      ... on ShopifyListingConfigRecord {
+        id
+        fetchMode
+        collectionFilter
+        sourceCollection {
+          shopifyHandle
+        }
+        selectedProducts {
+          title
+          shopifyHandle
+        }
+      }
+    }
     hasLimit
     limit
     displayType
@@ -560,24 +588,6 @@ const CONTENT_LISTING_SECTION_BLOCK = `
     loadMoreLabel
     carouselOptions {
       ${CAROUSEL_SETTING_FIELDS}
-    }
-    selectedCategories {
-      id
-      categoryName
-      categorySlug
-      categoryColor {
-        hex
-      }
-    }
-    manualPosts {
-      ${POST_CARD_FIELDS}
-    }
-    sourceCollection {
-      shopifyHandle
-    }
-    selectedProducts {
-      title
-      shopifyHandle
     }
   }
 `;
@@ -856,7 +866,7 @@ export const GET_ALL_POSTS = /* GraphQL */ `
   }
 `;
 
-/** Categorias para chips da Latest posts section (modo auto / categoryDisplay=all). */
+/** Categorias para chips da listagem Blog (`listingConfig.filterDisplay=all`). */
 export const GET_ALL_CATEGORIES = /* GraphQL */ `
   query GetAllCategories($locale: SiteLocale!) {
     allCategories(locale: $locale, orderBy: categoryName_ASC, first: 100) {

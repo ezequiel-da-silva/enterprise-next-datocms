@@ -13,6 +13,7 @@ import {
   readLatestPostCards,
   resolveLatestPostsOptions,
 } from "@/lib/datocms/resolve-latest-posts-section";
+import { readContentListingConfig } from "@/lib/datocms/resolve-content-listing-section";
 import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 
@@ -76,8 +77,10 @@ export function BlogPostsSectionFallback({
 
 export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPostsSectionBlockProps) {
   const copy = latestPostsCopy(locale);
+  const raw = record as Record<string, unknown>;
+  const config = readContentListingConfig(raw) ?? raw;
   const options = resolveLatestPostsOptions(
-    record as Record<string, unknown>,
+    raw,
     copy.allCategories,
     copy.loadMore,
   );
@@ -86,13 +89,13 @@ export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPos
 
   const posts =
     options.fetchMode === "manual"
-      ? readLatestPostCards(record as Record<string, unknown>, "manualPosts", "manual_posts")
+      ? readLatestPostCards(config, "manualPosts", "manual_posts")
       : usablePosts(resolvedCatalog?.posts ?? []);
 
   const categories =
     options.categoryDisplay === "selected"
       ? readCategorySummariesFromRecord(
-          record as Record<string, unknown>,
+          config,
           "selectedCategories",
           "selected_categories",
         )

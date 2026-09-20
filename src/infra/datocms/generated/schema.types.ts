@@ -180,6 +180,37 @@ export type BannerImageBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 👤 Blog listing configuration (blog_listing_config) */
+export type BlogListingConfigRecord = RecordInterface & {
+  __typename?: 'BlogListingConfigRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  allCategoriesLabel?: Maybe<Scalars['String']['output']>;
+  fetchMode?: Maybe<Scalars['String']['output']>;
+  filterDisplay?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  manualPosts: Array<PostRecord>;
+  selectedCategories: Array<CategoryRecord>;
+  showSortTabs: Scalars['BooleanType']['output'];
+};
+
+
+/** Block of type 👤 Blog listing configuration (blog_listing_config) */
+export type BlogListingConfigRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
 /** Specifies how to filter Boolean fields */
 export type BooleanFilter = {
   /** Search for records with an exact match */
@@ -646,6 +677,8 @@ export type ContactFormSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+export type ContentListingSectionModelListingConfigField = BlogListingConfigRecord | ShopifyListingConfigRecord;
+
 /** Block of type 👨‍👨‍👦‍👦 Content listing section (content_listing_section) */
 export type ContentListingSectionRecord = RecordInterface & {
   __typename?: 'ContentListingSectionRecord';
@@ -662,23 +695,15 @@ export type ContentListingSectionRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
-  allCategoriesLabel?: Maybe<Scalars['String']['output']>;
   carouselOptions: Array<CarouselSettingRecord>;
-  categoryDisplay?: Maybe<Scalars['String']['output']>;
-  contentSource?: Maybe<Scalars['String']['output']>;
   displayType?: Maybe<Scalars['String']['output']>;
-  fetchMode?: Maybe<Scalars['String']['output']>;
   hasLimit: Scalars['BooleanType']['output'];
   id: Scalars['ItemId']['output'];
   initialCount?: Maybe<Scalars['IntType']['output']>;
   limit?: Maybe<Scalars['IntType']['output']>;
+  listingConfig?: Maybe<ContentListingSectionModelListingConfigField>;
   loadMoreLabel?: Maybe<Scalars['String']['output']>;
   loadMoreStep?: Maybe<Scalars['IntType']['output']>;
-  manualPosts: Array<PostRecord>;
-  selectedCategories: Array<CategoryRecord>;
-  selectedProducts: Array<ProductPageRecord>;
-  showSortTabs: Scalars['BooleanType']['output'];
-  sourceCollection?: Maybe<CollectionPageRecord>;
   textHeaderSection: Array<TextHeaderRecord>;
 };
 
@@ -4774,6 +4799,35 @@ export type SeoFieldMultiLocaleField = {
 export type SeoFilter = {
   /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+};
+
+/** Block of type 🗣️ Shopify listing configuration (shopify_listing_config) */
+export type ShopifyListingConfigRecord = RecordInterface & {
+  __typename?: 'ShopifyListingConfigRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  collectionFilter?: Maybe<Scalars['String']['output']>;
+  fetchMode?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+  selectedProducts: Array<ProductPageRecord>;
+  sourceCollection?: Maybe<CollectionPageRecord>;
+};
+
+
+/** Block of type 🗣️ Shopify listing configuration (shopify_listing_config) */
+export type ShopifyListingConfigRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
 };
 
 export type Site = {

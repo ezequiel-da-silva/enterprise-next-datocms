@@ -1,29 +1,208 @@
 import { describe, expect, it } from "vitest";
 import {
   CONTENT_LISTING_DEFAULTS,
+  readBlogPostSelection,
   readContentListingFilterDisplay,
+  readContentListingMode,
   readContentListingSource,
+  readShopifyProductSelection,
   resolveContentListingOptions,
 } from "./resolve-content-listing-section";
 
 describe("readContentListingSource", () => {
-  it("defaults old blog blocks to blog", () => {
+  it("defaults missing configurations to blog", () => {
     expect(readContentListingSource({})).toBe("blog");
   });
 
-  it("reads camelCase, snake_case and CMS labels", () => {
-    expect(readContentListingSource({ contentSource: "shopify" })).toBe("shopify");
+  it("derives the source from the single block type", () => {
+    expect(
+      readContentListingSource({
+        listingConfig: { __typename: "ShopifyListingConfigRecord", fetchMode: "auto" },
+      }),
+    ).toBe("shopify");
+    expect(
+      readContentListingSource({
+        listing_config: { __typename: "BlogListingConfigRecord", fetch_mode: "auto" },
+      }),
+    ).toBe("blog");
+  });
+
+  it("keeps compatibility with legacy source and listing_mode fields", () => {
     expect(readContentListingSource({ content_source: "Shopify products" })).toBe("shopify");
-    expect(readContentListingSource({ content_source: "Blog" })).toBe("blog");
+    expect(readContentListingSource({ listingMode: "shopify_auto_all" })).toBe("shopify");
+    expect(readContentListingSource({ listing_mode: "blog_manual" })).toBe("blog");
+  });
+});
+
+describe("source-specific selections", () => {
+  it("resolves Blog and Shopify nested fetch modes", () => {
+    expect(
+      resolveContentListingOptions(
+        { listingConfig: { __typename: "BlogListingConfigRecord", fetchMode: "manual" } },
+        "More",
+      ),
+    ).toMatchObject({ contentSource: "blog", fetchMode: "manual" });
+
+    expect(
+      resolveContentListingOptions(
+        { listingConfig: { __typename: "ShopifyListingConfigRecord", fetchMode: "auto" } },
+        "More",
+      ),
+    ).toMatchObject({ contentSource: "shopify", fetchMode: "auto" });
+  });
+
+  it("derives compatibility selections from nested configurations", () => {
+    expect(
+      readBlogPostSelection({
+        listingConfig: {
+          __typename: "BlogListingConfigRecord",
+          fetchMode: "auto",
+          filterDisplay: "selected",
+        },
+      }),
+    ).toBe("selected_categories");
+    expect(
+      readBlogPostSelection({
+        listing_config: {
+          __typename: "BlogListingConfigRecord",
+          fetch_mode: "auto",
+          filter_display: "none",
+        },
+      }),
+    ).toBe("no_categories");
+    expect(
+      readShopifyProductSelection({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "selected",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }),
+    ).toBe("collection");
+    expect(
+      readShopifyProductSelection({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "all",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }),
+    ).toBe("all_products");
+    expect(
+      readShopifyProductSelection({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "selected",
+        },
+      }),
+    ).toBe("collection");
+    expect(
+      readShopifyProductSelection({
+        listingConfig: { __typename: "ShopifyListingConfigRecord", fetchMode: "manual" },
+      }),
+    ).toBe("manual");
+  });
+
+  it("keeps reading the previous selector fields", () => {
+    expect(readBlogPostSelection({ blogPostSelection: "selected_categories" })).toBe(
+      "selected_categories",
+    );
+    expect(readShopifyProductSelection({ shopify_product_selection: "manual" })).toBe("manual");
+  });
+
+  it.each([
+    ["blog_auto_all", "blog", "all_categories", "all_products"],
+    ["blog_auto_selected", "blog", "selected_categories", "all_products"],
+    ["blog_auto_none", "blog", "no_categories", "all_products"],
+    ["blog_manual", "blog", "manual", "all_products"],
+    ["shopify_auto_all", "shopify", "all_categories", "all_products"],
+    ["shopify_auto_collection", "shopify", "all_categories", "collection"],
+    ["shopify_manual", "shopify", "all_categories", "manual"],
+  ] as const)(
+    "maps legacy mode %s",
+    (listingMode, contentSource, blogPostSelection, shopifyProductSelection) => {
+      expect(resolveContentListingOptions({ listingMode }, "More")).toMatchObject({
+        contentSource,
+      });
+      expect(readBlogPostSelection({ listingMode })).toBe(blogPostSelection);
+      expect(readShopifyProductSelection({ listingMode })).toBe(shopifyProductSelection);
+      expect(readContentListingMode({ listingMode })).toBe(listingMode);
+    },
+  );
+
+  it("maps legacy Shopify collection configuration", () => {
+    expect(
+      readContentListingMode({
+        content_source: "shopify",
+        fetch_mode: "auto",
+        category_display: "selected",
+      }),
+    ).toBe("shopify_auto_collection");
   });
 });
 
 describe("readContentListingFilterDisplay", () => {
-  it("defaults to all and reads category_display for collections too", () => {
+  it("derives Blog filters and Shopify collection scope from the child", () => {
     expect(readContentListingFilterDisplay({})).toBe("all");
-    expect(readContentListingFilterDisplay({ categoryDisplay: "selected" })).toBe("selected");
-    expect(readContentListingFilterDisplay({ category_display: "Ocultar filtro" })).toBe("none");
-    expect(readContentListingFilterDisplay({ categoryDisplay: "Mostrar todas" })).toBe("all");
+    expect(
+      readContentListingFilterDisplay({
+        listingConfig: {
+          __typename: "BlogListingConfigRecord",
+          fetchMode: "auto",
+          filterDisplay: "selected",
+        },
+      }),
+    ).toBe("selected");
+    expect(
+      readContentListingFilterDisplay({
+        listingConfig: {
+          __typename: "BlogListingConfigRecord",
+          fetchMode: "auto",
+          filterDisplay: "none",
+        },
+      }),
+    ).toBe("none");
+    expect(
+      readContentListingFilterDisplay({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "selected",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }),
+    ).toBe("selected");
+    expect(
+      readContentListingFilterDisplay({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "all",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }),
+    ).toBe("all");
+    expect(
+      readContentListingFilterDisplay({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collection_filter: "selected",
+        },
+      }),
+    ).toBe("selected");
+    expect(
+      readContentListingFilterDisplay({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }),
+    ).toBe("selected");
   });
 });
 describe("resolveContentListingOptions", () => {
@@ -43,23 +222,12 @@ describe("resolveContentListingOptions", () => {
     });
   });
 
-  it.each([
-    ["blog", "auto"],
-    ["blog", "manual"],
-    ["shopify", "auto"],
-    ["shopify", "manual"],
-  ] as const)("resolves %s + %s", (contentSource, fetchMode) => {
-    expect(resolveContentListingOptions({ contentSource, fetchMode }, "More")).toMatchObject({
-      contentSource,
-      fetchMode,
-    });
-  });
-
   it("normalizes display labels and clamps shared counts", () => {
     expect(
       resolveContentListingOptions(
         {
-          fetch_mode: "Seleção manual",
+          content_source: "blog",
+          blog_post_selection: "manual",
           display_type: "Carregar mais",
           limit: 0,
           initial_count: 500,

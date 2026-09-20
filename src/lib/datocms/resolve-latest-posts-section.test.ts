@@ -21,18 +21,20 @@ describe("resolveLatestPostsOptions", () => {
     expect(
       resolveLatestPostsOptions(
         {
-          fetchMode: "manual",
-          categoryDisplay: "selected",
-          showSortTabs: false,
+          listingConfig: {
+            __typename: "BlogListingConfigRecord",
+            fetchMode: "manual",
+            showSortTabs: false,
+            allCategoriesLabel: "Everything",
+          },
           hasLimit: true,
           limit: 9,
-          allCategoriesLabel: "Everything",
         },
         "All",
       ),
     ).toMatchObject({
       fetchMode: "manual",
-      categoryDisplay: "selected",
+      categoryDisplay: "all",
       showSortTabs: false,
       hasLimit: true,
       limit: 9,
@@ -42,9 +44,12 @@ describe("resolveLatestPostsOptions", () => {
     expect(
       resolveLatestPostsOptions(
         {
-          fetch_mode: "auto",
-          category_display: "none",
-          show_sort_tabs: true,
+          listing_config: {
+            __typename: "BlogListingConfigRecord",
+            fetch_mode: "auto",
+            filter_display: "none",
+            show_sort_tabs: true,
+          },
           has_limit: true,
           limit: 3,
         },
@@ -61,14 +66,50 @@ describe("resolveLatestPostsOptions", () => {
   });
 
   it("normalizes CMS labels and clamps limit", () => {
-    expect(resolveLatestPostsOptions({ fetchMode: "Curadoria manual" }, "All").fetchMode).toBe("manual");
-    expect(resolveLatestPostsOptions({ categoryDisplay: "Selecionadas" }, "All").categoryDisplay).toBe(
-      "selected",
-    );
-    expect(resolveLatestPostsOptions({ category_display: "Ocultar" }, "All").categoryDisplay).toBe("none");
+    expect(
+      resolveLatestPostsOptions(
+        { listingConfig: { __typename: "BlogListingConfigRecord", fetchMode: "manual" } },
+        "All",
+      ).fetchMode,
+    ).toBe("manual");
+    expect(
+      resolveLatestPostsOptions(
+        {
+          listingConfig: {
+            __typename: "BlogListingConfigRecord",
+            fetchMode: "auto",
+            filterDisplay: "selected",
+          },
+        },
+        "All",
+      ).categoryDisplay,
+    ).toBe("selected");
+    expect(
+      resolveLatestPostsOptions(
+        {
+          listingConfig: {
+            __typename: "BlogListingConfigRecord",
+            fetchMode: "auto",
+            filterDisplay: "none",
+          },
+        },
+        "All",
+      ).categoryDisplay,
+    ).toBe("none");
+    expect(
+      resolveLatestPostsOptions(
+        {
+          listingConfig: {
+            __typename: "BlogListingConfigRecord",
+            fetchMode: "auto",
+            showSortTabs: false,
+          },
+        },
+        "All",
+      ).showSortTabs,
+    ).toBe(false);
     expect(resolveLatestPostsOptions({ limit: 0 }, "All").limit).toBe(1);
     expect(resolveLatestPostsOptions({ limit: 500 }, "All").limit).toBe(100);
-    expect(resolveLatestPostsOptions({ showSortTabs: false }, "All").showSortTabs).toBe(false);
     expect(resolveLatestPostsOptions({ hasLimit: true }, "All").hasLimit).toBe(true);
     expect(resolveLatestPostsOptions({ has_limit: false, limit: 3 }, "All").hasLimit).toBe(false);
   });

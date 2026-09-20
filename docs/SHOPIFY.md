@@ -32,7 +32,7 @@ flowchart LR
 | Dato `product_page` | `title`, `description`, `seo`; chaves `shopify_handle` + `shopify_product_id` |
 | Dato `collection_page` | Igual, com `shopify_collection_id`. Sem links para produtos. Grelha da PLP: Storefront |
 | Page de catálogo | Global settings `products_page` e `collections_page` |
-| Bloco `content_listing_section` | Fonte Blog/Shopify; Shopify automático usa `category_display` (`all`/`selected`/`none`) e `source_collection` só em `selected`. Preço/imagem: Storefront com `@inContext(country)` (EN=`US`/USD, PT=`BR`/BRL, ES=`ES`/EUR) |
+| Bloco `content_listing_section` | `listing_config` é um single block Blog/Shopify. No `shopify_listing_config`, `fetch_mode=auto` usa `collection_filter` (catálogo completo ou coleção escolhida); `source_collection` só no segundo caso. Manual usa `selected_products`. Preço/imagem: Storefront com `@inContext(country)` (EN=`US`/USD, PT=`BR`/BRL, ES=`ES`/EUR) |
 | Bloco Link (`type_content`) | Product / Collection apontam a `product_page` / `collection_page` (Hero, CTA, tabs, feature grid, pricing). Sem fetch Storefront no botão. |
 | Next PDP / PLP | RSC: copy/SEO Dato + Storefront no **servidor** |
 | Dato → Shopify | `title` + `description`: EN no produto; PT/ES na Translations API |
@@ -170,7 +170,7 @@ O `product_page` tem `title`, `description`, `seo`, `shopify_handle` e `shopify_
 - **Create** Shopify → Dato: `title` e `description` nos 3 locales = copy EN. Handles `frontpage` / `home-page` não criam `collection_page`.
 - **Update** Shopify → Dato: `title.en` / `description.en` só se mudou; `pt-BR`/`es` só via Translations. Locales vazios mantêm-se no payload CMA.
 - URLs: `/{locale}/products/{handle}` e `/{locale}/collections/{handle}`. Produtos da coleção: Storefront, não links no Dato.
-- Listagem em landing/páginas: bloco modular **Content listing section**. Escolha `content_source=shopify`, depois `fetch_mode=auto` e `category_display`: `all`/`none` = catálogo; `selected` = `source_collection`. Manual usa `selected_products`. A mesma secção usa `content_source=blog` para posts/categorias.
+- Listagem em landing/páginas: bloco modular **Content listing section**. Em `listing_config`, escolha **Shopify listing configuration**; `fetch_mode=auto` com `collection_filter=all` lista o catálogo e `selected` filtra pela `source_collection` (obrigatória editorialmente; vazia = empty state). Manual usa `selected_products`. **Blog listing configuration** concentra posts, categorias e ordenação no seu próprio bloco.
 - Não alargar as fichas com galeria, preço ou tags.
 
 ### 4b. Dato ↔ Shopify (título e descrição EN / PT / ES)
