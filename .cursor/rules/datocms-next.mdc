@@ -21,9 +21,9 @@ Complements [`react-rsc.mdc`](react-rsc.mdc) and [`datocms-blocks.mdc`](datocms-
 | Fetch | Tags (examples) |
 |-------|-----------------|
 | `get-page` | `datocms:page`, `page:${locale}:${slug}` |
+| `get-layout-chrome` (nav + `_site`) | `NAV_TAG`, `navigation:${locale}`, `datocms:site-seo`, `site-seo:${locale}` |
+| `get-global-settings` (404 + índices) | `datocms:global-settings`, `global-settings:${locale}` |
 | `get-blog` | `datocms:blog`, `datocms:posts`, `post:…` |
-| `get-navigation` | `NAV_TAG`, `navigation:${locale}` |
-| `get-site-seo` | `datocms:site-seo`, `site-seo:${locale}` |
 | sitemap / search / home | existing `SITEMAP_TAG` / `SEARCH_TAG` / `datocms:site` |
 | `get-redirects` | `datocms:redirects` |
 

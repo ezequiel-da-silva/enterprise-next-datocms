@@ -1,3 +1,4 @@
+import { cdaFetchCache } from "@/infra/datocms/cda-fetch-cache";
 import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import type { DatoSiteLocale } from "@/constants/i18n";
 import {
@@ -35,25 +36,22 @@ function baseEditingOptions(includeDrafts: boolean) {
   };
 }
 
-function devPublishedNoStore(includeDrafts: boolean) {
-  return process.env.NODE_ENV === "development" && !includeDrafts;
-}
-
 const loadAllPosts = cache(
   async (
     locale: DatoSiteLocale,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetAllPostsQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     return datocmsFetch<GetAllPostsQueryResult>({
       query: GET_ALL_POSTS,
       variables: { locale },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:posts"],
-      revalidate: noStore ? false : 120,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:posts"],
+        revalidate: 120,
+      }),
     });
   },
 );
@@ -64,7 +62,6 @@ const loadPostBySlug = cache(
     slug: string,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetPostBySlugQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     const response = await datocmsFetch<{
       post: Record<string, unknown> | null;
@@ -72,11 +69,14 @@ const loadPostBySlug = cache(
     }>({
       query: GET_POST_BY_SLUG,
       variables: { locale, slug, withEditingUrl: Boolean(editing.baseEditingUrl) },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:posts", `post:${locale}:${slug}`],
-      revalidate: noStore ? false : 120,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:posts", `post:${locale}:${slug}`],
+        revalidate: 120,
+        bypassPublishedCacheInDev: true,
+      }),
     });
     if ("errors" in response) return response;
     return { data: normalizePostBySlugResult(response.data) };
@@ -89,7 +89,6 @@ const loadAuthorBySlug = cache(
     slug: string,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetAuthorBySlugQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     const response = await datocmsFetch<{
       author: Record<string, unknown> | null;
@@ -97,11 +96,14 @@ const loadAuthorBySlug = cache(
     }>({
       query: GET_AUTHOR_BY_SLUG,
       variables: { locale, slug },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:authors", `author:${locale}:${slug}`],
-      revalidate: noStore ? false : 300,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:authors", `author:${locale}:${slug}`],
+        revalidate: 300,
+        bypassPublishedCacheInDev: true,
+      }),
     });
     if ("errors" in response) return response;
     return { data: normalizeAuthorBySlugResult(response.data) };
@@ -114,16 +116,17 @@ const loadPostsByAuthor = cache(
     authorId: string,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetPostsByAuthorQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     return datocmsFetch<GetPostsByAuthorQueryResult>({
       query: GET_POSTS_BY_AUTHOR,
       variables: { locale, authorId },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:posts", `author-posts:${authorId}`],
-      revalidate: noStore ? false : 120,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:posts", `author-posts:${authorId}`],
+        revalidate: 120,
+      }),
     });
   },
 );
@@ -134,7 +137,6 @@ const loadCategoryBySlug = cache(
     slug: string,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetCategoryBySlugQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     const response = await datocmsFetch<{
       category: Record<string, unknown> | null;
@@ -142,11 +144,14 @@ const loadCategoryBySlug = cache(
     }>({
       query: GET_CATEGORY_BY_SLUG,
       variables: { locale, slug },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:categories", `category:${locale}:${slug}`],
-      revalidate: noStore ? false : 300,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:categories", `category:${locale}:${slug}`],
+        revalidate: 300,
+        bypassPublishedCacheInDev: true,
+      }),
     });
     if ("errors" in response) return response;
     return { data: normalizeCategoryBySlugResult(response.data) };
@@ -159,16 +164,17 @@ const loadPostsByCategory = cache(
     categoryId: string,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetPostsByCategoryQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     return datocmsFetch<GetPostsByCategoryQueryResult>({
       query: GET_POSTS_BY_CATEGORY,
       variables: { locale, categoryId },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:posts", `category-posts:${categoryId}`],
-      revalidate: noStore ? false : 120,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:posts", `category-posts:${categoryId}`],
+        revalidate: 120,
+      }),
     });
   },
 );
@@ -178,16 +184,17 @@ const loadAllCategories = cache(
     locale: DatoSiteLocale,
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetAllCategoriesQueryResult>> => {
-    const noStore = includeDrafts || devPublishedNoStore(includeDrafts);
     const editing = baseEditingOptions(includeDrafts);
     return datocmsFetch<GetAllCategoriesQueryResult>({
       query: GET_ALL_CATEGORIES,
       variables: { locale },
-      tags: noStore ? undefined : ["datocms:blog", "datocms:categories"],
-      revalidate: noStore ? false : 300,
       includeDrafts,
       ...editing,
-      cache: noStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:blog", "datocms:categories"],
+        revalidate: 300,
+      }),
     });
   },
 );

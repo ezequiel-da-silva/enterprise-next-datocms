@@ -206,6 +206,17 @@ Não promover este schema de `develop` para `main` até o front estar pronto no 
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).
 
+### Quota CDA (plano Free)
+
+Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache do Dato**. Para não esgotar 100k calls:
+
+- O **proxy** aplica CSP em todos os paths, mas **não** chama `getRedirects()` em `/api`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `llms.txt` nem icons.
+- O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`) e **uma** de `global_setting` (404 + páginas índice). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
+- **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
+- Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
+- `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
+- Codegen e Lighthouse/Playwright contra o CDA real ficam para um passo seguinte (schema local / fixtures). Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
+
 Rota: [`POST /api/revalidate`](../src/app/api/revalidate/route.ts).
 
 | | |

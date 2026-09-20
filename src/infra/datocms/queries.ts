@@ -1079,9 +1079,7 @@ export const GET_POSTS_BY_CATEGORY = /* GraphQL */ `
 /**
  * Preferências de SEO do projecto (`_site.globalSeo`).
  */
-export const GET_SITE_SEO = /* GraphQL */ `
-  query GetSiteSeo($locale: SiteLocale!) {
-    _site {
+export const SITE_SEO_SELECTION = `
       globalSeo(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
         siteName
         titleSuffix
@@ -1098,6 +1096,12 @@ export const GET_SITE_SEO = /* GraphQL */ `
           }
         }
       }
+`;
+
+export const GET_SITE_SEO = /* GraphQL */ `
+  query GetSiteSeo($locale: SiteLocale!) {
+    _site {
+      ${SITE_SEO_SELECTION}
     }
   }
 `;
@@ -1107,9 +1111,13 @@ export const GET_SITE_SEO = /* GraphQL */ `
  * Em `description404`, `blocks`/`links`/`inlineBlocks` no CDA são escalares (IDs), não unions
  * como em campos ST escalares (bio, 404); pedir subcampos em `links`/`blocks` invalida a query.
  */
-export const GET_GLOBAL_SETTINGS = /* GraphQL */ `
-  query GetGlobalSettings($locale: SiteLocale!) {
-    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+const GLOBAL_SETTING_PAGE_REF = `
+        id
+        title
+        slug
+`;
+
+export const GLOBAL_SETTING_SELECTION = `
       title404
       description404 {
         value
@@ -1120,6 +1128,27 @@ export const GET_GLOBAL_SETTINGS = /* GraphQL */ `
       image404 {
         ${IMAGE_BLOCK_RESPONSIVE}
       }
+      blogPage {
+        ${GLOBAL_SETTING_PAGE_REF}
+      }
+      contactPage {
+        ${GLOBAL_SETTING_PAGE_REF}
+      }
+      searchPage {
+        ${GLOBAL_SETTING_PAGE_REF}
+      }
+      productsPage {
+        ${GLOBAL_SETTING_PAGE_REF}
+      }
+      collectionsPage {
+        ${GLOBAL_SETTING_PAGE_REF}
+      }
+`;
+
+export const GET_GLOBAL_SETTINGS = /* GraphQL */ `
+  query GetGlobalSettings($locale: SiteLocale!) {
+    globalSetting(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      ${GLOBAL_SETTING_SELECTION}
     }
   }
 `;

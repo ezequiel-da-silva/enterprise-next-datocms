@@ -9,6 +9,7 @@ import {
 import { NONCE_HEADER } from "@/constants/security";
 import { THEME_COOKIE_NAME, isThemeMode, type ThemeMode } from "@/constants/theme";
 import { getRedirects, pickRedirectRecords } from "@/infra/datocms/get-redirects";
+import { shouldLookupCmsRedirects } from "@/lib/datocms/cms-redirect-lookup";
 import { matchRedirect } from "@/lib/datocms/match-redirect";
 
 const DATO_ADMIN_FRAME =
@@ -94,7 +95,7 @@ export async function proxy(request: NextRequest) {
     return applySecurityHeaders(NextResponse.redirect(url, 308), nonce, isDev);
   }
 
-  if (!pathname.startsWith("/api")) {
+  if (shouldLookupCmsRedirects(pathname)) {
     const records = pickRedirectRecords(await getRedirects());
     const matched = matchRedirect(pathname, records);
     if (matched) {

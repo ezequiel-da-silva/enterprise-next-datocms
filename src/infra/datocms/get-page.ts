@@ -1,3 +1,4 @@
+import { cdaFetchCache } from "@/infra/datocms/cda-fetch-cache";
 import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import type { AppLocale } from "@/constants/i18n";
 import { toDatoSiteLocale } from "@/constants/i18n";
@@ -20,8 +21,6 @@ const loadPageBySlug = cache(
     includeDrafts: boolean,
     locale: AppLocale,
   ): Promise<DatocmsResponse<PageBySlugQueryResult>> => {
-    /** Em dev evita cache de `page: null` após publicares no Dato (fetch com tags ainda guardava 404). */
-    const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
     const editing = baseEditingOptions(includeDrafts);
 
     const response = await datocmsFetch<PageBySlugQuery>({
@@ -31,11 +30,15 @@ const loadPageBySlug = cache(
         locale: toDatoSiteLocale(locale),
         withEditingUrl: Boolean(editing.baseEditingUrl),
       },
-      tags: includeDrafts || devPublishedNoStore ? undefined : ["datocms:page", `page:${locale}:${slug}`],
-      revalidate: includeDrafts || devPublishedNoStore ? false : 120,
       includeDrafts,
       ...editing,
-      cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:page", `page:${locale}:${slug}`],
+        revalidate: 120,
+        /** Evita cache de `page: null` após publicares no Dato em next dev. */
+        bypassPublishedCacheInDev: true,
+      }),
     });
 
     if ("errors" in response) {

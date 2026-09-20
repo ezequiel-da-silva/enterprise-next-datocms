@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { toDatoSiteLocale } from "@/constants/i18n";
+import { cdaFetchCache } from "@/infra/datocms/cda-fetch-cache";
 import { datocmsFetch } from "@/infra/datocms/client";
 import { LIST_PRODUCT_PAGES } from "@/infra/datocms/queries";
 import {
@@ -25,14 +26,15 @@ import { cache } from "react";
 type ProductPageRow = { title: string | null; shopifyHandle: string | null };
 
 const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean): Promise<ProductPageCard[]> => {
-  const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
   const result = await datocmsFetch<{ allProductPages: ProductPageRow[] }>({
     query: LIST_PRODUCT_PAGES,
     variables: { locale: toDatoSiteLocale(locale) },
-    tags: includeDrafts || devPublishedNoStore ? undefined : ["datocms:product"],
-    revalidate: includeDrafts || devPublishedNoStore ? false : 120,
     includeDrafts,
-    cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
+    ...cdaFetchCache({
+      includeDrafts,
+      tags: ["datocms:product"],
+      revalidate: 120,
+    }),
   });
   if ("errors" in result) return [];
   return result.data.allProductPages.flatMap((row) => {

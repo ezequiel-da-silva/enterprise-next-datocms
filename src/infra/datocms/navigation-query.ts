@@ -52,13 +52,7 @@ const FILE_FIELD = `
   blurUpThumb
 `;
 
-/**
- * Single Instance `navigation` com fieldsets Header + Footer.
- * `fallbackLocales`: quando o locale da URL não tem tradução, o Dato preenche a partir de outro idioma.
- */
-export const GET_NAVIGATION = /* GraphQL */ `
-  query GetNavigation($locale: SiteLocale!) {
-    navigation(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+export const NAVIGATION_SELECTION = `
       logo {
         ${FILE_FIELD}
       }
@@ -94,6 +88,16 @@ export const GET_NAVIGATION = /* GraphQL */ `
       legalLinks {
         ${NAV_LEGAL_ROOT}
       }
+`;
+
+/**
+ * Single Instance `navigation` com fieldsets Header + Footer.
+ * `fallbackLocales`: quando o locale da URL não tem tradução, o Dato preenche a partir de outro idioma.
+ */
+export const GET_NAVIGATION = /* GraphQL */ `
+  query GetNavigation($locale: SiteLocale!) {
+    navigation(locale: $locale, fallbackLocales: [en, pt_BR, es]) {
+      ${NAVIGATION_SELECTION}
     }
   }
 `;

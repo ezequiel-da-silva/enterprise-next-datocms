@@ -1,11 +1,13 @@
 import type { AppLocale } from "@/constants/i18n";
 import { toDatoSiteLocale } from "@/constants/i18n";
+import { cdaFetchCache } from "@/infra/datocms/cda-fetch-cache";
 import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import { GET_GLOBAL_SETTINGS } from "@/infra/datocms/queries";
 import type { GetGlobalSettingsQueryResult, GlobalSettingRecord } from "@/infra/datocms/types-global-setting";
+import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
 import { cache } from "react";
 
-const GLOBAL_SETTINGS_TAG = "datocms:global-settings";
+const GLOBAL_SETTINGS_TAG = DATOCMS_CACHE_TAGS.globalSettings;
 
 const loadGlobalSettings = cache(
   async (
@@ -13,17 +15,17 @@ const loadGlobalSettings = cache(
     includeDrafts: boolean,
   ): Promise<DatocmsResponse<GetGlobalSettingsQueryResult>> => {
     const baseEditingUrl = process.env.NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL;
-    const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
-
     return datocmsFetch<GetGlobalSettingsQueryResult>({
       query: GET_GLOBAL_SETTINGS,
       variables: { locale: toDatoSiteLocale(locale) },
-      tags: includeDrafts || devPublishedNoStore ? undefined : [GLOBAL_SETTINGS_TAG, `global-settings:${locale}`],
-      revalidate: includeDrafts || devPublishedNoStore ? false : 300,
       includeDrafts,
       contentLink: includeDrafts && baseEditingUrl ? "v1" : undefined,
       baseEditingUrl: includeDrafts && baseEditingUrl ? baseEditingUrl : undefined,
-      cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: [GLOBAL_SETTINGS_TAG, `global-settings:${locale}`, DATOCMS_CACHE_TAGS.page],
+        revalidate: 300,
+      }),
     });
   },
 );
