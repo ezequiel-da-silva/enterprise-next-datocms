@@ -137,7 +137,7 @@ Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --in
 
 O índice do blog é uma `Page` normal: Hero, SEO, título, `content_page` e slug vêm do
 registo selecionado em **Global setting → Blog page**. Para listar artigos, adicione
-`Content listing section` ao conteúdo dessa Page e escolha **Content source = Blog**.
+`Content listing section` ao conteúdo dessa Page e escolha **Blog listing configuration**.
 
 - A slug localizada da Page controla apenas o índice (por exemplo, `/pt/noticias`).
 - Artigos, categorias e autores mantêm os URLs estáveis em `/{locale}/blog/*`.
@@ -260,8 +260,11 @@ Nas fichas `product_page` / `collection_page` o editor só mexe em **copy** (`ti
 
 Listagens em páginas CMS usam um único bloco **Content listing section** (`content_listing_section`):
 
-- **Content source = Blog**: automático com categorias (todas/selecionadas/ocultas) ou posts manuais.
-- **Content source = Shopify**: automático usa o mesmo `category_display` (`all` / `selected` / `none`). `selected` filtra por `source_collection` e só mostra produtos com `product_page` (evita PDP 404); `all` e `none` listam todos os `product_page` publicados. Manual usa `selected_products`. Uma listagem vazia continua visível.
+- O pai guarda somente apresentação partilhada: cabeçalho, limite, grid/carrossel/paginação/load more.
+- **Listing configuration** é um `single_block` obrigatório: escolha **Blog listing configuration** ou **Shopify listing configuration**.
+- Blog possui `fetch_mode` automático/manual e `filter_display` (`all`, `selected`, `none`), além de categorias, ordenação e posts manuais.
+- Shopify possui `fetch_mode` automático/manual. No automático, `collection_filter` escolhe **All published products** ou **Selected collection**; `source_collection` só aparece na segunda opção (vazio = listagem vazia). No manual, usa `selected_products`.
+- As listagens automáticas Shopify só mostram produtos com `product_page` (evita PDP 404). Uma coleção sem produtos publicáveis produz estado vazio visível.
 - Limite e apresentação (grid, carrossel, paginação, carregar mais) são partilhados.
 
 O bloco **Link** (`type_content` Product / Collection) liga CTAs internos (Hero, CTA banner, tabs, feature grid, pricing) a `product_page` ou `collection_page` pelo `shopify_handle`. Structured Text já resolvia estes modelos; o header (`navItemLink`) continua a ser um path em texto.

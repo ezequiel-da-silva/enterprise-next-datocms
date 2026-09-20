@@ -21,7 +21,10 @@ describe("resolveProductsSectionOptions", () => {
   it("reads camelCase and snake_case", () => {
     expect(
       resolveProductsSectionOptions({
-        fetchMode: "manual",
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "manual",
+        },
         hasLimit: true,
         limit: 9,
         displayType: "carousel",
@@ -35,7 +38,10 @@ describe("resolveProductsSectionOptions", () => {
 
     expect(
       resolveProductsSectionOptions({
-        fetch_mode: "auto",
+        listing_config: {
+          __typename: "ShopifyListingConfigRecord",
+          fetch_mode: "auto",
+        },
         has_limit: true,
         limit: 3,
         display_type: "Carregar mais",
@@ -49,17 +55,67 @@ describe("resolveProductsSectionOptions", () => {
   });
 
   it("normalizes CMS labels and clamps limit", () => {
-    expect(resolveProductsSectionOptions({ fetchMode: "Curadoria manual" }).fetchMode).toBe("manual");
-    expect(resolveProductsSectionOptions({ categoryDisplay: "Apenas selecionadas" }).filterDisplay).toBe(
-      "selected",
-    );
+    expect(
+      resolveProductsSectionOptions({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "manual",
+        },
+      }).fetchMode,
+    ).toBe("manual");
+    expect(
+      resolveProductsSectionOptions({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "selected",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }).filterDisplay,
+    ).toBe("selected");
     expect(resolveProductsSectionOptions({ limit: 0 }).limit).toBe(1);
     expect(resolveProductsSectionOptions({ limit: 500 }).limit).toBe(100);
   });
 
-  it("reads category_display for the Shopify collection filter", () => {
-    expect(resolveProductsSectionOptions({ categoryDisplay: "selected" }).filterDisplay).toBe("selected");
-    expect(resolveProductsSectionOptions({ category_display: "none" }).filterDisplay).toBe("none");
+  it("reads the Shopify collection filter from its nested configuration", () => {
+    expect(
+      resolveProductsSectionOptions({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "selected",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }).filterDisplay,
+    ).toBe("selected");
+    expect(
+      resolveProductsSectionOptions({
+        listing_config: {
+          __typename: "ShopifyListingConfigRecord",
+          fetch_mode: "auto",
+          collection_filter: "all",
+          source_collection: { shopify_handle: "summer" },
+        },
+      }).filterDisplay,
+    ).toBe("all");
+    expect(
+      resolveProductsSectionOptions({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          collectionFilter: "selected",
+        },
+      }).filterDisplay,
+    ).toBe("selected");
+    expect(
+      resolveProductsSectionOptions({
+        listingConfig: {
+          __typename: "ShopifyListingConfigRecord",
+          fetchMode: "auto",
+          sourceCollection: { shopifyHandle: "summer" },
+        },
+      }).filterDisplay,
+    ).toBe("selected");
     expect(resolveProductsSectionOptions({}).filterDisplay).toBe("all");
   });
 });
