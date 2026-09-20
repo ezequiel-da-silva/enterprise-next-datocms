@@ -439,6 +439,15 @@ const FEATURE_GRID_BLOCK = `
       __typename
       ... on CardRecord {
         id
+        cardSource
+        sourceProduct {
+          shopifyHandle
+          title
+        }
+        sourceCollection {
+          shopifyHandle
+          title
+        }
         titleCard
         hasIcon
         iconCard

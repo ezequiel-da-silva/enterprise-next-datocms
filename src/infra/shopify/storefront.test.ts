@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getStorefrontCollectionByHandle, getStorefrontProductByHandle, storefrontAuthHeaders } from "@/infra/shopify/storefront";
+import { getStorefrontCollectionByHandle, getStorefrontCollectionMeta, getStorefrontProductByHandle, storefrontAuthHeaders } from "@/infra/shopify/storefront";
 
 describe("getStorefrontProductByHandle", () => {
   it("returns null when env is missing", async () => {
@@ -90,6 +90,34 @@ describe("getStorefrontProductByHandle", () => {
       variables: { country: string };
     };
     expect(body.variables.country).toBe("ES");
+    vi.unstubAllGlobals();
+  });
+
+  it("fetches collection meta without product nodes", async () => {
+    process.env.SHOPIFY_STORE_DOMAIN = "shop.myshopify.com";
+    process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN = "token";
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        data: {
+          collection: {
+            title: "Hydrogen",
+            handle: "hydrogen",
+            image: { url: "https://cdn.shopify.com/col.jpg", altText: "Col", width: 400, height: 300 },
+          },
+        },
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const meta = await getStorefrontCollectionMeta("hydrogen", "en");
+    expect(meta).toEqual({
+      handle: "hydrogen",
+      title: "Hydrogen",
+      image: { url: "https://cdn.shopify.com/col.jpg", altText: "Col", width: 400, height: 300 },
+    });
+    const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as { query: string };
+    expect(body.query).not.toContain("products(");
     vi.unstubAllGlobals();
   });
 

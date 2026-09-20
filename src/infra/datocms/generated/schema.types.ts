@@ -260,6 +260,7 @@ export type CardRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  cardSource?: Maybe<Scalars['String']['output']>;
   descriptionCard?: Maybe<Scalars['String']['output']>;
   hasDescription: Scalars['BooleanType']['output'];
   hasIcon: Scalars['BooleanType']['output'];
@@ -269,6 +270,8 @@ export type CardRecord = RecordInterface & {
   id: Scalars['ItemId']['output'];
   imageCard?: Maybe<CardImageBlockRecord>;
   linkCard?: Maybe<LinkRecord>;
+  sourceCollection?: Maybe<CollectionPageRecord>;
+  sourceProduct?: Maybe<ProductPageRecord>;
   titleCard?: Maybe<Scalars['String']['output']>;
 };
 

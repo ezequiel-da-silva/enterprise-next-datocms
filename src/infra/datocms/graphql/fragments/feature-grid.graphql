@@ -1,7 +1,7 @@
 # Fragmento do bloco Feature GRID (`feature_grid`).
 #
 # CMS:
-#   Page → Structured text → blocos permitidos → Feature GRID.
+#   Page → content_page → Feature GRID → CARD (`card_source` editorial | product | collection).
 # Variantes: `cards` e `full_bleed`.
 #import "./carousel-setting.graphql"
 #import "./text-header.graphql"
@@ -21,6 +21,15 @@ fragment FeatureGridBlockFragment on FeatureGridRecord {
     __typename
     ... on CardRecord {
       id
+      cardSource
+      sourceProduct {
+        shopifyHandle
+        title
+      }
+      sourceCollection {
+        shopifyHandle
+        title
+      }
       titleCard
       hasIcon
       iconCard
