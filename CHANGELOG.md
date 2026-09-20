@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.37.0...next-dato-v0.38.0) (2026-09-20)
+
+
+### Features
+
+* **feature-grid:** enhance feature grid cards with catalog sources and storefront integration ([7367379](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7367379f406cd6a01748c5081387d3c1a2b46232))
+
 ## [0.37.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.36.0...next-dato-v0.37.0) (2026-09-20)
 
 
