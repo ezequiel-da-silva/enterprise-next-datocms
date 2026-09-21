@@ -10,7 +10,7 @@ Seven pillars agents and reviewers must verify before merge. Each pillar lists *
 | Logic / resolvers | `npm test` |
 | Any source | `npm run lint` |
 | UI, routes, layout | `npm run build` |
-| GraphQL / Dato schema | `npm run codegen` (+ `npm run codegen:check` in CI) |
+| GraphQL / Dato schema | `npm run codegen` (queries) or `codegen:from-dato` (modelo Dato); `codegen:check` in CI (offline) |
 | Security / proxy / API | `npm run security:check` |
 | Full pre-merge | `npm run check-all` |
 
@@ -144,7 +144,7 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 ```markdown
 - [ ] typecheck + test + lint pass locally
 - [ ] build passes (if UI/routes touched)
-- [ ] codegen run (if GraphQL touched)
+- [ ] codegen run (if GraphQL touched; `codegen:from-dato` if Dato model changed)
 - [ ] security:check (if proxy/API/auth touched)
 - [ ] Security: no secrets, safe links, CSP nonce respected
 - [ ] A11y: landmarks, focus, one h1, touch targets

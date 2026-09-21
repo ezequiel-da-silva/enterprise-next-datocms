@@ -31,13 +31,12 @@ A DatoCMS webhook should call `POST /api/revalidate` ([`docs/DATOCMS.md`](../../
 
 ## Codegen
 
-After any change to `*.graphql` or [`queries.ts`](../../src/infra/datocms/queries.ts):
+SDL CDA versionado: [`src/infra/datocms/generated/schema.graphql`](../../src/infra/datocms/generated/schema.graphql). Não editar `generated/**` à mão.
 
-1. Update **both** `queries.ts` and `page-by-slug.graphql` (and fragment files).
-2. Run `npm run codegen`.
-3. Commit generated files; never hand-edit `src/infra/datocms/generated/**`.
+- Só queries (`.graphql` / [`queries.ts`](../../src/infra/datocms/queries.ts)): actualizar **ambos** `queries.ts` e `page-by-slug.graphql` (e fragments), depois `npm run codegen`.
+- Modelo Dato mudou: `npm run codegen:from-dato` (`DATOCMS_ENVIRONMENT` do `.env`) e commitar o SDL + tipos.
 
-`codegen:check` runs on CI and `.husky/pre-push`.
+`codegen:check` (CI e `.husky/pre-push`) é offline.
 
 ## Images
 

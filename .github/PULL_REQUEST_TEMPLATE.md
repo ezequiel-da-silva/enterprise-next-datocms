@@ -10,7 +10,7 @@ See [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md).
 - [ ] `npm test` passes
 - [ ] `npm run lint` passes
 - [ ] `npm run build` passes (if UI/routes/layout touched)
-- [ ] `npm run codegen` run and generated files committed (if GraphQL touched)
+- [ ] `npm run codegen` (or `codegen:from-dato` if the Dato model changed) and generated files committed
 
 ## Pillar review
 

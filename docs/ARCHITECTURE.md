@@ -75,7 +75,7 @@ flowchart TB
 
 Runtime queries live in `queries.ts`. Codegen input lives in `src/infra/datocms/graphql/*.graphql` → `generated/operations.types.ts`.
 
-**Do not edit** `src/infra/datocms/generated/**` by hand — run `npm run codegen`.
+**Do not edit** `src/infra/datocms/generated/**` by hand — `npm run codegen`; after Dato model changes `npm run codegen:from-dato`.
 
 ## Block rendering pipeline
 

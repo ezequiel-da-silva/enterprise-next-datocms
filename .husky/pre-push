@@ -1,8 +1,8 @@
 #!/bin/sh
 echo "🔍 Executando validação completa antes do push..."
 
-# 1. Verifica sincronia de tipos do GraphQL com o DatoCMS (Rápido)
-npm run codegen:check || { echo "❌ Schema do DatoCMS mudou. Rode 'npm run codegen' e inclua as alterações."; exit 1; }
+# 1. Verifica tipos GraphQL vs SDL versionado (offline)
+npm run codegen:check || { echo "❌ GraphQL gerado desactualizado. Rode 'npm run codegen' (ou 'npm run codegen:from-dato' se o schema Dato mudou) e inclua generated/."; exit 1; }
 
 # 2. Verificação de tipos estritos do TypeScript em todo o projeto (Rápido)
 npm run typecheck || { echo "❌ Falha na verificação de tipos (typecheck)."; exit 1; }

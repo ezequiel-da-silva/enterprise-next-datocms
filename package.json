@@ -12,7 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "codegen": "dotenv -e .env --cascade -- graphql-codegen --config codegen-schema.yml && dotenv -e .env --cascade -- graphql-codegen --config codegen-operations.yml && node scripts/fix-codegen-import.mjs",
+    "codegen": "graphql-codegen --config codegen-schema.yml && graphql-codegen --config codegen-operations.yml && node scripts/fix-codegen-import.mjs",
+    "codegen:schema": "dotenv -e .env --cascade -- node scripts/codegen-schema.mjs",
+    "codegen:from-dato": "npm run codegen:schema && npm run codegen",
     "codegen:check": "node scripts/codegen-check.mjs",
     "check-all": "npm run typecheck && npm run test && npm run lint && npm run build",
     "security:audit": "npm audit --omit=dev --audit-level=high",
@@ -51,6 +53,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^7.2.0",
+    "@graphql-codegen/schema-ast": "^6.1.0",
     "@graphql-codegen/typescript": "^6.1.0",
     "@graphql-codegen/typescript-operations": "^6.1.2",
     "@lhci/cli": "^0.15.1",

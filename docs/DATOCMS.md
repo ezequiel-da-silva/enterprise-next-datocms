@@ -8,7 +8,7 @@ Há **três** superfícies. Não partilham autenticação.
 
 | Superfície | Para quê | Auth |
 |------------|----------|------|
-| **Next.js** (local, Vercel, CI) | Páginas, GraphQL CDA, draft, codegen | Variáveis no `.env` / Vercel / GitHub Secrets — tokens **CDA** (e CMA só para user reviews) |
+| **Next.js** (local, Vercel, CI) | Páginas, GraphQL CDA, draft | Variáveis no `.env` / Vercel / GitHub Secrets — tokens **CDA** (e CMA só para user reviews) |
 | **CLI + Agent Skills** | Schema, migrations, `schema:inspect`, CMA no terminal | OAuth (`npx datocms login`) + [`datocms.config.json`](../datocms.config.json) no Git. **Não** usa os tokens CDA. |
 | **MCP** (opcional, Cursor) | Chat remoto sem terminal | OAuth no browser (`https://mcp.datocms.com`). Sem tokens no JSON. |
 
@@ -41,7 +41,7 @@ Lista completa: [`.env.example`](../.env.example). Secrets de CI: [SECURITY.md](
 Pré-requisito: acesso ao projeto Dato **Boilerplate DATO** (`siteId` `201057`, admin `https://boilerplate-dato.admin.datocms.com`). Conta pessoal, sem `organization-id`.
 
 ```bash
-cp .env.example .env   # preencher tokens CDA — o site e o codegen
+cp .env.example .env   # preencher tokens CDA — o site (e `codegen:schema` após mudar o modelo)
 npm install
 
 npx datocms login       # uma vez por máquina; abre o browser (OAuth)
@@ -75,7 +75,7 @@ npx datocms schema:inspect
 npx datocms environments:list
 ```
 
-Schema GraphQL do Next continua com `npm run codegen` (usa `DATOCMS_API_TOKEN` do `.env`, não a CLI).
+Schema GraphQL do Next: `npm run codegen` lê [`src/infra/datocms/generated/schema.graphql`](../src/infra/datocms/generated/schema.graphql) (sem CDA). Depois de alterar o modelo Dato: `npm run codegen:from-dato` (dump CDA com `DATOCMS_API_TOKEN` + `DATOCMS_ENVIRONMENT` do `.env`). Se a introspecção CDA estiver indisponível (quota), `node scripts/schema-types-to-sdl.mjs && npm run codegen` gera um SDL de recurso a partir dos tipos já commitados — substitui com o dump live assim que o CDA voltar.
 
 ### Agent Skills oficiais
 
@@ -129,9 +129,9 @@ Inspect: `npx datocms schema:inspect text_section --environment=develop --includ
 Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --include-validators`.
 
 - Schema (CLI): `npx datocms migrations:run --source=develop --in-place` — **não** promove para `main`.
-- Conteúdo no Next: `DATOCMS_ENVIRONMENT=develop` no `.env` (CDA). O token CDA tem de ter acesso ao sandbox `develop` (senão introspection/codegen devolve `INSUFFICIENT_PERMISSIONS`).
-- GraphQL: após o schema no ambiente alvo, `npm run codegen` (usa `DATOCMS_API_TOKEN` + `DATOCMS_ENVIRONMENT`). Não editar `src/infra/datocms/generated/**` à mão.
-- CI (`codegen:check`) aponta a `DATOCMS_ENVIRONMENT=main`. Enquanto estes blocos existirem só em `develop`, o check em `main` falha até promoveres o schema (ou apontares o CI ao sandbox).
+- Conteúdo no Next: `DATOCMS_ENVIRONMENT=develop` no `.env` (CDA). O token CDA tem de ter acesso ao sandbox `develop`.
+- GraphQL: após o schema no ambiente do `.env`, `npm run codegen:from-dato` e commit de `src/infra/datocms/generated/**` (SDL + tipos). `npm run codegen` sozinho basta quando só mudam queries. Não editar `generated/` à mão.
+- CI (`codegen:check`) é **offline** (SDL versionado). Promove o schema Dato para `main` no mesmo ciclo das queries novas — tipos verdes não impedem erro CDA em produção se o campo ainda não existir no primary.
 
 ## Página do blog
 
@@ -215,7 +215,7 @@ Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache d
 - **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
 - Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
 - `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
-- Codegen e Lighthouse/Playwright contra o CDA real ficam para um passo seguinte (schema local / fixtures). Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
+- `npm run codegen` / `codegen:check` / pre-push **não** chamam a CDA: usam o SDL em `generated/schema.graphql`. Só `npm run codegen:schema` (ou `codegen:from-dato`) introspecta, após mudar o modelo. Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
 
 Rota: [`POST /api/revalidate`](../src/app/api/revalidate/route.ts).
 

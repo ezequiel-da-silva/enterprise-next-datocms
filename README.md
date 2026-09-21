@@ -16,7 +16,7 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-Copy [`.env.example`](.env.example) to `.env` and configure DatoCMS **CDA** tokens before fetching CMS content. That is what Next.js, Vercel, and `npm run codegen` use.
+Copy [`.env.example`](.env.example) to `.env` and configure DatoCMS **CDA** tokens before fetching CMS content (Next.js / Vercel). `npm run codegen` is local; `npm run codegen:schema` needs the token after Dato model changes.
 
 The DatoCMS **CLI** (schema, migrations, Agent Skills) is separate: OAuth on your machine plus committed [`datocms.config.json`](datocms.config.json). It does **not** add Vercel env vars. Setup: [docs/DATOCMS.md](docs/DATOCMS.md) (CLI passo a passo).
 

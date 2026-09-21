@@ -1,8 +1,16 @@
-# Atalho: schema + operações GraphQL.
-# Uso: set -a && . ./.env && set +a && npm run codegen
+# Codegen GraphQL (CDA).
+#
+# Dump remoto (token + DATOCMS_ENVIRONMENT do .env) — só após mudar o modelo Dato:
+#   npm run codegen:schema
+#
+# Tipos a partir do SDL versionado (sem CDA):
+#   npm run codegen
+#
+# Pós-migration (dump + tipos):
+#   npm run codegen:from-dato
 #
 # Configs:
-# - codegen-schema.yml  → src/infra/datocms/generated/schema.types.ts
-# - codegen-operations.yml → src/infra/datocms/generated/operations.types.ts
-#   (documentos em src/infra/datocms/graphql/*.graphql)
-# Schema e operações enviam X-Environment: ${DATOCMS_ENVIRONMENT} (mesmo sandbox que o CDA).
+# - codegen-schema-dump.yml → src/infra/datocms/generated/schema.graphql
+# - codegen-schema.yml      → src/infra/datocms/generated/schema.types.ts
+# - codegen-operations.yml  → src/infra/datocms/generated/operations.types.ts
+#   (documentos em src/infra/datocms/graphql/*.graphql — não incluir o SDL nesse glob)

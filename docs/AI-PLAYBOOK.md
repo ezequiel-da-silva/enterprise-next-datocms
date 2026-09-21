@@ -50,7 +50,7 @@ Official DatoCMS CLI/CMA skills: [`.agents/skills/`](../.agents/skills/). Bootst
 
 ## Do not edit
 
-- `src/infra/datocms/generated/**` — regenerate with `npm run codegen`
+- `src/infra/datocms/generated/**` — `npm run codegen`; after Dato model changes `npm run codegen:from-dato`
 - `.env` — never commit secrets
 - `.cursor/plans/**` — user-owned plan files unless asked
 
@@ -75,5 +75,5 @@ Hooks fail open (warn only) except shell-guard for dangerous commands.
 ## Human + agent collaboration
 
 - Agents implement; humans approve architecture changes and CMS schema in Dato admin.
-- After Dato schema changes, agent runs codegen and updates queries + components.
+- After Dato schema changes, agent runs `npm run codegen:from-dato` and updates queries + components.
 - PR template maps to QUALITY-GATES pillars — fill honestly.
