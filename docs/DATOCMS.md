@@ -68,6 +68,48 @@ npx datocms link --site-id=201057
 
 Não corras `link` contra outro `siteId` sem acordo — o ficheiro no Git é a fonte de verdade para este boilerplate.
 
+### Profile `staging` (segunda conta Dato)
+
+Quota CDA é **por conta**. O sandbox `develop` no projecto `201057` **não** isola o Free de produção.
+
+| Profile | Projecto | `siteId` | Admin |
+|---------|----------|----------|--------|
+| `default` | Boilerplate DATO (produção) | `201057` | `https://boilerplate-dato.admin.datocms.com` |
+| `staging` | Boilerplate DATO - Staging | `234806` | `https://dashboard.datocms.com/personal-account/project/234806` |
+
+```bash
+npx datocms login   # conta que vê o Staging
+npx datocms link --profile=staging --site-id=234806
+```
+
+As migrations deste repo são **incrementais** sobre o boilerplate **já evoluído** neste repo. **Não** corras `migrations:run` num projecto Staging vazio (`image_block` 404). Um projecto criado a partir do **template oficial Dato** também não chega: o `image_block` do starter só tem um campo (`image`) e faltam `asset` / `asset_desktop`, `cta_banner`, `card`, `global_setting`, Shopify, etc.
+
+Bootstrap correcto: no admin de **produção**, duplicar o projecto (Dato mantém IDs de modelos/campos) e usar essa cópia como Staging — ou convidar a conta Staging como collaborator na cópia.
+
+Se a conta de produção estiver **suspensa por cota** (`Cannot duplicate a blocked site!`), a duplicação no dashboard **não** tem plugin nem CLI equivalente: o Free desliga admin, CDA **e** CMA até ao dia 1 do mês seguinte (ou até upgrade pago). Plugins Dato correm *dentro* de um projecto e não leem um site bloqueado. `environments:fork` no projecto suspenso também falha. Recriar o schema no Staging à mão / via CMA gera **novos IDs** e não substitui a duplicação.
+
+Desbloqueio (duplicação com IDs iguais): upgrade temporário na conta de produção → Duplicate (só models/fields) → transferir/convidar Staging — ou esperar o reset da cota. Support (`support@datocms.com`) pode desbloquear a duplicação pontual.
+
+**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `234806` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
+
+```bash
+npx datocms login   # conta ezecas / projecto 234806
+npx datocms link --profile=staging --site-id=234806
+npx datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging
+```
+
+O script recusa `siteId` `201057`. Marca as migrations já no repo como aplicadas em `schema_migration`. Conteúdo (páginas/posts) não é copiado.
+
+Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`234806`), nunca CMA no `DATOCMS_API_TOKEN`.
+
+Depois de o bootstrap, migrations **novas** (ficheiros que ainda não existiam):
+
+```bash
+npx datocms migrations:run --profile=staging --in-place --allow-primary
+```
+
+`--allow-primary` só no Staging vazio/cópia sem editores. Nunca no `main` de produção. A CLI recusa `--in-place` no primary sem esta flag.
+
 Úteis a seguir:
 
 ```bash

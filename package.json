@@ -21,6 +21,7 @@
     "security:audit:all": "npm audit --audit-level=high",
     "security:headers": "node scripts/check-security-headers.mjs",
     "security:check": "npm run security:audit && npm run security:headers",
+    "dato:bootstrap-staging": "datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging",
     "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
     "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",

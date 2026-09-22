@@ -7,6 +7,16 @@
         "directory": "./migrations",
         "modelApiKey": "schema_migration"
       }
+    },
+    "staging": {
+      "siteId": "234806",
+      "logLevel": "NONE",
+      "migrations": {
+        "directory": "./migrations",
+        "modelApiKey": "schema_migration",
+        "template": "",
+        "tsconfig": ""
+      }
     }
   }
 }
