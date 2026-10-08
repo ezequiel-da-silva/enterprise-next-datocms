@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import { toDatoSiteLocale } from "@/constants/i18n";
+import { cdaFetchCache } from "@/infra/datocms/cda-fetch-cache";
 import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
 import type { LegalPageBySlugQuery } from "@/infra/datocms/generated/operations.types";
 import { LEGAL_PAGE_BY_SLUG } from "@/infra/datocms/queries";
@@ -24,18 +25,16 @@ const loadLegalPageBySlug = cache(
     includeDrafts: boolean,
     locale: AppLocale,
   ): Promise<DatocmsResponse<LegalPageBySlugQuery>> => {
-    const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
-
     return datocmsFetch<LegalPageBySlugQuery>({
       query: LEGAL_PAGE_BY_SLUG,
       variables: { slug, locale: toDatoSiteLocale(locale) },
-      tags:
-        includeDrafts || devPublishedNoStore
-          ? undefined
-          : ["datocms:legal", `legal:${locale}:${slug}`],
-      revalidate: includeDrafts || devPublishedNoStore ? false : 120,
       includeDrafts,
-      cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
+      ...cdaFetchCache({
+        includeDrafts,
+        tags: ["datocms:legal", `legal:${locale}:${slug}`],
+        revalidate: 120,
+        bypassPublishedCacheInDev: true,
+      }),
     });
   },
 );

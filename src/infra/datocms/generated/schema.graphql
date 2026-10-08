@@ -1,0 +1,2484 @@
+# CDA SDL for graphql-codegen (offline).
+# Live dump: npm run codegen:schema (DATOCMS_API_TOKEN + DATOCMS_ENVIRONMENT).
+
+
+scalar BooleanType
+scalar CustomData
+scalar DateTime
+scalar FloatType
+scalar IntType
+scalar ItemId
+scalar JsonField
+scalar MetaTagAttributes
+scalar UploadId
+
+enum AuthorModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  authorName_ASC
+  authorName_DESC
+  authorRole_ASC
+  authorRole_DESC
+  id_ASC
+  id_DESC
+}
+enum CategoryModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  categoryName_ASC
+  categoryName_DESC
+  id_ASC
+  id_DESC
+}
+enum CollectionPageModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  shopifyCollectionId_ASC
+  shopifyCollectionId_DESC
+  title_ASC
+  title_DESC
+}
+enum ColorBucketType {
+  black
+  blue
+  brown
+  cyan
+  green
+  grey
+  orange
+  pink
+  purple
+  red
+  white
+  yellow
+}
+enum FaviconType {
+  appleTouchIcon
+  icon
+  msApplication
+}
+enum ImgixParamsAuto {
+  compress
+  enhance
+  format
+  redeye
+}
+enum ImgixParamsBgRemoveFgType {
+  auto
+  car
+}
+enum ImgixParamsBlendAlign {
+  bottom
+  center
+  left
+  middle
+  right
+  top
+}
+enum ImgixParamsBlendCrop {
+  bottom
+  faces
+  left
+  right
+  top
+}
+enum ImgixParamsBlendFit {
+  clamp
+  clip
+  crop
+  max
+  scale
+}
+enum ImgixParamsBlendMode {
+  burn
+  color
+  darken
+  difference
+  dodge
+  exclusion
+  hardlight
+  hue
+  lighten
+  luminosity
+  multiply
+  normal
+  overlay
+  saturation
+  screen
+  softlight
+}
+enum ImgixParamsBlendSize {
+  inherit
+}
+enum ImgixParamsCh {
+  dpr
+  saveData
+  width
+}
+enum ImgixParamsCrop {
+  bottom
+  edges
+  entropy
+  faces
+  focalpoint
+  left
+  right
+  top
+}
+enum ImgixParamsCs {
+  adobergb1998
+  origin
+  srgb
+  strip
+  tinysrgb
+}
+enum ImgixParamsFill {
+  blur
+  gen
+  generative
+  gradient
+  solid
+}
+enum ImgixParamsFillGenPos {
+  bottom
+  center
+  left
+  middle
+  right
+  top
+}
+enum ImgixParamsFillGradientCs {
+  hsl
+  lch
+  linear
+  oklab
+  srgb
+}
+enum ImgixParamsFillGradientLinearDirection {
+  bottom
+  left
+  right
+  top
+}
+enum ImgixParamsFillGradientType {
+  linear
+  radial
+}
+enum ImgixParamsFit {
+  clamp
+  clip
+  crop
+  facearea
+  fill
+  fillmax
+  max
+  min
+  scale
+}
+enum ImgixParamsFlip {
+  h
+  hv
+  v
+}
+enum ImgixParamsFm {
+  avif
+  blurhash
+  gif
+  jp2
+  jpg
+  json
+  jxr
+  mp4
+  pjpg
+  png
+  png8
+  png32
+  webm
+  webp
+}
+enum ImgixParamsIptc {
+  allow
+  block
+}
+enum ImgixParamsMarkAlign {
+  bottom
+  center
+  left
+  middle
+  right
+  top
+}
+enum ImgixParamsMarkFit {
+  clip
+  crop
+  fill
+  max
+  scale
+}
+enum ImgixParamsMarkTile {
+  grid
+}
+enum ImgixParamsPalette {
+  css
+  json
+}
+enum ImgixParamsRotType {
+  pivot
+  straighten
+}
+enum ImgixParamsTransparency {
+  grid
+}
+enum ImgixParamsTrim {
+  alpha
+  auto
+  color
+}
+enum ImgixParamsTxtAlign {
+  bottom
+  center
+  left
+  middle
+  right
+  top
+}
+enum ImgixParamsTxtClip {
+  ellipsis
+  end
+  middle
+  start
+}
+enum ImgixParamsTxtFit {
+  max
+}
+enum ItemStatus {
+  draft
+  published
+  updated
+}
+enum LegalPageModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  title_ASC
+  title_DESC
+}
+enum MuxThumbnailFitMode {
+  crop
+  pad
+  preserve
+  smartcrop
+  stretch
+}
+enum MuxThumbnailFormatType {
+  gif
+  jpg
+  png
+}
+enum MuxThumbnailRotation {
+  ROTATE_90
+  ROTATE_180
+  ROTATE_270
+}
+enum PageModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  title_ASC
+  title_DESC
+}
+enum PostModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  postTitle_ASC
+  postTitle_DESC
+}
+enum ProductPageModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  shopifyProductId_ASC
+  shopifyProductId_DESC
+  title_ASC
+  title_DESC
+}
+enum RedirectModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  fromPathRedirect_ASC
+  fromPathRedirect_DESC
+  id_ASC
+  id_DESC
+  statusRedirect_ASC
+  statusRedirect_DESC
+  toPathRedirect_ASC
+  toPathRedirect_DESC
+}
+enum ResolutionType {
+  icon
+  large
+  medium
+  small
+}
+enum SchemaMigrationModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  name_ASC
+  name_DESC
+}
+enum SiteLocale {
+  en
+  es
+  pt_BR
+}
+enum UploadOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  basename_ASC
+  basename_DESC
+  filename_ASC
+  filename_DESC
+  format_ASC
+  format_DESC
+  id_ASC
+  id_DESC
+  mimeType_ASC
+  mimeType_DESC
+  resolution_ASC
+  resolution_DESC
+  size_ASC
+  size_DESC
+}
+enum UploadOrientation {
+  landscape
+  portrait
+  square
+}
+enum UploadType {
+  archive
+  audio
+  image
+  pdfdocument
+  presentation
+  richtext
+  spreadsheet
+  video
+}
+enum UserReviewModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  authorEmail_ASC
+  authorEmail_DESC
+  authorName_ASC
+  authorName_DESC
+  id_ASC
+  id_DESC
+  rating_ASC
+  rating_DESC
+}
+enum VideoMp4Res {
+  high
+  low
+  medium
+}
+
+interface FileFieldInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _updatedAt: DateTime!
+  alt(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  author: String
+  basename: String!
+  blurUpThumb(imgixParams: ImgixParams, punch: Float, quality: Int, size: Int): String
+  blurhash: String
+  colors: [ColorField!]!
+  copyright: String
+  customData(fallbackLocales: [SiteLocale!], locale: SiteLocale): CustomData!
+  exifInfo: CustomData!
+  filename: String!
+  focalPoint(fallbackLocales: [SiteLocale!], locale: SiteLocale): FocalPoint
+  format: String!
+  height: IntType
+  id: UploadId!
+  md5: String!
+  mimeType: String!
+  notes: String
+  responsiveImage(fallbackLocales: [SiteLocale!], imgixParams: ImgixParams, locale: SiteLocale, sizes: String): ResponsiveImage
+  size: IntType!
+  smartTags: [String!]!
+  tags: [String!]!
+  thumbhash: String
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  url(imgixParams: ImgixParams): String!
+  video: UploadVideoField
+  width: IntType
+}
+interface RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+}
+
+union ContentListingSectionModelListingConfigField = BlogListingConfigRecord | ShopifyListingConfigRecord
+union LegalPageModelContentLinksField = LegalPageRecord | PageRecord
+union PageModelContentPageField = ContactFormSectionRecord | ContentListingSectionRecord | CtaBannerRecord | FaqGroupRecord | FeatureGridRecord | LogoGridRecord | PricingSectionRecord | ReviewsSectionRecord | SearchSectionRecord | StatsSectionRecord | StepsSectionRecord | TabsSectionRecord | TeamSectionRecord | TextSectionRecord
+union PostModelPostContentBlocksField = ContentListingSectionRecord | ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord
+union TextSectionModelBodyBlocksField = ImageBlockRecord | ImageGalleryBlockRecord | VideoBlockRecord
+
+type AuthorModelAuthorBioField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type AuthorModelAuthorBioFieldMultiLocaleField {
+  locale: SiteLocale
+  value: AuthorModelAuthorBioField
+}
+type AuthorRecord implements RecordInterface {
+  _allAuthorBioLocales(fallbackLocales: [SiteLocale!]): [AuthorModelAuthorBioFieldMultiLocaleField!]
+  _allAuthorSlugLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allSeoAnalysisLocales(fallbackLocales: [SiteLocale!]): [JsonFieldMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  authorBio(fallbackLocales: [SiteLocale!], locale: SiteLocale): AuthorModelAuthorBioField
+  authorName: String
+  authorRole: String
+  authorSlug(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  authorSocialLinks: [SocialLinkRecord!]!
+  avatarBio: ImageBlockRecord
+  id: ItemId!
+  seoAnalysis(fallbackLocales: [SiteLocale!], locale: SiteLocale): JsonField
+  seoSettingsSocial: SeoField
+}
+type BannerImageBlockRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  assetDesktop: FileField
+  assetMobile: FileField
+  id: ItemId!
+}
+type BlogListingConfigRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  allCategoriesLabel: String
+  fetchMode: String
+  filterDisplay: String
+  id: ItemId!
+  manualPosts: [PostRecord!]!
+  selectedCategories: [CategoryRecord!]!
+  showSortTabs: BooleanType!
+}
+type CardImageBlockRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  assetDesktop: FileField
+  assetMobile: FileField
+  id: ItemId!
+}
+type CardRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  cardSource: String
+  descriptionCard: String
+  hasDescription: BooleanType!
+  hasIcon: BooleanType!
+  hasImage: BooleanType!
+  hasLink: BooleanType!
+  iconCard: JsonField
+  id: ItemId!
+  imageCard: CardImageBlockRecord
+  linkCard: LinkRecord
+  sourceCollection: CollectionPageRecord
+  sourceProduct: ProductPageRecord
+  titleCard: String
+}
+type CarouselSettingRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  autoplay: BooleanType!
+  autoplayInterval: IntType
+  id: ItemId!
+  loop: BooleanType!
+  showArrows: BooleanType!
+  showDots: BooleanType!
+}
+type CategoryModelCategoryDescriptionField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type CategoryModelCategoryDescriptionFieldMultiLocaleField {
+  locale: SiteLocale
+  value: CategoryModelCategoryDescriptionField
+}
+type CategoryRecord implements RecordInterface {
+  _allCategoryDescriptionLocales(fallbackLocales: [SiteLocale!]): [CategoryModelCategoryDescriptionFieldMultiLocaleField!]
+  _allCategoryNameLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allCategorySlugLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allSeoAnalysisLocales(fallbackLocales: [SiteLocale!]): [JsonFieldMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  categoryColor: ColorField
+  categoryDescription(fallbackLocales: [SiteLocale!], locale: SiteLocale): CategoryModelCategoryDescriptionField
+  categoryIcon: FileField
+  categoryName(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  categorySlug(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  id: ItemId!
+  seoAnalysis(fallbackLocales: [SiteLocale!], locale: SiteLocale): JsonField
+  seoSettingsSocial: SeoField
+}
+type CollectionMetadata {
+  count: IntType!
+}
+type CollectionPageRecord implements RecordInterface {
+  _allDescriptionLocales(fallbackLocales: [SiteLocale!], markdown: Boolean): [StringMultiLocaleField!]
+  _allSeoLocales(fallbackLocales: [SiteLocale!]): [SeoFieldMultiLocaleField!]
+  _allTitleLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  description(fallbackLocales: [SiteLocale!], locale: SiteLocale, markdown: Boolean): String
+  id: ItemId!
+  seo(fallbackLocales: [SiteLocale!], locale: SiteLocale): SeoField
+  shopifyCollectionId: String
+  shopifyHandle: String
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+}
+type ColorField {
+  alpha: IntType!
+  blue: IntType!
+  cssRgb: String!
+  green: IntType!
+  hex: String!
+  red: IntType!
+}
+type ColorThemeRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  colorNeutral: ColorField
+  colorPrimary: ColorField
+  colorSecondary: ColorField
+  colorTertiary: ColorField
+  id: ItemId!
+  paletteSelection: String
+}
+type ContactFormSectionModelIntroField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [PageRecord!]!
+  value: JsonField!
+}
+type ContactFormSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  hasTextHeader: BooleanType!
+  id: ItemId!
+  intro: ContactFormSectionModelIntroField
+  privacyNote: String
+  successMessage: String
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type ContentListingSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  carouselOptions: [CarouselSettingRecord!]!
+  displayType: String
+  hasLimit: BooleanType!
+  id: ItemId!
+  initialCount: IntType
+  limit: IntType
+  listingConfig: ContentListingSectionModelListingConfigField
+  loadMoreLabel: String
+  loadMoreStep: IntType
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type CtaBannerRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  advancedOptions: BooleanType!
+  bgTheme: String
+  buttons: [LinkRecord!]!
+  eyebrow: String
+  hasEyebrow: BooleanType!
+  hasImage: BooleanType!
+  id: ItemId!
+  imageBanner: [BannerImageBlockRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+  variant: String
+}
+type FaqGroupRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  accordionMode: String
+  advancedOptions: BooleanType!
+  enableFaqSchema: BooleanType!
+  headerAlignment: String
+  id: ItemId!
+  openFirstItem: BooleanType!
+  questions: [FaqItemRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type FaqItemModelAnswerField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type FaqItemModelQuestionField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type FaqItemRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  answer: FaqItemModelAnswerField
+  id: ItemId!
+  question: FaqItemModelQuestionField
+}
+type FeatureGridRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  advancedOptions: BooleanType!
+  carouselOptions: [CarouselSettingRecord!]!
+  id: ItemId!
+  itemsFeatureGrid: [CardRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+  variant: String
+}
+type FileField implements FileFieldInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _updatedAt: DateTime!
+  alt(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  author: String
+  basename: String!
+  blurUpThumb(imgixParams: ImgixParams, punch: Float, quality: Int, size: Int): String
+  blurhash: String
+  colors: [ColorField!]!
+  copyright: String
+  customData(fallbackLocales: [SiteLocale!], locale: SiteLocale): CustomData!
+  exifInfo: CustomData!
+  filename: String!
+  focalPoint(fallbackLocales: [SiteLocale!], locale: SiteLocale): FocalPoint
+  format: String!
+  height: IntType
+  id: UploadId!
+  md5: String!
+  mimeType: String!
+  notes: String
+  responsiveImage(fallbackLocales: [SiteLocale!], imgixParams: ImgixParams, locale: SiteLocale, sizes: String): ResponsiveImage
+  size: IntType!
+  smartTags: [String!]!
+  tags: [String!]!
+  thumbhash: String
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  url(imgixParams: ImgixParams): String!
+  video: UploadVideoField
+  width: IntType
+}
+type GlobalSeoField {
+  facebookPageUrl: String
+  fallbackSeo: SeoField
+  siteName: String
+  titleSuffix: String
+  twitterAccount: String
+}
+type GlobalSettingModelDescription404Field {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type GlobalSettingModelDescription404FieldMultiLocaleField {
+  locale: SiteLocale
+  value: GlobalSettingModelDescription404Field
+}
+type GlobalSettingRecord implements RecordInterface {
+  _allDescription404Locales(fallbackLocales: [SiteLocale!]): [GlobalSettingModelDescription404FieldMultiLocaleField!]
+  _allTitle404Locales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  blogPage: PageRecord
+  collectionsPage: PageRecord
+  contactPage: PageRecord
+  description404(fallbackLocales: [SiteLocale!], locale: SiteLocale): GlobalSettingModelDescription404Field
+  id: ItemId!
+  image404: ImageBlockRecord
+  productsPage: PageRecord
+  searchPage: PageRecord
+  title404(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+}
+type HeroImageBlockRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  assetDesktop: FileField
+  assetMobile: FileField
+  id: ItemId!
+}
+type HeroSectionModelSubtitleHeroField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type HeroSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  buttonHero: [LinkRecord!]!
+  id: ItemId!
+  imageHero: HeroImageBlockRecord
+  imageOverlay: HeroImageBlockRecord
+  layoutHero: String
+  showButton: BooleanType!
+  showImageHero: BooleanType!
+  showImageOverlay: BooleanType!
+  subtitleHero: HeroSectionModelSubtitleHeroField
+  titleHero: String
+}
+type HeroSectionRecordMultiLocaleField {
+  locale: SiteLocale
+  value: HeroSectionRecord
+}
+type ImageBlockRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  asset: FileField
+  assetDesktop: FileField
+  id: ItemId!
+}
+type ImageGalleryBlockRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  assets: [FileField!]!
+  id: ItemId!
+}
+type JsonFieldMultiLocaleField {
+  locale: SiteLocale
+  value: JsonField
+}
+type LegalPageModelContentField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [LegalPageModelContentLinksField!]!
+  value: JsonField!
+}
+type LegalPageModelContentFieldMultiLocaleField {
+  locale: SiteLocale
+  value: LegalPageModelContentField
+}
+type LegalPageRecord implements RecordInterface {
+  _allContentLocales(fallbackLocales: [SiteLocale!]): [LegalPageModelContentFieldMultiLocaleField!]
+  _allSeoAnalysisLocales(fallbackLocales: [SiteLocale!]): [JsonFieldMultiLocaleField!]
+  _allSeoSettingsSocialLocales(fallbackLocales: [SiteLocale!]): [SeoFieldMultiLocaleField!]
+  _allTitleLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  content(fallbackLocales: [SiteLocale!], locale: SiteLocale): LegalPageModelContentField
+  id: ItemId!
+  seoAnalysis(fallbackLocales: [SiteLocale!], locale: SiteLocale): JsonField
+  seoSettingsSocial(fallbackLocales: [SiteLocale!], locale: SiteLocale): SeoField
+  slug: String
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+}
+type LinkRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  ctaLabel: String
+  ctaLinkAria: String
+  externalLink: String
+  id: ItemId!
+  internalLinkAuthor: AuthorRecord
+  internalLinkCategory: CategoryRecord
+  internalLinkCollection: CollectionPageRecord
+  internalLinkPage: PageRecord
+  internalLinkPost: PostRecord
+  internalLinkProduct: ProductPageRecord
+  openInNewTab: BooleanType!
+  typeContent: String
+}
+type LogoGridRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  grayscale: BooleanType!
+  id: ItemId!
+  layoutStyle: String
+  logos: [ImageBlockRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type NavItemModularRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  navItemLabel: String
+  navItemLink: String
+  navItemLinkAria: String
+  openInNewTab: BooleanType!
+  submenu: [NavItemModularRecord!]!
+}
+type NavItemModularRecordListListNonNullMultiLocaleField {
+  locale: SiteLocale
+  value: [NavItemModularRecord!]!
+}
+type NavItemSimpleRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  navItemLabel: String
+  navItemLink: String
+  navItemLinkAria: String
+  openInNewTab: BooleanType!
+  submenu: [NavItemModularRecord!]!
+}
+type NavItemSimpleRecordListListNonNullMultiLocaleField {
+  locale: SiteLocale
+  value: [NavItemSimpleRecord!]!
+}
+type NavigationModelCopyrightTextField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [String!]!
+  value: JsonField!
+}
+type NavigationModelCopyrightTextFieldMultiLocaleField {
+  locale: SiteLocale
+  value: NavigationModelCopyrightTextField
+}
+type NavigationRecord implements RecordInterface {
+  _allCopyrightTextLocales(fallbackLocales: [SiteLocale!]): [NavigationModelCopyrightTextFieldMultiLocaleField!]
+  _allFooterMenuLocales(fallbackLocales: [SiteLocale!]): [NavItemModularRecordListListNonNullMultiLocaleField!]
+  _allHeaderSearchPlaceholderLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allHeaderSearchSubmitLabelLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allLegalLinksLocales(fallbackLocales: [SiteLocale!]): [NavItemSimpleRecordListListNonNullMultiLocaleField!]
+  _allMenuLinksLocales(fallbackLocales: [SiteLocale!]): [NavItemModularRecordListListNonNullMultiLocaleField!]
+  _allSocialLinksLocales(fallbackLocales: [SiteLocale!]): [SocialLinkRecordListListNonNullMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  copyrightText(fallbackLocales: [SiteLocale!], locale: SiteLocale): NavigationModelCopyrightTextField
+  defaultTheme: String
+  footerLogo: FileField
+  footerMenu(fallbackLocales: [SiteLocale!], locale: SiteLocale): [NavItemModularRecord!]!
+  headerSearchPlaceholder(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  headerSearchSubmitLabel(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  id: ItemId!
+  legalLinks(fallbackLocales: [SiteLocale!], locale: SiteLocale): [NavItemSimpleRecord!]!
+  logo: FileField
+  menuLinks(fallbackLocales: [SiteLocale!], locale: SiteLocale): [NavItemModularRecord!]!
+  showHeaderSearch: BooleanType!
+  showThemeToggle: BooleanType!
+  socialLinks(fallbackLocales: [SiteLocale!], locale: SiteLocale): [SocialLinkRecord!]!
+}
+type PageModelContentPageFieldListListNonNullMultiLocaleField {
+  locale: SiteLocale
+  value: [PageModelContentPageField!]!
+}
+type PageRecord implements RecordInterface {
+  _allContentPageLocales(fallbackLocales: [SiteLocale!]): [PageModelContentPageFieldListListNonNullMultiLocaleField!]
+  _allHeroPageLocales(fallbackLocales: [SiteLocale!]): [HeroSectionRecordMultiLocaleField!]
+  _allSeoAnalysisLocales(fallbackLocales: [SiteLocale!]): [JsonFieldMultiLocaleField!]
+  _allSeoSettingsSocialLocales(fallbackLocales: [SiteLocale!]): [SeoFieldMultiLocaleField!]
+  _allSlugLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allTitleLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  contentPage(fallbackLocales: [SiteLocale!], locale: SiteLocale): [PageModelContentPageField!]!
+  heroPage(fallbackLocales: [SiteLocale!], locale: SiteLocale): HeroSectionRecord
+  id: ItemId!
+  seoAnalysis(fallbackLocales: [SiteLocale!], locale: SiteLocale): JsonField
+  seoSettingsSocial(fallbackLocales: [SiteLocale!], locale: SiteLocale): SeoField
+  slug(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+}
+type PostModelPostContentField {
+  blocks: [PostModelPostContentBlocksField!]!
+  inlineBlocks: [String!]!
+  links: [PageRecord!]!
+  value: JsonField!
+}
+type PostModelPostContentFieldMultiLocaleField {
+  locale: SiteLocale
+  value: PostModelPostContentField
+}
+type PostRecord implements RecordInterface {
+  _allExcerptLocales(fallbackLocales: [SiteLocale!], markdown: Boolean): [StringMultiLocaleField!]
+  _allPostContentLocales(fallbackLocales: [SiteLocale!]): [PostModelPostContentFieldMultiLocaleField!]
+  _allPostSlugLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allPostTitleLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allSeoAnalysisLocales(fallbackLocales: [SiteLocale!]): [JsonFieldMultiLocaleField!]
+  _allSeoSettingsSocialLocales(fallbackLocales: [SiteLocale!]): [SeoFieldMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  coverImage: CardImageBlockRecord
+  excerpt(fallbackLocales: [SiteLocale!], locale: SiteLocale, markdown: Boolean): String
+  id: ItemId!
+  postAuthor: AuthorRecord
+  postCategory: [CategoryRecord!]!
+  postContent(fallbackLocales: [SiteLocale!], locale: SiteLocale): PostModelPostContentField
+  postSlug(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  postTitle(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  seoAnalysis(fallbackLocales: [SiteLocale!], locale: SiteLocale): JsonField
+  seoSettingsSocial(fallbackLocales: [SiteLocale!], locale: SiteLocale): SeoField
+}
+type PricingCardRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  amount: FloatType
+  billingPeriod: String
+  ctaButton: [LinkRecord!]!
+  currency: String
+  description: String
+  features(markdown: Boolean): String
+  hasButton: BooleanType!
+  hasDescription: BooleanType!
+  id: ItemId!
+  isPopular: BooleanType!
+  name: String
+  priceType: String
+}
+type PricingSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  plans: [PricingCardRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type ProductPageRecord implements RecordInterface {
+  _allDescriptionLocales(fallbackLocales: [SiteLocale!], markdown: Boolean): [StringMultiLocaleField!]
+  _allSeoLocales(fallbackLocales: [SiteLocale!]): [SeoFieldMultiLocaleField!]
+  _allTitleLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  description(fallbackLocales: [SiteLocale!], locale: SiteLocale, markdown: Boolean): String
+  id: ItemId!
+  seo(fallbackLocales: [SiteLocale!], locale: SiteLocale): SeoField
+  shopifyHandle: String
+  shopifyProductId: String
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+}
+type Query {
+  _allAuthorsMeta(filter: AuthorModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allCategoriesMeta(filter: CategoryModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allCollectionPagesMeta(filter: CollectionPageModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allLegalPagesMeta(filter: LegalPageModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allPagesMeta(filter: PageModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allPostsMeta(filter: PostModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allProductPagesMeta(filter: ProductPageModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allRedirectsMeta(filter: RedirectModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allSchemaMigrationsMeta(filter: SchemaMigrationModelFilter, locale: SiteLocale): CollectionMetadata!
+  _allUploadsMeta(filter: UploadFilter, locale: SiteLocale): CollectionMetadata!
+  _allUserReviewsMeta(filter: UserReviewModelFilter, locale: SiteLocale): CollectionMetadata!
+  _site(fallbackLocales: [SiteLocale!], locale: SiteLocale): Site!
+  allAuthors(fallbackLocales: [SiteLocale!], filter: AuthorModelFilter, first: IntType, locale: SiteLocale, orderBy: [AuthorModelOrderBy], skip: IntType): [AuthorRecord!]!
+  allCategories(fallbackLocales: [SiteLocale!], filter: CategoryModelFilter, first: IntType, locale: SiteLocale, orderBy: [CategoryModelOrderBy], skip: IntType): [CategoryRecord!]!
+  allCollectionPages(fallbackLocales: [SiteLocale!], filter: CollectionPageModelFilter, first: IntType, locale: SiteLocale, orderBy: [CollectionPageModelOrderBy], skip: IntType): [CollectionPageRecord!]!
+  allLegalPages(fallbackLocales: [SiteLocale!], filter: LegalPageModelFilter, first: IntType, locale: SiteLocale, orderBy: [LegalPageModelOrderBy], skip: IntType): [LegalPageRecord!]!
+  allPages(fallbackLocales: [SiteLocale!], filter: PageModelFilter, first: IntType, locale: SiteLocale, orderBy: [PageModelOrderBy], skip: IntType): [PageRecord!]!
+  allPosts(fallbackLocales: [SiteLocale!], filter: PostModelFilter, first: IntType, locale: SiteLocale, orderBy: [PostModelOrderBy], skip: IntType): [PostRecord!]!
+  allProductPages(fallbackLocales: [SiteLocale!], filter: ProductPageModelFilter, first: IntType, locale: SiteLocale, orderBy: [ProductPageModelOrderBy], skip: IntType): [ProductPageRecord!]!
+  allRedirects(fallbackLocales: [SiteLocale!], filter: RedirectModelFilter, first: IntType, locale: SiteLocale, orderBy: [RedirectModelOrderBy], skip: IntType): [RedirectRecord!]!
+  allSchemaMigrations(fallbackLocales: [SiteLocale!], filter: SchemaMigrationModelFilter, first: IntType, locale: SiteLocale, orderBy: [SchemaMigrationModelOrderBy], skip: IntType): [SchemaMigrationRecord!]!
+  allUploads(fallbackLocales: [SiteLocale!], filter: UploadFilter, first: IntType, locale: SiteLocale, orderBy: [UploadOrderBy], skip: IntType): [FileField!]!
+  allUserReviews(fallbackLocales: [SiteLocale!], filter: UserReviewModelFilter, first: IntType, locale: SiteLocale, orderBy: [UserReviewModelOrderBy], skip: IntType): [UserReviewRecord!]!
+  author(fallbackLocales: [SiteLocale!], filter: AuthorModelFilter, locale: SiteLocale, orderBy: [AuthorModelOrderBy]): AuthorRecord
+  category(fallbackLocales: [SiteLocale!], filter: CategoryModelFilter, locale: SiteLocale, orderBy: [CategoryModelOrderBy]): CategoryRecord
+  collectionPage(fallbackLocales: [SiteLocale!], filter: CollectionPageModelFilter, locale: SiteLocale, orderBy: [CollectionPageModelOrderBy]): CollectionPageRecord
+  globalSetting(fallbackLocales: [SiteLocale!], locale: SiteLocale): GlobalSettingRecord
+  legalPage(fallbackLocales: [SiteLocale!], filter: LegalPageModelFilter, locale: SiteLocale, orderBy: [LegalPageModelOrderBy]): LegalPageRecord
+  navigation(fallbackLocales: [SiteLocale!], locale: SiteLocale): NavigationRecord
+  page(fallbackLocales: [SiteLocale!], filter: PageModelFilter, locale: SiteLocale, orderBy: [PageModelOrderBy]): PageRecord
+  post(fallbackLocales: [SiteLocale!], filter: PostModelFilter, locale: SiteLocale, orderBy: [PostModelOrderBy]): PostRecord
+  productPage(fallbackLocales: [SiteLocale!], filter: ProductPageModelFilter, locale: SiteLocale, orderBy: [ProductPageModelOrderBy]): ProductPageRecord
+  redirect(fallbackLocales: [SiteLocale!], filter: RedirectModelFilter, locale: SiteLocale, orderBy: [RedirectModelOrderBy]): RedirectRecord
+  schemaMigration(fallbackLocales: [SiteLocale!], filter: SchemaMigrationModelFilter, locale: SiteLocale, orderBy: [SchemaMigrationModelOrderBy]): SchemaMigrationRecord
+  upload(fallbackLocales: [SiteLocale!], filter: UploadFilter, locale: SiteLocale, orderBy: [UploadOrderBy]): FileField
+  userReview(fallbackLocales: [SiteLocale!], filter: UserReviewModelFilter, locale: SiteLocale, orderBy: [UserReviewModelOrderBy]): UserReviewRecord
+}
+type RedirectRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  fromPathRedirect: String
+  id: ItemId!
+  statusRedirect: String
+  toPathRedirect: String
+}
+type ResponsiveImage {
+  alt: String
+  aspectRatio: FloatType!
+  base64: String
+  bgColor: String
+  height: IntType!
+  sizes: String!
+  src: String!
+  srcSet: String!
+  title: String
+  webpSrcSet: String!
+  width: IntType!
+}
+type ReviewsSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  allowSubmissions: BooleanType!
+  id: ItemId!
+  reviews: [UserReviewRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type SchemaMigrationRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  name: String
+}
+type SearchSectionModelIntroField {
+  blocks: [String!]!
+  inlineBlocks: [String!]!
+  links: [PageRecord!]!
+  value: JsonField!
+}
+type SearchSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  emptyHint: String
+  hasTextHeader: BooleanType!
+  id: ItemId!
+  intro: SearchSectionModelIntroField
+  noResults: String
+  placeholder: String
+  submitLabel: String
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type SeoField {
+  description: String
+  image: FileField
+  noIndex: BooleanType
+  title: String
+  twitterCard: String
+}
+type SeoFieldMultiLocaleField {
+  locale: SiteLocale
+  value: SeoField
+}
+type ShopifyListingConfigRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  collectionFilter: String
+  fetchMode: String
+  id: ItemId!
+  selectedProducts: [ProductPageRecord!]!
+  sourceCollection: CollectionPageRecord
+}
+type Site {
+  favicon: FileField
+  faviconMetaTags(variants: [FaviconType]): [Tag!]!
+  globalSeo(fallbackLocales: [SiteLocale!], locale: SiteLocale): GlobalSeoField
+  locales: [SiteLocale!]!
+  noIndex: BooleanType
+}
+type SocialLinkRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  image: FileField
+  linkAria: String
+  openInNewTab: BooleanType!
+  plataforma: String
+  url: String
+}
+type SocialLinkRecordListListNonNullMultiLocaleField {
+  locale: SiteLocale
+  value: [SocialLinkRecord!]!
+}
+type StatCardRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  description: String
+  hasDescription: BooleanType!
+  id: ItemId!
+  label: String
+  value: String
+}
+type StatsSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  stats: [StatCardRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type StepCardRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  description(markdown: Boolean): String
+  hasDescription: BooleanType!
+  hasImage: BooleanType!
+  id: ItemId!
+  mediaImage: [CardImageBlockRecord!]!
+  title: String
+}
+type StepsSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  steps: [StepCardRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type StringMultiLocaleField {
+  locale: SiteLocale
+  value: String
+}
+type TabItemRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  ctaLink: LinkRecord
+  description(markdown: Boolean): String
+  hasDescription: BooleanType!
+  hasImage: BooleanType!
+  hasLink: BooleanType!
+  id: ItemId!
+  labelTab: String
+  mediaImage: CardImageBlockRecord
+  title: String
+}
+type TabsSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  tabs: [TabItemRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type Tag {
+  attributes: MetaTagAttributes
+  content: String
+  tag: String!
+}
+type TeamSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  id: ItemId!
+  members: [AuthorRecord!]!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type TextHeaderRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  description: String
+  hasDescription: BooleanType!
+  hasSectionId: BooleanType!
+  id: ItemId!
+  sectionId: String
+  title: String
+}
+type TextSectionModelBodyField {
+  blocks: [TextSectionModelBodyBlocksField!]!
+  inlineBlocks: [String!]!
+  links: [PageRecord!]!
+  value: JsonField!
+}
+type TextSectionRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  body: TextSectionModelBodyField
+  hasTextHeader: BooleanType!
+  id: ItemId!
+  textHeaderSection: [TextHeaderRecord!]!
+}
+type UploadVideoField {
+  alt(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  blurUpThumb(imgixParams: ImgixParams, punch: Float, quality: Int, size: Int): String
+  blurhash: String
+  duration: Int
+  framerate: Int
+  height: IntType!
+  mp4Url(exactRes: VideoMp4Res, res: VideoMp4Res): String
+  muxAssetId: String!
+  muxPlaybackId: String!
+  posterTime: Float
+  streamingUrl: String!
+  thumbhash: String
+  thumbnailUrl(fitMode: MuxThumbnailFitMode, flipH: Boolean, flipV: Boolean, format: MuxThumbnailFormatType, height: Int, rotate: MuxThumbnailRotation, time: Float, width: Int): String!
+  title(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  width: IntType!
+}
+type UserReviewRecord implements RecordInterface {
+  _allAuthorNameLocales(fallbackLocales: [SiteLocale!]): [StringMultiLocaleField!]
+  _allCommentLocales(fallbackLocales: [SiteLocale!], markdown: Boolean): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  authorAvatar: FileField
+  authorEmail: String
+  authorName(fallbackLocales: [SiteLocale!], locale: SiteLocale): String
+  comment(fallbackLocales: [SiteLocale!], locale: SiteLocale, markdown: Boolean): String
+  id: ItemId!
+  rating: IntType
+}
+type VideoBlockRecord implements RecordInterface {
+  _createdAt: DateTime!
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  _seoMetaTags(locale: SiteLocale): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  asset: FileField
+  id: ItemId!
+}
+type FocalPoint {
+  x: FloatType!
+  y: FloatType!
+}
+
+input AuthorModelFilter {
+  AND: [AuthorModelFilter]
+  OR: [AuthorModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  authorBio: StructuredTextFilter
+  authorName: StringFilter
+  authorRole: StringFilter
+  authorSlug: SlugFilter
+  id: ItemIdFilter
+  seoAnalysis: JsonFilter
+  seoSettingsSocial: SeoFilter
+}
+input BooleanFilter {
+  eq: BooleanType
+}
+input CategoryModelFilter {
+  AND: [CategoryModelFilter]
+  OR: [CategoryModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  categoryColor: ColorFilter
+  categoryDescription: StructuredTextFilter
+  categoryIcon: FileFilter
+  categoryName: StringFilter
+  categorySlug: SlugFilter
+  id: ItemIdFilter
+  seoAnalysis: JsonFilter
+  seoSettingsSocial: SeoFilter
+}
+input CollectionPageModelFilter {
+  AND: [CollectionPageModelFilter]
+  OR: [CollectionPageModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  description: TextFilter
+  id: ItemIdFilter
+  seo: SeoFilter
+  shopifyCollectionId: StringFilter
+  shopifyHandle: SlugFilter
+  title: StringFilter
+}
+input ColorFilter {
+  exists: BooleanType
+}
+input CreatedAtFilter {
+  eq: DateTime
+  exists: BooleanType
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+}
+input FileFilter {
+  eq: UploadId
+  exists: BooleanType
+  in: [UploadId]
+  neq: UploadId
+  notIn: [UploadId]
+}
+input ImgixParams {
+  ar: String
+  auto: [ImgixParamsAuto!]
+  bg: String
+  bgRemove: BooleanType
+  bgRemoveFallback: BooleanType
+  bgRemoveFgType: [ImgixParamsBgRemoveFgType!]
+  bgRemoveSemiTransparency: BooleanType
+  bgReplace: String
+  bgReplaceFallback: BooleanType
+  bgReplaceNegPrompt: String
+  blend: String
+  blendAlign: [ImgixParamsBlendAlign!]
+  blendAlpha: IntType
+  blendColor: String
+  blendCrop: [ImgixParamsBlendCrop!]
+  blendFit: ImgixParamsBlendFit
+  blendH: FloatType
+  blendMode: ImgixParamsBlendMode
+  blendPad: IntType
+  blendSize: ImgixParamsBlendSize
+  blendW: FloatType
+  blendX: IntType
+  blendY: IntType
+  blur: IntType
+  border: String
+  borderBottom: IntType
+  borderLeft: IntType
+  borderRadius: String
+  borderRadiusInner: String
+  borderRight: IntType
+  borderTop: IntType
+  bri: IntType
+  ch: [ImgixParamsCh!]
+  chromasub: IntType
+  colorquant: IntType
+  colors: IntType
+  con: IntType
+  cornerRadius: String
+  crop: [ImgixParamsCrop!]
+  cs: ImgixParamsCs
+  dl: String
+  dpi: IntType
+  dpr: FloatType
+  duotone: String
+  duotoneAlpha: IntType
+  exp: IntType
+  expires: IntType
+  faceBlur: IntType
+  facePixel: IntType
+  faceindex: IntType
+  facepad: FloatType
+  faces: IntType
+  fill: ImgixParamsFill
+  fillColor: String
+  fillGenFallback: BooleanType
+  fillGenNegPrompt: String
+  fillGenPos: [ImgixParamsFillGenPos!]
+  fillGenPrompt: String
+  fillGenSeed: IntType
+  fillGradientCs: ImgixParamsFillGradientCs
+  fillGradientLinear: String
+  fillGradientLinearDirection: [ImgixParamsFillGradientLinearDirection!]
+  fillGradientRadial: String
+  fillGradientRadialRadius: String
+  fillGradientRadialX: FloatType
+  fillGradientRadialY: FloatType
+  fillGradientType: ImgixParamsFillGradientType
+  fit: ImgixParamsFit
+  flip: ImgixParamsFlip
+  fm: ImgixParamsFm
+  fpDebug: BooleanType
+  fpX: FloatType
+  fpY: FloatType
+  fpZ: FloatType
+  fps: IntType
+  frame: String
+  gam: IntType
+  gifQ: IntType
+  gridColors: String
+  gridSize: IntType
+  h: FloatType
+  high: IntType
+  htn: IntType
+  hue: IntType
+  interval: IntType
+  invert: BooleanType
+  iptc: ImgixParamsIptc
+  jpgProgressive: BooleanType
+  loop: IntType
+  lossless: BooleanType
+  lpBlur: IntType
+  mark: String
+  markAlign: [ImgixParamsMarkAlign!]
+  markAlpha: IntType
+  markBase: String
+  markFit: ImgixParamsMarkFit
+  markH: FloatType
+  markIfMinHeight: IntType
+  markIfMinWidth: IntType
+  markPad: IntType
+  markRot: FloatType
+  markScale: IntType
+  markTile: ImgixParamsMarkTile
+  markW: FloatType
+  markX: IntType
+  markY: IntType
+  mask: String
+  maskBg: String
+  maxH: IntType
+  maxW: IntType
+  minH: IntType
+  minW: IntType
+  monochrome: String
+  nr: IntType
+  nrs: IntType
+  objectRemovalNegativePrompt: String
+  objectRemovalPrompt: String
+  objectRemovalRect: String
+  objectRemovalSeed: IntType
+  orient: IntType
+  pad: IntType
+  padBottom: IntType
+  padLeft: IntType
+  padRight: IntType
+  padTop: IntType
+  page: IntType
+  palette: ImgixParamsPalette
+  pdfAnnotation: BooleanType
+  prefix: String
+  px: IntType
+  q: IntType
+  rasterizeBypass: BooleanType
+  rect: String
+  reverse: BooleanType
+  rot: FloatType
+  rotType: ImgixParamsRotType
+  sat: IntType
+  sepia: IntType
+  shad: FloatType
+  sharp: FloatType
+  skip: IntType
+  skipDefaultOptimizations: BooleanType
+  svgSanitize: BooleanType
+  transparency: ImgixParamsTransparency
+  trim: ImgixParamsTrim
+  trimAlpha: FloatType
+  trimColor: String
+  trimMd: FloatType
+  trimPad: IntType
+  trimSd: FloatType
+  trimTol: FloatType
+  txt: String
+  txtAlign: [ImgixParamsTxtAlign!]
+  txtClip: [ImgixParamsTxtClip!]
+  txtColor: String
+  txtFit: ImgixParamsTxtFit
+  txtFont: String
+  txtLead: IntType
+  txtLine: IntType
+  txtLineColor: String
+  txtPad: IntType
+  txtShad: FloatType
+  txtSize: IntType
+  txtTrack: IntType
+  txtWidth: IntType
+  txtX: IntType
+  txtY: IntType
+  upscale: BooleanType
+  upscaleFallback: BooleanType
+  usm: IntType
+  usmrad: FloatType
+  vib: IntType
+  w: FloatType
+}
+input InUseFilter {
+  eq: BooleanType
+}
+input IntegerFilter {
+  eq: IntType
+  exists: BooleanType
+  gt: IntType
+  gte: IntType
+  lt: IntType
+  lte: IntType
+  neq: IntType
+}
+input ItemIdFilter {
+  eq: ItemId
+  in: [ItemId]
+  neq: ItemId
+  notIn: [ItemId]
+}
+input JsonFilter {
+  exists: BooleanType
+}
+input LegalPageModelFilter {
+  AND: [LegalPageModelFilter]
+  OR: [LegalPageModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  content: StructuredTextFilter
+  id: ItemIdFilter
+  seoAnalysis: JsonFilter
+  seoSettingsSocial: SeoFilter
+  slug: SlugFilter
+  title: StringFilter
+}
+input LinkFilter {
+  eq: ItemId
+  exists: BooleanType
+  in: [ItemId]
+  neq: ItemId
+  notIn: [ItemId]
+}
+input LinksFilter {
+  allIn: [ItemId]
+  anyIn: [ItemId]
+  eq: [ItemId]
+  exists: BooleanType
+  notIn: [ItemId]
+}
+input LocalesFilter {
+  allIn: [SiteLocale!]
+  anyIn: [SiteLocale!]
+  notIn: [SiteLocale!]
+}
+input OrientationFilter {
+  eq: UploadOrientation
+  neq: UploadOrientation
+}
+input PageModelFilter {
+  AND: [PageModelFilter]
+  OR: [PageModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  id: ItemIdFilter
+  seoAnalysis: JsonFilter
+  seoSettingsSocial: SeoFilter
+  slug: SlugFilter
+  title: StringFilter
+}
+input PostModelFilter {
+  AND: [PostModelFilter]
+  OR: [PostModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  excerpt: TextFilter
+  id: ItemIdFilter
+  postAuthor: LinkFilter
+  postCategory: LinksFilter
+  postContent: StructuredTextFilter
+  postSlug: SlugFilter
+  postTitle: StringFilter
+  seoAnalysis: JsonFilter
+  seoSettingsSocial: SeoFilter
+}
+input ProductPageModelFilter {
+  AND: [ProductPageModelFilter]
+  OR: [ProductPageModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  description: TextFilter
+  id: ItemIdFilter
+  seo: SeoFilter
+  shopifyHandle: SlugFilter
+  shopifyProductId: StringFilter
+  title: StringFilter
+}
+input PublishedAtFilter {
+  eq: DateTime
+  exists: BooleanType
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+}
+input RedirectModelFilter {
+  AND: [RedirectModelFilter]
+  OR: [RedirectModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  fromPathRedirect: StringFilter
+  id: ItemIdFilter
+  statusRedirect: StringFilter
+  toPathRedirect: StringFilter
+}
+input ResolutionFilter {
+  eq: ResolutionType
+  in: [ResolutionType]
+  neq: ResolutionType
+  notIn: [ResolutionType]
+}
+input SchemaMigrationModelFilter {
+  AND: [SchemaMigrationModelFilter]
+  OR: [SchemaMigrationModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  id: ItemIdFilter
+  name: StringFilter
+}
+input SeoFilter {
+  exists: BooleanType
+}
+input SlugFilter {
+  eq: String
+  in: [String]
+  neq: String
+  notIn: [String]
+}
+input StatusFilter {
+  eq: ItemStatus
+  in: [ItemStatus]
+  neq: ItemStatus
+  notIn: [ItemStatus]
+}
+input StringFilter {
+  eq: String
+  exists: BooleanType
+  in: [String]
+  isBlank: BooleanType
+  isPresent: BooleanType
+  matches: StringMatchesFilter
+  neq: String
+  notIn: [String]
+  notMatches: StringMatchesFilter
+}
+input StringMatchesFilter {
+  caseSensitive: BooleanType
+  pattern: String!
+  regexp: BooleanType
+}
+input StructuredTextFilter {
+  exists: BooleanType
+  isBlank: BooleanType
+  isPresent: BooleanType
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input TextFilter {
+  exists: BooleanType
+  isBlank: BooleanType
+  isPresent: BooleanType
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input TypeFilter {
+  eq: UploadType
+  in: [UploadType]
+  neq: UploadType
+  notIn: [UploadType]
+}
+input UpdatedAtFilter {
+  eq: DateTime
+  exists: BooleanType
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+}
+input UploadAltFilter {
+  eq: String
+  exists: BooleanType
+  in: [String]
+  matches: StringMatchesFilter
+  neq: String
+  notIn: [String]
+  notMatches: StringMatchesFilter
+}
+input UploadAuthorFilter {
+  exists: BooleanType
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input UploadBasenameFilter {
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input UploadColorsFilter {
+  allIn: [ColorBucketType]
+  anyIn: [ColorBucketType]
+  contains: ColorBucketType
+  eq: [ColorBucketType]
+  notIn: [ColorBucketType]
+}
+input UploadCopyrightFilter {
+  exists: BooleanType
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input UploadCreatedAtFilter {
+  eq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+}
+input UploadFilenameFilter {
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input UploadFilter {
+  AND: [UploadFilter]
+  OR: [UploadFilter]
+  _createdAt: UploadCreatedAtFilter
+  _updatedAt: UploadUpdatedAtFilter
+  alt: UploadAltFilter
+  author: UploadAuthorFilter
+  basename: UploadBasenameFilter
+  colors: UploadColorsFilter
+  copyright: UploadCopyrightFilter
+  filename: UploadFilenameFilter
+  format: UploadFormatFilter
+  height: UploadHeightFilter
+  id: UploadIdFilter
+  inUse: InUseFilter
+  md5: UploadMd5Filter
+  mimeType: UploadMimeTypeFilter
+  notes: UploadNotesFilter
+  orientation: OrientationFilter
+  path: UploadPathFilter
+  resolution: ResolutionFilter
+  size: UploadSizeFilter
+  smartTags: UploadTagsFilter
+  tags: UploadTagsFilter
+  title: UploadTitleFilter
+  type: TypeFilter
+  width: UploadWidthFilter
+}
+input UploadFormatFilter {
+  eq: String
+  in: [String]
+  neq: String
+  notIn: [String]
+}
+input UploadHeightFilter {
+  eq: IntType
+  gt: IntType
+  gte: IntType
+  lt: IntType
+  lte: IntType
+  neq: IntType
+}
+input UploadIdFilter {
+  eq: UploadId
+  in: [UploadId]
+  neq: UploadId
+  notIn: [UploadId]
+}
+input UploadMd5Filter {
+  eq: String
+  in: [String]
+  neq: String
+  notIn: [String]
+}
+input UploadMimeTypeFilter {
+  eq: String
+  in: [String]
+  matches: StringMatchesFilter
+  neq: String
+  notIn: [String]
+  notMatches: StringMatchesFilter
+}
+input UploadNotesFilter {
+  exists: BooleanType
+  matches: StringMatchesFilter
+  notMatches: StringMatchesFilter
+}
+input UploadPathFilter {
+  eq: String
+  in: [String]
+  neq: String
+  notIn: [String]
+}
+input UploadSizeFilter {
+  eq: IntType
+  gt: IntType
+  gte: IntType
+  lt: IntType
+  lte: IntType
+  neq: IntType
+}
+input UploadTagsFilter {
+  allIn: [String!]
+  anyIn: [String!]
+  contains: String
+  eq: [String!]
+  notIn: [String!]
+}
+input UploadTitleFilter {
+  eq: String
+  exists: BooleanType
+  in: [String]
+  matches: StringMatchesFilter
+  neq: String
+  notIn: [String]
+  notMatches: StringMatchesFilter
+}
+input UploadUpdatedAtFilter {
+  eq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  neq: DateTime
+}
+input UploadWidthFilter {
+  eq: IntType
+  gt: IntType
+  gte: IntType
+  lt: IntType
+  lte: IntType
+  neq: IntType
+}
+input UserReviewModelFilter {
+  AND: [UserReviewModelFilter]
+  OR: [UserReviewModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  authorAvatar: FileFilter
+  authorEmail: StringFilter
+  authorName: StringFilter
+  comment: TextFilter
+  id: ItemIdFilter
+  rating: IntegerFilter
+}

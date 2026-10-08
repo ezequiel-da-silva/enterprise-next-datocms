@@ -1,39 +1,13 @@
 import type { AppLocale } from "@/constants/i18n";
-import { toDatoSiteLocale } from "@/constants/i18n";
-import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
-import type { GetContactPageQuery } from "@/infra/datocms/generated/operations.types";
-import { GET_CONTACT_PAGE } from "@/infra/datocms/queries";
+import { getGlobalSettings, pickGlobalSetting } from "@/infra/datocms/get-global-settings";
+import type { GlobalSettingPageRef } from "@/infra/datocms/types-global-setting";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-import { cache } from "react";
 import { stripStega } from "react-datocms/stega";
 
-export type ContactPageReference = NonNullable<
-  NonNullable<GetContactPageQuery["globalSetting"]>["contactPage"]
->;
+export type ContactPageReference = NonNullable<GlobalSettingPageRef>;
 
 /** Slugs históricos / localizados da página de contacto. */
 export const CONTACT_PAGE_ALIAS_SLUGS = new Set(["contato", "contact", "contacto"]);
-
-const loadContactPage = cache(
-  async (
-    locale: AppLocale,
-    includeDrafts: boolean,
-  ): Promise<DatocmsResponse<GetContactPageQuery>> => {
-    const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
-
-    return datocmsFetch<GetContactPageQuery>({
-      query: GET_CONTACT_PAGE,
-      variables: { locale: toDatoSiteLocale(locale) },
-      tags:
-        includeDrafts || devPublishedNoStore
-          ? undefined
-          : ["datocms:global-settings", `global-settings:${locale}`, "datocms:page"],
-      revalidate: includeDrafts || devPublishedNoStore ? false : 300,
-      includeDrafts,
-      cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
-    });
-  },
-);
 
 /**
  * A referência é opcional durante a implantação da migration. Enquanto o campo
@@ -43,9 +17,8 @@ export async function getContactPage(
   locale: AppLocale,
   includeDrafts: boolean,
 ): Promise<ContactPageReference | null> {
-  const result = await loadContactPage(locale, includeDrafts);
-  if ("errors" in result) return null;
-  return result.data.globalSetting?.contactPage ?? null;
+  const setting = pickGlobalSetting(await getGlobalSettings(locale, includeDrafts));
+  return setting?.contactPage ?? null;
 }
 
 export function contactPagePath(

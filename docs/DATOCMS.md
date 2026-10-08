@@ -8,7 +8,7 @@ Há **três** superfícies. Não partilham autenticação.
 
 | Superfície | Para quê | Auth |
 |------------|----------|------|
-| **Next.js** (local, Vercel, CI) | Páginas, GraphQL CDA, draft, codegen | Variáveis no `.env` / Vercel / GitHub Secrets — tokens **CDA** (e CMA só para user reviews) |
+| **Next.js** (local, Vercel, CI) | Páginas, GraphQL CDA, draft | Variáveis no `.env` / Vercel / GitHub Secrets — tokens **CDA** (e CMA só para user reviews) |
 | **CLI + Agent Skills** | Schema, migrations, `schema:inspect`, CMA no terminal | OAuth (`npx datocms login`) + [`datocms.config.json`](../datocms.config.json) no Git. **Não** usa os tokens CDA. |
 | **MCP** (opcional, Cursor) | Chat remoto sem terminal | OAuth no browser (`https://mcp.datocms.com`). Sem tokens no JSON. |
 
@@ -41,7 +41,7 @@ Lista completa: [`.env.example`](../.env.example). Secrets de CI: [SECURITY.md](
 Pré-requisito: acesso ao projeto Dato **Boilerplate DATO** (`siteId` `201057`, admin `https://boilerplate-dato.admin.datocms.com`). Conta pessoal, sem `organization-id`.
 
 ```bash
-cp .env.example .env   # preencher tokens CDA — o site e o codegen
+cp .env.example .env   # preencher tokens CDA — o site (e `codegen:schema` após mudar o modelo)
 npm install
 
 npx datocms login       # uma vez por máquina; abre o browser (OAuth)
@@ -68,6 +68,71 @@ npx datocms link --site-id=201057
 
 Não corras `link` contra outro `siteId` sem acordo — o ficheiro no Git é a fonte de verdade para este boilerplate.
 
+### Profile `staging` (segunda conta Dato)
+
+Quota CDA é **por conta**. O sandbox `develop` no projecto `201057` **não** isola o Free de produção.
+
+| Profile | Projecto | `siteId` | Admin |
+|---------|----------|----------|--------|
+| `default` | Boilerplate DATO (produção) | `201057` | `https://boilerplate-dato.admin.datocms.com` |
+| `staging` | Boilerplate DATO - staging | `236043` | `https://boilerplate-dato-staging-8167.admin.datocms.com` |
+
+```bash
+npx datocms login   # conta que vê o Staging
+npx datocms link --profile=staging --site-id=236043
+```
+
+As migrations deste repo são **incrementais** sobre o boilerplate **já evoluído** neste repo. **Não** corras `migrations:run` num projecto Staging vazio (`image_block` 404). Um projecto criado a partir do **template oficial Dato** também não chega: o `image_block` do starter só tem um campo (`image`) e faltam `asset` / `asset_desktop`, `cta_banner`, `card`, `global_setting`, Shopify, etc.
+
+Bootstrap correcto: no admin de **produção**, duplicar o projecto (Dato mantém IDs de modelos/campos) e usar essa cópia como Staging — ou convidar a conta Staging como collaborator na cópia.
+
+Se a conta de produção estiver **suspensa por cota** (`Cannot duplicate a blocked site!`), a duplicação no dashboard **não** tem plugin nem CLI equivalente: o Free desliga admin, CDA **e** CMA até ao dia 1 do mês seguinte (ou até upgrade pago). Plugins Dato correm *dentro* de um projecto e não leem um site bloqueado. `environments:fork` no projecto suspenso também falha. Recriar o schema no Staging à mão / via CMA gera **novos IDs** e não substitui a duplicação.
+
+Desbloqueio (duplicação com IDs iguais): upgrade temporário na conta de produção → Duplicate (só models/fields) → transferir/convidar Staging — ou esperar o reset da cota. Support (`support@datocms.com`) pode desbloquear a duplicação pontual.
+
+**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `236043` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
+
+```bash
+npx datocms login   # conta que vê o projecto 236043
+npx datocms link --profile=staging --site-id=236043
+npx datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging
+```
+
+O script recusa `siteId` `201057`. Marca as migrations já no repo como aplicadas em `schema_migration`. Conteúdo (páginas/posts) não é copiado.
+
+Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`236043`), nunca CMA no `DATOCMS_API_TOKEN`.
+
+### Fluxo de migrations (Staging → Produção)
+
+Os dois projectos não sincronizam entre si: um campo criado num deles só existe lá. Toda a mudança de schema é um ficheiro em `migrations/` (partilhado pelos profiles); cada projecto regista o que já correu em `schema_migration`. Não criar campos à mão no admin — a produção nunca os recebe.
+
+```bash
+npm run dato:migration:new -- adicionarCampoX   # cria migrations/<timestamp>_adicionarCampoX.ts
+npm run dato:migrate:staging:dry                # opcional: simula
+npm run dato:migrate:staging                    # aplica no primary do Staging (--in-place --allow-primary)
+npm run codegen:from-dato                       # .env com tokens do Staging
+npm run dato:migrations:status                  # 0 pendentes no Staging
+```
+
+Staging duplicado só com models/fields chega sem registos em `schema_migration` (todas aparecem pendentes, embora o schema já esteja aplicado). Uma vez, depois de confirmar o schema com `schema:inspect`: `npm run dato:migrations:baseline` — regista os ficheiros sem os correr e recusa o site `201057`.
+
+Commit conjunto: migration + `src/infra/datocms/generated/**` + código que usa o campo. O **pre-push** corre `dato:migrations:status` quando o push altera `migrations/` e bloqueia se houver alguma por aplicar no Staging (exige `npx datocms login`; pushes sem migrations não chamam a CLI).
+
+Depois do merge em `main`, produção (nunca `--in-place`: a CLI faz fork do primary num sandbox e aplica lá):
+
+```bash
+npm run dato:migrations:status:prod             # o que falta em produção
+npm run dato:migrate:prod:dry
+npm run dato:migrate:prod                       # fork + migrations no sandbox
+npm run dato:promote:prod -- <nome-do-sandbox>  # depois de conferir o sandbox
+```
+
+- **Ordem de deploy:** a migration tem de estar promovida em produção antes (ou junto) do deploy de `main`; senão as queries novas quebram.
+- **Login:** o OAuth da CLI vale para uma conta de cada vez. Usar uma conta com acesso aos dois projectos (convite como collaborator).
+- **Só schema:** registos (páginas, posts) e uploads não migram.
+
+`--allow-primary` só no Staging (cópia sem editores de produção). Nunca no `main` de produção.
+
 Úteis a seguir:
 
 ```bash
@@ -75,7 +140,7 @@ npx datocms schema:inspect
 npx datocms environments:list
 ```
 
-Schema GraphQL do Next continua com `npm run codegen` (usa `DATOCMS_API_TOKEN` do `.env`, não a CLI).
+Schema GraphQL do Next: `npm run codegen` lê [`src/infra/datocms/generated/schema.graphql`](../src/infra/datocms/generated/schema.graphql) (sem CDA). Depois de alterar o modelo Dato: `npm run codegen:from-dato` (dump CDA com `DATOCMS_API_TOKEN` + `DATOCMS_ENVIRONMENT` do `.env`). Se a introspecção CDA estiver indisponível (quota), `node scripts/schema-types-to-sdl.mjs && npm run codegen` gera um SDL de recurso a partir dos tipos já commitados — substitui com o dump live assim que o CDA voltar.
 
 ### Agent Skills oficiais
 
@@ -129,9 +194,9 @@ Inspect: `npx datocms schema:inspect text_section --environment=develop --includ
 Inspect: `npx datocms schema:inspect hero_image_block --environment=develop --include-validators`.
 
 - Schema (CLI): `npx datocms migrations:run --source=develop --in-place` — **não** promove para `main`.
-- Conteúdo no Next: `DATOCMS_ENVIRONMENT=develop` no `.env` (CDA). O token CDA tem de ter acesso ao sandbox `develop` (senão introspection/codegen devolve `INSUFFICIENT_PERMISSIONS`).
-- GraphQL: após o schema no ambiente alvo, `npm run codegen` (usa `DATOCMS_API_TOKEN` + `DATOCMS_ENVIRONMENT`). Não editar `src/infra/datocms/generated/**` à mão.
-- CI (`codegen:check`) aponta a `DATOCMS_ENVIRONMENT=main`. Enquanto estes blocos existirem só em `develop`, o check em `main` falha até promoveres o schema (ou apontares o CI ao sandbox).
+- Conteúdo no Next: `DATOCMS_ENVIRONMENT=develop` no `.env` (CDA). O token CDA tem de ter acesso ao sandbox `develop`.
+- GraphQL: após o schema no ambiente do `.env`, `npm run codegen:from-dato` e commit de `src/infra/datocms/generated/**` (SDL + tipos). `npm run codegen` sozinho basta quando só mudam queries. Não editar `generated/` à mão.
+- CI (`codegen:check`) é **offline** (SDL versionado). Promove o schema Dato para `main` no mesmo ciclo das queries novas — tipos verdes não impedem erro CDA em produção se o campo ainda não existir no primary.
 
 ## Página do blog
 
@@ -205,6 +270,17 @@ Não promover este schema de `develop` para `main` até o front estar pronto no 
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).
+
+### Quota CDA (plano Free)
+
+Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache do Dato**. Para não esgotar 100k calls:
+
+- O **proxy** aplica CSP em todos os paths, mas **não** chama `getRedirects()` em `/api`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `llms.txt` nem icons.
+- O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`) e **uma** de `global_setting` (404 + páginas índice). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
+- **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
+- Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
+- `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
+- `npm run codegen` / `codegen:check` / pre-push **não** chamam a CDA: usam o SDL em `generated/schema.graphql`. Só `npm run codegen:schema` (ou `codegen:from-dato`) introspecta, após mudar o modelo. Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
 
 Rota: [`POST /api/revalidate`](../src/app/api/revalidate/route.ts).
 

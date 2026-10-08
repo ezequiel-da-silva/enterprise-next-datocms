@@ -21,9 +21,9 @@ Complements [`react-rsc.mdc`](react-rsc.mdc) and [`datocms-blocks.mdc`](datocms-
 | Fetch | Tags (examples) |
 |-------|-----------------|
 | `get-page` | `datocms:page`, `page:${locale}:${slug}` |
+| `get-layout-chrome` (nav + `_site`) | `NAV_TAG`, `navigation:${locale}`, `datocms:site-seo`, `site-seo:${locale}` |
+| `get-global-settings` (404 + índices) | `datocms:global-settings`, `global-settings:${locale}` |
 | `get-blog` | `datocms:blog`, `datocms:posts`, `post:…` |
-| `get-navigation` | `NAV_TAG`, `navigation:${locale}` |
-| `get-site-seo` | `datocms:site-seo`, `site-seo:${locale}` |
 | sitemap / search / home | existing `SITEMAP_TAG` / `SEARCH_TAG` / `datocms:site` |
 | `get-redirects` | `datocms:redirects` |
 
@@ -31,13 +31,12 @@ A DatoCMS webhook should call `POST /api/revalidate` ([`docs/DATOCMS.md`](../../
 
 ## Codegen
 
-After any change to `*.graphql` or [`queries.ts`](../../src/infra/datocms/queries.ts):
+SDL CDA versionado: [`src/infra/datocms/generated/schema.graphql`](../../src/infra/datocms/generated/schema.graphql). Não editar `generated/**` à mão.
 
-1. Update **both** `queries.ts` and `page-by-slug.graphql` (and fragment files).
-2. Run `npm run codegen`.
-3. Commit generated files; never hand-edit `src/infra/datocms/generated/**`.
+- Só queries (`.graphql` / [`queries.ts`](../../src/infra/datocms/queries.ts)): actualizar **ambos** `queries.ts` e `page-by-slug.graphql` (e fragments), depois `npm run codegen`.
+- Modelo Dato mudou: `npm run codegen:from-dato` (`DATOCMS_ENVIRONMENT` do `.env`) e commitar o SDL + tipos.
 
-`codegen:check` runs on CI and `.husky/pre-push`.
+`codegen:check` (CI e `.husky/pre-push`) é offline.
 
 ## Images
 

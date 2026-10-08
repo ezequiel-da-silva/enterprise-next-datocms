@@ -37,12 +37,12 @@ Full diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 |------|---------|
 | Always before merge | `npm run typecheck` · `npm test` · `npm run lint` |
 | UI / routes / layout changed | `npm run build` |
-| GraphQL or Dato schema changed | `npm run codegen` |
+| GraphQL or Dato schema changed | `npm run codegen` (queries only) or `npm run codegen:from-dato` (Dato model changed) |
 | Proxy / API / auth changed | `npm run security:check` |
 | Full local gate | `npm run check-all` |
 | E2E smoke (needs build + Chromium) | `npm run build && npm run test:e2e` |
 
-Copy [`.env.example`](.env.example) to `.env` for CMS and codegen (CDA tokens).
+Copy [`.env.example`](.env.example) to `.env` for CMS (CDA tokens). `npm run codegen` is offline; `codegen:schema` needs the CDA token after Dato model changes.
 
 CLI / schema / Agent Skills: `npx datocms login` then `whoami`. Project is linked via [`datocms.config.json`](datocms.config.json) (`siteId` `201057`). Do not put a CMA token in `DATOCMS_API_TOKEN`. Official Dato skills live in [`.agents/skills/`](.agents/skills/). Playbook: [docs/DATOCMS.md](docs/DATOCMS.md).
 

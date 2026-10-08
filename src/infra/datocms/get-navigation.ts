@@ -1,35 +1,16 @@
 import type { AppLocale } from "@/constants/i18n";
-import { toDatoSiteLocale } from "@/constants/i18n";
-import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
-import { GET_NAVIGATION } from "@/infra/datocms/navigation-query";
+import { getLayoutChrome, sliceChromeNavigation } from "@/infra/datocms/get-layout-chrome";
+import type { DatocmsResponse } from "@/infra/datocms/client";
 import type { GetNavigationQueryResult, NavigationData } from "@/infra/datocms/types-navigation";
-import { cache } from "react";
+import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
 
-const NAV_TAG = "datocms:navigation";
-
-const loadNavigation = cache(
-  async (locale: AppLocale, includeDrafts: boolean): Promise<DatocmsResponse<GetNavigationQueryResult>> => {
-    const baseEditingUrl = process.env.NEXT_PUBLIC_DATOCMS_BASE_EDITING_URL;
-    const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
-
-    return datocmsFetch<GetNavigationQueryResult>({
-      query: GET_NAVIGATION,
-      variables: { locale: toDatoSiteLocale(locale) },
-      tags: includeDrafts || devPublishedNoStore ? undefined : [NAV_TAG, `navigation:${locale}`],
-      revalidate: includeDrafts || devPublishedNoStore ? false : 300,
-      includeDrafts,
-      contentLink: includeDrafts && baseEditingUrl ? "v1" : undefined,
-      baseEditingUrl: includeDrafts && baseEditingUrl ? baseEditingUrl : undefined,
-      cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
-    });
-  },
-);
+const NAV_TAG = DATOCMS_CACHE_TAGS.navigation;
 
 export function getNavigation(
   locale: AppLocale,
   includeDrafts: boolean,
 ): Promise<DatocmsResponse<GetNavigationQueryResult>> {
-  return loadNavigation(locale, includeDrafts);
+  return getLayoutChrome(locale, includeDrafts).then(sliceChromeNavigation);
 }
 
 export function navigationRevalidateTags(locale?: AppLocale): string[] {

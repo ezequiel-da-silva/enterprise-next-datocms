@@ -1,0 +1,14 @@
+# Único codegen que fala com a CDA. Uso: npm run codegen:schema
+# Ambiente: DATOCMS_ENVIRONMENT do .env (o SDL no Git é o schema contra o qual o commit foi tipado).
+schema:
+  - https://graphql.datocms.com/:
+      headers:
+        Authorization: Bearer ${DATOCMS_API_TOKEN}
+        X-Environment: ${DATOCMS_ENVIRONMENT}
+        X-Exclude-Invalid: true
+generates:
+  src/infra/datocms/generated/schema.graphql:
+    plugins:
+      - schema-ast
+    config:
+      includeDirectives: true

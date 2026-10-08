@@ -26,11 +26,17 @@ npm run lint
 npm run build
 ```
 
-**If GraphQL or Dato schema fields changed:**
+**If GraphQL documents changed:**
 
 ```bash
 npm run codegen
-git diff --exit-code src/infra/datocms/generated/  # no drift after codegen
+```
+
+**If Dato model/schema fields changed:**
+
+```bash
+npm run codegen:from-dato
+git diff --exit-code src/infra/datocms/generated/  # SDL + types committed
 ```
 
 **If `src/proxy.ts`, `src/app/api/`, security, or auth changed:**

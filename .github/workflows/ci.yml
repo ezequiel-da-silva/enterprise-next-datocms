@@ -48,6 +48,3 @@ jobs:
 
       - name: GraphQL codegen drift check
         run: npm run codegen:check
-        env:
-          DATOCMS_API_TOKEN: ${{ secrets.DATOCMS_API_TOKEN }}
-          DATOCMS_ENVIRONMENT: main

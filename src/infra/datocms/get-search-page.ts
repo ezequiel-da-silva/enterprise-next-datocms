@@ -1,53 +1,22 @@
 import type { AppLocale } from "@/constants/i18n";
-import { toDatoSiteLocale } from "@/constants/i18n";
-import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
-import type { GetSearchPageQuery } from "@/infra/datocms/generated/operations.types";
-import { GET_SEARCH_PAGE } from "@/infra/datocms/queries";
+import { getGlobalSettings, pickGlobalSetting } from "@/infra/datocms/get-global-settings";
+import type { GlobalSettingPageRef } from "@/infra/datocms/types-global-setting";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
-import { cache } from "react";
 import { stripStega } from "react-datocms/stega";
 
 export { readSearchQuery, searchResultsPath } from "@/lib/datocms/search-query";
 
-export type SearchPageReference = NonNullable<
-  NonNullable<GetSearchPageQuery["globalSetting"]>["searchPage"]
->;
+export type SearchPageReference = NonNullable<GlobalSettingPageRef>;
 
 /** Slugs históricos / localizados da página de busca. */
 export const SEARCH_PAGE_ALIAS_SLUGS = new Set(["busca", "search", "busqueda"]);
 
-const loadSearchPage = cache(
-  async (
-    locale: AppLocale,
-    includeDrafts: boolean,
-  ): Promise<DatocmsResponse<GetSearchPageQuery>> => {
-    const devPublishedNoStore = process.env.NODE_ENV === "development" && !includeDrafts;
-
-    return datocmsFetch<GetSearchPageQuery>({
-      query: GET_SEARCH_PAGE,
-      variables: { locale: toDatoSiteLocale(locale) },
-      tags:
-        includeDrafts || devPublishedNoStore
-          ? undefined
-          : ["datocms:global-settings", `global-settings:${locale}`, "datocms:page"],
-      revalidate: includeDrafts || devPublishedNoStore ? false : 300,
-      includeDrafts,
-      cache: includeDrafts || devPublishedNoStore ? "no-store" : undefined,
-    });
-  },
-);
-
-/**
- * A referência é opcional durante a implantação da migration. Enquanto o campo
- * ainda não existir (ou não estiver preenchido), mantém o caminho histórico.
- */
 export async function getSearchPage(
   locale: AppLocale,
   includeDrafts: boolean,
 ): Promise<SearchPageReference | null> {
-  const result = await loadSearchPage(locale, includeDrafts);
-  if ("errors" in result) return null;
-  return result.data.globalSetting?.searchPage ?? null;
+  const setting = pickGlobalSetting(await getGlobalSettings(locale, includeDrafts));
+  return setting?.searchPage ?? null;
 }
 
 export function searchPagePath(

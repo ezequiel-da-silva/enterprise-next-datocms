@@ -87,4 +87,13 @@ describe("proxy", () => {
     expect(res.status).toBe(200);
     expect(getRedirects).not.toHaveBeenCalled();
   });
+
+  it("does not spend CDA on metadata routes but still sets CSP", async () => {
+    for (const path of ["/robots.txt", "/sitemap.xml", "/manifest.webmanifest", "/llms.txt"]) {
+      getRedirects.mockClear();
+      const res = await proxy(makeRequest(path));
+      expect(getRedirects, path).not.toHaveBeenCalled();
+      expect(res.headers.get("content-security-policy"), path).toBeTruthy();
+    }
+  });
 });

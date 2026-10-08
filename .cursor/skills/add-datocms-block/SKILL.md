@@ -34,9 +34,10 @@ Optional: `src/infra/datocms/graphql/fragments/{kebab-name}.graphql` for documen
 
 ```bash
 npm run codegen
+# se o modelo Dato mudou: npm run codegen:from-dato
 ```
 
-Never hand-edit `src/infra/datocms/generated/**`.
+Never hand-edit `src/infra/datocms/generated/**` (includes `schema.graphql`).
 
 ## 4. Types
 

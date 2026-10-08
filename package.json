@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/dev.mjs",
+    "dev:prod": "dotenv -e .env.prod -- node scripts/dev.mjs",
     "build": "next build",
+    "build:prod": "dotenv -e .env.prod -- next build",
     "start": "next start",
     "start:prod": "NODE_ENV=production next start",
     "start:standalone": "node scripts/serve-standalone.mjs",
@@ -12,13 +14,25 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "codegen": "dotenv -e .env --cascade -- graphql-codegen --config codegen-schema.yml && dotenv -e .env --cascade -- graphql-codegen --config codegen-operations.yml && node scripts/fix-codegen-import.mjs",
+    "codegen": "graphql-codegen --config codegen-schema.yml && graphql-codegen --config codegen-operations.yml && node scripts/fix-codegen-import.mjs",
+    "codegen:schema": "dotenv -e .env --cascade -- node scripts/codegen-schema.mjs",
+    "codegen:from-dato": "npm run codegen:schema && npm run codegen",
     "codegen:check": "node scripts/codegen-check.mjs",
     "check-all": "npm run typecheck && npm run test && npm run lint && npm run build",
     "security:audit": "npm audit --omit=dev --audit-level=high",
     "security:audit:all": "npm audit --audit-level=high",
     "security:headers": "node scripts/check-security-headers.mjs",
     "security:check": "npm run security:audit && npm run security:headers",
+    "dato:bootstrap-staging": "datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging",
+    "dato:migration:new": "datocms migrations:new --profile=staging",
+    "dato:migrations:status": "datocms cma:script scripts/dato-migrations-status.ts --profile=staging",
+    "dato:migrations:status:prod": "datocms cma:script scripts/dato-migrations-status.ts --profile=default",
+    "dato:migrations:baseline": "datocms cma:script scripts/dato-migrations-baseline.ts --profile=staging",
+    "dato:migrate:staging": "datocms migrations:run --profile=staging --in-place --allow-primary",
+    "dato:migrate:staging:dry": "datocms migrations:run --profile=staging --in-place --allow-primary --dry-run",
+    "dato:migrate:prod:dry": "datocms migrations:run --profile=default --dry-run",
+    "dato:migrate:prod": "datocms migrations:run --profile=default",
+    "dato:promote:prod": "datocms environments:promote --profile=default",
     "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
     "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",
@@ -39,18 +53,19 @@
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "next": "^16.3.4",
+    "next": "^16.4.0",
     "postcss": "^8.5.25",
     "react": "19.2.4",
     "react-datocms": "^8.0.2",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.72.1",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^7.2.0",
+    "@graphql-codegen/schema-ast": "^6.1.0",
     "@graphql-codegen/typescript": "^6.1.0",
     "@graphql-codegen/typescript-operations": "^6.1.2",
     "@lhci/cli": "^0.15.1",
@@ -61,10 +76,10 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.7.0",
     "chalk": "4.1.2",
-    "datocms": "^4.0.29",
+    "datocms": "^4.2.0",
     "dotenv-cli": "^11.0.0",
     "eslint": "^9",
-    "eslint-config-next": "16.3.4",
+    "eslint-config-next": "16.4.0",
     "graphql": "^16.13.2",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
@@ -75,12 +90,13 @@
   "overrides": {
     "next": {
       "postcss": "^8.5.25",
-      "sharp": "^0.35.4"
+      "sharp": "^0.35.5"
     },
     "postcss": "^8.5.25",
-    "sharp": "^0.35.4",
+    "sharp": "^0.35.5",
     "lodash": "^4.17.21",
     "nanoid": "^3.3.18",
+    "source-map-js": "^1.2.2",
     "tmp": "^0.2.7",
     "uuid": "^11.1.1",
     "chalk": "4.1.2"
@@ -96,5 +112,10 @@
       "eslint --fix",
       "vitest related --run"
     ]
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
   }
 }

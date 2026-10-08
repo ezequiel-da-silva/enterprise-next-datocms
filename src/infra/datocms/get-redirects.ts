@@ -1,4 +1,5 @@
 import { datocmsFetch, type DatocmsResponse } from "@/infra/datocms/client";
+import { cdaFetchCache } from "@/infra/datocms/cda-fetch-cache";
 import { GET_ALL_REDIRECTS } from "@/infra/datocms/redirects-query";
 import type { AllRedirectsQuery } from "@/infra/datocms/generated/operations.types";
 import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
@@ -10,16 +11,17 @@ export const REDIRECTS_TAG = DATOCMS_CACHE_TAGS.redirects;
 /**
  * Redirects publicados. Sem draft: só records publicados devem afectar o proxy.
  * Sem `cache()` do React — o proxy não corre numa árvore RSC.
+ * ISR + tags: o webhook `redirect` chama `revalidateTag("datocms:redirects")`.
  */
 export async function getRedirects(): Promise<DatocmsResponse<AllRedirectsQuery>> {
-  const devPublishedNoStore = process.env.NODE_ENV === "development";
-
   return datocmsFetch<AllRedirectsQuery>({
     query: GET_ALL_REDIRECTS,
-    tags: devPublishedNoStore ? undefined : [REDIRECTS_TAG],
-    revalidate: devPublishedNoStore ? false : 300,
     includeDrafts: false,
-    cache: devPublishedNoStore ? "no-store" : undefined,
+    ...cdaFetchCache({
+      includeDrafts: false,
+      tags: [REDIRECTS_TAG],
+      revalidate: 300,
+    }),
   });
 }
 
