@@ -1,6 +1,15 @@
 #!/bin/sh
 echo "🔍 Executando validação completa antes do push..."
 
+# 0. Migrations Dato novas têm de estar aplicadas no Staging (só quando o push altera migrations/)
+BASE=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)
+if [ -z "$BASE" ] && git rev-parse --verify --quiet origin/develop >/dev/null; then
+  BASE=origin/develop
+fi
+if [ -n "$BASE" ] && [ -n "$(git diff --name-only --diff-filter=d "$BASE"...HEAD -- migrations/)" ]; then
+  npm run dato:migrations:status || { echo "❌ Há migrations Dato por aplicar no Staging. Rode 'npm run dato:migrate:staging' e 'npm run codegen:from-dato' (requer 'npx datocms login')."; exit 1; }
+fi
+
 # 1. Verifica tipos GraphQL vs SDL versionado (offline)
 npm run codegen:check || { echo "❌ GraphQL gerado desactualizado. Rode 'npm run codegen' (ou 'npm run codegen:from-dato' se o schema Dato mudou) e inclua generated/."; exit 1; }
 

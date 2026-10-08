@@ -1,11 +1,11 @@
 /**
- * One-shot CMA bootstrap for Staging (site 234806).
+ * One-shot CMA bootstrap for Staging (site 236043).
  * Recreates the current Next CDA api_keys on an empty project.
  *
  * Never run against production (profile `default` / site 201057).
  *
  *   npx datocms login
- *   npx datocms link --profile=staging --site-id=234806
+ *   npx datocms link --profile=staging --site-id=236043
  *   npx datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging
  */
 import { readdirSync } from "node:fs";

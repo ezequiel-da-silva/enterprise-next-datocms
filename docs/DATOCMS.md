@@ -75,11 +75,11 @@ Quota CDA é **por conta**. O sandbox `develop` no projecto `201057` **não** is
 | Profile | Projecto | `siteId` | Admin |
 |---------|----------|----------|--------|
 | `default` | Boilerplate DATO (produção) | `201057` | `https://boilerplate-dato.admin.datocms.com` |
-| `staging` | Boilerplate DATO - Staging | `234806` | `https://dashboard.datocms.com/personal-account/project/234806` |
+| `staging` | Boilerplate DATO - staging | `236043` | `https://boilerplate-dato-staging-8167.admin.datocms.com` |
 
 ```bash
 npx datocms login   # conta que vê o Staging
-npx datocms link --profile=staging --site-id=234806
+npx datocms link --profile=staging --site-id=236043
 ```
 
 As migrations deste repo são **incrementais** sobre o boilerplate **já evoluído** neste repo. **Não** corras `migrations:run` num projecto Staging vazio (`image_block` 404). Um projecto criado a partir do **template oficial Dato** também não chega: o `image_block` do starter só tem um campo (`image`) e faltam `asset` / `asset_desktop`, `cta_banner`, `card`, `global_setting`, Shopify, etc.
@@ -90,25 +90,48 @@ Se a conta de produção estiver **suspensa por cota** (`Cannot duplicate a bloc
 
 Desbloqueio (duplicação com IDs iguais): upgrade temporário na conta de produção → Duplicate (só models/fields) → transferir/convidar Staging — ou esperar o reset da cota. Support (`support@datocms.com`) pode desbloquear a duplicação pontual.
 
-**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `234806` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
+**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `236043` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
 
 ```bash
-npx datocms login   # conta ezecas / projecto 234806
-npx datocms link --profile=staging --site-id=234806
+npx datocms login   # conta que vê o projecto 236043
+npx datocms link --profile=staging --site-id=236043
 npx datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging
 ```
 
 O script recusa `siteId` `201057`. Marca as migrations já no repo como aplicadas em `schema_migration`. Conteúdo (páginas/posts) não é copiado.
 
-Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`234806`), nunca CMA no `DATOCMS_API_TOKEN`.
+Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`236043`), nunca CMA no `DATOCMS_API_TOKEN`.
 
-Depois de o bootstrap, migrations **novas** (ficheiros que ainda não existiam):
+### Fluxo de migrations (Staging → Produção)
+
+Os dois projectos não sincronizam entre si: um campo criado num deles só existe lá. Toda a mudança de schema é um ficheiro em `migrations/` (partilhado pelos profiles); cada projecto regista o que já correu em `schema_migration`. Não criar campos à mão no admin — a produção nunca os recebe.
 
 ```bash
-npx datocms migrations:run --profile=staging --in-place --allow-primary
+npm run dato:migration:new -- adicionarCampoX   # cria migrations/<timestamp>_adicionarCampoX.ts
+npm run dato:migrate:staging:dry                # opcional: simula
+npm run dato:migrate:staging                    # aplica no primary do Staging (--in-place --allow-primary)
+npm run codegen:from-dato                       # .env com tokens do Staging
+npm run dato:migrations:status                  # 0 pendentes no Staging
 ```
 
-`--allow-primary` só no Staging vazio/cópia sem editores. Nunca no `main` de produção. A CLI recusa `--in-place` no primary sem esta flag.
+Staging duplicado só com models/fields chega sem registos em `schema_migration` (todas aparecem pendentes, embora o schema já esteja aplicado). Uma vez, depois de confirmar o schema com `schema:inspect`: `npm run dato:migrations:baseline` — regista os ficheiros sem os correr e recusa o site `201057`.
+
+Commit conjunto: migration + `src/infra/datocms/generated/**` + código que usa o campo. O **pre-push** corre `dato:migrations:status` quando o push altera `migrations/` e bloqueia se houver alguma por aplicar no Staging (exige `npx datocms login`; pushes sem migrations não chamam a CLI).
+
+Depois do merge em `main`, produção (nunca `--in-place`: a CLI faz fork do primary num sandbox e aplica lá):
+
+```bash
+npm run dato:migrations:status:prod             # o que falta em produção
+npm run dato:migrate:prod:dry
+npm run dato:migrate:prod                       # fork + migrations no sandbox
+npm run dato:promote:prod -- <nome-do-sandbox>  # depois de conferir o sandbox
+```
+
+- **Ordem de deploy:** a migration tem de estar promovida em produção antes (ou junto) do deploy de `main`; senão as queries novas quebram.
+- **Login:** o OAuth da CLI vale para uma conta de cada vez. Usar uma conta com acesso aos dois projectos (convite como collaborator).
+- **Só schema:** registos (páginas, posts) e uploads não migram.
+
+`--allow-primary` só no Staging (cópia sem editores de produção). Nunca no `main` de produção.
 
 Úteis a seguir:
 
