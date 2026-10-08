@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.38.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.37.0...next-dato-v0.38.0) (2026-10-08)
+
+
+### Features
+
+* **datocms:** add staging profile and bootstrap script for schema management ([f43b897](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/f43b8978cde8b8087cb5616cacc91d22d87aa592))
+* **datocms:** enhance caching and data fetching for global settings and layout chrome ([d5f04a4](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d5f04a471cfb18cfb6071bb8357cde90820e5fad))
+* **datocms:** enhance GraphQL code generation and schema management ([12cc5ac](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/12cc5ac25627439402edfdaa09d4bb82a6a94fe9))
+* **datocms:** update staging configuration and enhance migration scripts ([433a886](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/433a88647090f7ffcc6c32d6a2f0bc34112c0e58))
+* **feature-grid:** enhance feature grid cards with catalog sources and storefront integration ([7367379](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7367379f406cd6a01748c5081387d3c1a2b46232))
+
+
+### Chores
+
+* **deps:** bump next, sharp and datocms CLI; pin patched source-map-js ([a7ccd0d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/a7ccd0d1ac1198a234912b2b086c884a5fd0f44c))
+
 ## [0.37.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.36.0...next-dato-v0.37.0) (2026-09-20)
 
 
