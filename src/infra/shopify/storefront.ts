@@ -15,12 +15,19 @@ export type StorefrontProductImage = {
   height: number | null;
 };
 
+export type StorefrontSelectedOption = {
+  name: string;
+  value: string;
+};
+
 export type StorefrontVariant = {
   id: string;
   title: string;
   availableForSale: boolean;
   quantityAvailable: number | null;
   price: StorefrontMoney;
+  selectedOptions: StorefrontSelectedOption[];
+  image: StorefrontProductImage | null;
 };
 
 export type StorefrontProduct = {
@@ -29,6 +36,7 @@ export type StorefrontProduct = {
   handle: string;
   availableForSale: boolean;
   featuredImage: StorefrontProductImage | null;
+  images: StorefrontProductImage[];
   priceRange: { minVariantPrice: StorefrontMoney };
   variants: StorefrontVariant[];
 };
@@ -46,6 +54,14 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
         width
         height
       }
+      images(first: 10) {
+        nodes {
+          url
+          altText
+          width
+          height
+        }
+      }
       priceRange {
         minVariantPrice {
           amount
@@ -61,6 +77,16 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
           price {
             amount
             currencyCode
+          }
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            url
+            altText
+            width
+            height
           }
         }
       }
@@ -116,6 +142,21 @@ function readImage(value: unknown): StorefrontProductImage | null {
   };
 }
 
+function readSelectedOptions(value: unknown): StorefrontSelectedOption[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry) => {
+    const record = asRecord(entry);
+    if (!record || typeof record.name !== "string" || typeof record.value !== "string") return [];
+    return [{ name: record.name, value: record.value }];
+  });
+}
+
+function readImageNodes(value: unknown): StorefrontProductImage[] {
+  const nodes = asRecord(value)?.nodes;
+  if (!Array.isArray(nodes)) return [];
+  return nodes.map(readImage).filter((image): image is StorefrontProductImage => image !== null);
+}
+
 function readVariant(value: unknown): StorefrontVariant | null {
   const record = asRecord(value);
   if (!record || typeof record.id !== "string" || typeof record.title !== "string") return null;
@@ -127,6 +168,8 @@ function readVariant(value: unknown): StorefrontVariant | null {
     availableForSale: record.availableForSale === true,
     quantityAvailable: typeof record.quantityAvailable === "number" ? record.quantityAvailable : null,
     price,
+    selectedOptions: readSelectedOptions(record.selectedOptions),
+    image: readImage(record.image),
   };
 }
 
@@ -148,6 +191,7 @@ function mapProduct(value: unknown): StorefrontProduct | null {
     handle: record.handle,
     availableForSale: record.availableForSale === true,
     featuredImage: readImage(record.featuredImage),
+    images: readImageNodes(record.images),
     priceRange: { minVariantPrice: minPrice },
     variants,
   };

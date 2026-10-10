@@ -25,6 +25,16 @@ describe("parseLocalePath", () => {
     expect(parseLocalePath("/contato")).toEqual({ kind: "cms", slug: "contato" });
     expect(parseLocalePath("/busca")).toEqual({ kind: "cms", slug: "busca" });
   });
+
+  it("parses Shopify PDP / PLP routes and keeps catalog indexes as CMS pages", () => {
+    expect(parseLocalePath("/pt/products/the-complete-snowboard")).toEqual({
+      kind: "product",
+      handle: "the-complete-snowboard",
+    });
+    expect(parseLocalePath("/es/collections/hydrogen")).toEqual({ kind: "collection", handle: "hydrogen" });
+    expect(parseLocalePath("/pt/products")).toEqual({ kind: "cms", slug: "products" });
+    expect(parseLocalePath("/pt/products/a/b")).toEqual({ kind: "other" });
+  });
 });
 
 describe("buildLocaleSwitcherHrefs", () => {
@@ -39,6 +49,15 @@ describe("buildLocaleSwitcherHrefs", () => {
       pt: "/pt/blog",
       es: "/es/blog",
     });
+  });
+
+  it("keeps the Shopify handle across locales on PDP and PLP", () => {
+    expect(buildLocaleSwitcherHrefs("/en/products/board")).toEqual({
+      en: "/en/products/board",
+      pt: "/pt/products/board",
+      es: "/es/products/board",
+    });
+    expect(hrefForLocale("/pt/collections/hydrogen", "es")).toBe("/es/collections/hydrogen");
   });
 
   it("keeps CMS slug mapping for /busca until slugLocales resolve", () => {
