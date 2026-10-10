@@ -1,0 +1,63 @@
+name: DatoCMS schema release (produção)
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Só simular (não altera produção)"
+        type: boolean
+        default: true
+      skip_promote:
+        description: "Criar o sandbox com as migrations, sem promover"
+        type: boolean
+        default: false
+      force_maintenance:
+        description: "Forçar maintenance mode mesmo com editores ativos"
+        type: boolean
+        default: false
+      destination:
+        description: "Nome do sandbox (vazio = release-<data>)"
+        type: string
+        required: false
+
+concurrency:
+  group: dato-release-production
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: datocms-production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Release schema
+        env:
+          DATOCMS_PROD_CMA_TOKEN: ${{ secrets.DATOCMS_PROD_CMA_TOKEN }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          SKIP_PROMOTE: ${{ inputs.skip_promote }}
+          FORCE: ${{ inputs.force_maintenance }}
+          DESTINATION: ${{ inputs.destination }}
+        run: |
+          if [ -z "$DATOCMS_PROD_CMA_TOKEN" ]; then
+            echo "::error::Secret DATOCMS_PROD_CMA_TOKEN em falta no environment datocms-production."
+            exit 1
+          fi
+          set --
+          [ "$DRY_RUN" = "true" ] && set -- "$@" --dry-run
+          [ "$SKIP_PROMOTE" = "true" ] && set -- "$@" --skip-promote
+          [ "$FORCE" = "true" ] && set -- "$@" --force
+          [ -n "$DESTINATION" ] && set -- "$@" "--destination=$DESTINATION"
+          node scripts/dato-release-prod.mjs "$@"

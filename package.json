@@ -33,6 +33,8 @@
     "dato:migrate:prod:dry": "datocms migrations:run --profile=default --dry-run",
     "dato:migrate:prod": "datocms migrations:run --profile=default",
     "dato:promote:prod": "datocms environments:promote --profile=default",
+    "dato:release:prod": "node scripts/dato-release-prod.mjs",
+    "dato:release:prod:dry": "node scripts/dato-release-prod.mjs --dry-run",
     "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
     "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",
