@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.38.0...next-dato-v0.39.0) (2026-10-10)
+
+
+### Features
+
+* **product-page:** integrate product variant picker and enhance product display ([21d9e31](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/21d9e31e8a263a3c3584f5500b3c3f759b40c592))
+
 ## [0.38.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.37.0...next-dato-v0.38.0) (2026-10-08)
 
 
