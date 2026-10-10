@@ -1,9 +1,14 @@
 import { Container } from "@/components/atoms/container";
-import Image from "next/image";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import {
+  ProductVariantPicker,
+  type ProductPickerCopy,
+  type ProductPickerImage,
+  type ProductPickerVariant,
+} from "@/components/patterns/product-variant-picker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
-import type { StorefrontProduct } from "@/infra/shopify/storefront";
+import type { StorefrontProduct, StorefrontProductImage } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
@@ -25,6 +30,54 @@ function availabilityLabel(locale: AppLocale, available: boolean): string {
   return available ? "In stock" : "Sold out";
 }
 
+function pickerCopy(locale: AppLocale): ProductPickerCopy {
+  if (locale === "pt") return { thumbnailLabel: "Ver imagem", unavailableSuffix: "(esgotado)" };
+  if (locale === "es") return { thumbnailLabel: "Ver imagen", unavailableSuffix: "(agotado)" };
+  return { thumbnailLabel: "View image", unavailableSuffix: "(sold out)" };
+}
+
+function toPickerImage(image: StorefrontProductImage | null, fallbackAlt: string): ProductPickerImage | null {
+  if (!image?.url) return null;
+  return {
+    url: image.url,
+    alt: image.altText?.trim() || fallbackAlt,
+    width: image.width && image.width > 0 ? image.width : 800,
+    height: image.height && image.height > 0 ? image.height : 800,
+  };
+}
+
+function pickerVariants(locale: AppLocale, title: string, storefront: StorefrontProduct): ProductPickerVariant[] {
+  if (storefront.variants.length === 0) {
+    const price = storefront.priceRange.minVariantPrice;
+    return [
+      {
+        id: storefront.id,
+        available: storefront.availableForSale,
+        priceLabel: formatStorefrontMoney(locale, price.amount, price.currencyCode),
+        availabilityLabel: availabilityLabel(locale, storefront.availableForSale),
+        options: [],
+        image: null,
+      },
+    ];
+  }
+  return storefront.variants.map((variant) => ({
+    id: variant.id,
+    available: variant.availableForSale,
+    priceLabel: formatStorefrontMoney(locale, variant.price.amount, variant.price.currencyCode),
+    availabilityLabel: availabilityLabel(locale, variant.availableForSale),
+    options: variant.selectedOptions,
+    image: toPickerImage(variant.image, `${title} — ${variant.title}`),
+  }));
+}
+
+function pickerImages(title: string, storefront: StorefrontProduct): ProductPickerImage[] {
+  const source = storefront.images.length > 0 ? storefront.images : [storefront.featuredImage];
+  return source.flatMap((image) => {
+    const mapped = toPickerImage(image, title);
+    return mapped ? [mapped] : [];
+  });
+}
+
 export async function ProductPageArticle({
   locale,
   handle,
@@ -43,9 +96,6 @@ export async function ProductPageArticle({
     catalog: { name: catalogLabel, path: catalogPath },
     storefront,
   });
-  const image = storefront?.featuredImage;
-  const price = storefront?.priceRange.minVariantPrice;
-  const available = storefront?.availableForSale ?? false;
 
   return (
     <Container as="article" size="sm" name="ProductPage" className="py-12">
@@ -63,27 +113,14 @@ export async function ProductPageArticle({
         {description ? (
           <p className="whitespace-pre-line text-lg text-muted-foreground">{description}</p>
         ) : null}
-        {price ? (
-          <p className="text-lg font-medium text-foreground">
-            {formatStorefrontMoney(locale, price.amount, price.currencyCode)}
-          </p>
-        ) : null}
-        {storefront ? (
-          <p className="text-sm text-muted-foreground">{availabilityLabel(locale, available)}</p>
-        ) : null}
       </header>
 
-      {image?.url ? (
-        <figure className="mt-8 overflow-hidden rounded-xl border border-border bg-muted shadow-sm ring-1 ring-border/40">
-          <Image
-            src={image.url}
-            alt={image.altText?.trim() || title}
-            width={image.width && image.width > 0 ? image.width : 800}
-            height={image.height && image.height > 0 ? image.height : 800}
-            sizes="(max-width: 768px) 100vw, 720px"
-            className="h-auto w-full object-cover"
-          />
-        </figure>
+      {storefront ? (
+        <ProductVariantPicker
+          variants={pickerVariants(locale, title, storefront)}
+          images={pickerImages(title, storefront)}
+          copy={pickerCopy(locale)}
+        />
       ) : null}
     </Container>
   );

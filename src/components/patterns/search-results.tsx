@@ -3,9 +3,9 @@ import type { SearchHit } from "@/lib/datocms/search-hit";
 import Link from "next/link";
 
 const kindLabel: Record<AppLocale, Record<string, string>> = {
-  en: { page: "Page", post: "Article", author: "Author" },
-  pt: { page: "Página", post: "Artigo", author: "Autor" },
-  es: { page: "Página", post: "Artículo", author: "Autor" },
+  en: { page: "Page", post: "Article", author: "Author", product: "Product", collection: "Collection" },
+  pt: { page: "Página", post: "Artigo", author: "Autor", product: "Produto", collection: "Coleção" },
+  es: { page: "Página", post: "Artículo", author: "Autor", product: "Producto", collection: "Colección" },
 };
 
 const FALLBACK_ERROR: Record<AppLocale, string> = {

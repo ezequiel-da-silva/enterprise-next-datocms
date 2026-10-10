@@ -1316,6 +1316,36 @@ export const SEARCH_LEGAL_PAGES = /* GraphQL */ `
   }
 `;
 
+/** Consulta isolada: em ambientes sem `product_page` / `collection_page` a SEARCH_SITE continua a funcionar. */
+export const SEARCH_CATALOG = /* GraphQL */ `
+  query SearchCatalog($q: String!, $locale: SiteLocale!) {
+    products: allProductPages(
+      locale: $locale
+      first: 10
+      filter: {
+        OR: [{ title: { matches: { ${SEARCH_MATCH} } } }, { shopifyHandle: { eq: $q } }]
+      }
+      orderBy: _updatedAt_DESC
+    ) {
+      id
+      title
+      shopifyHandle
+    }
+    collections: allCollectionPages(
+      locale: $locale
+      first: 10
+      filter: {
+        OR: [{ title: { matches: { ${SEARCH_MATCH} } } }, { shopifyHandle: { eq: $q } }]
+      }
+      orderBy: _updatedAt_DESC
+    ) {
+      id
+      title
+      shopifyHandle
+    }
+  }
+`;
+
 export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
   query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
     productPage(

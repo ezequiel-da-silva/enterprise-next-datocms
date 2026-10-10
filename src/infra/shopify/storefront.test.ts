@@ -21,15 +21,28 @@ describe("getStorefrontProductByHandle", () => {
             handle: "hat",
             availableForSale: true,
             featuredImage: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
+            images: {
+              nodes: [
+                { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
+                { url: "https://cdn.shopify.com/hat-back.jpg", altText: null, width: 800, height: 800 },
+                { url: "" },
+              ],
+            },
             priceRange: { minVariantPrice: { amount: "19.00", currencyCode: "BRL" } },
             variants: {
               nodes: [
                 {
                   id: "gid://shopify/ProductVariant/2",
-                  title: "Default",
+                  title: "Red / M",
                   availableForSale: true,
                   quantityAvailable: 3,
                   price: { amount: "19.00", currencyCode: "BRL" },
+                  selectedOptions: [
+                    { name: "Color", value: "Red" },
+                    { name: "Size", value: "M" },
+                    { name: "Broken" },
+                  ],
+                  image: { url: "https://cdn.shopify.com/hat-red.jpg", altText: "Red hat", width: 600, height: 600 },
                 },
               ],
             },
@@ -43,6 +56,15 @@ describe("getStorefrontProductByHandle", () => {
     expect(product?.handle).toBe("hat");
     expect(product?.priceRange.minVariantPrice.currencyCode).toBe("BRL");
     expect(product?.variants).toHaveLength(1);
+    expect(product?.images.map((image) => image.url)).toEqual([
+      "https://cdn.shopify.com/hat.jpg",
+      "https://cdn.shopify.com/hat-back.jpg",
+    ]);
+    expect(product?.variants[0]?.selectedOptions).toEqual([
+      { name: "Color", value: "Red" },
+      { name: "Size", value: "M" },
+    ]);
+    expect(product?.variants[0]?.image?.url).toBe("https://cdn.shopify.com/hat-red.jpg");
     const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
       variables: { country: string };
     };

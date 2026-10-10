@@ -1,5 +1,7 @@
 import { APP_LOCALES, isAppLocale, type AppLocale } from "@/constants/i18n";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
+import { collectionPagePath } from "@/lib/datocms/collection-page-path";
+import { productPagePath } from "@/lib/datocms/product-page-path";
 import { readSearchQuery } from "@/lib/datocms/search-query";
 import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import type { DatoSlugLocaleEntry } from "@/lib/seo/hreflang";
@@ -12,6 +14,8 @@ export type LocalePathKind =
   | { kind: "author"; slug: string }
   | { kind: "category"; slug: string }
   | { kind: "cms"; slug: string }
+  | { kind: "product"; handle: string }
+  | { kind: "collection"; handle: string }
   | { kind: "other" };
 
 export function normalizeSwitcherPathname(pathname: string): string {
@@ -52,6 +56,10 @@ function parseAfterLocale(rest: string[]): LocalePathKind {
   if (second.toLowerCase() === "home" && tail.length === 0) return { kind: "home" };
   if (second === "blog") return parseBlogRest(tail);
   if (tail.length === 0) return { kind: "cms", slug: second };
+  if (tail.length === 1 && tail[0]) {
+    if (second === "products") return { kind: "product", handle: tail[0] };
+    if (second === "collections") return { kind: "collection", handle: tail[0] };
+  }
   return { kind: "other" };
 }
 
@@ -112,6 +120,16 @@ export function buildLocaleSwitcherHrefs(
   if (kind.kind === "blog") {
     return completeHrefs(
       Object.fromEntries(APP_LOCALES.map((locale) => [locale, `/${locale}/blog`])) as Record<
+        AppLocale,
+        string
+      >,
+    );
+  }
+
+  if (kind.kind === "product" || kind.kind === "collection") {
+    const toPath = kind.kind === "product" ? productPagePath : collectionPagePath;
+    return completeHrefs(
+      Object.fromEntries(APP_LOCALES.map((locale) => [locale, toPath(locale, kind.handle)])) as Record<
         AppLocale,
         string
       >,
