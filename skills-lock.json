@@ -48,18 +48,6 @@
       "sourceType": "github",
       "skillPath": "skills/datocms-setup/SKILL.md",
       "computedHash": "3f0652f26a1b0f6c25fd5119f0cdff94a796f85cf2ecd3273f2445ed31f4dd7c"
-    },
-    "eval-triggers": {
-      "source": "datocms/agent-skills",
-      "sourceType": "github",
-      "skillPath": ".agents/skills/eval-triggers/SKILL.md",
-      "computedHash": "ad629aadcaac5d7661a26499930ad8090ee465404aa9543bb1651a1b9d779aa4"
-    },
-    "validate": {
-      "source": "datocms/agent-skills",
-      "sourceType": "github",
-      "skillPath": ".agents/skills/validate/SKILL.md",
-      "computedHash": "eb431b7b5f09b856e5e2b89825c029cab76028ba830b88cbb7325f12fb19516b"
     }
   }
 }

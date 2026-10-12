@@ -11,6 +11,7 @@
  */
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, watch, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join } from "node:path";
 
 const LOCK_FILE = ".next/dev/lock";
@@ -163,9 +164,10 @@ rmSync(".next", { recursive: true, force: true });
 mkdirSync(".next", { recursive: true });
 watchPrerenderManifest();
 
-const nextBin = existsSync("node_modules/.bin/next") ? "node_modules/.bin/next" : "next";
+/* `.bin/next` is a shell shim on Windows that `spawn` cannot execute; run Next's JS entry with Node instead. */
+const nextEntry = createRequire(import.meta.url).resolve("next/dist/bin/next");
 
-const child = spawn(nextBin, ["dev", "--webpack", ...process.argv.slice(2)], {
+const child = spawn(process.execPath, [nextEntry, "dev", "--webpack", ...process.argv.slice(2)], {
   stdio: "inherit",
   shell: false,
   env: process.env,

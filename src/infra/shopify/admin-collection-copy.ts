@@ -3,6 +3,7 @@ import type {
   ShopifyCopyTranslations,
   ShopifyProductTitles,
 } from "@/infra/shopify/admin-product-title";
+import { SHOPIFY_ADMIN_API_VERSION } from "@/infra/shopify/api-version";
 import { resolveAdminAccessToken } from "@/lib/shopify/admin-access-token";
 import {
   DATO_ES_SHOPIFY_CANDIDATES,
@@ -12,7 +13,7 @@ import {
 } from "@/lib/shopify/locale-map";
 import { plainTextToShopifyHtml, shopifyHtmlToPlainText } from "@/lib/shopify/product-description-html";
 
-export const SHOPIFY_ADMIN_API_VERSION = "2026-07";
+export { SHOPIFY_ADMIN_API_VERSION };
 
 const EMPTY_COPY: ShopifyCopyTranslations = {
   title: { pt: null, es: null },

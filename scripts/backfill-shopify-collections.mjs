@@ -11,7 +11,8 @@
 import { createHmac } from "node:crypto";
 import { readFileSync } from "node:fs";
 
-const STOREFRONT_API_VERSION = "2024-07";
+/** Keep in sync with `src/infra/shopify/api-version.ts`. */
+const STOREFRONT_API_VERSION = "2026-07";
 const PAGE_SIZE = 50;
 const DELAY_MS = 250;
 const SKIP = new Set(["frontpage", "home-page"]);

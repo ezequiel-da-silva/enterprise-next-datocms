@@ -127,6 +127,23 @@ npm run dato:migrate:prod                       # fork + migrations no sandbox
 npm run dato:promote:prod -- <nome-do-sandbox>  # depois de conferir o sandbox
 ```
 
+Atalho para os passos acima: [`scripts/dato-release-prod.mjs`](../scripts/dato-release-prod.mjs).
+
+```bash
+npm run dato:release:prod:dry                   # status + dry-run, não altera nada
+npm run dato:release:prod                       # maintenance on → fork + migrations → promote → maintenance off
+node scripts/dato-release-prod.mjs --skip-promote   # cria o sandbox release-<data> sem promover
+```
+
+Sai sem fazer nada se a produção não tiver migrations pendentes. `maintenance:off` corre sempre, mesmo quando um passo falha. Se houver editores ativos, `maintenance:on` recusa; `--force` só com acordo da equipa (o fork perde edições feitas no primary durante a release).
+
+GitHub: **Actions → DatoCMS schema release (produção) → Run workflow** ([`.github/workflows/dato-release.yml`](../.github/workflows/dato-release.yml)). Começa com `dry_run` ligado. Configuração única:
+
+1. Settings → Environments → criar `datocms-production` (opcional: required reviewers para aprovar cada execução).
+2. Secret `DATOCMS_PROD_CMA_TOKEN` nesse environment: token **CMA** do projecto `201057` com permissão de schema e environments. Não reutilizar `DATOCMS_API_TOKEN` (é CDA, só leitura).
+
+Depois do promote, o primary antigo fica como sandbox no Dato. Apaga-o quando já não precisares de rollback (o Free tem poucos sandboxes).
+
 - **Ordem de deploy:** a migration tem de estar promovida em produção antes (ou junto) do deploy de `main`; senão as queries novas quebram.
 - **Login:** o OAuth da CLI vale para uma conta de cada vez. Usar uma conta com acesso aos dois projectos (convite como collaborator).
 - **Só schema:** registos (páginas, posts) e uploads não migram.

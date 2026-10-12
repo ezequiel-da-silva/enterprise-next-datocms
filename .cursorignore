@@ -1,0 +1,29 @@
+# Blocks AI access entirely (read, search, Tab). Index exclusions only: .cursorindexingignore.
+# node_modules stays readable (next/dist/docs per AGENTS.md); .gitignore already keeps it out of the index.
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Build, caches, reports
+.next/
+out/
+build/
+coverage/
+.npm-cache/
+.lighthouseci/
+playwright-report/
+test-results/
+blob-report/
+*.tsbuildinfo
+*.log
+
+# Binary assets
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.mp4
+*.webm
+*.woff2

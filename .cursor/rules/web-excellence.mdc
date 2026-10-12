@@ -1,6 +1,7 @@
 ---
 description: SEO, Performance, AEO, ATF, a11y e boas práticas web (next-dato + DatoCMS)
-alwaysApply: true
+globs: "src/app/**,src/components/**,src/lib/seo/**,src/lib/a11y/**,src/app/globals.css,next.config.ts"
+alwaysApply: false
 ---
 
 # Web excellence (next-dato)

@@ -254,7 +254,8 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | `src/lib/shopify/locale-map.ts` | Dato `pt-BR`/`es` → Shopify `pt`/`es` |
 | `src/lib/shopify/admin-access-token.ts` | Client credentials + cache Admin |
 | `src/infra/shopify/admin-product-title.ts` | `productUpdate` + `translationsRegister` |
-| `src/infra/shopify/storefront.ts` | GraphQL Storefront `2024-07` |
+| `src/infra/shopify/api-version.ts` | Versões Storefront + Admin (`2026-07`); backfills `.mjs` têm cópia local |
+| `src/infra/shopify/storefront.ts` | GraphQL Storefront (`SHOPIFY_STOREFRONT_API_VERSION`) |
 | `src/app/[slug]/products/[handle]/page.tsx` | PDP |
 
 Docs Shopify: [Storefront getting started](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/getting-started), [Get API access tokens](https://shopify.dev/docs/apps/build/dev-dashboard/get-api-access-tokens).
