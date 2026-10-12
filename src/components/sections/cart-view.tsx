@@ -159,7 +159,7 @@ export function CartView({ locale, cart, shopPath, actions }: CartViewProps) {
               <CartLineItem key={line.id} line={line} locale={locale} copy={copy} actions={actions} />
             ))}
           </ul>
-          <div className="mt-8 space-y-4 rounded-xl border border-border bg-muted/40 p-6 sm:ml-auto sm:max-w-sm">
+          <div className="mx-auto mt-8 w-full max-w-md space-y-4 rounded-xl border border-border bg-muted/40 p-6">
             {subtotal ? (
               <p className="flex justify-between text-lg font-semibold text-foreground">
                 <span>{copy.subtotal}</span>
