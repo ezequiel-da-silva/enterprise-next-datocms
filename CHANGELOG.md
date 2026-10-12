@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.40.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.39.0...next-dato-v0.40.0) (2026-10-12)
+
+
+### Features
+
+* **cms:** add Shopify store page setup script ([465cab6](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/465cab64032b2713b8c75de0489ad076ac8e2816))
+* **datocms:** add DatoCMS schema release workflow and related scripts ([5e7374b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/5e7374b8cbaa376d6696e246a5492b17bdaad0b3))
+
+
+### Chores
+
+* add .cursorignore file to manage AI access and exclude sensitive files ([80e5f4b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/80e5f4bebe0164920d78307684ed47f5c9a41439))
+* add cursorignore and indexing ignore for context savings ([9155c08](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/9155c0882b1a7fbfa8e5995b0db346ddf41c417c))
+* archive unused Dato repo-maintenance skills ([153956f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/153956f5bf6379e0304d4c68f8e6edc19c689ae2))
+* **deps:** bump Shopify Storefront API to 2026-07 ([d66eb19](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d66eb1996df514a4796e31921bdcf876c3afeb22))
+* replace shell-guard hook with cross-platform Node script ([d0950e9](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d0950e9a10828d0de8e807dea4b3cf4a3c4d13bc))
+* scope web-excellence and security rules with globs ([9e06126](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/9e061267c3853e6340fd91d03def6585dac6b42a))
+* stop tracking .npm-cache ([8bb0a3d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8bb0a3dcb6c1a071288a53280b8a5a545344a9ee))
+
 ## [0.39.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.38.0...next-dato-v0.39.0) (2026-10-10)
 
 
