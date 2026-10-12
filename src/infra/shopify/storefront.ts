@@ -1,7 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
+import { SHOPIFY_STOREFRONT_API_VERSION as STOREFRONT_API_VERSION } from "@/infra/shopify/api-version";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
-
-const STOREFRONT_API_VERSION = "2024-07";
 
 export type StorefrontMoney = {
   amount: string;
