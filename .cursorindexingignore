@@ -1,0 +1,6 @@
+# Out of the semantic index only — the agent can still read these on demand.
+.agents/
+src/infra/datocms/generated/
+migrations/
+skills-lock.json
+package-lock.json
