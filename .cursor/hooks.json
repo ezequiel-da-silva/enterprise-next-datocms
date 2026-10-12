@@ -13,7 +13,7 @@
     ],
     "beforeShellExecution": [
       {
-        "command": "bash .cursor/hooks/shell-guard.sh",
+        "command": "node .cursor/hooks/shell-guard.mjs",
         "failClosed": true
       }
     ]
