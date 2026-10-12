@@ -68,6 +68,8 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 | `DATOCMS_USER_REVIEWS_CDA_TOKEN` | Dato (token **CMA**) | Upsert de `product_page`. **Não** uses `DATOCMS_API_TOKEN` (CDA) |
 | `DATOCMS_REVALIDATE_SECRET` | Dato webhook Bearer | `/api/revalidate` **e** `/api/webhooks/datocms/product-page` |
 | `DATOCMS_ENVIRONMENT` | Dato | Escolhe o ambiente. Default **`main`**. `develop` = sandbox (fork). |
+| `SHOPIFY_CART_ENABLED` | Flag do site | `1`/`true` liga carrinho e checkout. Vazio = desligado (default) |
+| `SHOPIFY_CHECKOUT_DOMAIN` | Opcional | Domínio próprio do checkout, se não for `*.myshopify.com` |
 
 O cliente Storefront envia `Shopify-Storefront-Private-Token` se o valor começar por `shpat_`; senão `X-Shopify-Storefront-Access-Token` (token público hex). Preferir o **privado** no servidor.
 
@@ -200,6 +202,23 @@ curl -s -X POST "https://$SHOPIFY_STORE_DOMAIN/admin/oauth/access_token" \
 
 Se o `scope` não incluir `write_products`, `read_locales`, `read_translations` e `write_translations`: `npx shopify app deploy` e depois **Apps → a app → atualizar** na loja (a Shopify pede a aprovação dos scopes novos). Só depois é que o Dato → Shopify funciona.
 
+## Carrinho e checkout
+
+Desligado por defeito. Com `SHOPIFY_CART_ENABLED=1`:
+
+- **PDP:** botão “Adicionar ao carrinho” no seletor de variantes. Só aparece quando todas as variantes têm id `gid://shopify/ProductVariant/…` (produtos sem variantes da Storefront não mostram o botão).
+- **Header:** ícone com contador → `/{locale}/cart`.
+- **`/{locale}/cart`:** linhas, quantidade (0 remove), remover, subtotal e link “Finalizar compra” para o `checkoutUrl` da Shopify. A página tem `noindex`; com a flag desligada devolve 404.
+
+Fluxo e segurança:
+
+1. Server Actions em `src/app/actions/cart.ts` chamam `cartCreate` / `cartLinesAdd` / `cartLinesUpdate` / `cartLinesRemove` com `@inContext(country)` do locale. O token Storefront nunca chega ao browser.
+2. O id do carrinho fica no cookie `nd-cart` (`httpOnly`, `SameSite=Lax`, `Secure` em produção, 14 dias). O valor é validado com Zod antes de cada uso; id inválido ou expirado = carrinho novo.
+3. Rate limit em memória: 20 ações/min por IP (`getClientIpKey("cart")`). Erros da Shopify (`userErrors`) viram uma mensagem genérica.
+4. Checkout é um `<a href>` (a CSP tem `form-action 'self'`). O `checkoutUrl` só é renderizado se for `https` num host permitido: `*.myshopify.com`, `SHOPIFY_STORE_DOMAIN` ou `SHOPIFY_CHECKOUT_DOMAIN`.
+
+Pré-requisitos na Shopify: token Storefront com `unauthenticated_read_checkouts` e `unauthenticated_write_checkouts`; produtos publicados no canal Headless; Markets US/BR/ES se quiseres moeda por locale. Enquanto a loja não estiver aberta, deixa a flag vazia na Vercel.
+
 ## Vercel
 
 1. Settings → Environment Variables.
@@ -257,5 +276,9 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | `src/infra/shopify/api-version.ts` | Versões Storefront + Admin (`2026-07`); backfills `.mjs` têm cópia local |
 | `src/infra/shopify/storefront.ts` | GraphQL Storefront (`SHOPIFY_STOREFRONT_API_VERSION`) |
 | `src/app/[slug]/products/[handle]/page.tsx` | PDP |
+| `src/infra/shopify/cart.ts` | Cart API Storefront (query + mutations) |
+| `src/app/actions/cart.ts` | Server Actions do carrinho (flag, rate limit, Zod, cookie) |
+| `src/app/[slug]/cart/page.tsx` | Página do carrinho |
+| `src/lib/shopify/checkout-url.ts` | Allowlist de hosts do `checkoutUrl` |
 
 Docs Shopify: [Storefront getting started](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/getting-started), [Get API access tokens](https://shopify.dev/docs/apps/build/dev-dashboard/get-api-access-tokens).
