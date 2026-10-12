@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.41.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.40.0...next-dato-v0.41.0) (2026-10-12)
+
+
+### Features
+
+* **cms:** add Shopify collections page setup script ([8f06d05](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8f06d05c5880d9a0258418fe6fde66bc5c5cc2c9))
+
+
+### Bug Fixes
+
+* **next:** sync Shopify cart country with locale ([8dac8f0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8dac8f090b3f5aa6997b962cd7175a996837c787))
+* **seo:** fall back to site description in product and collection metadata ([751d1a1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/751d1a195411dbe3d2e93d2087a5443ff4fa6cf2))
+* **ui:** center cart summary box ([84525cd](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/84525cd21f597e45a5ffbeb963aa77d2156fd143))
+* **ui:** tidy cart line layout and summary ([e4289bf](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e4289bf93f198aa8ea705bcb05a7c7a6c02a9d2f))
+* **ui:** use h2 for footer column headings ([ea4e6b9](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/ea4e6b9c02f2e22807a6163bfddf3a1a69ab2780))
+
+
+### Documentation
+
+* add Shopify go-live checklist ([e67268a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e67268ac925aea47bf0a412870f5b0c815fabe82))
+
+
+### Chores
+
+* add Lighthouse shop paths script ([9bbb415](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/9bbb415a643963b0fc5d23bd22693e125a00fd47))
+
 ## [0.40.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.39.0...next-dato-v0.40.0) (2026-10-12)
 
 
