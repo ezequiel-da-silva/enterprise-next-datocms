@@ -47,7 +47,7 @@ function FooterMenuColumn({ item, locale }: { item: NavItemRecord; locale: AppLo
   const children = item.submenu?.filter(Boolean) ?? [];
   return (
     <div className="min-w-0 space-y-3">
-      <h3 className="text-sm font-semibold text-foreground">{item.navItemLabel}</h3>
+      <h2 className="text-sm font-semibold text-foreground">{item.navItemLabel}</h2>
       {children.length > 0 ? (
         <ul className="space-y-2">
           {children.map((child) => (

@@ -43,14 +43,15 @@ export async function generateMetadata({ params }: CollectionPlpProps): Promise<
     return buildUnavailableMetadata("Collection");
   }
   const page = result.data.collectionPage;
-  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
+  const identity = buildSiteIdentity({ seo: pickSiteSeo(seoResult) });
   return buildDatoPageMetadata({
     path: collectionPagePath(locale, handle),
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: result.data._site.faviconMetaTags,
     seoSettingsSocial: page.seo,
     fallbackTitle: page.title,
-    fallbackOgImage: page.seo?.image?.url ?? storefront?.image?.url ?? siteOg,
+    fallbackOgImage: page.seo?.image?.url ?? storefront?.image?.url ?? identity.fallbackOgImage,
+    fallbackDescription: page.description?.trim() || identity.description,
     hreflangPaths: buildLocaleAlternatePaths((l) => collectionPagePath(l, handle)),
   });
 }

@@ -13,6 +13,22 @@
  */
 import { buildBlockRecord } from "@datocms/cma-client-node";
 import type { Client } from "datocms/lib/cma-client-node";
+import {
+  type BlockPayload,
+  type Raw,
+  asLocalized,
+  blockId,
+  blockTypeId,
+  carouselOptions,
+  ensureGlobalSettingPage,
+  ensureNavLink,
+  field,
+  findPageBySlug,
+  publishIfDraftModel,
+  ref,
+  textHeaderBlock,
+  textIn,
+} from "./lib/dato-script-helpers";
 
 type LocaleCopy = {
   title: string;
@@ -60,16 +76,6 @@ const COPY: Record<string, LocaleCopy> = {
 
 const HIGHLIGHT_COUNT = 3;
 
-type Localized<T> = Record<string, T>;
-type ItemRef = { type: "item_type"; id: string };
-/** Any CMA field value; `cma:script` rejects the top type annotation, so this is its equivalent. */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-type Raw = {} | null | undefined;
-
-function field(item: object, key: string): Raw {
-  return (item as Record<string, Raw>)[key];
-}
-
 function copyFor(locale: string): LocaleCopy {
   return COPY[locale] ?? COPY.en;
 }
@@ -77,41 +83,6 @@ function copyFor(locale: string): LocaleCopy {
 function storePath(locale: string): string {
   const c = copyFor(locale);
   return `/${c.appLocale}/${c.slug}`;
-}
-
-function asLocalized<T>(value: Raw): Localized<T> {
-  return value && typeof value === "object" && !Array.isArray(value) ? (value as Localized<T>) : {};
-}
-
-type BlockPayload = string | ReturnType<typeof buildBlockRecord>;
-
-/** Nested blocks come back JSON:API-shaped (`attributes`, `relationships`, `__itemTypeId`). */
-function blockId(block: Raw): string | null {
-  const id = block && typeof block === "object" ? field(block, "id") : null;
-  return typeof id === "string" ? id : null;
-}
-
-function blockTypeId(block: Raw): string | null {
-  if (!block || typeof block !== "object") return null;
-  const direct = field(block, "__itemTypeId");
-  if (typeof direct === "string") return direct;
-  const rel = field(block, "relationships");
-  const itemType = rel && typeof rel === "object" ? field(rel, "item_type") : field(block, "item_type");
-  const data = itemType && typeof itemType === "object" ? (field(itemType, "data") ?? itemType) : null;
-  const id = data && typeof data === "object" ? field(data, "id") : null;
-  return typeof id === "string" ? id : null;
-}
-
-function blockAttr(block: Raw, key: string): Raw {
-  if (!block || typeof block !== "object") return null;
-  const attrs = field(block, "attributes");
-  return attrs && typeof attrs === "object" ? field(attrs, key) : field(block, key);
-}
-
-async function publishIfDraftModel(client: Client, item: { id: string; meta: object }, label: string) {
-  if (typeof field(item.meta, "status") !== "string") return;
-  await client.items.publish(item.id);
-  console.log(`  publicado: ${label}`);
 }
 
 export default async function setupShopifyStorePage(client: Client): Promise<void> {
@@ -130,35 +101,12 @@ export default async function setupShopifyStorePage(client: Client): Promise<voi
       client.itemTypes.find("nav_item_modular"),
       client.itemTypes.find("carousel_setting"),
     ]);
-  const ref = (id: string): ItemRef => ({ type: "item_type", id });
-
-  /** `carousel_options` is validated with size eq 1 even when the display is not a carousel. */
-  const carouselOptions = () => [
-    buildBlockRecord({
-      item_type: ref(carouselSetting.id),
-      autoplay: false,
-      autoplay_interval: 5,
-      loop: true,
-      show_arrows: true,
-      show_dots: true,
-    }),
-  ];
-
-  const header = (title: string, description?: string) =>
-    buildBlockRecord({
-      item_type: ref(textHeader.id),
-      title,
-      has_description: Boolean(description),
-      description: description ?? null,
-      has_section_id: false,
-      section_id: null,
-    });
 
   const listingBlock = (locale: string) => {
     const c = copyFor(locale);
     return buildBlockRecord({
       item_type: ref(listingSection.id),
-      text_header_section: [header(c.listingTitle, c.listingDescription)],
+      text_header_section: [textHeaderBlock(textHeader.id, c.listingTitle, c.listingDescription)],
       listing_config: buildBlockRecord({
         item_type: ref(shopifyConfig.id),
         fetch_mode: "auto",
@@ -172,7 +120,7 @@ export default async function setupShopifyStorePage(client: Client): Promise<voi
       initial_count: null,
       load_more_step: null,
       load_more_label: null,
-      carousel_options: carouselOptions(),
+      carousel_options: carouselOptions(carouselSetting.id),
     });
   };
 
@@ -186,25 +134,20 @@ export default async function setupShopifyStorePage(client: Client): Promise<voi
     if (highlightProducts.length >= HIGHLIGHT_COUNT) break;
   }
 
-  const titleIn = (raw: Raw, locale: string): string | null => {
-    const value = typeof raw === "string" ? raw : asLocalized<Raw>(raw)[locale];
-    return typeof value === "string" && value.trim() ? value.trim() : null;
-  };
-
   const highlightsBlock = (locale: string) =>
     buildBlockRecord({
       item_type: ref(featureGrid.id),
-      text_header_section: [header(copyFor(locale).highlightsTitle)],
+      text_header_section: [textHeaderBlock(textHeader.id, copyFor(locale).highlightsTitle)],
       advanced_options: false,
       variant: null,
-      carousel_options: carouselOptions(),
+      carousel_options: carouselOptions(carouselSetting.id),
       items_feature_grid: highlightProducts.map((p) =>
         buildBlockRecord({
           item_type: ref(card.id),
           card_source: "product",
           source_product: p.id,
           source_collection: null,
-          title_card: titleIn(p.title, locale),
+          title_card: textIn(p.title, locale),
           has_icon: false,
           icon_card: null,
           has_description: false,
@@ -218,15 +161,7 @@ export default async function setupShopifyStorePage(client: Client): Promise<voi
     });
 
   // --- Page ---------------------------------------------------------------
-  const ourSlugs = new Set(Object.values(COPY).map((c) => c.slug));
-  let page: { id: string } | null = null;
-  for await (const candidate of client.items.listPagedIterator({ filter: { type: "page" } })) {
-    const slugs = Object.values(asLocalized<Raw>(field(candidate, "slug")));
-    if (slugs.some((s) => typeof s === "string" && ourSlugs.has(s))) {
-      page = candidate;
-      break;
-    }
-  }
+  let page = await findPageBySlug(client, new Set(Object.values(COPY).map((c) => c.slug)));
 
   if (!page) {
     page = await client.items.create({
@@ -293,80 +228,20 @@ export default async function setupShopifyStorePage(client: Client): Promise<voi
 
   await publishIfDraftModel(client, await client.items.find(page.id), "página");
 
-  // --- Navigation ---------------------------------------------------------
-  const [navigation] = await client.items.list({ filter: { type: "navigation" }, nested: true });
-  if (!navigation) {
-    console.warn("  navigation não encontrada — menu não alterado.");
-  } else {
-    const nestedMenu = asLocalized<Raw[]>(field(navigation, "menu_links"));
+  await ensureNavLink(client, {
+    navItemTypeId: navItem.id,
+    locales,
+    pathFor: storePath,
+    labelFor: (l) => copyFor(l).navLabel,
+    name: "da loja",
+  });
 
-    let added = 0;
-    let removed = 0;
-    const nextMenu = Object.fromEntries(
-      locales.map((l) => {
-        const kept: BlockPayload[] = [];
-        let seenStore = false;
-        for (const block of nestedMenu[l] ?? []) {
-          const id = blockId(block);
-          if (!id) continue;
-          const link = blockAttr(block, "nav_item_link");
-          if (typeof link === "string" && link.replace(/\/$/, "") === storePath(l)) {
-            if (seenStore) {
-              removed += 1;
-              continue;
-            }
-            seenStore = true;
-          }
-          kept.push(id);
-        }
-        if (seenStore) return [l, kept];
-        added += 1;
-        return [
-          l,
-          [
-            ...kept,
-            buildBlockRecord({
-              item_type: ref(navItem.id),
-              nav_item_label: copyFor(l).navLabel,
-              nav_item_link: storePath(l),
-              nav_item_link_aria: copyFor(l).navLabel,
-              open_in_new_tab: false,
-              submenu: [],
-            }),
-          ],
-        ];
-      }),
-    );
-
-    if (added > 0 || removed > 0) {
-      await client.items.update(navigation.id, { menu_links: nextMenu });
-      if (added > 0) console.log("  item de menu adicionado");
-      if (removed > 0) console.log(`  itens de menu duplicados removidos: ${removed}`);
-      await publishIfDraftModel(client, await client.items.find(navigation.id), "navigation");
-    } else {
-      console.log("  menu já tem o link da loja");
-    }
-  }
-
-  // --- Global settings ----------------------------------------------------
-  const [settings] = await client.items.list({ filter: { type: "global_setting" } });
-  if (!settings) {
-    console.warn("  global_setting não encontrado — products_page não definido.");
-  } else {
-    const current = field(settings, "products_page");
-    const force = process.env.STORE_PAGE_FORCE_PRODUCTS_PAGE === "1";
-    if (current === page.id) {
-      console.log("  products_page já aponta para a loja");
-    } else if (current && !force) {
-      console.warn(
-        `  products_page já aponta para ${String(current)} — mantido (STORE_PAGE_FORCE_PRODUCTS_PAGE=1 para substituir).`,
-      );
-    } else {
-      await client.items.update(settings.id, { products_page: page.id });
-      console.log("  products_page definido");
-      await publishIfDraftModel(client, await client.items.find(settings.id), "global_setting");
-    }
-  }
+  await ensureGlobalSettingPage(client, {
+    fieldKey: "products_page",
+    pageId: page.id,
+    force: process.env.STORE_PAGE_FORCE_PRODUCTS_PAGE === "1",
+    forceEnvName: "STORE_PAGE_FORCE_PRODUCTS_PAGE",
+  });
 
   console.log(`Concluído. Página: ${locales.map(storePath).join(" · ")}`);
 }

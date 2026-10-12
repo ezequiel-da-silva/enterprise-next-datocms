@@ -51,7 +51,8 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 - Validação no núcleo: Zod em `src/core/entities/contact.ts` + `validateContactSubmission`.
 - Honeypot `company_website`: preenchido → resposta genérica de sucesso + delay (anti-bot, sem revelar filtro).
-- Rate limit in-memory por IP (`checkRateLimit` + `getClientIpKey`) na action de contacto — 5 req/min.
+- Rate limit in-memory por IP (`checkRateLimit` + `getClientIpKey`) na action de contacto — 5 req/min; actions do carrinho (`src/app/actions/cart.ts`) — 20 req/min, atrás da flag `SHOPIFY_CART_ENABLED`.
+- Carrinho: `userErrors` da Shopify → mensagem genérica; checkout só via `<a href>` com `safeCheckoutUrl()` (https + host permitido), nunca redirect de form.
 - `"use server"` em actions; integrações (e-mail/CRM) só em `src/infra/`, nunca credenciais no bundle.
 
 ## APIs (`src/app/api/`)
@@ -63,6 +64,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 ## Cookies
 
 - Tema (`nd-theme`): valores validados com `isThemeMode()`; cookie com `SameSite=Lax` no cliente.
+- Carrinho (`nd-cart`): só id do carrinho, escrito em Server Actions — `httpOnly`, `SameSite=Lax`, `Secure` em prod (`cartCookieOptions()`); validar com `cartIdSchema` antes de usar.
 - Draft: cookies httpOnly geridos pelo Next — não duplicar lógica manual salvo `makeDraftModeWorkWithinIframes`.
 
 ## Anti-padrões

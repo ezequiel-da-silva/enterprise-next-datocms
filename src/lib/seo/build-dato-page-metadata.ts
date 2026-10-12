@@ -41,6 +41,8 @@ type BuildArgs = {
   fallbackTitle?: string | null;
   /** Hero, cover ou outro asset quando `seoSettingsSocial.image` está vazio. */
   fallbackOgImage?: string | null;
+  /** Usada quando nem o campo SEO nem `_seoMetaTags` trazem descrição (ex.: PDP sem copy). */
+  fallbackDescription?: string | null;
 };
 
 /**
@@ -55,6 +57,7 @@ export function buildDatoPageMetadata({
   hreflangPaths,
   fallbackTitle,
   fallbackOgImage,
+  fallbackDescription,
 }: BuildArgs): Metadata {
   const baseUrl = getSiteBaseUrl();
   const canonicalPath = path.startsWith("/") ? path : `/${path}`;
@@ -65,6 +68,8 @@ export function buildDatoPageMetadata({
 
   const s = seoSettingsSocial;
   const fromField: Metadata = {};
+  const description =
+    s?.description?.trim() || (fromTags.description ? undefined : fallbackDescription?.trim()) || undefined;
 
   const resolvedTitle = s?.title?.trim() || fallbackTitle?.trim() || "";
   const pageLocale = appLocaleFromPath(canonicalPath);
@@ -89,9 +94,9 @@ export function buildDatoPageMetadata({
     openGraph.title = resolvedTitle;
     hasOpenGraph = true;
   }
-  if (s?.description) {
-    fromField.description = s.description;
-    openGraph.description = s.description;
+  if (description) {
+    fromField.description = description;
+    openGraph.description = description;
     hasOpenGraph = true;
   }
   if (s?.image?.url) {
@@ -116,7 +121,7 @@ export function buildDatoPageMetadata({
     fromField.openGraph = openGraph;
   }
 
-  const twitterDescription = s?.description ? { description: s.description } : {};
+  const twitterDescription = description ? { description } : {};
   const resolvedOgUrl =
     s?.image?.url || fallbackOgImage?.trim() || getDefaultOpenGraphImage() || undefined;
   const twitterImages = resolvedOgUrl ? { images: [resolvedOgUrl] } : {};
@@ -130,7 +135,7 @@ export function buildDatoPageMetadata({
       ...twitterImages,
       card: twitterCard,
     };
-  } else if (resolvedTitle || s?.description || resolvedOgUrl) {
+  } else if (resolvedTitle || description || resolvedOgUrl) {
     fromField.twitter = {
       ...twitterBase,
       ...twitterTitle,

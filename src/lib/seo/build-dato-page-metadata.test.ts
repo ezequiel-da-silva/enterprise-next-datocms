@@ -16,6 +16,41 @@ const EMPTY_SEO = {
   image: null,
 };
 
+describe("buildDatoPageMetadata description fallback", () => {
+  it("uses fallbackDescription when neither the SEO field nor the tags have one", () => {
+    const meta = buildDatoPageMetadata({
+      path: "/pt/products/wax",
+      seoMetaTags: GLOBAL_FALLBACK_TAGS,
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+      fallbackDescription: "Descrição do site",
+    });
+
+    expect(meta.description).toBe("Descrição do site");
+    expect(meta.openGraph?.description).toBe("Descrição do site");
+  });
+
+  it("keeps the SEO field description and the Dato tag description over the fallback", () => {
+    const fromField = buildDatoPageMetadata({
+      path: "/pt/products/wax",
+      seoMetaTags: null,
+      faviconMetaTags: null,
+      seoSettingsSocial: { ...EMPTY_SEO, description: "Copy do produto" },
+      fallbackDescription: "Descrição do site",
+    });
+    expect(fromField.description).toBe("Copy do produto");
+
+    const fromTags = buildDatoPageMetadata({
+      path: "/pt/products/wax",
+      seoMetaTags: [{ tag: "meta", content: null, attributes: { name: "description", content: "Da tag" } }],
+      faviconMetaTags: null,
+      seoSettingsSocial: EMPTY_SEO,
+      fallbackDescription: "Descrição do site",
+    });
+    expect(fromTags.description).toBe("Da tag");
+  });
+});
+
 describe("buildDatoPageMetadata title resolution", () => {
   it("prefers the record title over the Dato global fallback", () => {
     const meta = buildDatoPageMetadata({

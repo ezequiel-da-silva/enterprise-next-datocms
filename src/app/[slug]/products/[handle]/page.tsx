@@ -1,3 +1,4 @@
+import { addToCart } from "@/app/actions/cart";
 import { ProductPageArticle } from "@/components/patterns/product-page-article";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale } from "@/constants/i18n";
@@ -39,14 +40,15 @@ export async function generateMetadata({ params }: ProductPdpProps): Promise<Met
     return buildUnavailableMetadata("Product");
   }
   const page = result.data.productPage;
-  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
+  const identity = buildSiteIdentity({ seo: pickSiteSeo(seoResult) });
   return buildDatoPageMetadata({
     path: productPagePath(locale, handle),
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: result.data._site.faviconMetaTags,
     seoSettingsSocial: page.seo,
     fallbackTitle: page.title,
-    fallbackOgImage: page.seo?.image?.url ?? storefront?.featuredImage?.url ?? siteOg,
+    fallbackOgImage: page.seo?.image?.url ?? storefront?.featuredImage?.url ?? identity.fallbackOgImage,
+    fallbackDescription: page.description?.trim() || identity.description,
     hreflangPaths: buildLocaleAlternatePaths((l) => productPagePath(l, handle)),
   });
 }
@@ -78,6 +80,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       catalogPath={productsIndexPath(locale, catalog)}
       catalogLabel={productsIndexLabel(catalog)}
       storefront={storefront}
+      addToCartAction={addToCart}
     />
   );
 }

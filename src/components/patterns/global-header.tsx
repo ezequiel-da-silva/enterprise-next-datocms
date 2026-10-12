@@ -1,4 +1,5 @@
 import { Container } from "@/components/atoms/container";
+import { CartLink } from "@/components/patterns/cart-link";
 import { HeaderNav } from "@/components/patterns/header-nav";
 import { HeaderSearch } from "@/components/patterns/header-search";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
@@ -30,6 +31,8 @@ type GlobalHeaderProps = {
   searchQuery?: string;
   /** Cookie `nd-theme` no SSR — evita skeleton no ThemeToggle. */
   initialThemeMode?: ThemeMode;
+  /** `null`/omitido = carrinho desligado (`SHOPIFY_CART_ENABLED`); número = itens no cookie `nd-cart`. */
+  cartCount?: number | null;
 };
 
 export function GlobalHeader({
@@ -39,6 +42,7 @@ export function GlobalHeader({
   searchPath,
   searchQuery,
   initialThemeMode,
+  cartCount,
 }: GlobalHeaderProps) {
   const logo = data?.logo;
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
@@ -132,6 +136,7 @@ export function GlobalHeader({
               {themeToggle}
             </div>
           )}
+          {typeof cartCount === "number" ? <CartLink locale={locale} count={cartCount} /> : null}
         </div>
       </Container>
     </header>

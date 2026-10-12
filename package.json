@@ -36,10 +36,13 @@
     "dato:release:prod": "node scripts/dato-release-prod.mjs",
     "dato:release:prod:dry": "node scripts/dato-release-prod.mjs --dry-run",
     "dato:setup:store-page": "datocms cma:script scripts/setup-shopify-store-page.ts --profile=default",
+    "dato:setup:collections-page": "datocms cma:script scripts/setup-shopify-collections-page.ts --profile=default",
     "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
     "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",
+    "lighthouse:shop": "dotenv -e .env.prod -v LHCI_PATHS=/pt/loja,/pt/products/selling-plans-ski-wax,/pt/collections -- lhci autorun",
     "test:e2e": "playwright test",
+    "test:e2e:shop": "dotenv -e .env.prod -v SHOPIFY_CART_ENABLED=1 -v E2E_SHOP=1 -- playwright test e2e/shop-cart.spec.ts",
     "prepare": "husky"
   },
   "dependencies": {

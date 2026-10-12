@@ -68,6 +68,8 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 | `DATOCMS_USER_REVIEWS_CDA_TOKEN` | Dato (token **CMA**) | Upsert de `product_page`. **Não** uses `DATOCMS_API_TOKEN` (CDA) |
 | `DATOCMS_REVALIDATE_SECRET` | Dato webhook Bearer | `/api/revalidate` **e** `/api/webhooks/datocms/product-page` |
 | `DATOCMS_ENVIRONMENT` | Dato | Escolhe o ambiente. Default **`main`**. `develop` = sandbox (fork). |
+| `SHOPIFY_CART_ENABLED` | Flag do site | `1`/`true` liga carrinho e checkout. Vazio = desligado (default) |
+| `SHOPIFY_CHECKOUT_DOMAIN` | Opcional | Domínio próprio do checkout, se não for `*.myshopify.com` |
 
 O cliente Storefront envia `Shopify-Storefront-Private-Token` se o valor começar por `shpat_`; senão `X-Shopify-Storefront-Access-Token` (token público hex). Preferir o **privado** no servidor.
 
@@ -200,6 +202,77 @@ curl -s -X POST "https://$SHOPIFY_STORE_DOMAIN/admin/oauth/access_token" \
 
 Se o `scope` não incluir `write_products`, `read_locales`, `read_translations` e `write_translations`: `npx shopify app deploy` e depois **Apps → a app → atualizar** na loja (a Shopify pede a aprovação dos scopes novos). Só depois é que o Dato → Shopify funciona.
 
+## Carrinho e checkout
+
+Desligado por defeito. Com `SHOPIFY_CART_ENABLED=1`:
+
+- **PDP:** botão “Adicionar ao carrinho” no seletor de variantes. Só aparece quando todas as variantes têm id `gid://shopify/ProductVariant/…` (produtos sem variantes da Storefront não mostram o botão).
+- **Header:** ícone com contador → `/{locale}/cart`.
+- **`/{locale}/cart`:** linhas, quantidade (0 remove), remover, subtotal e link “Finalizar compra” para o `checkoutUrl` da Shopify. A página tem `noindex`; com a flag desligada devolve 404.
+
+Fluxo e segurança:
+
+1. Server Actions em `src/app/actions/cart.ts` chamam `cartCreate` / `cartLinesAdd` / `cartLinesUpdate` / `cartLinesRemove` com `@inContext(country)` do locale. O token Storefront nunca chega ao browser.
+2. O id do carrinho fica no cookie `nd-cart` (`httpOnly`, `SameSite=Lax`, `Secure` em produção, 14 dias). O valor é validado com Zod antes de cada uso; id inválido ou expirado = carrinho novo.
+3. Rate limit em memória: 20 ações/min por IP (`getClientIpKey("cart")`). Erros da Shopify (`userErrors`) viram uma mensagem genérica.
+4. Checkout é um `<a href>` (a CSP tem `form-action 'self'`). O `checkoutUrl` só é renderizado se for `https` num host permitido: `*.myshopify.com`, `SHOPIFY_STORE_DOMAIN` ou `SHOPIFY_CHECKOUT_DOMAIN`.
+
+Pré-requisitos na Shopify: token Storefront com `unauthenticated_read_checkouts` e `unauthenticated_write_checkouts`; produtos publicados no canal Headless; Markets US/BR/ES se quiseres moeda por locale. Enquanto a loja não estiver aberta, deixa a flag vazia na Vercel.
+
+## Go-live
+
+Checklist para abrir a loja. A parte de admin é só cliques na Shopify; cada item diz como confirmar no site.
+
+### Admin Shopify (sem código)
+
+| Área | O que configurar | Como confirmar |
+|------|------------------|----------------|
+| **Markets** | US → USD, Brasil → BRL, Espanha → EUR (é o que `shopifyCountryFromLocale` envia em `@inContext`). Produtos publicados no canal **Headless** e em cada Market. | PDP em `/en`, `/pt`, `/es` mostra USD / BRL / EUR; o carrinho e o checkout mantêm a moeda. |
+| **Pagamentos** | Shopify Payments em **modo de teste** (ou *Bogus Gateway* numa development store). Bogus: cartão `1` = aprovado, `2` = recusado. | Compra de teste (abaixo) gera pedido marcado como teste. |
+| **Frete e impostos** | Zonas de envio por Market, tarifas, e impostos incluídos no preço (BR/ES) ou somados no checkout (US). | No checkout, o frete aparece para um endereço de cada país. |
+| **Políticas** | Settings → Policies: reembolso, privacidade, termos e envio. Reaproveita o texto das páginas legais do site (rodapé: Privacidade, Termos, Reembolso). | O rodapé do checkout lista as políticas. O site não precisa de linkar as da Shopify. |
+| **Domínio do checkout** | Settings → Domains: `checkout.seudominio.com` (CNAME → `shops.myshopify.com`). Depois define `SHOPIFY_CHECKOUT_DOMAIN` na Vercel e faz redeploy. | “Finalizar compra” em `/{locale}/cart` aponta para o domínio novo. Sem a variável, `safeCheckoutUrl` esconde o botão (aparece “checkout indisponível”). |
+| **Branding do checkout** | Settings → Checkout → Customize: logo, cores, fontes. | Visual do checkout alinhado com o site. |
+| **Senha da loja** | Mantém a senha ativa até ao lançamento. O site headless e a Storefront API não dependem dela; o **checkout** sim. | Testers entram com a senha ou com conta de staff. |
+
+### Conteúdo
+
+- `product_page` e `collection_page`: `title`, `description` e `seo` em `en`, `pt_BR` e `es`. Ao publicar, o webhook Dato → Shopify sincroniza título e descrição.
+- Imagens e preços ficam na Shopify; o site lê-os da Storefront.
+- Páginas de índice: Loja (`npm run dato:setup:store-page`) e Coleções (`npm run dato:setup:collections-page`). Os scripts são idempotentes e definem `products_page` / `collections_page` nas Global settings quando estão vazios. Se a página já existir, mantém os slugs dela (em produção, Coleções usa `collections` nos 3 locales) e o link do menu segue esses slugs. Antes de Coleções, corre o backfill (`npm run shopify:backfill:collections`) se ainda não houver `collection_page`.
+
+### Qualidade (local, com dados de produção)
+
+```bash
+npm run build:prod
+npm run lighthouse:shop   # /pt/loja, um PDP e /pt/collections (LHCI_PATHS)
+npm run test:e2e:shop     # loja → produto → carrinho (opt-in, precisa de E2E_SHOP=1 e da flag)
+```
+
+O E2E não entra no checkout. Fica de fora do CI porque precisa de credenciais Shopify reais.
+
+Notas sobre o Lighthouse local:
+
+- **Windows:** o `chrome-launcher` pode falhar com `EPERM` a apagar o perfil temporário (e `NO_NAVSTART` no trace). Alternativa: abre o Chrome com `--headless=new --remote-debugging-port=9222 --user-data-dir=<pasta>` e corre `node node_modules/lighthouse/cli/index.js <url> --port=9222` por URL. A performance continua a precisar do trace; mede-a no CI ou com PageSpeed Insights em produção.
+- **PDP “sem meta description”:** a PDP espera pela Storefront em `generateMetadata`, por isso o Next faz *streaming* das meta tags para o `<body>` em browsers (e no Googlebot, que executa JS). Bots só-HTML (`facebookexternalhit`, Twitterbot, Bingbot…) recebem tudo no `<head>`. O aviso do Lighthouse é falso positivo; o score SEO fica acima de 0.9.
+- **`errors-in-console` com `/apple-icon`:** só acontece a testar em `127.0.0.1` com `NEXT_PUBLIC_SITE_URL=http://localhost:3000` (a CSP `img-src 'self'` bloqueia a outra origem). Em produção o domínio é o mesmo.
+
+### Compra de teste
+
+1. Modo de teste ligado nos pagamentos.
+2. Site com `SHOPIFY_CART_ENABLED=1` (local com `.env.prod` ou Preview na Vercel). Adiciona um produto.
+3. “Finalizar compra” → paga com o cartão de teste.
+4. Confirma o pedido de teste em Orders.
+5. Cancela / reembolsa o pedido.
+
+### Lançamento
+
+1. Desliga o modo de teste nos pagamentos.
+2. Remove a senha da loja (Online Store → Preferences).
+3. Vercel: `SHOPIFY_CART_ENABLED=1` e, se usares domínio próprio, `SHOPIFY_CHECKOUT_DOMAIN`.
+4. Redeploy.
+5. Smoke em produção: `/pt/loja` → PDP → adicionar → `/pt/cart` → “Finalizar compra” abre o checkout.
+
 ## Vercel
 
 1. Settings → Environment Variables.
@@ -257,5 +330,9 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | `src/infra/shopify/api-version.ts` | Versões Storefront + Admin (`2026-07`); backfills `.mjs` têm cópia local |
 | `src/infra/shopify/storefront.ts` | GraphQL Storefront (`SHOPIFY_STOREFRONT_API_VERSION`) |
 | `src/app/[slug]/products/[handle]/page.tsx` | PDP |
+| `src/infra/shopify/cart.ts` | Cart API Storefront (query + mutations) |
+| `src/app/actions/cart.ts` | Server Actions do carrinho (flag, rate limit, Zod, cookie) |
+| `src/app/[slug]/cart/page.tsx` | Página do carrinho |
+| `src/lib/shopify/checkout-url.ts` | Allowlist de hosts do `checkoutUrl` |
 
 Docs Shopify: [Storefront getting started](https://shopify.dev/docs/storefronts/headless/building-with-the-storefront-api/getting-started), [Get API access tokens](https://shopify.dev/docs/apps/build/dev-dashboard/get-api-access-tokens).
