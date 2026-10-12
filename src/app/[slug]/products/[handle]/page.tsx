@@ -40,14 +40,15 @@ export async function generateMetadata({ params }: ProductPdpProps): Promise<Met
     return buildUnavailableMetadata("Product");
   }
   const page = result.data.productPage;
-  const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
+  const identity = buildSiteIdentity({ seo: pickSiteSeo(seoResult) });
   return buildDatoPageMetadata({
     path: productPagePath(locale, handle),
     seoMetaTags: page._seoMetaTags,
     faviconMetaTags: result.data._site.faviconMetaTags,
     seoSettingsSocial: page.seo,
     fallbackTitle: page.title,
-    fallbackOgImage: page.seo?.image?.url ?? storefront?.featuredImage?.url ?? siteOg,
+    fallbackOgImage: page.seo?.image?.url ?? storefront?.featuredImage?.url ?? identity.fallbackOgImage,
+    fallbackDescription: page.description?.trim() || identity.description,
     hreflangPaths: buildLocaleAlternatePaths((l) => productPagePath(l, handle)),
   });
 }
