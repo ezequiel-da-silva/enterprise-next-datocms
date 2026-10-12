@@ -41,6 +41,7 @@
     "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",
     "test:e2e": "playwright test",
+    "test:e2e:shop": "dotenv -e .env.prod -v SHOPIFY_CART_ENABLED=1 -v E2E_SHOP=1 -- playwright test e2e/shop-cart.spec.ts",
     "prepare": "husky"
   },
   "dependencies": {
