@@ -67,11 +67,7 @@ npm run check-all
 
 ## 3. Known anti-patterns (block merge if present)
 
-- Async Server Component inside sync parent without fix
-- `error.tsx` rendering `<html>` or `<body>`
-- `dynamic()` on Server Component ST blocks
-- `SmartLink` in `Button asChild` without `tone="inherit"`
-- Edited files under `generated/` without running codegen
+Every item in `AGENTS.md` → "Learned anti-patterns", plus edited files under `generated/` without running codegen.
 
 ## 4. PR
 

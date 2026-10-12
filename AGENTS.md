@@ -48,14 +48,7 @@ CLI / schema / Agent Skills: `npx datocms login` then `whoami`. Project is linke
 
 ## Cursor rules (`.cursor/rules/`)
 
-- [`web-excellence.mdc`](.cursor/rules/web-excellence.mdc) — SEO, perf, AEO, a11y
-- [`security.mdc`](.cursor/rules/security.mdc) — CSP, secrets, draft mode
-- [`architecture.mdc`](.cursor/rules/architecture.mdc) — layers, naming, imports
-- [`datocms-blocks.mdc`](.cursor/rules/datocms-blocks.mdc) — CMS blocks + GraphQL
-- [`datocms-next.mdc`](.cursor/rules/datocms-next.mdc) — RSC fetch, cache tags, codegen, images
-- [`git-conventions.mdc`](.cursor/rules/git-conventions.mdc) — Conventional Commits + PR titles · repo settings: [docs/GITHUB.md](docs/GITHUB.md)
-- [`react-rsc.mdc`](.cursor/rules/react-rsc.mdc) — RSC, error boundaries
-- [`testing.mdc`](.cursor/rules/testing.mdc) — Vitest patterns
+Always on: `architecture`, `git-conventions`. Attached by globs: `web-excellence` (UI/SEO), `security` (proxy, API, actions, infra), `datocms-blocks`, `datocms-next`, `react-rsc`, `testing` — read the `.mdc` when touching those areas outside the globs.
 
 ## Project skills (`.cursor/skills/`)
 
@@ -65,7 +58,7 @@ CLI / schema / Agent Skills: `npx datocms login` then `whoami`. Project is linke
 
 Official DatoCMS skills: [`.agents/skills/`](.agents/skills/) (`datocms-cli`, `datocms-cma`, …).
 
-Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) · GitHub: [docs/GITHUB.md](docs/GITHUB.md)
+Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) · GitHub: [docs/GITHUB.md](docs/GITHUB.md) · Security: [docs/SECURITY.md](docs/SECURITY.md) · Shopify: [docs/SHOPIFY.md](docs/SHOPIFY.md)
 
 ## Learned anti-patterns (do not repeat)
 
@@ -80,7 +73,3 @@ Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GAT
 
 - `src/infra/datocms/generated/**`
 - `.env` or committed secrets
-
-## Security docs
-
-[docs/SECURITY.md](docs/SECURITY.md) · Revalidate: [docs/DATOCMS.md](docs/DATOCMS.md) · Shopify: [docs/SHOPIFY.md](docs/SHOPIFY.md) · CI: [`.github/workflows/security.yml`](.github/workflows/security.yml)

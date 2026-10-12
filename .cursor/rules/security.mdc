@@ -1,6 +1,7 @@
 ---
 description: Segurança, CSP, secrets, draft mode e validação de entrada (next-dato)
-alwaysApply: true
+globs: "src/proxy.ts,src/app/api/**,src/app/actions/**,src/lib/security/**,src/infra/**,next.config.ts,.env.example,.github/workflows/**"
+alwaysApply: false
 ---
 
 # Segurança e boas práticas (next-dato)

@@ -23,26 +23,14 @@ export async function generateMetadata({ params }): Promise<Metadata> {
 
 **Static pages:** `export const metadata = buildMetadata({ title, description, path })`
 
-Always use `getSiteBaseUrl()` / `getSiteName()` — never hardcode production URLs.
-
-Special cases:
-
-- 404: `noIndex`, omit canonical
-- Search with query: `noIndex`, canonical with query param
+Base URL, 404 / search `noIndex` cases and the existing builders: `web-excellence.mdc` (SEO + AEO sections).
 
 ## JSON-LD builders
 
 - Location: `src/lib/seo/`
 - Add unit test in `*.test.ts` beside builder
 - Shape: `{ "@context": "https://schema.org", "@graph": [...] }`
-
-Existing builders:
-
-- Site: `buildSiteJsonLdGraph()` — layout
-- Page: `buildPageWebPageJsonLd()` — via adapter
-- Blog post: `buildBlogPostJsonLdGraph()`
-- Search: `buildSearchPageJsonLd()`
-- FAQ block: `buildFaqPageJsonLd()`
+- Also: `buildFaqPageJsonLd()` (FAQ block), `buildProductPageJsonLd()` / `buildCollectionPageJsonLd()` (Shopify)
 
 ## Injection (CSP-safe)
 
