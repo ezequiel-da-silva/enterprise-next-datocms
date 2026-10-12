@@ -219,6 +219,60 @@ Fluxo e segurança:
 
 Pré-requisitos na Shopify: token Storefront com `unauthenticated_read_checkouts` e `unauthenticated_write_checkouts`; produtos publicados no canal Headless; Markets US/BR/ES se quiseres moeda por locale. Enquanto a loja não estiver aberta, deixa a flag vazia na Vercel.
 
+## Go-live
+
+Checklist para abrir a loja. A parte de admin é só cliques na Shopify; cada item diz como confirmar no site.
+
+### Admin Shopify (sem código)
+
+| Área | O que configurar | Como confirmar |
+|------|------------------|----------------|
+| **Markets** | US → USD, Brasil → BRL, Espanha → EUR (é o que `shopifyCountryFromLocale` envia em `@inContext`). Produtos publicados no canal **Headless** e em cada Market. | PDP em `/en`, `/pt`, `/es` mostra USD / BRL / EUR; o carrinho e o checkout mantêm a moeda. |
+| **Pagamentos** | Shopify Payments em **modo de teste** (ou *Bogus Gateway* numa development store). Bogus: cartão `1` = aprovado, `2` = recusado. | Compra de teste (abaixo) gera pedido marcado como teste. |
+| **Frete e impostos** | Zonas de envio por Market, tarifas, e impostos incluídos no preço (BR/ES) ou somados no checkout (US). | No checkout, o frete aparece para um endereço de cada país. |
+| **Políticas** | Settings → Policies: reembolso, privacidade, termos e envio. Reaproveita o texto das páginas legais do site (rodapé: Privacidade, Termos, Reembolso). | O rodapé do checkout lista as políticas. O site não precisa de linkar as da Shopify. |
+| **Domínio do checkout** | Settings → Domains: `checkout.seudominio.com` (CNAME → `shops.myshopify.com`). Depois define `SHOPIFY_CHECKOUT_DOMAIN` na Vercel e faz redeploy. | “Finalizar compra” em `/{locale}/cart` aponta para o domínio novo. Sem a variável, `safeCheckoutUrl` esconde o botão (aparece “checkout indisponível”). |
+| **Branding do checkout** | Settings → Checkout → Customize: logo, cores, fontes. | Visual do checkout alinhado com o site. |
+| **Senha da loja** | Mantém a senha ativa até ao lançamento. O site headless e a Storefront API não dependem dela; o **checkout** sim. | Testers entram com a senha ou com conta de staff. |
+
+### Conteúdo
+
+- `product_page` e `collection_page`: `title`, `description` e `seo` em `en`, `pt_BR` e `es`. Ao publicar, o webhook Dato → Shopify sincroniza título e descrição.
+- Imagens e preços ficam na Shopify; o site lê-os da Storefront.
+- Páginas de índice: Loja (`npm run dato:setup:store-page`) e Coleções (`npm run dato:setup:collections-page`). Os scripts são idempotentes e definem `products_page` / `collections_page` nas Global settings quando estão vazios. Se a página já existir, mantém os slugs dela (em produção, Coleções usa `collections` nos 3 locales) e o link do menu segue esses slugs. Antes de Coleções, corre o backfill (`npm run shopify:backfill:collections`) se ainda não houver `collection_page`.
+
+### Qualidade (local, com dados de produção)
+
+```bash
+npm run build:prod
+npm run lighthouse:shop   # /pt/loja, um PDP e /pt/collections (LHCI_PATHS)
+npm run test:e2e:shop     # loja → produto → carrinho (opt-in, precisa de E2E_SHOP=1 e da flag)
+```
+
+O E2E não entra no checkout. Fica de fora do CI porque precisa de credenciais Shopify reais.
+
+Notas sobre o Lighthouse local:
+
+- **Windows:** o `chrome-launcher` pode falhar com `EPERM` a apagar o perfil temporário (e `NO_NAVSTART` no trace). Alternativa: abre o Chrome com `--headless=new --remote-debugging-port=9222 --user-data-dir=<pasta>` e corre `node node_modules/lighthouse/cli/index.js <url> --port=9222` por URL. A performance continua a precisar do trace; mede-a no CI ou com PageSpeed Insights em produção.
+- **PDP “sem meta description”:** a PDP espera pela Storefront em `generateMetadata`, por isso o Next faz *streaming* das meta tags para o `<body>` em browsers (e no Googlebot, que executa JS). Bots só-HTML (`facebookexternalhit`, Twitterbot, Bingbot…) recebem tudo no `<head>`. O aviso do Lighthouse é falso positivo; o score SEO fica acima de 0.9.
+- **`errors-in-console` com `/apple-icon`:** só acontece a testar em `127.0.0.1` com `NEXT_PUBLIC_SITE_URL=http://localhost:3000` (a CSP `img-src 'self'` bloqueia a outra origem). Em produção o domínio é o mesmo.
+
+### Compra de teste
+
+1. Modo de teste ligado nos pagamentos.
+2. Site com `SHOPIFY_CART_ENABLED=1` (local com `.env.prod` ou Preview na Vercel). Adiciona um produto.
+3. “Finalizar compra” → paga com o cartão de teste.
+4. Confirma o pedido de teste em Orders.
+5. Cancela / reembolsa o pedido.
+
+### Lançamento
+
+1. Desliga o modo de teste nos pagamentos.
+2. Remove a senha da loja (Online Store → Preferences).
+3. Vercel: `SHOPIFY_CART_ENABLED=1` e, se usares domínio próprio, `SHOPIFY_CHECKOUT_DOMAIN`.
+4. Redeploy.
+5. Smoke em produção: `/pt/loja` → PDP → adicionar → `/pt/cart` → “Finalizar compra” abre o checkout.
+
 ## Vercel
 
 1. Settings → Environment Variables.
