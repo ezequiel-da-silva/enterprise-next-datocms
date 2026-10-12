@@ -32,6 +32,8 @@ export type StorefrontCart = {
   /** Already validated with `safeCheckoutUrl`; `null` when the host is not allowed. */
   checkoutUrl: string | null;
   totalQuantity: number;
+  /** `buyerIdentity.countryCode` — sets the cart currency (Markets). */
+  countryCode: string | null;
   subtotal: StorefrontMoney | null;
   total: StorefrontMoney | null;
   lines: StorefrontCartLine[];
@@ -43,6 +45,7 @@ const CART_FIELDS = `
   id
   checkoutUrl
   totalQuantity
+  buyerIdentity { countryCode }
   cost {
     subtotalAmount { amount currencyCode }
     totalAmount { amount currencyCode }
@@ -111,6 +114,16 @@ const CART_LINES_REMOVE = /* GraphQL */ `
   }
 `;
 
+const CART_BUYER_IDENTITY_UPDATE = /* GraphQL */ `
+  mutation CartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!, $country: CountryCode!)
+  @inContext(country: $country) {
+    cartBuyerIdentityUpdate(cartId: $cartId, buyerIdentity: $buyerIdentity) {
+      cart { ${CART_FIELDS} }
+      userErrors { field message }
+    }
+  }
+`;
+
 function readLine(value: unknown): StorefrontCartLine | null {
   const record = asRecord(value);
   const merchandise = asRecord(record?.merchandise);
@@ -135,6 +148,11 @@ function readLine(value: unknown): StorefrontCartLine | null {
   };
 }
 
+function readCountryCode(value: unknown): string | null {
+  const code = asRecord(value)?.countryCode;
+  return typeof code === "string" && code ? code : null;
+}
+
 export function mapCart(value: unknown): StorefrontCart | null {
   const record = asRecord(value);
   if (!record || typeof record.id !== "string") return null;
@@ -147,6 +165,7 @@ export function mapCart(value: unknown): StorefrontCart | null {
       process.env.SHOPIFY_CHECKOUT_DOMAIN,
     ]),
     totalQuantity: typeof record.totalQuantity === "number" ? record.totalQuantity : 0,
+    countryCode: readCountryCode(record.buyerIdentity),
     subtotal: readMoney(cost?.subtotalAmount),
     total: readMoney(cost?.totalAmount),
     lines: Array.isArray(nodes) ? nodes.map(readLine).filter((l): l is StorefrontCartLine => l !== null) : [],
@@ -166,9 +185,21 @@ async function runMutation(
   return cart ? { ok: true, cart } : { ok: false };
 }
 
+/**
+ * The cart currency follows `buyerIdentity.countryCode` set at creation, not `@inContext`.
+ * When the visitor switches locale (e.g. /en → /pt), move the cart to that locale's market.
+ */
 export async function getCart(cartId: string, locale: AppLocale): Promise<StorefrontCart | null> {
-  const json = await storefrontGraphql(CART_QUERY, { id: cartId, country: shopifyCountryFromLocale(locale) });
-  return mapCart(asRecord(json?.data)?.cart);
+  const country = shopifyCountryFromLocale(locale);
+  const json = await storefrontGraphql(CART_QUERY, { id: cartId, country });
+  const cart = mapCart(asRecord(json?.data)?.cart);
+  if (!cart || !cart.countryCode || cart.countryCode === country) return cart;
+  const synced = await runMutation("cartBuyerIdentityUpdate", CART_BUYER_IDENTITY_UPDATE, {
+    cartId,
+    buyerIdentity: { countryCode: country },
+    country,
+  });
+  return synced.ok ? synced.cart : cart;
 }
 
 /** Cart from the raw `nd-cart` cookie value; invalid or expired ids resolve to `null`. */

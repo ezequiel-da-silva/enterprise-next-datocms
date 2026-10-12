@@ -54,6 +54,30 @@ describe("Storefront cart", () => {
     expect(cart?.lines[0]).toMatchObject({ productHandle: "hat", variantTitle: "Red / M", quantity: 2 });
   });
 
+  it("moves the cart to the locale's market when the country differs", async () => {
+    const usCart = { ...CART, buyerIdentity: { countryCode: "US" } };
+    const brCart = { ...CART, buyerIdentity: { countryCode: "BR" } };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { cart: usCart } }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { cartBuyerIdentityUpdate: { cart: brCart, userErrors: [] } } }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const cart = await getCart(CART.id, "pt");
+    expect(cart?.countryCode).toBe("BR");
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body as string);
+    expect(body.variables.buyerIdentity.countryCode).toBe("BR");
+  });
+
+  it("does not update when the cart is already in the locale's market", async () => {
+    const fetchMock = mockFetch({ cart: { ...CART, buyerIdentity: { countryCode: "BR" } } });
+    await getCart(CART.id, "pt");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
   it("drops a checkout URL on an unexpected host", async () => {
     mockFetch({ cart: { ...CART, checkoutUrl: "https://evil.example/cart" } });
     const cart = await getCart(CART.id, "en");
