@@ -1,17 +1,22 @@
 import { Container } from "@/components/atoms/container";
+import type { AddToCartAction } from "@/components/patterns/add-to-cart-button";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import {
   ProductVariantPicker,
+  type ProductPickerCart,
   type ProductPickerCopy,
   type ProductPickerImage,
   type ProductPickerVariant,
 } from "@/components/patterns/product-variant-picker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
+import { isShopifyVariantId } from "@/core/entities/cart";
 import type { StorefrontProduct, StorefrontProductImage } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
+import { cartCopy } from "@/lib/i18n/cart-copy";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
+import { cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 
 type ProductPageArticleProps = {
@@ -22,6 +27,8 @@ type ProductPageArticleProps = {
   catalogPath: string;
   catalogLabel: string;
   storefront: StorefrontProduct | null;
+  /** Server Action do carrinho; sem ela (ou com a flag desligada) o botão não aparece. */
+  addToCartAction?: AddToCartAction;
 };
 
 function availabilityLabel(locale: AppLocale, available: boolean): string {
@@ -70,6 +77,18 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
   }));
 }
 
+function pickerCart(
+  locale: AppLocale,
+  variants: ProductPickerVariant[],
+  action: AddToCartAction | undefined,
+): ProductPickerCart | undefined {
+  if (!action || !isCartEnabled() || !variants.every((variant) => isShopifyVariantId(variant.id))) {
+    return undefined;
+  }
+  const { addToCart, adding, soldOut, viewCart } = cartCopy(locale);
+  return { action, locale, cartHref: cartPath(locale), copy: { addToCart, adding, soldOut, viewCart } };
+}
+
 function pickerImages(title: string, storefront: StorefrontProduct): ProductPickerImage[] {
   const source = storefront.images.length > 0 ? storefront.images : [storefront.featuredImage];
   return source.flatMap((image) => {
@@ -86,6 +105,7 @@ export async function ProductPageArticle({
   catalogPath,
   catalogLabel,
   storefront,
+  addToCartAction,
 }: ProductPageArticleProps) {
   const path = productPagePath(locale, handle);
   const jsonLd = buildProductPageJsonLd({
@@ -96,6 +116,7 @@ export async function ProductPageArticle({
     catalog: { name: catalogLabel, path: catalogPath },
     storefront,
   });
+  const variants = storefront ? pickerVariants(locale, title, storefront) : null;
 
   return (
     <Container as="article" size="sm" name="ProductPage" className="py-12">
@@ -115,11 +136,12 @@ export async function ProductPageArticle({
         ) : null}
       </header>
 
-      {storefront ? (
+      {storefront && variants ? (
         <ProductVariantPicker
-          variants={pickerVariants(locale, title, storefront)}
+          variants={variants}
           images={pickerImages(title, storefront)}
           copy={pickerCopy(locale)}
+          cart={pickerCart(locale, variants, addToCartAction)}
         />
       ) : null}
     </Container>

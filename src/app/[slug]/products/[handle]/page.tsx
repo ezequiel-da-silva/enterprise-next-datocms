@@ -1,3 +1,4 @@
+import { addToCart } from "@/app/actions/cart";
 import { ProductPageArticle } from "@/components/patterns/product-page-article";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale } from "@/constants/i18n";
@@ -78,6 +79,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       catalogPath={productsIndexPath(locale, catalog)}
       catalogLabel={productsIndexLabel(catalog)}
       storefront={storefront}
+      addToCartAction={addToCart}
     />
   );
 }

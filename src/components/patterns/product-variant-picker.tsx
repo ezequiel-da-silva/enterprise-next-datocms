@@ -1,5 +1,6 @@
 "use client";
 
+import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -24,10 +25,19 @@ export type ProductPickerCopy = {
   unavailableSuffix: string;
 };
 
+export type ProductPickerCart = {
+  action: AddToCartAction;
+  locale: string;
+  cartHref: string;
+  copy: AddToCartCopy;
+};
+
 type ProductVariantPickerProps = {
   variants: ProductPickerVariant[];
   images: ProductPickerImage[];
   copy: ProductPickerCopy;
+  /** Only set when the cart is enabled and every variant id is a Shopify ProductVariant gid. */
+  cart?: ProductPickerCart;
 };
 
 const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
@@ -52,7 +62,7 @@ function selectionOf(variant: ProductPickerVariant | undefined): Record<string, 
   return Object.fromEntries((variant?.options ?? []).map((option) => [option.name, option.value]));
 }
 
-export function ProductVariantPicker({ variants, images, copy }: ProductVariantPickerProps) {
+export function ProductVariantPicker({ variants, images, copy, cart }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(
@@ -128,6 +138,17 @@ export function ProductVariantPicker({ variants, images, copy }: ProductVariantP
             </fieldset>
           ))
         : null}
+
+      {cart && selected ? (
+        <AddToCartButton
+          action={cart.action}
+          variantId={selected.id}
+          available={selected.available}
+          locale={cart.locale}
+          cartHref={cart.cartHref}
+          copy={cart.copy}
+        />
+      ) : null}
 
       {mainImage ? (
         <div className="space-y-3">
