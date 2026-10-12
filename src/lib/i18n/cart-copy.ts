@@ -12,6 +12,8 @@ export type CartCopy = {
   empty: string;
   continueShopping: string;
   quantity: string;
+  /** Suffix after the unit price, e.g. "R$ 139,00 cada". */
+  each: string;
   update: string;
   remove: string;
   subtotal: string;
@@ -35,6 +37,7 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     empty: "Your cart is empty.",
     continueShopping: "Continue shopping",
     quantity: "Quantity",
+    each: "each",
     update: "Update",
     remove: "Remove",
     subtotal: "Subtotal",
@@ -55,6 +58,7 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     empty: "Seu carrinho está vazio.",
     continueShopping: "Continuar comprando",
     quantity: "Quantidade",
+    each: "cada",
     update: "Atualizar",
     remove: "Remover",
     subtotal: "Subtotal",
@@ -75,6 +79,7 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     empty: "Tu carrito está vacío.",
     continueShopping: "Seguir comprando",
     quantity: "Cantidad",
+    each: "c/u",
     update: "Actualizar",
     remove: "Eliminar",
     subtotal: "Subtotal",
