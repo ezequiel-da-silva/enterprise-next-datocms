@@ -106,6 +106,32 @@ function shopDomain(): string | undefined {
   return raw.replace(/^https?:\/\//, "").replace(/\/$/, "");
 }
 
+export function storefrontShopDomain(): string | undefined {
+  return shopDomain();
+}
+
+/** POST to the Storefront API; `null` on missing env, network or HTTP error. Never cached. */
+export async function storefrontGraphql(
+  query: string,
+  variables: Record<string, unknown>,
+): Promise<{ data?: unknown; errors?: unknown } | null> {
+  const shop = shopDomain();
+  const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
+  if (!shop || !token) return null;
+  try {
+    const res = await fetch(`https://${shop}/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...storefrontAuthHeaders(token) },
+      body: JSON.stringify({ query, variables }),
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as { data?: unknown; errors?: unknown };
+  } catch {
+    return null;
+  }
+}
+
 /** Headless private tokens (`shpat_`) use a different header than the public hex token. */
 export function storefrontAuthHeaders(token: string): Record<string, string> {
   if (token.startsWith("shpat_")) {
@@ -114,14 +140,14 @@ export function storefrontAuthHeaders(token: string): Record<string, string> {
   return { "X-Shopify-Storefront-Access-Token": token };
 }
 
-function asRecord(value: unknown): Record<string, unknown> | null {
+export function asRecord(value: unknown): Record<string, unknown> | null {
   if (value && typeof value === "object" && !Array.isArray(value)) {
     return value as Record<string, unknown>;
   }
   return null;
 }
 
-function readMoney(value: unknown): StorefrontMoney | null {
+export function readMoney(value: unknown): StorefrontMoney | null {
   const record = asRecord(value);
   if (!record) return null;
   const amount = typeof record.amount === "string" ? record.amount : null;
@@ -130,7 +156,7 @@ function readMoney(value: unknown): StorefrontMoney | null {
   return { amount, currencyCode };
 }
 
-function readImage(value: unknown): StorefrontProductImage | null {
+export function readImage(value: unknown): StorefrontProductImage | null {
   const record = asRecord(value);
   if (!record || typeof record.url !== "string" || !record.url.trim()) return null;
   return {
@@ -141,7 +167,7 @@ function readImage(value: unknown): StorefrontProductImage | null {
   };
 }
 
-function readSelectedOptions(value: unknown): StorefrontSelectedOption[] {
+export function readSelectedOptions(value: unknown): StorefrontSelectedOption[] {
   if (!Array.isArray(value)) return [];
   return value.flatMap((entry) => {
     const record = asRecord(entry);
