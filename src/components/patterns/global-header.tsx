@@ -1,4 +1,5 @@
 import { Container } from "@/components/atoms/container";
+import { AccountLink } from "@/components/patterns/account-link";
 import { CartLink } from "@/components/patterns/cart-link";
 import { HeaderNav } from "@/components/patterns/header-nav";
 import { HeaderSearch } from "@/components/patterns/header-search";
@@ -33,6 +34,8 @@ type GlobalHeaderProps = {
   initialThemeMode?: ThemeMode;
   /** `null`/omitido = carrinho desligado (`SHOPIFY_CART_ENABLED`); número = itens no cookie `nd-cart`. */
   cartCount?: number | null;
+  /** `null`/omitido = conta desligada; booleano = cookie `nd-customer` presente. */
+  accountSignedIn?: boolean | null;
 };
 
 export function GlobalHeader({
@@ -43,6 +46,7 @@ export function GlobalHeader({
   searchQuery,
   initialThemeMode,
   cartCount,
+  accountSignedIn,
 }: GlobalHeaderProps) {
   const logo = data?.logo;
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
@@ -136,6 +140,7 @@ export function GlobalHeader({
               {themeToggle}
             </div>
           )}
+          {typeof accountSignedIn === "boolean" ? <AccountLink locale={locale} signedIn={accountSignedIn} /> : null}
           {typeof cartCount === "number" ? <CartLink locale={locale} count={cartCount} /> : null}
         </div>
       </Container>

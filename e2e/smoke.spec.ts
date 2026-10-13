@@ -14,6 +14,13 @@ test.describe("smoke", () => {
     await expect(page.locator("h1").first()).toBeVisible();
   });
 
+  test("missing pages and unknown locales return a real 404", async ({ request }) => {
+    for (const path of ["/pt/pagina-que-nao-existe-xyz", "/xx-invalid"]) {
+      const res = await request.get(path);
+      expect(res.status(), path).toBe(404);
+    }
+  });
+
   test("draft API rejects unauthenticated enable", async ({ request }) => {
     const res = await request.get("/api/draft");
     expect([401, 500]).toContain(res.status());

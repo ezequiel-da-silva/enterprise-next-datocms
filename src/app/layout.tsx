@@ -12,6 +12,12 @@ import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getCartFromCookie } from "@/infra/shopify/cart";
 import { CART_COOKIE, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import {
+  activeAccessToken,
+  CUSTOMER_COOKIE,
+  isCustomerAccountEnabled,
+  readCustomerSession,
+} from "@/lib/shopify/customer-session";
 import { cn } from "@/lib/cn";
 import { appendLocaleSwitcherSearch } from "@/lib/i18n/locale-switch-href";
 import { resolveLocaleSwitcherHrefs } from "@/lib/i18n/resolve-locale-switcher-hrefs";
@@ -116,8 +122,11 @@ export default async function RootLayout({
   const themeCookie = cookieStore.get(THEME_COOKIE_NAME)?.value;
   const initialThemeMode = isThemeMode(themeCookie) ? themeCookie : undefined;
   const serverDark = initialThemeMode === "dark";
+  const accountEnabled = isCustomerAccountEnabled();
+  const customerSession = accountEnabled ? readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value) : null;
   const cartCount = isCartEnabled()
-    ? ((await getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, appLocale))?.totalQuantity ?? 0)
+    ? ((await getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, appLocale, activeAccessToken(customerSession)))
+        ?.totalQuantity ?? 0)
     : null;
   const themeCss = buildThemeCssVariables();
 
@@ -154,6 +163,7 @@ export default async function RootLayout({
             searchQuery={searchQuery}
             initialThemeMode={initialThemeMode}
             cartCount={cartCount}
+            accountSignedIn={accountEnabled ? customerSession !== null : null}
           />
         </div>
         <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">

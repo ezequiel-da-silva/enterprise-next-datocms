@@ -19,6 +19,7 @@ import { cartCopy } from "@/lib/i18n/cart-copy";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/lib/security/rate-limit";
 import { CART_COOKIE, cartCookieOptions, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { activeAccessToken, CUSTOMER_COOKIE, readCustomerSession } from "@/lib/shopify/customer-session";
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -63,7 +64,10 @@ export async function addToCart(_prev: CartActionState, formData: FormData): Pro
   const lines = [{ merchandiseId: input.data.variantId, quantity: input.data.quantity }];
   const cartId = await readCartId();
   let result: CartMutationResult = cartId ? await addCartLines(cartId, lines, locale) : { ok: false };
-  if (!result.ok) result = await createCart(lines, locale);
+  if (!result.ok) {
+    const session = readCustomerSession((await cookies()).get(CUSTOMER_COOKIE)?.value);
+    result = await createCart(lines, locale, activeAccessToken(session));
+  }
   if (!result.ok) return { status: "error", message: copy.errorGeneric };
 
   await persist(result);

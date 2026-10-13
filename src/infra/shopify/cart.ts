@@ -189,14 +189,18 @@ async function runMutation(
  * The cart currency follows `buyerIdentity.countryCode` set at creation, not `@inContext`.
  * When the visitor switches locale (e.g. /en → /pt), move the cart to that locale's market.
  */
-export async function getCart(cartId: string, locale: AppLocale): Promise<StorefrontCart | null> {
+export async function getCart(
+  cartId: string,
+  locale: AppLocale,
+  customerAccessToken?: string | null,
+): Promise<StorefrontCart | null> {
   const country = shopifyCountryFromLocale(locale);
   const json = await storefrontGraphql(CART_QUERY, { id: cartId, country });
   const cart = mapCart(asRecord(json?.data)?.cart);
   if (!cart || !cart.countryCode || cart.countryCode === country) return cart;
   const synced = await runMutation("cartBuyerIdentityUpdate", CART_BUYER_IDENTITY_UPDATE, {
     cartId,
-    buyerIdentity: { countryCode: country },
+    buyerIdentity: customerAccessToken ? { countryCode: country, customerAccessToken } : { countryCode: country },
     country,
   });
   return synced.ok ? synced.cart : cart;
@@ -206,17 +210,35 @@ export async function getCart(cartId: string, locale: AppLocale): Promise<Storef
 export async function getCartFromCookie(
   cookieValue: string | undefined,
   locale: AppLocale,
+  customerAccessToken?: string | null,
 ): Promise<StorefrontCart | null> {
   const parsed = cartIdSchema.safeParse(cookieValue ?? "");
-  return parsed.success ? getCart(parsed.data, locale) : null;
+  return parsed.success ? getCart(parsed.data, locale, customerAccessToken) : null;
 }
 
+/** `customerAccessToken` (Customer Account API token) makes checkout open logged in. */
 export function createCart(
   lines: { merchandiseId: string; quantity: number }[],
   locale: AppLocale,
+  customerAccessToken?: string | null,
 ): Promise<CartMutationResult> {
   const country = shopifyCountryFromLocale(locale);
-  return runMutation("cartCreate", CART_CREATE, { input: { lines, buyerIdentity: { countryCode: country } }, country });
+  const buyerIdentity = customerAccessToken ? { countryCode: country, customerAccessToken } : { countryCode: country };
+  return runMutation("cartCreate", CART_CREATE, { input: { lines, buyerIdentity }, country });
+}
+
+/** Attaches a logged-in customer to an existing cart; call again after every token refresh. */
+export function linkCartToCustomer(
+  cartId: string,
+  customerAccessToken: string,
+  locale: AppLocale,
+): Promise<CartMutationResult> {
+  const country = shopifyCountryFromLocale(locale);
+  return runMutation("cartBuyerIdentityUpdate", CART_BUYER_IDENTITY_UPDATE, {
+    cartId,
+    buyerIdentity: { countryCode: country, customerAccessToken },
+    country,
+  });
 }
 
 export function addCartLines(
