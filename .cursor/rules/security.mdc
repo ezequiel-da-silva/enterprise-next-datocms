@@ -16,7 +16,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
 - Media do Dato: `img-src` inclui `www.datocms-assets.com` + `image.mux.com` (posters de vídeo) + `cdn.shopify.com` (PDP); `media-src` inclui `www.datocms-assets.com` + `*.mux.com` — wildcard recomendado pelo Mux, que entrega por vários CDNs (`stream.mux.com` redireciona para `*.fastly.mux.com`).
 - `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
-- Hosts condicionais (`optionalCspHosts`): Google (`GA_CSP_HOSTS`) só com `GA_MEASUREMENT_ID`; loja/checkout Shopify em `connect-src` e `cdn.shopify.com` em `script-src` só com `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`. Trackers novos: entram atrás de `ConsentScript` e com host condicional, nunca fixo.
+- Hosts condicionais (`optionalCspHosts`): Google (`GA_CSP_HOSTS`) só com `GA_MEASUREMENT_ID`; loja/checkout Shopify em `connect-src` e `cdn.shopify.com` em `script-src` só com `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`. Trackers novos: entram atrás de `ConsentScript` e com host condicional, nunca fixo. Vercel Speed Insights (`isSpeedInsightsEnabled()`: `VERCEL=1` ou `SPEED_INSIGHTS_ENABLED`) reporta para `/_vercel/speed-insights/*` no mesmo origin; `va.vercel-scripts.com` só entra na CSP quando está ativo (build debug em dev e modo `dsn`).
 - Headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva, `COOP: same-origin`, `HSTS` só em produção.
 
 ## Nonce em conteúdo dinâmico
@@ -77,6 +77,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Redirect de draft para URL absoluta externa.
 - `target="_blank"` sem `rel="noopener noreferrer"`.
 - Nova API com `Access-Control-Allow-Origin: *` sem justificativa (plugin Dato).
+- `console.error`/`console.warn` direto em código de servidor: usar `logError`/`logWarn` (`src/infra/observability/log-error.ts`) com `scope` estável (`webhook.shopify.product`); uma linha JSON que a Vercel indexa. Nunca tokens, códigos OAuth, cookies ou e-mails no `context` (o formatador descarta essas chaves, mas não confiar nisso); em produção o erro cru não é logado, só o nome. Exceção: `src/lib/shopify/env.ts`, `admin-env.ts` e `admin-access-token.ts` ficam em `lib/` (não podem importar `infra/`).
 
 ## Verificação automatizada
 

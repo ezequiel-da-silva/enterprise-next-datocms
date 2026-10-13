@@ -1,4 +1,5 @@
 import type { ContactFormInput } from "@/core/entities/contact";
+import { logError } from "@/infra/observability/log-error";
 
 export type SendContactPayload = ContactFormInput & {
   submittedAt: string;
@@ -26,6 +27,7 @@ export async function sendContactMessage(payload: SendContactPayload): Promise<S
       });
       return { ok: true };
     }
+    logError("contact.send", "CONTACT_WEBHOOK_URL is not set; message dropped");
     return { ok: false, reason: "not_configured" };
   }
 
@@ -36,10 +38,12 @@ export async function sendContactMessage(payload: SendContactPayload): Promise<S
       body: JSON.stringify(payload),
     });
     if (!response.ok) {
+      logError("contact.send", "Contact webhook rejected the message", { context: { status: response.status } });
       return { ok: false, reason: "transport_error" };
     }
     return { ok: true };
-  } catch {
+  } catch (err) {
+    logError("contact.send", "Contact webhook request failed", { error: err });
     return { ok: false, reason: "transport_error" };
   }
 }

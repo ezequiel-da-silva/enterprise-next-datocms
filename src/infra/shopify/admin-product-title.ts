@@ -1,3 +1,4 @@
+import { logError } from "@/infra/observability/log-error";
 import { SHOPIFY_ADMIN_API_VERSION } from "@/infra/shopify/api-version";
 import { resolveAdminAccessToken } from "@/lib/shopify/admin-access-token";
 import {
@@ -179,7 +180,7 @@ const TRANSLATIONS_REGISTER = /* GraphQL */ `
 
 /** Mensagem de erro Shopify: fica no log (também em produção) porque diz o scope em falta. */
 function logAdminFailure(message: string, detail?: string): void {
-  console.error(detail ? `${message}: ${detail}` : message);
+  logError("shopify.admin-product-title", message, { detail });
 }
 
 function translationRows(value: unknown): Array<{ key?: string; value?: string | null }> {

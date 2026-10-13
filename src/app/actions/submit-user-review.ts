@@ -5,6 +5,7 @@ import { DEFAULT_APP_LOCALE, isAppLocale, type AppLocale } from "@/constants/i18
 import type { UserReviewActionState } from "@/core/entities/user-review";
 import { submitUserReviewUseCase } from "@/core/use-cases/submit-user-review";
 import { createPendingUserReview } from "@/infra/datocms/create-user-review";
+import { logError } from "@/infra/observability/log-error";
 import { reviewsCopy } from "@/lib/i18n/reviews-copy";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/infra/security/rate-limit";
@@ -47,6 +48,9 @@ export async function submitUserReview(
   const result = await submitUserReviewUseCase(raw, locale, createPendingUserReview);
 
   if (!result.ok) {
+    if (result.statusCode === "notConfigured") {
+      logError("action.user-review", "Review creation not configured (CMA token missing)");
+    }
     return {
       status: "error",
       fieldErrors: result.fieldErrors,

@@ -15,6 +15,7 @@ import {
   updateCartLines,
   type CartMutationResult,
 } from "@/infra/shopify/cart";
+import { logError } from "@/infra/observability/log-error";
 import { cartCopy } from "@/lib/i18n/cart-copy";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/infra/security/rate-limit";
@@ -35,8 +36,11 @@ async function readCartId(): Promise<string | null> {
   return parsed.success ? parsed.data : null;
 }
 
-async function persist(result: CartMutationResult): Promise<void> {
-  if (!result.ok) return;
+async function persist(result: CartMutationResult, action: string): Promise<void> {
+  if (!result.ok) {
+    logError("action.cart", "Cart mutation failed", { context: { action } });
+    return;
+  }
   (await cookies()).set(CART_COOKIE, result.cart.id, cartCookieOptions());
   refresh();
 }
@@ -68,9 +72,12 @@ export async function addToCart(_prev: CartActionState, formData: FormData): Pro
     const session = readCustomerSession((await cookies()).get(CUSTOMER_COOKIE)?.value);
     result = await createCart(lines, locale, activeAccessToken(session));
   }
-  if (!result.ok) return { status: "error", message: copy.errorGeneric };
+  if (!result.ok) {
+    logError("action.cart", "Cart create failed after add fallback", { context: { action: "add" } });
+    return { status: "error", message: copy.errorGeneric };
+  }
 
-  await persist(result);
+  await persist(result, "add");
   return { status: "success", message: copy.added, totalQuantity: result.cart.totalQuantity };
 }
 
@@ -87,7 +94,7 @@ export async function updateCartLine(formData: FormData): Promise<void> {
     input.data.quantity === 0
       ? await removeCartLines(cartId, [input.data.lineId], locale)
       : await updateCartLines(cartId, [{ id: input.data.lineId, quantity: input.data.quantity }], locale);
-  await persist(result);
+  await persist(result, input.data.quantity === 0 ? "remove" : "update");
 }
 
 export async function removeCartLine(formData: FormData): Promise<void> {
@@ -95,5 +102,5 @@ export async function removeCartLine(formData: FormData): Promise<void> {
   const input = removeCartLineSchema.safeParse({ lineId: formData.get("lineId") });
   const cartId = await readCartId();
   if (!input.success || !cartId) return;
-  await persist(await removeCartLines(cartId, [input.data.lineId], readLocale(formData)));
+  await persist(await removeCartLines(cartId, [input.data.lineId], readLocale(formData)), "remove");
 }

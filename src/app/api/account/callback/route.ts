@@ -1,5 +1,6 @@
 import { linkCookieCart, redirectTo } from "@/app/api/account/account-route-utils";
 import { DEFAULT_APP_LOCALE, isAppLocale } from "@/constants/i18n";
+import { logWarn } from "@/infra/observability/log-error";
 import { exchangeAuthorizationCode, readIdTokenNonce, sessionFromTokens } from "@/infra/shopify/customer-account";
 import { isSecretEqual } from "@/lib/security/compare-secret";
 import {
@@ -22,27 +23,30 @@ export async function GET(request: NextRequest) {
   const handshake = readOAuthHandshake(request.cookies.get(OAUTH_COOKIE)?.value);
 
   if (!handshake || !isSecretEqual(params.get("state"), handshake.state)) {
+    logWarn("account.callback", "Login rejected", { context: { stage: handshake ? "state" : "handshake" } });
     const invalid = new NextResponse("Invalid login state.", { status: 400 });
     invalid.cookies.delete(OAUTH_COOKIE);
     return invalid;
   }
 
   const locale = isAppLocale(handshake.locale) ? handshake.locale : DEFAULT_APP_LOCALE;
-  const failed = () => {
+  const failed = (stage: "authorize" | "exchange" | "nonce" | "session") => {
+    logWarn("account.callback", "Login failed", { context: { stage } });
     const response = redirectTo(request, `${accountPath(locale)}?error=login`);
     response.cookies.delete(OAUTH_COOKIE);
     return response;
   };
 
   const code = params.get("code");
-  if (params.get("error") || !code) return failed();
+  if (params.get("error") || !code) return failed("authorize");
 
   const tokens = await exchangeAuthorizationCode(code, handshake.verifier);
-  if (!tokens?.id_token || !isSecretEqual(readIdTokenNonce(tokens.id_token), handshake.nonce)) return failed();
+  if (!tokens?.id_token) return failed("exchange");
+  if (!isSecretEqual(readIdTokenNonce(tokens.id_token), handshake.nonce)) return failed("nonce");
 
   const session = sessionFromTokens(tokens, null);
   const sealed = session ? sealCustomerSession(session) : null;
-  if (!session || !sealed) return failed();
+  if (!session || !sealed) return failed("session");
 
   await linkCookieCart(request, session.accessToken, locale);
   const response = redirectTo(request, accountPath(locale));

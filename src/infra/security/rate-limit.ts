@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { Redis } from "@upstash/redis";
+import { logError } from "@/infra/observability/log-error";
 import {
   checkMemoryRateLimit,
   DEFAULT_RATE_LIMIT,
@@ -64,10 +65,10 @@ export async function checkRateLimit(
     if (count <= options.limit) return { ok: true };
     const remainingMs = ttlMs > 0 ? ttlMs : options.windowMs;
     return { ok: false, retryAfterSec: Math.max(1, Math.ceil(remainingMs / 1000)) };
-  } catch {
+  } catch (err) {
     if (!warnedFallback) {
       warnedFallback = true;
-      console.error("[checkRateLimit] Upstash Redis failed; using the in-memory limiter");
+      logError("security.rate-limit", "Upstash Redis failed; using the in-memory limiter", { error: err });
     }
     return checkMemoryRateLimit(key, options);
   }

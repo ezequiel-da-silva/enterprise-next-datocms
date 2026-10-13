@@ -3,6 +3,7 @@ import type {
   ShopifyCopyTranslations,
   ShopifyProductTitles,
 } from "@/infra/shopify/admin-product-title";
+import { logError } from "@/infra/observability/log-error";
 import { SHOPIFY_ADMIN_API_VERSION } from "@/infra/shopify/api-version";
 import { resolveAdminAccessToken } from "@/lib/shopify/admin-access-token";
 import {
@@ -158,7 +159,7 @@ const TRANSLATIONS_REGISTER = /* GraphQL */ `
 `;
 
 function logAdminFailure(message: string, detail?: string): void {
-  console.error(detail ? `${message}: ${detail}` : message);
+  logError("shopify.admin-collection-copy", message, { detail });
 }
 
 function translationRows(value: unknown): Array<{ key?: string; value?: string | null }> {

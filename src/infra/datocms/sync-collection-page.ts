@@ -1,4 +1,5 @@
 import { buildClient, type Client } from "@datocms/cma-client-node";
+import { logError } from "@/infra/observability/log-error";
 import { readShopifyCollectionTranslations } from "@/infra/shopify/admin-collection-copy";
 import { readDatoCmsEnvironment } from "@/lib/datocms/environment";
 import type { ShopifyCollectionWebhook } from "@/lib/shopify/parse-collection-webhook";
@@ -155,11 +156,7 @@ export async function syncCollectionPageFromShopify(
     await client.items.publish(id);
     return { ok: true, id, created };
   } catch (err) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("[syncCollectionPageFromShopify] CMA upsert failed", err);
-    } else {
-      console.error("[syncCollectionPageFromShopify] CMA upsert failed");
-    }
+    logError("cms.sync-collection-page", "CMA upsert failed", { error: err });
     return { ok: false, reason: "transport_error" };
   }
 }

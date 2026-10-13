@@ -1,6 +1,7 @@
 import { buildClient, type Client } from "@datocms/cma-client-node";
 import { toDatoSiteLocale } from "@/constants/i18n";
 import type { CreateUserReviewPayload, CreateUserReviewResult } from "@/core/ports/user-review-creator";
+import { logError } from "@/infra/observability/log-error";
 
 const USER_REVIEW_API_KEY = "user_review";
 
@@ -62,11 +63,7 @@ export async function createPendingUserReview(
 
     return { ok: true };
   } catch (err) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("[createPendingUserReview] CMA create failed", err);
-    } else {
-      console.error("[createPendingUserReview] CMA create failed");
-    }
+    logError("cms.create-user-review", "CMA create failed", { error: err });
     return { ok: false, reason: "transport_error" };
   }
 }

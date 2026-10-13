@@ -1,5 +1,6 @@
 import { syncCollectionPageFromShopify } from "@/infra/datocms/sync-collection-page";
 import { syncProductPageFromShopify } from "@/infra/datocms/sync-product-page";
+import { logError, logWarn } from "@/infra/observability/log-error";
 import { productHandleForInventoryItem } from "@/infra/shopify/admin-inventory";
 import { SHOPIFY_CATALOG_TAG, SHOPIFY_PRODUCTS_TAG, shopifyProductTag } from "@/lib/shopify/cache-tags";
 import { logMissingShopifyWebhookEnv, readShopifyWebhookEnv } from "@/lib/shopify/env";
@@ -58,12 +59,14 @@ export async function POST(request: NextRequest) {
       env.data.SHOPIFY_API_SECRET_KEY,
     )
   ) {
+    logWarn("webhook.shopify", "Rejected: invalid HMAC");
     return unauthorized();
   }
 
   const expectedShop = normalizeShopDomain(env.data.SHOPIFY_STORE_DOMAIN);
   const incomingShop = normalizeShopDomain(request.headers.get("x-shopify-shop-domain"));
   if (incomingShop !== expectedShop) {
+    logWarn("webhook.shopify", "Rejected: shop domain mismatch");
     return unauthorized();
   }
 
@@ -103,6 +106,9 @@ export async function POST(request: NextRequest) {
       if (result.reason === "not_configured") {
         return missingEnvResponse(["DATOCMS_USER_REVIEWS_CDA_TOKEN"]);
       }
+      logError("webhook.shopify.collection", "Sync failed", {
+        context: { reason: result.reason, handle: collection.handle },
+      });
       return NextResponse.json({ error: "Sync failed" }, { status: 500 });
     }
     revalidateShopifyTags([SHOPIFY_CATALOG_TAG]);
@@ -122,6 +128,9 @@ export async function POST(request: NextRequest) {
     if (result.reason === "not_configured") {
       return missingEnvResponse(["DATOCMS_USER_REVIEWS_CDA_TOKEN"]);
     }
+    logError("webhook.shopify.product", "Sync failed", {
+      context: { reason: result.reason, handle: product.handle },
+    });
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });
   }
 
