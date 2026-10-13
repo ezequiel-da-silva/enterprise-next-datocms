@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.42.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.41.0...next-dato-v0.42.0) (2026-10-13)
+
+
+### Features
+
+* **next:** add Shopify customer account login ([3dbf2bc](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/3dbf2bcfb49e8fc785ac717c75b7cdd9b59f5d27))
+* **ui:** add account page and header link ([c0a2990](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/c0a29905eb5cd2277dd1316a85e8c8a1aad2ea86))
+
+
+### Bug Fixes
+
+* **next:** return real 404 by dropping route-level loading UI ([397512a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/397512ac406a1aac1644215a1e0700885c3f836b))
+
+
+### Documentation
+
+* **agents:** update section header for clarity ([959f9dc](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/959f9dc4e206ce318d8230cccd93f02b15ad27fa))
+* customer account setup ([85cb314](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/85cb314e8d3ddac30beb6448794f794ab6907350))
+* **env:** update example environment variables with additional instructions for generating secrets ([88fc53d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/88fc53d3a1c4a918690b1e1ebf428ab7faaeaea3))
+
 ## [0.41.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.40.0...next-dato-v0.41.0) (2026-10-12)
 
 
