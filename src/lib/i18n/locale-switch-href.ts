@@ -7,8 +7,18 @@ import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import type { DatoSlugLocaleEntry } from "@/lib/seo/hreflang";
 import { buildHreflangPathsFromSlugLocales } from "@/lib/seo/hreflang";
 
+/** Rotas da app (não Dato) com o mesmo segmento em todos os locales: `/{locale}/account`, `/{locale}/cart`. */
+const APP_ROUTE_SEGMENTS = ["account", "cart"] as const;
+
+export type AppRouteSegment = (typeof APP_ROUTE_SEGMENTS)[number];
+
+function isAppRouteSegment(value: string): value is AppRouteSegment {
+  return (APP_ROUTE_SEGMENTS as readonly string[]).includes(value);
+}
+
 export type LocalePathKind =
   | { kind: "home" }
+  | { kind: "app"; segment: AppRouteSegment }
   | { kind: "blog" }
   | { kind: "post"; slug: string }
   | { kind: "author"; slug: string }
@@ -55,6 +65,7 @@ function parseAfterLocale(rest: string[]): LocalePathKind {
   if (!second) return { kind: "home" };
   if (second.toLowerCase() === "home" && tail.length === 0) return { kind: "home" };
   if (second === "blog") return parseBlogRest(tail);
+  if (tail.length === 0 && isAppRouteSegment(second)) return { kind: "app", segment: second };
   if (tail.length === 0) return { kind: "cms", slug: second };
   if (tail.length === 1 && tail[0]) {
     if (second === "products") return { kind: "product", handle: tail[0] };
@@ -120,6 +131,15 @@ export function buildLocaleSwitcherHrefs(
   if (kind.kind === "blog") {
     return completeHrefs(
       Object.fromEntries(APP_LOCALES.map((locale) => [locale, `/${locale}/blog`])) as Record<
+        AppLocale,
+        string
+      >,
+    );
+  }
+
+  if (kind.kind === "app") {
+    return completeHrefs(
+      Object.fromEntries(APP_LOCALES.map((locale) => [locale, `/${locale}/${kind.segment}`])) as Record<
         AppLocale,
         string
       >,

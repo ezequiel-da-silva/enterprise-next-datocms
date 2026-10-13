@@ -35,6 +35,12 @@ describe("parseLocalePath", () => {
     expect(parseLocalePath("/pt/products")).toEqual({ kind: "cms", slug: "products" });
     expect(parseLocalePath("/pt/products/a/b")).toEqual({ kind: "other" });
   });
+
+  it("parses account and cart as app routes, not CMS slugs", () => {
+    expect(parseLocalePath("/pt/account")).toEqual({ kind: "app", segment: "account" });
+    expect(parseLocalePath("/es/cart/")).toEqual({ kind: "app", segment: "cart" });
+    expect(parseLocalePath("/pt/account/extra")).toEqual({ kind: "other" });
+  });
 });
 
 describe("buildLocaleSwitcherHrefs", () => {
@@ -58,6 +64,16 @@ describe("buildLocaleSwitcherHrefs", () => {
       es: "/es/products/board",
     });
     expect(hrefForLocale("/pt/collections/hydrogen", "es")).toBe("/es/collections/hydrogen");
+  });
+
+  it("keeps the account and cart paths across locales", () => {
+    expect(buildLocaleSwitcherHrefs("/pt/account")).toEqual({
+      en: "/en/account",
+      pt: "/pt/account",
+      es: "/es/account",
+    });
+    expect(hrefForLocale("/en/cart", "es")).toBe("/es/cart");
+    expect(hrefForLocale("/pt/account/extra", "en")).toBe("/en");
   });
 
   it("keeps CMS slug mapping for /busca until slugLocales resolve", () => {
