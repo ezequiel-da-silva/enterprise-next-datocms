@@ -526,3 +526,35 @@ export async function getStorefrontProductsByHandles(
     return card ? [card] : [];
   });
 }
+
+const SHOP_PRIVACY_POLICY_QUERY = /* GraphQL */ `
+  query ShopPrivacyPolicy {
+    shop {
+      privacyPolicy {
+        url
+      }
+    }
+  }
+`;
+
+/** Privacy policy page configured in Shopify admin (Settings → Policies); `null` when unset. */
+export async function getShopPrivacyPolicyUrl(): Promise<string | null> {
+  const shop = shopDomain();
+  const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
+  if (!shop || !token) return null;
+
+  try {
+    const res = await fetch(`https://${shop}/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...storefrontAuthHeaders(token) },
+      body: JSON.stringify({ query: SHOP_PRIVACY_POLICY_QUERY, variables: {} }),
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { shop?: unknown } };
+    const url = asRecord(asRecord(json.data?.shop)?.privacyPolicy)?.url;
+    return typeof url === "string" && url.startsWith("https://") ? url : null;
+  } catch {
+    return null;
+  }
+}

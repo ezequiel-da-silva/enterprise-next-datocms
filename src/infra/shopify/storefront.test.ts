@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getStorefrontCollectionByHandle, getStorefrontCollectionMeta, getStorefrontProductByHandle, storefrontAuthHeaders } from "@/infra/shopify/storefront";
+import { getStorefrontCollectionByHandle, getStorefrontCollectionMeta, getStorefrontProductByHandle, getShopPrivacyPolicyUrl, storefrontAuthHeaders } from "@/infra/shopify/storefront";
 
 describe("getStorefrontProductByHandle", () => {
   it("returns null when env is missing", async () => {
@@ -165,6 +165,31 @@ describe("getStorefrontProductByHandle", () => {
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "Shopify-Storefront-Private-Token": "shpat_test",
     });
+    vi.unstubAllGlobals();
+  });
+
+  it("reads the shop privacy policy URL, cached with the catalog", async () => {
+    process.env.SHOPIFY_STORE_DOMAIN = "shop.myshopify.com";
+    process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN = "token";
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { shop: { privacyPolicy: { url: "https://shop.myshopify.com/policies/privacy-policy" } } },
+        }),
+      })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { shop: { privacyPolicy: null } } }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { shop: { privacyPolicy: { url: "javascript:alert(1)" } } } }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getShopPrivacyPolicyUrl()).resolves.toBe("https://shop.myshopify.com/policies/privacy-policy");
+    expect(fetchMock.mock.calls[0]?.[1]?.next?.tags).toEqual(["shopify:catalog"]);
+    await expect(getShopPrivacyPolicyUrl()).resolves.toBeNull();
+    await expect(getShopPrivacyPolicyUrl()).resolves.toBeNull();
     vi.unstubAllGlobals();
   });
 

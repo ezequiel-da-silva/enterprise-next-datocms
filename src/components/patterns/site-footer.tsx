@@ -1,10 +1,12 @@
 import { Container } from "@/components/atoms/container";
+import { CookiePreferencesButton } from "@/components/patterns/consent/cookie-preferences-button";
 import { SocialNavLink } from "@/components/patterns/social-nav-link";
 import { structuredTextDatoNodeRules } from "@/components/patterns/structured-text-dato-rules";
 import type { NavigationData, NavItemRecord } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
+import { consentCopy } from "@/lib/i18n/consent-copy";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import Image from "next/image";
@@ -134,13 +136,16 @@ export function SiteFooter({ data, locale }: SiteFooterProps) {
           </div>
         ) : null}
 
-        {legal.length > 0 ? (
-          <nav aria-label="Links legais" className="flex flex-wrap gap-x-4 gap-y-2 border-t border-border pt-6">
-            {legal.map((item) => (
-              <FooterLink key={item.id} item={item} locale={locale} />
-            ))}
-          </nav>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-6">
+          {legal.length > 0 ? (
+            <nav aria-label="Links legais" className="flex flex-wrap gap-x-4 gap-y-2">
+              {legal.map((item) => (
+                <FooterLink key={item.id} item={item} locale={locale} />
+              ))}
+            </nav>
+          ) : null}
+          <CookiePreferencesButton label={consentCopy(locale).manage} />
+        </div>
       </Container>
     </footer>
   );

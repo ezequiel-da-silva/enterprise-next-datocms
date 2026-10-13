@@ -72,6 +72,7 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 | `SHOPIFY_CHECKOUT_DOMAIN` | Opcional | Domínio próprio do checkout, se não for `*.myshopify.com` |
 | `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID` | Headless → Customer Account API | Login de clientes (ver [Conta de cliente](#conta-de-cliente)) |
 | `SHOPIFY_CUSTOMER_SESSION_SECRET` | Gerada por ti (≥ 32 caracteres) | Cifra o cookie `nd-customer`. Trocar desloga todos |
+| `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` | Headless → API Storefront → **token público** | Opcional. Única exceção que chega ao browser: sincroniza o banner de cookies com a Customer Privacy API (ver [Consentimento de cookies](#consentimento-de-cookies)) |
 
 O cliente Storefront envia `Shopify-Storefront-Private-Token` se o valor começar por `shpat_`; senão `X-Shopify-Storefront-Access-Token` (token público hex). Preferir o **privado** no servidor.
 
@@ -273,6 +274,14 @@ A Shopify **não aceita `localhost`** no callback. Usa um túnel (ex.: `ngrok ht
 4. Server Components não gravam cookies: quando o token está a 1 min de expirar, `/account` redireciona para `GET /api/account/refresh?next=…`, que renova o token, volta a ligá-lo ao carrinho e regressa. `next` só aceita caminhos internos com locale (sem open redirect). Se a renovação falhar, a sessão é apagada.
 5. `GET /api/account/logout` apaga `nd-customer`, `nd-oauth` **e** `nd-cart` (o carrinho leva o token do cliente) e redireciona para o `end_session_endpoint` com `id_token_hint`. É GET porque a CSP tem `form-action 'self'`, que bloqueia um formulário que redireciona para a Shopify. O risco (alguém forçar o logout de um visitante) é baixo.
 6. Login com rate limit de 10/min por IP.
+
+## Consentimento de cookies
+
+O banner (en, pt, es) aparece enquanto não houver escolha no cookie `nd-consent` (`v1:granted` ou `v1:denied`, 180 dias, sem `httpOnly` porque o browser o escreve). O layout lê o cookie no servidor, então quem já escolheu não vê o banner piscar. "Preferências de cookies" no rodapé apaga a escolha e mostra o banner de novo.
+
+- **Rastreamento:** nada de terceiros carrega antes de "Aceitar todos". O GA4 (`GA_MEASUREMENT_ID`) passa por `ConsentScript`; scripts novos devem usar o mesmo componente. Se o visitante retirar o consentimento, o Consent Mode volta para `denied`.
+- **Shopify:** com `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`, o clique no banner carrega `consent-tracking-api.js` (cdn.shopify.com) e chama `setTrackingConsent` com `headlessStorefront: true`, então checkout e analytics da Shopify respeitam a escolha. Sem o token, vale só o cookie.
+- **Admin:** em Settings → Customer privacy, deixa o banner próprio da Shopify **desligado** para o storefront headless (o do site já cobre) e preenche a política de privacidade em Settings → Policies; o link do banner vem de `shop.privacyPolicy.url`.
 
 ## Go-live
 
