@@ -23,6 +23,8 @@ Corre `npm run security:audit:all` periodicamente para reavaliar; quando houver 
 
 O proxy em [`src/proxy.ts`](../src/proxy.ts) aplica CSP estrita e HSTS só quando o processo do Next corre com **`NODE_ENV=production`**.
 
+Hosts de terceiros entram na CSP só quando a env correspondente existe: GA4 (`GA_MEASUREMENT_ID`) e Shopify Customer Privacy (`SHOPIFY_STOREFRONT_PUBLIC_TOKEN`). Os dois scripts só carregam depois da escolha no banner de cookies ([SHOPIFY.md → Consentimento de cookies](./SHOPIFY.md#consentimento-de-cookies)). `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` é o único token que chega ao browser, e tem de ser o **público**.
+
 ```bash
 npm run build
 npm run start:prod

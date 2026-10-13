@@ -16,6 +16,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
 - Media do Dato: `img-src` inclui `www.datocms-assets.com` + `image.mux.com` (posters de vídeo) + `cdn.shopify.com` (PDP); `media-src` inclui `www.datocms-assets.com` + `*.mux.com` — wildcard recomendado pelo Mux, que entrega por vários CDNs (`stream.mux.com` redireciona para `*.fastly.mux.com`).
 - `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
+- Hosts condicionais (`optionalCspHosts`): Google (`GA_CSP_HOSTS`) só com `GA_MEASUREMENT_ID`; loja/checkout Shopify em `connect-src` e `cdn.shopify.com` em `script-src` só com `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`. Trackers novos: entram atrás de `ConsentScript` e com host condicional, nunca fixo.
 - Headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva, `COOP: same-origin`, `HSTS` só em produção.
 
 ## Nonce em conteúdo dinâmico
@@ -29,6 +30,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 - **Nunca** commitar `.env` (`.dockerignore` ignora `.env*`).
 - Tokens só no servidor: `DATOCMS_API_TOKEN`, `DATOCMS_DRAFT_CDA_TOKEN`, `DATOCMS_PREVIEW_SECRET`, `DATOCMS_USER_REVIEWS_CDA_TOKEN`, `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, `SHOPIFY_ADMIN_ACCESS_TOKEN`, `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID`, `SHOPIFY_CUSTOMER_SESSION_SECRET`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (ou `KV_REST_API_URL` / `KV_REST_API_TOKEN`).
+- Exceção documentada: `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` (token **público** Storefront) vai ao browser via `readShopifyPrivacyConfig()` → `ConsentRoot`, só para a Customer Privacy API. Nunca usar `SHOPIFY_STOREFRONT_ACCESS_TOKEN` nesse caminho.
 - Preview: comparar segredos com `isSecretEqual()` (`src/lib/security/compare-secret.ts`) — não `===` direto em rotas públicas.
 - `DATOCMS_PREVIEW_SECRET` obrigatório para `/api/draft` e `/api/preview-links`; sem secret → 500/401, nunca draft aberto.
 - `DATOCMS_REVALIDATE_SECRET` obrigatório para `POST /api/revalidate` e `POST /api/webhooks/datocms/product-page` (webhook Dato); comparar com `isSecretEqual()`.

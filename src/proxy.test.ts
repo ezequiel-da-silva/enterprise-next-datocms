@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
 
@@ -86,6 +86,40 @@ describe("proxy", () => {
     const res = await proxy(makeRequest("/api/draft"));
     expect(res.status).toBe(200);
     expect(getRedirects).not.toHaveBeenCalled();
+  });
+
+  describe("optional CSP hosts", () => {
+    async function csp() {
+      return (await proxy(makeRequest(`/${DEFAULT_APP_LOCALE}`))).headers.get("content-security-policy") ?? "";
+    }
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    it("leaves GA and Shopify consent hosts out by default", async () => {
+      vi.stubEnv("GA_MEASUREMENT_ID", "");
+      vi.stubEnv("SHOPIFY_STOREFRONT_PUBLIC_TOKEN", "");
+      const header = await csp();
+      expect(header).not.toContain("google");
+      expect(header).not.toMatch(/connect-src[^;]*myshopify/);
+    });
+
+    it("allows GA4 hosts when a measurement ID is set", async () => {
+      vi.stubEnv("GA_MEASUREMENT_ID", "G-TEST123");
+      const header = await csp();
+      expect(header).toMatch(/connect-src[^;]*https:\/\/\*\.google-analytics\.com/);
+      expect(header).toMatch(/img-src[^;]*https:\/\/www\.googletagmanager\.com/);
+    });
+
+    it("allows the shop domain for Customer Privacy when the public token is set", async () => {
+      vi.stubEnv("SHOPIFY_STOREFRONT_PUBLIC_TOKEN", "pub");
+      vi.stubEnv("SHOPIFY_STORE_DOMAIN", "shop.myshopify.com");
+      vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://example.com");
+      const header = await csp();
+      expect(header).toMatch(/connect-src[^;]*https:\/\/shop\.myshopify\.com/);
+      expect(header).toMatch(/script-src[^;]*https:\/\/cdn\.shopify\.com/);
+    });
   });
 
   it("does not spend CDA on metadata routes but still sets CSP", async () => {

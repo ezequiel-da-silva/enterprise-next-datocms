@@ -11,6 +11,8 @@ import { THEME_COOKIE_NAME, isThemeMode, type ThemeMode } from "@/constants/them
 import { getRedirects, pickRedirectRecords } from "@/infra/datocms/get-redirects";
 import { shouldLookupCmsRedirects } from "@/lib/datocms/cms-redirect-lookup";
 import { matchRedirect } from "@/lib/datocms/match-redirect";
+import { GA_CSP_HOSTS, readGaMeasurementId } from "@/lib/analytics/ga-config";
+import { shopifyPrivacyCspHosts } from "@/lib/shopify/customer-privacy-config";
 
 const DATO_ADMIN_FRAME =
   process.env.DATOCMS_ADMIN_FRAME_ANCESTOR ?? "https://boilerplate-dato.admin.datocms.com";
@@ -25,8 +27,24 @@ function createNonce(): string {
   return btoa(binary);
 }
 
+/**
+ * Hosts only present when the matching env is set (consent-gated GA4, Shopify Customer Privacy).
+ * In prod `strict-dynamic` ignores script hosts; they are listed for dev, where it is off.
+ */
+function optionalCspHosts(): { script: string; connect: string; img: string } {
+  const ga = readGaMeasurementId() ? GA_CSP_HOSTS.join(" ") : "";
+  const shopify = shopifyPrivacyCspHosts();
+  const join = (...parts: string[]) => parts.filter(Boolean).map((p) => ` ${p}`).join("");
+  return {
+    script: join(ga && "https://www.googletagmanager.com", shopify.length ? "https://cdn.shopify.com" : ""),
+    connect: join(ga, ...shopify),
+    img: join(ga),
+  };
+}
+
 function buildCspHeader(nonce: string, isDev: boolean): string {
   const scriptExtra = isDev ? " 'unsafe-eval'" : " 'strict-dynamic'";
+  const optional = optionalCspHosts();
   /*
    * Dev: unsafe-inline para HMR.
    * Prod: nonce em <style> (style-src / style-src-elem).
@@ -43,16 +61,16 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
 
   const directives = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}'${scriptExtra}`,
+    `script-src 'self' 'nonce-${nonce}'${scriptExtra}${optional.script}`,
     /* Fontes via next/font: ficheiros em /_next/static — cobertos por font-src 'self'. Sem fonts.googleapis.com / gstatic. */
     ...styleDirectives,
     /* image.mux.com: posters de vídeo (thumbnailUrl). */
-    "img-src 'self' data: blob: https://www.datocms-assets.com https://image.mux.com https://cdn.shopify.com",
+    `img-src 'self' data: blob: https://www.datocms-assets.com https://image.mux.com https://cdn.shopify.com${optional.img}`,
     "font-src 'self' data:",
     /* *.mux.com: o Mux entrega por vários CDNs (stream.mux.com → *.fastly.mux.com) e os hosts mudam sem aviso. */
     `media-src 'self' https://www.datocms-assets.com https://*.mux.com`,
     "manifest-src 'self'",
-    `connect-src 'self' https://graphql.datocms.com ${DATO_ADMIN_FRAME}`,
+    `connect-src 'self' https://graphql.datocms.com ${DATO_ADMIN_FRAME}${optional.connect}`,
     `frame-ancestors 'self' https://plugins-cdn.datocms.com ${DATO_ADMIN_FRAME}`,
     "base-uri 'self'",
     "form-action 'self'",
