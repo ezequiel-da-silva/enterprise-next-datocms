@@ -14,6 +14,7 @@ import { ConsentRoot } from "@/components/patterns/consent/consent-root";
 import { getCartFromCookie } from "@/infra/shopify/cart";
 import { getShopPrivacyPolicyUrl } from "@/infra/shopify/storefront";
 import { readGaMeasurementId } from "@/lib/analytics/ga-config";
+import { isSpeedInsightsEnabled } from "@/lib/analytics/speed-insights-config";
 import { CONSENT_COOKIE, parseConsent } from "@/lib/consent/consent-cookie";
 import { readShopifyPrivacyConfig } from "@/lib/shopify/customer-privacy-config";
 import { CART_COOKIE, isCartEnabled } from "@/lib/shopify/cart-cookie";
@@ -181,6 +182,7 @@ export default async function RootLayout({
           locale={appLocale}
           initialConsent={initialConsent}
           gaMeasurementId={readGaMeasurementId()}
+          speedInsightsEnabled={isSpeedInsightsEnabled()}
           shopifyPrivacy={readShopifyPrivacyConfig()}
           privacyPolicyUrl={privacyPolicyUrl}
           nonce={nonce ?? null}
