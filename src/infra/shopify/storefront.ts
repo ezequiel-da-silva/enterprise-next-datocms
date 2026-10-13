@@ -1,6 +1,16 @@
 import type { AppLocale } from "@/constants/i18n";
 import { SHOPIFY_STOREFRONT_API_VERSION as STOREFRONT_API_VERSION } from "@/infra/shopify/api-version";
+import {
+  SHOPIFY_CATALOG_REVALIDATE_SEC,
+  SHOPIFY_CATALOG_TAG,
+  SHOPIFY_PRODUCTS_TAG,
+  shopifyProductTag,
+} from "@/lib/shopify/cache-tags";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
+
+function catalogCache(tags: string[]): { revalidate: number; tags: string[] } {
+  return { revalidate: SHOPIFY_CATALOG_REVALIDATE_SEC, tags };
+}
 
 export type StorefrontMoney = {
   amount: string;
@@ -27,12 +37,14 @@ export type StorefrontVariant = {
   price: StorefrontMoney;
   selectedOptions: StorefrontSelectedOption[];
   image: StorefrontProductImage | null;
+  sku: string | null;
 };
 
 export type StorefrontProduct = {
   id: string;
   title: string;
   handle: string;
+  vendor: string | null;
   availableForSale: boolean;
   featuredImage: StorefrontProductImage | null;
   images: StorefrontProductImage[];
@@ -46,6 +58,7 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
       id
       title
       handle
+      vendor
       availableForSale
       featuredImage {
         url
@@ -73,6 +86,7 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
           title
           availableForSale
           quantityAvailable
+          sku
           price {
             amount
             currencyCode
@@ -195,7 +209,12 @@ function readVariant(value: unknown): StorefrontVariant | null {
     price,
     selectedOptions: readSelectedOptions(record.selectedOptions),
     image: readImage(record.image),
+    sku: readOptionalText(record.sku),
   };
+}
+
+function readOptionalText(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 function mapProduct(value: unknown): StorefrontProduct | null {
@@ -214,6 +233,7 @@ function mapProduct(value: unknown): StorefrontProduct | null {
     id: record.id,
     title: record.title,
     handle: record.handle,
+    vendor: readOptionalText(record.vendor),
     availableForSale: record.availableForSale === true,
     featuredImage: readImage(record.featuredImage),
     images: readImageNodes(record.images),
@@ -371,7 +391,7 @@ export async function getStorefrontProductByHandle(
         query: PRODUCT_BY_HANDLE_QUERY,
         variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([shopifyProductTag(trimmed), SHOPIFY_PRODUCTS_TAG]),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { product?: unknown } };
@@ -402,7 +422,7 @@ export async function getStorefrontCollectionByHandle(
         query: COLLECTION_BY_HANDLE_QUERY,
         variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { collection?: unknown } };
@@ -433,7 +453,7 @@ export async function getStorefrontCollectionMeta(
         query: COLLECTION_META_QUERY,
         variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { collection?: unknown } };
@@ -466,7 +486,7 @@ export async function getStorefrontProducts(locale: AppLocale): Promise<Storefro
         query: PRODUCTS_QUERY,
         variables: { country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
     });
     if (!res.ok) return [];
     const json = (await res.json()) as { data?: { products?: { nodes?: unknown } } };
@@ -505,4 +525,36 @@ export async function getStorefrontProductsByHandles(
     const card = byHandle.get(handle);
     return card ? [card] : [];
   });
+}
+
+const SHOP_PRIVACY_POLICY_QUERY = /* GraphQL */ `
+  query ShopPrivacyPolicy {
+    shop {
+      privacyPolicy {
+        url
+      }
+    }
+  }
+`;
+
+/** Privacy policy page configured in Shopify admin (Settings → Policies); `null` when unset. */
+export async function getShopPrivacyPolicyUrl(): Promise<string | null> {
+  const shop = shopDomain();
+  const token = readEnv("SHOPIFY_STOREFRONT_ACCESS_TOKEN");
+  if (!shop || !token) return null;
+
+  try {
+    const res = await fetch(`https://${shop}/api/${STOREFRONT_API_VERSION}/graphql.json`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...storefrontAuthHeaders(token) },
+      body: JSON.stringify({ query: SHOP_PRIVACY_POLICY_QUERY, variables: {} }),
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { data?: { shop?: unknown } };
+    const url = asRecord(asRecord(json.data?.shop)?.privacyPolicy)?.url;
+    return typeof url === "string" && url.startsWith("https://") ? url : null;
+  } catch {
+    return null;
+  }
 }

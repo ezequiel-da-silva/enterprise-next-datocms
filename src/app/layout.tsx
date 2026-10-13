@@ -10,7 +10,12 @@ import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
 import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
+import { ConsentRoot } from "@/components/patterns/consent/consent-root";
 import { getCartFromCookie } from "@/infra/shopify/cart";
+import { getShopPrivacyPolicyUrl } from "@/infra/shopify/storefront";
+import { readGaMeasurementId } from "@/lib/analytics/ga-config";
+import { CONSENT_COOKIE, parseConsent } from "@/lib/consent/consent-cookie";
+import { readShopifyPrivacyConfig } from "@/lib/shopify/customer-privacy-config";
 import { CART_COOKIE, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import {
   activeAccessToken,
@@ -128,6 +133,8 @@ export default async function RootLayout({
     ? ((await getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, appLocale, activeAccessToken(customerSession)))
         ?.totalQuantity ?? 0)
     : null;
+  const initialConsent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value);
+  const privacyPolicyUrl = await getShopPrivacyPolicyUrl();
   const themeCss = buildThemeCssVariables();
 
   const siteJsonLd = buildSiteJsonLdGraph(identity, searchPath);
@@ -170,6 +177,14 @@ export default async function RootLayout({
           {children}
         </main>
         <SiteFooter data={navigation} locale={appLocale} />
+        <ConsentRoot
+          locale={appLocale}
+          initialConsent={initialConsent}
+          gaMeasurementId={readGaMeasurementId()}
+          shopifyPrivacy={readShopifyPrivacyConfig()}
+          privacyPolicyUrl={privacyPolicyUrl}
+          nonce={nonce ?? null}
+        />
         {/*
           Única injeção: paletas depois do bundle Tailwind (`@theme` em globals.css).
           Ver comentário em buildThemeCssVariables().

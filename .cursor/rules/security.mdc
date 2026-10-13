@@ -16,6 +16,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
 - Media do Dato: `img-src` inclui `www.datocms-assets.com` + `image.mux.com` (posters de vídeo) + `cdn.shopify.com` (PDP); `media-src` inclui `www.datocms-assets.com` + `*.mux.com` — wildcard recomendado pelo Mux, que entrega por vários CDNs (`stream.mux.com` redireciona para `*.fastly.mux.com`).
 - `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
+- Hosts condicionais (`optionalCspHosts`): Google (`GA_CSP_HOSTS`) só com `GA_MEASUREMENT_ID`; loja/checkout Shopify em `connect-src` e `cdn.shopify.com` em `script-src` só com `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`. Trackers novos: entram atrás de `ConsentScript` e com host condicional, nunca fixo.
 - Headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` restritiva, `COOP: same-origin`, `HSTS` só em produção.
 
 ## Nonce em conteúdo dinâmico
@@ -28,7 +29,8 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 ## Secrets e env
 
 - **Nunca** commitar `.env` (`.dockerignore` ignora `.env*`).
-- Tokens só no servidor: `DATOCMS_API_TOKEN`, `DATOCMS_DRAFT_CDA_TOKEN`, `DATOCMS_PREVIEW_SECRET`, `DATOCMS_USER_REVIEWS_CDA_TOKEN`, `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, `SHOPIFY_ADMIN_ACCESS_TOKEN`, `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID`, `SHOPIFY_CUSTOMER_SESSION_SECRET`.
+- Tokens só no servidor: `DATOCMS_API_TOKEN`, `DATOCMS_DRAFT_CDA_TOKEN`, `DATOCMS_PREVIEW_SECRET`, `DATOCMS_USER_REVIEWS_CDA_TOKEN`, `SHOPIFY_CLIENT_ID`, `SHOPIFY_API_SECRET_KEY`, `SHOPIFY_STOREFRONT_ACCESS_TOKEN`, `SHOPIFY_ADMIN_ACCESS_TOKEN`, `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID`, `SHOPIFY_CUSTOMER_SESSION_SECRET`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (ou `KV_REST_API_URL` / `KV_REST_API_TOKEN`).
+- Exceção documentada: `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` (token **público** Storefront) vai ao browser via `readShopifyPrivacyConfig()` → `ConsentRoot`, só para a Customer Privacy API. Nunca usar `SHOPIFY_STOREFRONT_ACCESS_TOKEN` nesse caminho.
 - Preview: comparar segredos com `isSecretEqual()` (`src/lib/security/compare-secret.ts`) — não `===` direto em rotas públicas.
 - `DATOCMS_PREVIEW_SECRET` obrigatório para `/api/draft` e `/api/preview-links`; sem secret → 500/401, nunca draft aberto.
 - `DATOCMS_REVALIDATE_SECRET` obrigatório para `POST /api/revalidate` e `POST /api/webhooks/datocms/product-page` (webhook Dato); comparar com `isSecretEqual()`.
@@ -51,7 +53,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 
 - Validação no núcleo: Zod em `src/core/entities/contact.ts` + `validateContactSubmission`.
 - Honeypot `company_website`: preenchido → resposta genérica de sucesso + delay (anti-bot, sem revelar filtro).
-- Rate limit in-memory por IP (`checkRateLimit` + `getClientIpKey`) na action de contacto — 5 req/min; actions do carrinho (`src/app/actions/cart.ts`) — 20 req/min, atrás da flag `SHOPIFY_CART_ENABLED`.
+- Rate limit por IP com `await checkRateLimit()` de `@/infra/security/rate-limit` (Upstash Redis, janela fixa partilhada entre instâncias; chave enviada como sha256, nunca o IP cru). Sem env Redis ou com Redis em falha, cai no limiter em memória (`checkMemoryRateLimit`). Contacto e reviews — 5 req/min; carrinho (`src/app/actions/cart.ts`) — 20 req/min; login de cliente — 10 req/min.
 - Carrinho: `userErrors` da Shopify → mensagem genérica; checkout só via `<a href>` com `safeCheckoutUrl()` (https + host permitido), nunca redirect de form.
 - `"use server"` em actions; integrações (e-mail/CRM) só em `src/infra/`, nunca credenciais no bundle.
 
@@ -86,4 +88,3 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 ## Melhorias futuras (quando necessário)
 
 - CAPTCHA ou Turnstile se spam no formulário aumentar.
-- Rate limit distribuído (Redis/Upstash) se a app escalar para várias instâncias.

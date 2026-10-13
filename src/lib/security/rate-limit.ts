@@ -1,6 +1,7 @@
 /**
- * In-memory fixed-window rate limiter for Server Actions.
- * Suitable for single-instance / serverless warm instances; not a distributed store.
+ * In-memory fixed-window rate limiter: per instance only. Production callers go through
+ * `checkRateLimit` in `src/infra/security/rate-limit.ts` (Upstash Redis), which falls back
+ * to this one when Redis is not configured or unreachable.
  */
 
 type Bucket = { count: number; resetAt: number };
@@ -18,7 +19,7 @@ export type RateLimitOptions = {
   windowMs: number;
 };
 
-const DEFAULT_OPTIONS: RateLimitOptions = {
+export const DEFAULT_RATE_LIMIT: RateLimitOptions = {
   limit: 5,
   windowMs: 60_000,
 };
@@ -30,7 +31,7 @@ function pruneExpired(now: number): void {
   }
 }
 
-export function checkRateLimit(key: string, options: RateLimitOptions = DEFAULT_OPTIONS): RateLimitResult {
+export function checkMemoryRateLimit(key: string, options: RateLimitOptions = DEFAULT_RATE_LIMIT): RateLimitResult {
   const now = Date.now();
   pruneExpired(now);
 

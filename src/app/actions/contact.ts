@@ -5,7 +5,7 @@ import type { ContactActionState } from "@/core/entities/contact";
 import { submitContactUseCase } from "@/core/use-cases/submit-contact";
 import { sendContactMessage } from "@/infra/contact/send-contact";
 import { getClientIpKey } from "@/lib/security/client-ip";
-import { checkRateLimit } from "@/lib/security/rate-limit";
+import { checkRateLimit } from "@/infra/security/rate-limit";
 
 async function normalizeBotDelay(): Promise<void> {
   await new Promise((r) => setTimeout(r, 250 + Math.floor(Math.random() * 120)));
@@ -23,7 +23,7 @@ export async function submitContact(
   }
 
   const ipKey = await getClientIpKey("contact");
-  const rate = checkRateLimit(ipKey, { limit: 5, windowMs: 60_000 });
+  const rate = await checkRateLimit(ipKey, { limit: 5, windowMs: 60_000 });
   if (!rate.ok) {
     return {
       status: "error",

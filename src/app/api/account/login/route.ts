@@ -1,6 +1,6 @@
 import { clientIpKey, readLocaleParam, redirectTo } from "@/app/api/account/account-route-utils";
 import { buildAuthorizeUrl, customerAccountRedirectUri, discoverCustomerAuth } from "@/infra/shopify/customer-account";
-import { checkRateLimit } from "@/lib/security/rate-limit";
+import { checkRateLimit } from "@/infra/security/rate-limit";
 import {
   accountPath,
   codeChallengeFor,
@@ -21,7 +21,7 @@ const LOGIN_RATE_LIMIT = { limit: 10, windowMs: 60_000 };
 export async function GET(request: NextRequest) {
   if (!isCustomerAccountEnabled()) return new NextResponse(null, { status: 404 });
   const locale = readLocaleParam(request);
-  if (!checkRateLimit(clientIpKey(request, "account-login"), LOGIN_RATE_LIMIT).ok) {
+  if (!(await checkRateLimit(clientIpKey(request, "account-login"), LOGIN_RATE_LIMIT)).ok) {
     return redirectTo(request, `${accountPath(locale)}?error=rate`);
   }
 

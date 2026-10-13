@@ -14,7 +14,10 @@ const CART = {
       {
         id: "gid://shopify/CartLine/l1?cart=c1-abc",
         quantity: 2,
-        cost: { totalAmount: { amount: "38.00", currencyCode: "BRL" } },
+        cost: {
+          totalAmount: { amount: "34.00", currencyCode: "BRL" },
+          amountPerQuantity: { amount: "17.00", currencyCode: "BRL" },
+        },
         merchandise: {
           id: "gid://shopify/ProductVariant/2",
           title: "Red / M",
@@ -52,6 +55,13 @@ describe("Storefront cart", () => {
     expect(cart?.checkoutUrl).toBe(CART.checkoutUrl);
     expect(cart?.lines).toHaveLength(1);
     expect(cart?.lines[0]).toMatchObject({ productHandle: "hat", variantTitle: "Red / M", quantity: 2 });
+  });
+
+  it("takes the unit price from the line cost, not the variant list price", async () => {
+    mockFetch({ cart: CART });
+    const cart = await getCart(CART.id, "pt");
+    expect(cart?.lines[0]?.unitPrice).toEqual({ amount: "17.00", currencyCode: "BRL" });
+    expect(cart?.lines[0]?.total).toEqual({ amount: "34.00", currencyCode: "BRL" });
   });
 
   it("moves the cart to the locale's market when the country differs", async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { getStorefrontCollectionByHandle, getStorefrontCollectionMeta, getStorefrontProductByHandle, storefrontAuthHeaders } from "@/infra/shopify/storefront";
+import { getStorefrontCollectionByHandle, getStorefrontCollectionMeta, getStorefrontProductByHandle, getShopPrivacyPolicyUrl, storefrontAuthHeaders } from "@/infra/shopify/storefront";
 
 describe("getStorefrontProductByHandle", () => {
   it("returns null when env is missing", async () => {
@@ -19,6 +19,7 @@ describe("getStorefrontProductByHandle", () => {
             id: "gid://shopify/Product/1",
             title: "Hat",
             handle: "hat",
+            vendor: " Acme ",
             availableForSale: true,
             featuredImage: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
             images: {
@@ -36,6 +37,7 @@ describe("getStorefrontProductByHandle", () => {
                   title: "Red / M",
                   availableForSale: true,
                   quantityAvailable: 3,
+                  sku: "HAT-RED-M",
                   price: { amount: "19.00", currencyCode: "BRL" },
                   selectedOptions: [
                     { name: "Color", value: "Red" },
@@ -56,6 +58,8 @@ describe("getStorefrontProductByHandle", () => {
     expect(product?.handle).toBe("hat");
     expect(product?.priceRange.minVariantPrice.currencyCode).toBe("BRL");
     expect(product?.variants).toHaveLength(1);
+    expect(product?.vendor).toBe("Acme");
+    expect(product?.variants[0]?.sku).toBe("HAT-RED-M");
     expect(product?.images.map((image) => image.url)).toEqual([
       "https://cdn.shopify.com/hat.jpg",
       "https://cdn.shopify.com/hat-back.jpg",
@@ -72,6 +76,11 @@ describe("getStorefrontProductByHandle", () => {
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "X-Shopify-Storefront-Access-Token": "token",
     });
+    expect(fetchMock.mock.calls[0]?.[1]?.next).toEqual({
+      revalidate: 300,
+      tags: ["shopify:product:hat", "shopify:products"],
+    });
+    expect(fetchMock.mock.calls[0]?.[1]?.cache).toBeUndefined();
     vi.unstubAllGlobals();
   });
 
@@ -112,6 +121,7 @@ describe("getStorefrontProductByHandle", () => {
       variables: { country: string };
     };
     expect(body.variables.country).toBe("ES");
+    expect(fetchMock.mock.calls[0]?.[1]?.next?.tags).toEqual(["shopify:catalog"]);
     vi.unstubAllGlobals();
   });
 
@@ -155,6 +165,31 @@ describe("getStorefrontProductByHandle", () => {
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "Shopify-Storefront-Private-Token": "shpat_test",
     });
+    vi.unstubAllGlobals();
+  });
+
+  it("reads the shop privacy policy URL, cached with the catalog", async () => {
+    process.env.SHOPIFY_STORE_DOMAIN = "shop.myshopify.com";
+    process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN = "token";
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { shop: { privacyPolicy: { url: "https://shop.myshopify.com/policies/privacy-policy" } } },
+        }),
+      })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { shop: { privacyPolicy: null } } }) })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: { shop: { privacyPolicy: { url: "javascript:alert(1)" } } } }),
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(getShopPrivacyPolicyUrl()).resolves.toBe("https://shop.myshopify.com/policies/privacy-policy");
+    expect(fetchMock.mock.calls[0]?.[1]?.next?.tags).toEqual(["shopify:catalog"]);
+    await expect(getShopPrivacyPolicyUrl()).resolves.toBeNull();
+    await expect(getShopPrivacyPolicyUrl()).resolves.toBeNull();
     vi.unstubAllGlobals();
   });
 
