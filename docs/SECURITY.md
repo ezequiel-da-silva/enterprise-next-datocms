@@ -97,7 +97,8 @@ Com HTTPS e domínio público:
 - [ ] Webhook Dato → `POST /api/revalidate` (200 com secret correcto; 401 sem)
 - [ ] Webhook Dato `product_page` → `POST /api/webhooks/datocms/product-page` (401 sem secret; 200 skip se não for o modelo; 500 se faltarem `SHOPIFY_CLIENT_ID` / `SHOPIFY_API_SECRET_KEY` / `SHOPIFY_STORE_DOMAIN`)
 - [ ] Webhook Dato `collection_page` → `POST /api/webhooks/datocms/collection-page` (mesmo contrato)
-- [ ] Webhook Shopify → `POST /api/webhooks/shopify` (500 se faltar env; 401 HMAC inválido; 200 com HMAC + `products/update` ou `collections/update`)
+- [ ] Webhook Shopify → `POST /api/webhooks/shopify` (500 se faltar env; 401 HMAC inválido; 200 com HMAC + `products/update`, `collections/update` ou `inventory_levels/update`)
+- [ ] Rate limit partilhado: `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (ou `KV_REST_API_*` da integração Vercel → Storage → Upstash Redis) definidos em produção como Sensitive. Sem eles o limite é por instância serverless. As chaves no Redis são `rl:<sha256>`, sem IP em claro.
 
 ## Limitações
 

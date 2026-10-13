@@ -17,7 +17,7 @@ import {
 } from "@/infra/shopify/cart";
 import { cartCopy } from "@/lib/i18n/cart-copy";
 import { getClientIpKey } from "@/lib/security/client-ip";
-import { checkRateLimit } from "@/lib/security/rate-limit";
+import { checkRateLimit } from "@/infra/security/rate-limit";
 import { CART_COOKIE, cartCookieOptions, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import { activeAccessToken, CUSTOMER_COOKIE, readCustomerSession } from "@/lib/shopify/customer-session";
 import { refresh } from "next/cache";
@@ -44,7 +44,7 @@ async function persist(result: CartMutationResult): Promise<void> {
 /** Flag + rate limit shared by every cart action. */
 async function guard(): Promise<"ok" | "disabled" | "limited"> {
   if (!isCartEnabled()) return "disabled";
-  const rate = checkRateLimit(await getClientIpKey("cart"), CART_RATE_LIMIT);
+  const rate = await checkRateLimit(await getClientIpKey("cart"), CART_RATE_LIMIT);
   return rate.ok ? "ok" : "limited";
 }
 

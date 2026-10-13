@@ -7,7 +7,7 @@ import { submitUserReviewUseCase } from "@/core/use-cases/submit-user-review";
 import { createPendingUserReview } from "@/infra/datocms/create-user-review";
 import { reviewsCopy } from "@/lib/i18n/reviews-copy";
 import { getClientIpKey } from "@/lib/security/client-ip";
-import { checkRateLimit } from "@/lib/security/rate-limit";
+import { checkRateLimit } from "@/infra/security/rate-limit";
 
 async function normalizeBotDelay(): Promise<void> {
   await new Promise((r) => setTimeout(r, 250 + Math.floor(Math.random() * 120)));
@@ -32,7 +32,7 @@ export async function submitUserReview(
   }
 
   const ipKey = await getClientIpKey("user-review");
-  const rate = checkRateLimit(ipKey, { limit: 5, windowMs: 60_000 });
+  const rate = await checkRateLimit(ipKey, { limit: 5, windowMs: 60_000 });
   if (!rate.ok) {
     return { status: "error", message: copy.status.rateLimited };
   }
