@@ -54,14 +54,16 @@ const CART_FIELDS = `
     nodes {
       id
       quantity
-      cost { totalAmount { amount currencyCode } }
+      cost {
+        totalAmount { amount currencyCode }
+        amountPerQuantity { amount currencyCode }
+      }
       merchandise {
         ... on ProductVariant {
           id
           title
           selectedOptions { name value }
           image { url altText width height }
-          price { amount currencyCode }
           product { title handle }
         }
       }
@@ -131,8 +133,10 @@ function readLine(value: unknown): StorefrontCartLine | null {
   if (!record || !merchandise || !product) return null;
   if (typeof record.id !== "string" || typeof record.quantity !== "number") return null;
   if (typeof merchandise.id !== "string" || typeof product.handle !== "string") return null;
-  const total = readMoney(asRecord(record.cost)?.totalAmount);
-  const unitPrice = readMoney(merchandise.price);
+  const cost = asRecord(record.cost);
+  const total = readMoney(cost?.totalAmount);
+  /* Per-line cost, not `merchandise.price`: it reflects line discounts and the market price. */
+  const unitPrice = readMoney(cost?.amountPerQuantity);
   if (!total || !unitPrice) return null;
   return {
     id: record.id,
