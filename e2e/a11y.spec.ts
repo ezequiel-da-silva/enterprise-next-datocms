@@ -22,6 +22,18 @@ test.describe("accessibility", () => {
     await expectNoSeriousA11yViolations(page);
   });
 
+  test("contact", async ({ page }) => {
+    await gotoMain(page, "/en/contact");
+    await expectNoSeriousA11yViolations(page);
+  });
+
+  test("cart (empty)", async ({ page, request }) => {
+    const res = await request.get("/en/cart");
+    test.skip(res.status() !== 200, "cart page unavailable (flag off)");
+    await gotoMain(page, "/en/cart");
+    await expectNoSeriousA11yViolations(page);
+  });
+
   test("account", async ({ page, request }) => {
     const res = await request.get("/en/account");
     test.skip(res.status() === 404, "customer account is disabled (flag or env missing)");
