@@ -37,12 +37,14 @@ export type StorefrontVariant = {
   price: StorefrontMoney;
   selectedOptions: StorefrontSelectedOption[];
   image: StorefrontProductImage | null;
+  sku: string | null;
 };
 
 export type StorefrontProduct = {
   id: string;
   title: string;
   handle: string;
+  vendor: string | null;
   availableForSale: boolean;
   featuredImage: StorefrontProductImage | null;
   images: StorefrontProductImage[];
@@ -56,6 +58,7 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
       id
       title
       handle
+      vendor
       availableForSale
       featuredImage {
         url
@@ -83,6 +86,7 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
           title
           availableForSale
           quantityAvailable
+          sku
           price {
             amount
             currencyCode
@@ -205,7 +209,12 @@ function readVariant(value: unknown): StorefrontVariant | null {
     price,
     selectedOptions: readSelectedOptions(record.selectedOptions),
     image: readImage(record.image),
+    sku: readOptionalText(record.sku),
   };
+}
+
+function readOptionalText(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 function mapProduct(value: unknown): StorefrontProduct | null {
@@ -224,6 +233,7 @@ function mapProduct(value: unknown): StorefrontProduct | null {
     id: record.id,
     title: record.title,
     handle: record.handle,
+    vendor: readOptionalText(record.vendor),
     availableForSale: record.availableForSale === true,
     featuredImage: readImage(record.featuredImage),
     images: readImageNodes(record.images),

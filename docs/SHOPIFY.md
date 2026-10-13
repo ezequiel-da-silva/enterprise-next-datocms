@@ -139,6 +139,10 @@ As leituras Storefront de produto, coleção e listagem usam o Data Cache do Nex
 
 O payload de estoque só traz `inventory_item_id`. Se a consulta Admin falhar, a rota invalida `shopify:products` (todos os PDPs) e responde 200 na mesma, para a Shopify não repetir. Depois de mudar os tópicos no toml: `npx shopify app deploy`.
 
+#### JSON-LD de produto (Merchant listings)
+
+O PDP publica `Product` com `brand` (vendor da Shopify ou nome da organização), `sku` e um `Offer` por variante com `priceValidUntil` (um ano à frente). `shippingDetails` e `hasMerchantReturnPolicy` só aparecem com as variáveis `SEO_*` do [`.env.example`](../.env.example) e usam o país do mercado do locale ([`merchant-policy.ts`](../src/lib/seo/merchant-policy.ts)). Depois de definir os valores na Vercel, valida um PDP no [Rich Results Test](https://search.google.com/test/rich-results).
+
 ### 2b. Backfill dos produtos já existentes
 
 As subscrições só disparam em **alterações futuras**. Produtos criados antes do `deploy` não entram sozinhos — ou os editas um a um na Shopify, ou corres o backfill:

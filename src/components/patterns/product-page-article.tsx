@@ -15,6 +15,7 @@ import type { StorefrontProduct, StorefrontProductImage } from "@/infra/shopify/
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import { cartCopy } from "@/lib/i18n/cart-copy";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
+import { getOrganizationName } from "@/lib/seo/site-config";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
@@ -115,6 +116,7 @@ export async function ProductPageArticle({
     description,
     catalog: { name: catalogLabel, path: catalogPath },
     storefront,
+    brandName: getOrganizationName(),
   });
   const variants = storefront ? pickerVariants(locale, title, storefront) : null;
 

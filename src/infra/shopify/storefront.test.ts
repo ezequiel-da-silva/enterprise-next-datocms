@@ -19,6 +19,7 @@ describe("getStorefrontProductByHandle", () => {
             id: "gid://shopify/Product/1",
             title: "Hat",
             handle: "hat",
+            vendor: " Acme ",
             availableForSale: true,
             featuredImage: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
             images: {
@@ -36,6 +37,7 @@ describe("getStorefrontProductByHandle", () => {
                   title: "Red / M",
                   availableForSale: true,
                   quantityAvailable: 3,
+                  sku: "HAT-RED-M",
                   price: { amount: "19.00", currencyCode: "BRL" },
                   selectedOptions: [
                     { name: "Color", value: "Red" },
@@ -56,6 +58,8 @@ describe("getStorefrontProductByHandle", () => {
     expect(product?.handle).toBe("hat");
     expect(product?.priceRange.minVariantPrice.currencyCode).toBe("BRL");
     expect(product?.variants).toHaveLength(1);
+    expect(product?.vendor).toBe("Acme");
+    expect(product?.variants[0]?.sku).toBe("HAT-RED-M");
     expect(product?.images.map((image) => image.url)).toEqual([
       "https://cdn.shopify.com/hat.jpg",
       "https://cdn.shopify.com/hat-back.jpg",
