@@ -1,5 +1,8 @@
 "use client";
 
+import { errorCopy, errorLocaleFromPath } from "@/lib/i18n/error-copy";
+import { usePathname } from "next/navigation";
+
 type GlobalErrorProps = {
   error: Error & { digest?: string };
   reset: () => void;
@@ -9,12 +12,14 @@ type GlobalErrorProps = {
  * Fallback de documento completo (layout/root). Rotas `error.tsx` não incluem `<html>`.
  */
 export default function GlobalError({ error, reset }: GlobalErrorProps) {
+  const locale = errorLocaleFromPath(usePathname());
+  const copy = errorCopy(locale);
   return (
-    <html lang="en">
+    <html lang={locale === "pt" ? "pt-BR" : locale}>
       <head>
         <meta name="robots" content="noindex, nofollow" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Erro</title>
+        <title>{copy.title}</title>
       </head>
       <body
         style={{
@@ -30,10 +35,8 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
         }}
       >
         <div style={{ maxWidth: "28rem", textAlign: "center" }}>
-          <h1 style={{ fontSize: "1.5rem", margin: 0 }}>Algo correu mal</h1>
-          <p style={{ marginTop: "0.75rem", opacity: 0.8 }}>
-            Ocorreu um erro inesperado. Pode tentar novamente ou voltar mais tarde.
-          </p>
+          <h1 style={{ fontSize: "1.5rem", margin: 0 }}>{copy.title}</h1>
+          <p style={{ marginTop: "0.75rem", opacity: 0.8 }}>{copy.description}</p>
           {process.env.NODE_ENV === "development" && error.message ? (
             <pre
               style={{
@@ -63,7 +66,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               cursor: "pointer",
             }}
           >
-            Tentar novamente
+            {copy.retry}
           </button>
         </div>
       </body>
