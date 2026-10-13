@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.43.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.42.0...next-dato-v0.43.0) (2026-10-13)
+
+
+### Features
+
+* **next:** allow consent-gated GA4 and Shopify privacy hosts in CSP ([c80f97f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/c80f97f229c3d0b73e9a8441578778aeae58bcbe))
+* **next:** distributed rate limit with Upstash Redis ([7897cef](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7897cef3b49718b3d4d86929ea1ae733106a0068))
+* **next:** revalidate products on Shopify inventory webhook ([706ce95](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/706ce954a716828c84932e0fa23f649a1d1dfd35))
+* **seo:** add sku, brand and merchant policies to Product JSON-LD ([b8bda0a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b8bda0a9c6101d098e9dac634a0fd19f59830c56))
+* **ui:** add cookie consent banner with Shopify customer privacy sync ([8b8b4f6](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8b8b4f66da658ca79f7365ec742bbae7d0385dbc))
+
+
+### Bug Fixes
+
+* **next:** keep account and cart paths when switching locale ([e1ff2d2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e1ff2d29d2a0f477c0a7eef373ad671ea50ed5f9))
+* **ui:** show cart unit price from line cost ([38d46c2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/38d46c2e3305f1b51c8dd0424c9a25988bc4914c))
+* **ui:** translate error boundaries and focus the heading ([adb28aa](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/adb28aa26696d39e211e7699e3014885e1ad325f))
+
+
+### Performance
+
+* **next:** cache Shopify catalog reads with tags ([1eae41d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1eae41da4f9c99ef933f21361650478af018dd77))
+
+
+### Chores
+
+* **env:** update .env.example with improved comments and new SEO shipping configurations ([697c1ce](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/697c1ce3dd6e528cd5bfd023c13b35858ca1805e))
+
 ## [0.42.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.41.0...next-dato-v0.42.0) (2026-10-13)
 
 
