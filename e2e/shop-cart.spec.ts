@@ -13,7 +13,7 @@ test.describe("shop cart", () => {
 
   const MAX_PRODUCTS_TRIED = 5;
 
-  /** The PDP streams behind `loading.tsx`; wait for the cart button (add or sold out) before deciding. */
+  /** Wait for the cart button (add or sold out) before deciding; the variant picker hydrates late. */
   async function addToCartButton(page: Page) {
     const cartButton = page.getByRole("button", { name: /^(Adicionar ao carrinho|Esgotado)$/ });
     try {
