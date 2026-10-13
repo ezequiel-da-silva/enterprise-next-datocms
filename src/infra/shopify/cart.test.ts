@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { addCartLines, createCart, getCart } from "@/infra/shopify/cart";
+import { addCartLines, createCart, getCart, linkCartToCustomer } from "@/infra/shopify/cart";
 
 const CART = {
   id: "gid://shopify/Cart/c1-abc?key=k",
@@ -70,6 +70,32 @@ describe("Storefront cart", () => {
     expect(cart?.countryCode).toBe("BR");
     const body = JSON.parse(fetchMock.mock.calls[1][1].body as string);
     expect(body.variables.buyerIdentity.countryCode).toBe("BR");
+  });
+
+  it("creates a cart for a logged-in customer", async () => {
+    const fetchMock = mockFetch({ cartCreate: { cart: CART, userErrors: [] } });
+    await createCart([{ merchandiseId: "gid://shopify/ProductVariant/2", quantity: 1 }], "pt", "shcat_1");
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.variables.input.buyerIdentity).toEqual({ countryCode: "BR", customerAccessToken: "shcat_1" });
+  });
+
+  it("links an existing cart to the customer", async () => {
+    const fetchMock = mockFetch({ cartBuyerIdentityUpdate: { cart: CART, userErrors: [] } });
+    const result = await linkCartToCustomer(CART.id, "shcat_1", "en");
+    expect(result.ok).toBe(true);
+    const body = JSON.parse(fetchMock.mock.calls[0][1].body as string);
+    expect(body.variables.buyerIdentity).toEqual({ countryCode: "US", customerAccessToken: "shcat_1" });
+  });
+
+  it("keeps the customer token when syncing the market", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { cart: { ...CART, buyerIdentity: { countryCode: "US" } } } }) })
+      .mockResolvedValueOnce({ ok: true, json: async () => ({ data: { cartBuyerIdentityUpdate: { cart: CART, userErrors: [] } } }) });
+    vi.stubGlobal("fetch", fetchMock);
+    await getCart(CART.id, "pt", "shcat_1");
+    const body = JSON.parse(fetchMock.mock.calls[1][1].body as string);
+    expect(body.variables.buyerIdentity.customerAccessToken).toBe("shcat_1");
   });
 
   it("does not update when the cart is already in the locale's market", async () => {

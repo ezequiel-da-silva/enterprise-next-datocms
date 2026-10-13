@@ -7,6 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cartCopy } from "@/lib/i18n/cart-copy";
 import { CART_COOKIE, cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { activeAccessToken, CUSTOMER_COOKIE, readCustomerSession } from "@/lib/shopify/customer-session";
 import type { Metadata } from "next";
 import { cookies, draftMode } from "next/headers";
 import { notFound } from "next/navigation";
@@ -32,8 +33,10 @@ export default async function CartPage({ params }: CartPageProps) {
   const { slug } = await params;
   if (!isCartEnabled() || !isAppLocale(slug)) notFound();
   const { isEnabled } = await draftMode();
+  const cookieStore = await cookies();
+  const session = readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value);
   const [cart, catalog] = await Promise.all([
-    getCartFromCookie((await cookies()).get(CART_COOKIE)?.value, slug),
+    getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, slug, activeAccessToken(session)),
     getProductsIndexPage(slug, isEnabled),
   ]);
   return (
