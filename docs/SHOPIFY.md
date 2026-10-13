@@ -70,6 +70,8 @@ Nunca `NEXT_PUBLIC_SHOPIFY_*`. Na Vercel: Environment Variables **sem** “Expos
 | `DATOCMS_ENVIRONMENT` | Dato | Escolhe o ambiente. Default **`main`**. `develop` = sandbox (fork). |
 | `SHOPIFY_CART_ENABLED` | Flag do site | `1`/`true` liga carrinho e checkout. Vazio = desligado (default) |
 | `SHOPIFY_CHECKOUT_DOMAIN` | Opcional | Domínio próprio do checkout, se não for `*.myshopify.com` |
+| `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID` | Headless → Customer Account API | Login de clientes (ver [Conta de cliente](#conta-de-cliente)) |
+| `SHOPIFY_CUSTOMER_SESSION_SECRET` | Gerada por ti (≥ 32 caracteres) | Cifra o cookie `nd-customer`. Trocar desloga todos |
 
 O cliente Storefront envia `Shopify-Storefront-Private-Token` se o valor começar por `shpat_`; senão `X-Shopify-Storefront-Access-Token` (token público hex). Preferir o **privado** no servidor.
 
@@ -218,6 +220,43 @@ Fluxo e segurança:
 4. Checkout é um `<a href>` (a CSP tem `form-action 'self'`). O `checkoutUrl` só é renderizado se for `https` num host permitido: `*.myshopify.com`, `SHOPIFY_STORE_DOMAIN` ou `SHOPIFY_CHECKOUT_DOMAIN`.
 
 Pré-requisitos na Shopify: token Storefront com `unauthenticated_read_checkouts` e `unauthenticated_write_checkouts`; produtos publicados no canal Headless; Markets US/BR/ES se quiseres moeda por locale. Enquanto a loja não estiver aberta, deixa a flag vazia na Vercel.
+
+## Conta de cliente
+
+Login com a Customer Account API (contas de cliente novas, não as clássicas). Liga só com `SHOPIFY_CART_ENABLED`, `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID` e `SHOPIFY_CUSTOMER_SESSION_SECRET` (≥ 32 caracteres). Com isso:
+
+- **Header:** ícone de conta ao lado do carrinho → `/{locale}/account` (`noindex`). O rótulo “Entrar” / “Minha conta” vem só da existência do cookie, sem chamada à Shopify.
+- **`/{locale}/account`:** sem sessão, botão “Entrar”; com sessão, nome, e-mail, os últimos 10 pedidos (link para a página de estado do pedido na Shopify) e “Sair”.
+- **Carrinho:** com o cliente logado, o carrinho recebe o token em `buyerIdentity.customerAccessToken`, e o checkout abre já logado.
+
+### Configurar na Shopify
+
+1. **Settings → Customer accounts:** escolhe **Customer accounts** (as novas).
+2. **Canal Headless → Customer Account API → Application setup:**
+   - Client type: **Public**.
+   - Callback URI: `https://enterprise-next-datocms.vercel.app/api/account/callback`
+   - JavaScript origin: `https://enterprise-next-datocms.vercel.app`
+   - Logout URI: `https://enterprise-next-datocms.vercel.app/en` (o site manda o locale atual em `post_logout_redirect_uri`; regista também `/pt` e `/es` se a Shopify pedir correspondência exata).
+3. Copia o **Client ID** para `SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID`.
+
+Callback, origin e logout derivam de `NEXT_PUBLIC_SITE_URL`. Num Preview com outro domínio, regista esse domínio também e define `NEXT_PUBLIC_SITE_URL` desse ambiente.
+
+### Vercel
+
+Cadastra as duas variáveis como **Sensitive** (Production; Preview se testares lá) e faz redeploy. Gera o segredo com `openssl rand -base64 32`.
+
+### Local
+
+A Shopify **não aceita `localhost`** no callback. Usa um túnel (ex.: `ngrok http 3000`), regista o domínio do túnel como Callback URI e JavaScript origin, e arranca com `NEXT_PUBLIC_SITE_URL=https://<túnel>`.
+
+### Fluxo e segurança
+
+1. `GET /api/account/login?locale=pt` gera `state`, `nonce` e o verificador PKCE, guarda-os cifrados no cookie `nd-oauth` (10 min) e redireciona para o `authorization_endpoint` (descoberto em `https://{loja}/.well-known/openid-configuration`) com `locale` e `region_country`.
+2. `GET /api/account/callback` valida `state` (tempo constante); se não bater, responde 400. Troca o `code` no `token_endpoint` com o verificador e o header `Origin` do site, confere o `nonce` do `id_token`, grava a sessão e liga o carrinho do cookie `nd-cart` ao cliente.
+3. Sessão no cookie `nd-customer` (30 dias, `httpOnly`, `SameSite=Lax`, `Secure` em produção), cifrado com AES-256-GCM. O valor é validado com Zod depois de decifrar; valor adulterado = deslogado.
+4. Server Components não gravam cookies: quando o token está a 1 min de expirar, `/account` redireciona para `GET /api/account/refresh?next=…`, que renova o token, volta a ligá-lo ao carrinho e regressa. `next` só aceita caminhos internos com locale (sem open redirect). Se a renovação falhar, a sessão é apagada.
+5. `GET /api/account/logout` apaga `nd-customer`, `nd-oauth` **e** `nd-cart` (o carrinho leva o token do cliente) e redireciona para o `end_session_endpoint` com `id_token_hint`. É GET porque a CSP tem `form-action 'self'`, que bloqueia um formulário que redireciona para a Shopify. O risco (alguém forçar o logout de um visitante) é baixo.
+6. Login com rate limit de 10/min por IP.
 
 ## Go-live
 
