@@ -1,6 +1,16 @@
 import type { AppLocale } from "@/constants/i18n";
 import { SHOPIFY_STOREFRONT_API_VERSION as STOREFRONT_API_VERSION } from "@/infra/shopify/api-version";
+import {
+  SHOPIFY_CATALOG_REVALIDATE_SEC,
+  SHOPIFY_CATALOG_TAG,
+  SHOPIFY_PRODUCTS_TAG,
+  shopifyProductTag,
+} from "@/lib/shopify/cache-tags";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
+
+function catalogCache(tags: string[]): { revalidate: number; tags: string[] } {
+  return { revalidate: SHOPIFY_CATALOG_REVALIDATE_SEC, tags };
+}
 
 export type StorefrontMoney = {
   amount: string;
@@ -371,7 +381,7 @@ export async function getStorefrontProductByHandle(
         query: PRODUCT_BY_HANDLE_QUERY,
         variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([shopifyProductTag(trimmed), SHOPIFY_PRODUCTS_TAG]),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { product?: unknown } };
@@ -402,7 +412,7 @@ export async function getStorefrontCollectionByHandle(
         query: COLLECTION_BY_HANDLE_QUERY,
         variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { collection?: unknown } };
@@ -433,7 +443,7 @@ export async function getStorefrontCollectionMeta(
         query: COLLECTION_META_QUERY,
         variables: { handle: trimmed, country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
     });
     if (!res.ok) return null;
     const json = (await res.json()) as { data?: { collection?: unknown } };
@@ -466,7 +476,7 @@ export async function getStorefrontProducts(locale: AppLocale): Promise<Storefro
         query: PRODUCTS_QUERY,
         variables: { country: shopifyCountryFromLocale(locale) },
       }),
-      cache: "no-store",
+      next: catalogCache([SHOPIFY_CATALOG_TAG]),
     });
     if (!res.ok) return [];
     const json = (await res.json()) as { data?: { products?: { nodes?: unknown } } };

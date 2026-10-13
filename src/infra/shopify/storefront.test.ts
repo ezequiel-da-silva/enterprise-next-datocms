@@ -72,6 +72,11 @@ describe("getStorefrontProductByHandle", () => {
     expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({
       "X-Shopify-Storefront-Access-Token": "token",
     });
+    expect(fetchMock.mock.calls[0]?.[1]?.next).toEqual({
+      revalidate: 300,
+      tags: ["shopify:product:hat", "shopify:products"],
+    });
+    expect(fetchMock.mock.calls[0]?.[1]?.cache).toBeUndefined();
     vi.unstubAllGlobals();
   });
 
@@ -112,6 +117,7 @@ describe("getStorefrontProductByHandle", () => {
       variables: { country: string };
     };
     expect(body.variables.country).toBe("ES");
+    expect(fetchMock.mock.calls[0]?.[1]?.next?.tags).toEqual(["shopify:catalog"]);
     vi.unstubAllGlobals();
   });
 
