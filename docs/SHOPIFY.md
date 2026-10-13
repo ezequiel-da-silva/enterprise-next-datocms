@@ -113,7 +113,7 @@ Webhooks em **Definições da loja → Notificações** usam **outro** signing s
 | Campo | Valor |
 |-------|--------|
 | URI | `/api/webhooks/shopify` (resolvido para `https://enterprise-next-datocms.vercel.app/api/webhooks/shopify`) |
-| Tópicos | `products/create`, `products/update`, `collections/create`, `collections/update` |
+| Tópicos | `products/create`, `products/update`, `collections/create`, `collections/update`, `inventory_levels/update` |
 | Formato | JSON |
 | Versão da API | a do toml (`2026-07`) |
 
@@ -126,6 +126,18 @@ A rota Shopify → Dato: HMAC do **corpo cru** → loja igual a `SHOPIFY_STORE_D
 O webhook Dato **Next.js revalidate** (`POST /api/revalidate`) só invalida cache. O título Dato → Shopify é **outro** webhook (passo 4b).
 
 Respostas Shopify: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400** JSON/payload; **200** `{ "success": true }`.
+
+#### Cache do catálogo e estoque
+
+As leituras Storefront de produto, coleção e listagem usam o Data Cache do Next (`revalidate` de 5 min no máximo) com tags de [`cache-tags.ts`](../src/lib/shopify/cache-tags.ts). O carrinho nunca é cacheado.
+
+| Evento | Tags invalidadas |
+|--------|------------------|
+| `products/*` (depois do sync Dato) | `shopify:product:{handle}`, `shopify:catalog` |
+| `collections/*` | `shopify:catalog` |
+| `inventory_levels/update` | `shopify:product:{handle}` (handle via Admin `inventoryItem → variant → product`), `shopify:catalog` |
+
+O payload de estoque só traz `inventory_item_id`. Se a consulta Admin falhar, a rota invalida `shopify:products` (todos os PDPs) e responde 200 na mesma, para a Shopify não repetir. Depois de mudar os tópicos no toml: `npx shopify app deploy`.
 
 ### 2b. Backfill dos produtos já existentes
 
