@@ -75,11 +75,11 @@ Quota CDA é **por conta**. O sandbox `develop` no projecto `201057` **não** is
 | Profile | Projecto | `siteId` | Admin |
 |---------|----------|----------|--------|
 | `default` | Boilerplate DATO (produção) | `201057` | `https://boilerplate-dato.admin.datocms.com` |
-| `staging` | Boilerplate DATO - staging | `236043` | `https://boilerplate-dato-staging-8167.admin.datocms.com` |
+| `staging` | Boilerplate DATO - Staging | `236271` | `https://boilerplate-dato-staging-9776.admin.datocms.com` |
 
 ```bash
 npx datocms login   # conta que vê o Staging
-npx datocms link --profile=staging --site-id=236043
+npx datocms link --profile=staging --site-id=236271
 ```
 
 As migrations deste repo são **incrementais** sobre o boilerplate **já evoluído** neste repo. **Não** corras `migrations:run` num projecto Staging vazio (`image_block` 404). Um projecto criado a partir do **template oficial Dato** também não chega: o `image_block` do starter só tem um campo (`image`) e faltam `asset` / `asset_desktop`, `cta_banner`, `card`, `global_setting`, Shopify, etc.
@@ -90,17 +90,17 @@ Se a conta de produção estiver **suspensa por cota** (`Cannot duplicate a bloc
 
 Desbloqueio (duplicação com IDs iguais): upgrade temporário na conta de produção → Duplicate (só models/fields) → transferir/convidar Staging — ou esperar o reset da cota. Support (`support@datocms.com`) pode desbloquear a duplicação pontual.
 
-**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `236043` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
+**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `236271` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
 
 ```bash
-npx datocms login   # conta que vê o projecto 236043
-npx datocms link --profile=staging --site-id=236043
+npx datocms login   # conta que vê o projecto 236271
+npx datocms link --profile=staging --site-id=236271
 npx datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging
 ```
 
 O script recusa `siteId` `201057`. Marca as migrations já no repo como aplicadas em `schema_migration`. Conteúdo (páginas/posts) não é copiado.
 
-Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`236043`), nunca CMA no `DATOCMS_API_TOKEN`.
+Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`236271`), nunca CMA no `DATOCMS_API_TOKEN`.
 
 ### Fluxo de migrations (Staging → Produção)
 
