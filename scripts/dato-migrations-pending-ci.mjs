@@ -4,27 +4,26 @@
  * Dato project and writes a PR comment body when some are not applied yet. Never fails the job —
  * it only warns (the release itself stays manual: `npm run dato:release:prod`).
  *
- * Uses the CMA REST API directly (no `datocms` CLI, no `npm ci`), so it is fast and the token only
- * ever travels to site-api.datocms.com.
+ * Reads through the CDA (GraphQL, published content) because the free plan has no custom roles, so
+ * a read-only CMA token cannot be created. `schema_migration` is not a draft model: the CLI
+ * publishes each record as soon as it creates it. Needs no `npm ci` and the token only ever travels
+ * to graphql.datocms.com.
  *
  * Env:
- *   DATOCMS_PROD_CMA_READONLY_TOKEN  CMA token of project 201057 limited to reading content (never the CDA token).
- *   DATOCMS_EXPECTED_SITE_ID         default "201057"; the check aborts if the token belongs to another project.
- *   DATOCMS_SITE_API_URL             default "https://site-api.datocms.com" (override for tests).
- *   RELEASE_WORKFLOW_URL             link to the manual release workflow, shown in the comment.
- *   GITHUB_OUTPUT                    receives `status` (skipped | ok | pending | error) and `body_file`.
+ *   DATOCMS_PROD_CDA_TOKEN   CDA token (published) of the PRODUCTION project. A Staging token reports Staging.
+ *   DATOCMS_GRAPHQL_URL      default "https://graphql.datocms.com/" (override for tests).
+ *   RELEASE_WORKFLOW_URL     link to the manual release workflow, shown in the comment.
+ *   GITHUB_OUTPUT            receives `status` (skipped | ok | pending | error) and `body_file`.
  */
 import { appendFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const MIGRATION_MODEL = "schema_migration";
 const MARKER = "<!-- dato-migrations-check -->";
 const PAGE_SIZE = 500;
 const MAX_PAGES = 20;
 
-const token = process.env.DATOCMS_PROD_CMA_READONLY_TOKEN?.trim();
-const expectedSiteId = process.env.DATOCMS_EXPECTED_SITE_ID?.trim() || "201057";
-const apiUrl = (process.env.DATOCMS_SITE_API_URL?.trim() || "https://site-api.datocms.com").replace(/\/$/, "");
+const token = process.env.DATOCMS_PROD_CDA_TOKEN?.trim();
+const graphqlUrl = process.env.DATOCMS_GRAPHQL_URL?.trim() || "https://graphql.datocms.com/";
 const releaseUrl = process.env.RELEASE_WORKFLOW_URL?.trim() || "";
 const bodyFile = join(process.env.RUNNER_TEMP || process.cwd(), "dato-migrations-comment.md");
 
@@ -41,36 +40,33 @@ function localMigrations() {
     .sort();
 }
 
-async function cma(path) {
-  const response = await fetch(`${apiUrl}${path}`, {
-    headers: { Authorization: `Bearer ${token}`, Accept: "application/json", "X-Api-Version": "3" },
-  });
-  if (!response.ok) {
-    throw new Error(`GET ${path.split("?")[0]} → ${response.status} ${response.statusText}`);
-  }
-  return response.json();
-}
+const QUERY = `query ($first: IntType!, $skip: IntType!) {
+  allSchemaMigrations(first: $first, skip: $skip) { name }
+}`;
 
 async function appliedMigrations() {
   const applied = new Set();
   for (let page = 0; page < MAX_PAGES; page += 1) {
-    const query = `filter[type]=${MIGRATION_MODEL}&page[limit]=${PAGE_SIZE}&page[offset]=${page * PAGE_SIZE}`;
-    const { data } = await cma(`/items?${query}`);
-    for (const item of data ?? []) {
-      const name = item.attributes?.name ?? item.name;
-      if (typeof name === "string") applied.add(name);
-    }
-    if ((data ?? []).length < PAGE_SIZE) break;
+    const response = await fetch(graphqlUrl, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ query: QUERY, variables: { first: PAGE_SIZE, skip: page * PAGE_SIZE } }),
+    });
+    if (!response.ok) throw new Error(`CDA → ${response.status} ${response.statusText}`);
+    const payload = await response.json();
+    if (payload.errors?.length) throw new Error(`CDA: ${payload.errors[0].message}`);
+    const rows = payload.data?.allSchemaMigrations ?? [];
+    for (const row of rows) if (typeof row.name === "string") applied.add(row.name);
+    if (rows.length < PAGE_SIZE) break;
   }
   return applied;
 }
-
 function pendingBody(pending, local, applied) {
   const lines = [
     MARKER,
     "### ⚠️ Há migrations Dato por aplicar na produção",
     "",
-    `A produção (\`${expectedSiteId}\`) tem ${applied} de ${local} migrations deste repositório. Pendentes:`,
+    `A produção tem ${applied} de ${local} migrations deste repositório. Pendentes:`,
     "",
     ...pending.map((file) => `- \`${file}\``),
     "",
@@ -101,18 +97,17 @@ function okBody(local) {
 
 async function main() {
   if (!token) {
-    console.log("::notice::DATOCMS_PROD_CMA_READONLY_TOKEN não definido (PR de fork, Dependabot ou secret em falta). Check ignorado.");
+    console.log("::notice::DATOCMS_PROD_CDA_TOKEN não definido (PR de fork, Dependabot ou secret em falta). Check ignorado.");
     setOutput("skipped");
     return;
   }
 
-  const { data: site } = await cma("/site");
-  if (String(site?.id) !== expectedSiteId) {
-    throw new Error(`O token pertence ao site ${site?.id}, esperado ${expectedSiteId}. Verifique o secret.`);
-  }
-
   const local = localMigrations();
   const applied = await appliedMigrations();
+  if (applied.size === 0) {
+    // A real project always has applied migrations; zero means an empty/wrong project or an unpublished model.
+    throw new Error("Nenhuma migration registada (token de outro projecto, ou modelo schema_migration sem registos publicados).");
+  }
   const pending = local.filter((file) => !applied.has(file));
   console.log(`Migrations: ${local.length} no repo, ${applied.size} registadas, ${pending.length} pendentes`);
 

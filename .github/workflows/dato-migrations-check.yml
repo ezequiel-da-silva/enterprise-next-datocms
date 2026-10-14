@@ -1,7 +1,7 @@
 name: DatoCMS migrations (aviso)
 
-# Avisa no PR quando `migrations/` tem ficheiros que a produção Dato ainda não aplicou.
-# Só lê; nunca falha o PR e nunca corre o release (esse é o workflow manual `dato-release.yml`).
+# Avisa no PR quando `migrations/` tem ficheiros que a produÃ§Ã£o Dato ainda nÃ£o aplicou.
+# SÃ³ lÃª; nunca falha o PR e nunca corre o release (esse Ã© o workflow manual `dato-release.yml`).
 on:
   pull_request:
     branches: [main, master]
@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   check:
-    # Forks não recebem secrets nem permissão de escrita.
+    # Forks nÃ£o recebem secrets nem permissÃ£o de escrita.
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -33,7 +33,7 @@ jobs:
       - name: Compare migrations with production
         id: check
         env:
-          DATOCMS_PROD_CMA_READONLY_TOKEN: ${{ secrets.DATOCMS_PROD_CMA_READONLY_TOKEN }}
+          DATOCMS_PROD_CDA_TOKEN: ${{ secrets.DATOCMS_PROD_CDA_TOKEN }}
           RELEASE_WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/dato-release.yml
         run: node scripts/dato-migrations-pending-ci.mjs
 
