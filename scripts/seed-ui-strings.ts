@@ -20,7 +20,7 @@ import {
   CART_LINK_FIELDS,
   CONSENT_FIELDS,
 } from "../src/lib/i18n/ui-strings-fields";
-import { field, publishIfDraftModel, type Localized } from "./lib/dato-script-helpers";
+import { asLocalized, field, publishIfDraftModel, type Localized } from "./lib/dato-script-helpers";
 
 type AppLocale = "en" | "pt" | "es";
 
@@ -68,10 +68,7 @@ export default async function seedUiStrings(client: Client): Promise<void> {
 
   const [existing] = await client.items.list({ filter: { type: "ui_string" }, page: { limit: 1 } });
 
-  const current = (apiKey: string): Localized<unknown> => {
-    const raw = existing ? field(existing, apiKey) : null;
-    return raw && typeof raw === "object" ? (raw as Localized<unknown>) : {};
-  };
+  const current = (apiKey: string): Localized<string> => asLocalized<string>(existing ? field(existing, apiKey) : null);
 
   const values: Record<string, Localized<string>> = {};
   let filled = 0;
@@ -79,7 +76,7 @@ export default async function seedUiStrings(client: Client): Promise<void> {
     const defaults = defaultsFor(APP_LOCALE_BY_DATO[locale]);
     for (const [cdaName, text] of Object.entries(defaults)) {
       const apiKey = camelToSnake(cdaName);
-      const hash = (values[apiKey] ??= { ...(current(apiKey) as Localized<string>) });
+      const hash = (values[apiKey] ??= { ...current(apiKey) });
       const present = hash[locale];
       if (typeof present === "string" && present.trim()) continue;
       hash[locale] = text;
