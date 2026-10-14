@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { StorefrontProduct, StorefrontVariant } from "@/infra/shopify/storefront";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
+import { normalizeMarketPolicy } from "@/lib/seo/merchant-policy";
 
 const money = (amount: string) => ({ amount, currencyCode: "BRL" });
 
@@ -43,16 +44,18 @@ const BASE = {
   catalog: { name: "Produtos", path: "/pt/products" },
   brandName: "Org Name",
   now: new Date("2026-10-13T12:00:00Z"),
-  env: {},
 };
 
-const POLICY_ENV = {
-  SEO_SHIPPING_RATES: "BR:0,US:9.90",
-  SEO_SHIPPING_HANDLING_DAYS: "1-3",
-  SEO_SHIPPING_TRANSIT_DAYS: "3-10",
-  SEO_RETURN_DAYS: "30",
-  SEO_RETURN_FEES: "free",
-};
+const POLICY = normalizeMarketPolicy({
+  country: "BR",
+  shippingRate: 0,
+  handlingDaysMin: 1,
+  handlingDaysMax: 3,
+  transitDaysMin: 3,
+  transitDaysMax: 10,
+  returnDays: 30,
+  returnFees: "free",
+});
 
 function productNode(graph: Record<string, unknown>[]) {
   return graph.find((node) => node["@type"] === "Product") as Record<string, unknown>;
@@ -103,11 +106,11 @@ describe("buildProductPageJsonLd", () => {
     expect(product.offers).toMatchObject({ priceValidUntil: "2027-10-13" });
   });
 
-  it("adds shipping and return policy for the locale's market only when env is set", () => {
-    const withPolicy = productNode(buildProductPageJsonLd({ ...BASE, env: POLICY_ENV, storefront: storefront() }));
+  it("adds shipping and return policy only when the market has a policy", () => {
+    const withPolicy = productNode(buildProductPageJsonLd({ ...BASE, policy: POLICY, storefront: storefront() }));
     expect(withPolicy.offers).toMatchObject({
       shippingDetails: {
-        shippingRate: { value: "0", currency: "BRL" },
+        shippingRate: { value: "0.00", currency: "BRL" },
         shippingDestination: { addressCountry: "BR" },
       },
       hasMerchantReturnPolicy: { applicableCountry: "BR", merchantReturnDays: 30 },
@@ -121,11 +124,11 @@ describe("buildProductPageJsonLd", () => {
     expect(without.hasMerchantReturnPolicy).toBeUndefined();
   });
 
-  it("omits the blocks when env values are invalid", () => {
+  it("omits the blocks when the policy values are invalid", () => {
     const offers = productNode(
       buildProductPageJsonLd({
         ...BASE,
-        env: { ...POLICY_ENV, SEO_SHIPPING_RATES: "BR:abc", SEO_RETURN_FEES: "maybe" },
+        policy: normalizeMarketPolicy({ shippingRate: -5, returnFees: "maybe", returnDays: 30 }),
         storefront: storefront(),
       }),
     ).offers as Record<string, unknown>;

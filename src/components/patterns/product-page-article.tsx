@@ -13,7 +13,8 @@ import type { AppLocale } from "@/constants/i18n";
 import { isShopifyVariantId } from "@/core/entities/cart";
 import type { StorefrontProduct, StorefrontProductImage } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import { cartCopy } from "@/lib/i18n/cart-copy";
+import type { CartCopy } from "@/lib/i18n/cart-copy";
+import type { MarketPolicy } from "@/lib/seo/merchant-policy";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { getOrganizationName } from "@/lib/seo/site-config";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
@@ -30,6 +31,10 @@ type ProductPageArticleProps = {
   storefront: StorefrontProduct | null;
   /** Server Action do carrinho; sem ela (ou com a flag desligada) o botão não aparece. */
   addToCartAction?: AddToCartAction;
+  /** Resolved in `app/` (CMS `ui_strings` over the built-in copy). */
+  cartCopy: CartCopy;
+  /** Shipping/returns of the locale's market (Dato `market_policy`); `null` omits both JSON-LD blocks. */
+  marketPolicy: MarketPolicy | null;
 };
 
 function availabilityLabel(locale: AppLocale, available: boolean): string {
@@ -80,13 +85,14 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
 
 function pickerCart(
   locale: AppLocale,
+  copy: CartCopy,
   variants: ProductPickerVariant[],
   action: AddToCartAction | undefined,
 ): ProductPickerCart | undefined {
   if (!action || !isCartEnabled() || !variants.every((variant) => isShopifyVariantId(variant.id))) {
     return undefined;
   }
-  const { addToCart, adding, soldOut, viewCart } = cartCopy(locale);
+  const { addToCart, adding, soldOut, viewCart } = copy;
   return { action, locale, cartHref: cartPath(locale), copy: { addToCart, adding, soldOut, viewCart } };
 }
 
@@ -98,7 +104,7 @@ function pickerImages(title: string, storefront: StorefrontProduct): ProductPick
   });
 }
 
-export async function ProductPageArticle({
+export function ProductPageArticle({
   locale,
   handle,
   title,
@@ -107,6 +113,8 @@ export async function ProductPageArticle({
   catalogLabel,
   storefront,
   addToCartAction,
+  cartCopy,
+  marketPolicy,
 }: ProductPageArticleProps) {
   const path = productPagePath(locale, handle);
   const jsonLd = buildProductPageJsonLd({
@@ -117,6 +125,7 @@ export async function ProductPageArticle({
     catalog: { name: catalogLabel, path: catalogPath },
     storefront,
     brandName: getOrganizationName(),
+    policy: marketPolicy,
   });
   const variants = storefront ? pickerVariants(locale, title, storefront) : null;
 
@@ -143,7 +152,7 @@ export async function ProductPageArticle({
           variants={variants}
           images={pickerImages(title, storefront)}
           copy={pickerCopy(locale)}
-          cart={pickerCart(locale, variants, addToCartAction)}
+          cart={pickerCart(locale, cartCopy, variants, addToCartAction)}
         />
       ) : null}
     </Container>

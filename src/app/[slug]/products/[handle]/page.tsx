@@ -2,7 +2,10 @@ import { addToCart } from "@/app/actions/cart";
 import { ProductPageArticle } from "@/components/patterns/product-page-article";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale } from "@/constants/i18n";
+import { getMarketPolicy } from "@/infra/datocms/get-market-policy";
 import { getProductPageByHandle } from "@/infra/datocms/get-product-page";
+import { getCartCopy } from "@/infra/datocms/get-ui-strings";
+import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 import { getProductsIndexPage, productsIndexLabel, productsIndexPath } from "@/infra/datocms/get-products-index-page";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import { getStaticParamsProductPages } from "@/infra/datocms/static-params";
@@ -60,10 +63,12 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const [result, catalog, storefront] = await Promise.all([
+  const [result, catalog, storefront, cartCopy, marketPolicy] = await Promise.all([
     getProductPageByHandle(locale, handle, isEnabled),
     getProductsIndexPage(locale, isEnabled),
     getStorefrontProductByHandle(handle, locale),
+    getCartCopy(locale),
+    getMarketPolicy(shopifyCountryFromLocale(locale)),
   ]);
 
   if ("errors" in result || !result.data.productPage) {
@@ -81,6 +86,8 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       catalogLabel={productsIndexLabel(catalog)}
       storefront={storefront}
       addToCartAction={addToCart}
+      cartCopy={cartCopy}
+      marketPolicy={marketPolicy}
     />
   );
 }

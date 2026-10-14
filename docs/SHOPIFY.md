@@ -142,7 +142,7 @@ O payload de estoque só traz `inventory_item_id`. Se a consulta Admin falhar, a
 
 #### JSON-LD de produto (Merchant listings)
 
-O PDP publica `Product` com `brand` (vendor da Shopify ou nome da organização), `sku` e um `Offer` por variante com `priceValidUntil` (um ano à frente). `shippingDetails` e `hasMerchantReturnPolicy` só aparecem com as variáveis `SEO_*` do [`.env.example`](../.env.example) e usam o país do mercado do locale ([`merchant-policy.ts`](../src/lib/seo/merchant-policy.ts)). Depois de definir os valores na Vercel, valida um PDP no [Rich Results Test](https://search.google.com/test/rich-results).
+O PDP publica `Product` com `brand` (vendor da Shopify ou nome da organização), `sku` e um `Offer` por variante com `priceValidUntil` (um ano à frente). `shippingDetails` e `hasMerchantReturnPolicy` só aparecem quando o país do mercado do locale tem um registo publicado no modelo Dato **Market policy** ([`merchant-policy.ts`](../src/lib/seo/merchant-policy.ts); ver [DATOCMS.md](./DATOCMS.md) § Política de mercado). Os valores têm de bater com o checkout e as políticas da Shopify. Depois de publicar o registo, valida um PDP no [Rich Results Test](https://search.google.com/test/rich-results); a alteração chega ao site sem deploy (webhook de revalidação ou 5 min de ISR).
 
 ### 2b. Backfill dos produtos já existentes
 
