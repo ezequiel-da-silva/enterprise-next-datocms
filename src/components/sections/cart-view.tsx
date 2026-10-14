@@ -22,7 +22,7 @@ export type CartViewActions = {
 
 type CartViewProps = {
   locale: AppLocale;
-  /** Resolved on the server (CMS `ui_strings` over the built-in copy). */
+  /** Resolved on the server (CMS `ui_string` over the built-in copy). */
   copy: CartCopy;
   cart: StorefrontCart | null;
   shopPath: string;

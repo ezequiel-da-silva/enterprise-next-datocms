@@ -36,7 +36,7 @@ type GlobalHeaderProps = {
   cartCount?: number | null;
   /** `null`/omitido = conta desligada; booleano = cookie `nd-customer` presente. */
   accountSignedIn?: boolean | null;
-  /** Accessible names of the icon links (CMS `ui_strings` over the built-in copy). */
+  /** Accessible names of the icon links (CMS `ui_string` over the built-in copy). */
   cartLinkLabel?: string;
   accountLinkLabel?: string;
 };

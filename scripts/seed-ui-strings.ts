@@ -1,5 +1,5 @@
 /**
- * Fills the `ui_strings` singleton with the built-in texts of `src/lib/i18n/*-copy.ts`, so
+ * Fills the `ui_string` singleton with the built-in texts of `src/lib/i18n/*-copy.ts`, so
  * editors see the real copy instead of empty fields.
  *
  * Idempotent: only EMPTY (locale, field) pairs are written — existing edits are never overwritten.
@@ -62,11 +62,11 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
 
 export default async function seedUiStrings(client: Client): Promise<void> {
   const site = await client.site.find();
-  const model = await client.itemTypes.find("ui_strings");
+  const model = await client.itemTypes.find("ui_string");
   const locales = site.locales.filter((locale) => APP_LOCALE_BY_DATO[locale]);
   console.log(`Site ${site.id} (${site.name}) — locales: ${locales.join(", ")}`);
 
-  const [existing] = await client.items.list({ filter: { type: "ui_strings" }, page: { limit: 1 } });
+  const [existing] = await client.items.list({ filter: { type: "ui_string" }, page: { limit: 1 } });
 
   const current = (apiKey: string): Localized<unknown> => {
     const raw = existing ? field(existing, apiKey) : null;
@@ -96,5 +96,5 @@ export default async function seedUiStrings(client: Client): Promise<void> {
     ? await client.items.update(existing.id, values)
     : await client.items.create({ item_type: { type: "item_type", id: model.id }, ...values });
   console.log(`  ${existing ? "atualizado" : "criado"}: ${record.id} (${filled} valor(es) preenchido(s))`);
-  await publishIfDraftModel(client, record, "ui_strings");
+  await publishIfDraftModel(client, record, "ui_string");
 }

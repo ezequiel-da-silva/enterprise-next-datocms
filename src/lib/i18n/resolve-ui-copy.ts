@@ -13,7 +13,7 @@ import {
 } from "@/lib/i18n/ui-strings-fields";
 
 /**
- * Overlay `ui_strings` (one locale) on the built-in copy. Empty or missing CMS fields keep the
+ * Overlay `ui_string` (one locale) on the built-in copy. Empty or missing CMS fields keep the
  * code text, so a CMS outage or an unmigrated environment never blanks the UI.
  */
 

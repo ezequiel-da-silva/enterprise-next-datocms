@@ -10,7 +10,7 @@ import { accountPath } from "@/lib/shopify/customer-session";
 
 type AccountViewProps = {
   locale: AppLocale;
-  /** Resolved on the server (CMS `ui_strings` over the built-in copy). */
+  /** Resolved on the server (CMS `ui_string` over the built-in copy). */
   copy: AccountCopy;
   /** `null` = signed out; `"error"` = signed in but the Customer Account API call failed. */
   customer: CustomerOverview | "error" | null;

@@ -76,7 +76,7 @@ function FooterMenuColumn({ item, locale }: { item: NavItemRecord; locale: AppLo
 type SiteFooterProps = {
   data: NavigationData | null;
   locale: AppLocale;
-  /** Label of the cookie preferences button (CMS `ui_strings` over the built-in copy). */
+  /** Label of the cookie preferences button (CMS `ui_string` over the built-in copy). */
   cookiePreferencesLabel: string;
 };
 

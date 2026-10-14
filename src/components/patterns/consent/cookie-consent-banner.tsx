@@ -10,7 +10,7 @@ import { setConsent, takeBannerFocusRequest, useConsent } from "./consent-store"
 import { syncShopifyConsent } from "./shopify-customer-privacy";
 
 type CookieConsentBannerProps = {
-  /** Resolved on the server (CMS `ui_strings` over the built-in copy). */
+  /** Resolved on the server (CMS `ui_string` over the built-in copy). */
   copy: ConsentCopy;
   privacyPolicyUrl: string | null;
   shopifyPrivacy: ShopifyPrivacyConfig | null;

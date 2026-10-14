@@ -146,10 +146,10 @@ describe("tagsToRevalidateFromWebhook", () => {
     expect(tags).toContain(DATOCMS_CACHE_TAGS.sitemap);
   });
 
-  it("maps ui_strings to its family and one tag per locale", () => {
+  it("maps ui_string to its family and one tag per locale", () => {
     const tags = tagsToRevalidateFromWebhook({
       entity: { relationships: { item_type: { data: { id: "t" } } } },
-      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "ui_strings" } }],
+      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "ui_string" } }],
     });
     expect(tags).toContain(DATOCMS_CACHE_TAGS.uiStrings);
     expect(tags).toContain("ui-strings:pt");

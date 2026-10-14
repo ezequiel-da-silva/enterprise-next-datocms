@@ -284,7 +284,7 @@ A query `LEGAL_PAGE_BY_SLUG` é independente de `PAGE_BY_SLUG`: em ambientes sem
 
 Não promover este schema de `develop` para `main` até o front estar pronto no primary.
 
-## Textos de interface (`ui_strings`)
+## Textos de interface (`ui_string`)
 
 Singleton **🔤 UI strings** com campos **localizados** agrupados por área: **🍪 Cookies** (banner de consentimento e link do rodapé), **🛒 Cart** e **👤 Account**. Todos são opcionais: **campo vazio = texto padrão do código** (`src/lib/i18n/{consent,cart,account}-copy.ts`). Os textos legais do banner de cookies são editáveis sem developer.
 
@@ -330,7 +330,7 @@ Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `dat
 Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache do Dato**. Para não esgotar 100k calls:
 
 - O **proxy** aplica CSP em todos os paths, mas **não** chama `getRedirects()` em `/api`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `llms.txt` nem icons.
-- O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`), **uma** de `global_setting` (404 + páginas índice) e **uma** de `ui_strings` (por locale, ISR 300s). O PDP acrescenta **uma** de `market_policy` (partilhada por todos os mercados). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
+- O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`), **uma** de `global_setting` (404 + páginas índice) e **uma** de `ui_string` (por locale, ISR 300s). O PDP acrescenta **uma** de `market_policy` (partilhada por todos os mercados). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
 - **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
 - Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
 - `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
@@ -371,7 +371,7 @@ Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testa
 | `item` modelo `page` | `datocms:page`, `page:{locale}:{slug}`, sitemap, search |
 | `post` / `author` / `category` | famílias `datocms:blog` + slug (`post:…`, `author-posts:{id}`, …) |
 | `navigation` / `global_setting` | `datocms:navigation` / `datocms:global-settings` + por locale |
-| `ui_strings` | `datocms:ui-strings` + `ui-strings:{locale}` |
+| `ui_string` | `datocms:ui-strings` + `ui-strings:{locale}` |
 | `market_policy` | `datocms:market-policy` |
 | `redirect` | `datocms:redirects` |
 | `product_page` | `datocms:product`, `product:{handle}`, sitemap |

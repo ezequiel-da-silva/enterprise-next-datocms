@@ -190,7 +190,7 @@ function tagsForApiKey(
       return [DATOCMS_CACHE_TAGS.navigation, ...APP_LOCALES.map((locale) => `navigation:${locale}`)];
     case "global_setting":
       return [DATOCMS_CACHE_TAGS.globalSettings, ...APP_LOCALES.map((locale) => `global-settings:${locale}`)];
-    case "ui_strings":
+    case "ui_string":
       return [DATOCMS_CACHE_TAGS.uiStrings, ...APP_LOCALES.map((locale) => `ui-strings:${locale}`)];
     case "market_policy":
       return [DATOCMS_CACHE_TAGS.marketPolicy];

@@ -11,7 +11,7 @@ function camelToSnake(name: string): string {
   return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
 
-describe("ui_strings field map", () => {
+describe("ui_string field map", () => {
   it("has unique field names", () => {
     expect(new Set(UI_STRINGS_FIELD_NAMES).size).toBe(UI_STRINGS_FIELD_NAMES.length);
   });

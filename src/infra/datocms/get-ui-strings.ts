@@ -13,12 +13,12 @@ import type { UiStringsRecord } from "@/lib/i18n/ui-strings-fields";
 import { cache } from "react";
 
 /**
- * Editable interface texts (singleton `ui_strings`). Every getter falls back to the built-in
+ * Editable interface texts (singleton `ui_string`). Every getter falls back to the built-in
  * copy in `src/lib/i18n/*-copy.ts`, so a CMS error, an unmigrated environment or an empty field
  * never blanks the UI. Published content only: the model has no draft mode.
  */
 
-type UiStringsQueryResult = { uiStrings: UiStringsRecord | null };
+type UiStringsQueryResult = { uiString: UiStringsRecord | null };
 
 const loadUiStrings = cache(async (locale: AppLocale): Promise<UiStringsRecord | null> => {
   const result = await datocmsFetch<UiStringsQueryResult>({
@@ -31,13 +31,13 @@ const loadUiStrings = cache(async (locale: AppLocale): Promise<UiStringsRecord |
     }),
   });
   if ("errors" in result) {
-    logWarnThrottled(`ui-strings:${locale}`, "datocms.ui-strings", "ui_strings unavailable; using built-in copy", {
+    logWarnThrottled(`ui-strings:${locale}`, "datocms.ui-strings", "ui_string unavailable; using built-in copy", {
       detail: result.errors[0]?.message?.slice(0, 200),
       context: { locale },
     });
     return null;
   }
-  return result.data.uiStrings;
+  return result.data.uiString;
 });
 
 export async function getConsentCopy(locale: AppLocale): Promise<ConsentCopy> {

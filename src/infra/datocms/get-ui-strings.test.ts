@@ -23,19 +23,19 @@ describe("GET_UI_STRINGS", () => {
 
 describe("get-ui-strings", () => {
   it("returns the built-in copy when the CMS errors", async () => {
-    datocmsFetch.mockResolvedValue({ errors: [{ message: "Field 'uiStrings' doesn't exist" }] });
+    datocmsFetch.mockResolvedValue({ errors: [{ message: "Field 'uiString' doesn't exist" }] });
     expect(await getConsentCopy("pt")).toEqual(CONSENT_COPY.pt);
     expect((await getCartCopy("en")).checkout).toBe(CART_COPY.en.checkout);
   });
 
   it("returns the built-in copy when the singleton is empty", async () => {
-    datocmsFetch.mockResolvedValue({ data: { uiStrings: null } });
+    datocmsFetch.mockResolvedValue({ data: { uiString: null } });
     expect(await getConsentCopy("es")).toEqual(CONSENT_COPY.es);
   });
 
   it("overlays CMS values for the requested locale", async () => {
     datocmsFetch.mockResolvedValue({
-      data: { uiStrings: { cookiesTitle: "Privacidade", cartLinkLabelOne: "x", accountGreeting: "Oi, {name}" } },
+      data: { uiString: { cookiesTitle: "Privacidade", cartLinkLabelOne: "x", accountGreeting: "Oi, {name}" } },
     });
     expect((await getConsentCopy("pt")).title).toBe("Privacidade");
     expect((await getAccountCopy("pt")).greeting("Ana")).toBe("Oi, Ana");

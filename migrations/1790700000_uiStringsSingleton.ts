@@ -1,7 +1,7 @@
 import { Client } from "datocms/lib/cma-client-node";
 
 /**
- * Singleton `ui_strings`: textos de interface localizados (cookies, carrinho, conta).
+ * Singleton `ui_string`: textos de interface localizados (cookies, carrinho, conta).
  *
  * Todos os campos são opcionais — vazio = texto padrão do código (`src/lib/i18n/*-copy.ts`).
  * Os api keys espelham `src/lib/i18n/ui-strings-fields.ts` (camelCase no CDA); o teste
@@ -137,7 +137,7 @@ function stringPayload(spec: Spec) {
 export default async function uiStringsSingleton(client: Client): Promise<void> {
   const model = await findOrCreateModel(
     client,
-    "ui_strings",
+    "ui_string",
     "🔤 UI strings",
     "Textos de interface por idioma. Campo vazio = texto padrão do código. Não use para segredos nem para textos das páginas de erro.",
   );
@@ -156,7 +156,7 @@ export default async function uiStringsSingleton(client: Client): Promise<void> 
 
     for (const spec of group.fields) {
       const payload = stringPayload(spec);
-      const existing = await findField(client, `ui_strings::${spec.key}`);
+      const existing = await findField(client, `ui_string::${spec.key}`);
       if (existing) {
         await client.fields.update(existing.id, payload);
       } else {

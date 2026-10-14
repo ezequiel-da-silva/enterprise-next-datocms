@@ -31,7 +31,7 @@ type ProductPageArticleProps = {
   storefront: StorefrontProduct | null;
   /** Server Action do carrinho; sem ela (ou com a flag desligada) o botão não aparece. */
   addToCartAction?: AddToCartAction;
-  /** Resolved in `app/` (CMS `ui_strings` over the built-in copy). */
+  /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
   cartCopy: CartCopy;
   /** Shipping/returns of the locale's market (Dato `market_policy`); `null` omits both JSON-LD blocks. */
   marketPolicy: MarketPolicy | null;

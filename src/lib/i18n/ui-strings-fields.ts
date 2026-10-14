@@ -3,7 +3,7 @@ import type { CartCopy } from "@/lib/i18n/cart-copy";
 import type { ConsentCopy } from "@/lib/i18n/consent-copy";
 
 /**
- * Maps each built-in copy key to its CDA field on the `ui_strings` singleton.
+ * Maps each built-in copy key to its CDA field on the `ui_string` singleton.
  * `satisfies` keeps these maps in sync with the copy types: adding a key to a `*-copy.ts` type
  * without a field here fails typecheck. The Dato migration (`uiStringsSingleton`) creates the
  * same fields (snake_case api keys); `ui-strings-fields.test.ts` guards that.
@@ -86,5 +86,5 @@ export const UI_STRINGS_FIELD_NAMES = [
 
 export type UiStringsFieldName = (typeof UI_STRINGS_FIELD_NAMES)[number];
 
-/** Raw `ui_strings` record as returned by the CDA (all fields optional and nullable). */
+/** Raw `ui_string` record as returned by the CDA (all fields optional and nullable). */
 export type UiStringsRecord = Partial<Record<UiStringsFieldName, string | null>>;
