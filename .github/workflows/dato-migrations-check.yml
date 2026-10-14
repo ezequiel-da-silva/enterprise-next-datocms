@@ -1,0 +1,64 @@
+name: DatoCMS migrations (aviso)
+
+# Avisa no PR quando `migrations/` tem ficheiros que a produção Dato ainda não aplicou.
+# Só lê; nunca falha o PR e nunca corre o release (esse é o workflow manual `dato-release.yml`).
+on:
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: dato-migrations-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    # Forks não recebem secrets nem permissão de escrita.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Compare migrations with production
+        id: check
+        env:
+          DATOCMS_PROD_CMA_READONLY_TOKEN: ${{ secrets.DATOCMS_PROD_CMA_READONLY_TOKEN }}
+          RELEASE_WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/dato-release.yml
+        run: node scripts/dato-migrations-pending-ci.mjs
+
+      - name: Comment on the PR
+        if: steps.check.outputs.status == 'pending' || steps.check.outputs.status == 'ok'
+        uses: actions/github-script@v7
+        env:
+          STATUS: ${{ steps.check.outputs.status }}
+          BODY_FILE: ${{ steps.check.outputs.body_file }}
+        with:
+          script: |
+            const fs = require("node:fs");
+            const marker = "<!-- dato-migrations-check -->";
+            const body = fs.readFileSync(process.env.BODY_FILE, "utf8");
+            const { owner, repo } = context.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner, repo, issue_number, per_page: 100,
+            });
+            const existing = comments.find((c) => c.user?.type === "Bot" && c.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else if (process.env.STATUS === "pending") {
+              // "ok" only edits an earlier warning; it never opens a new comment.
+              await github.rest.issues.createComment({ owner, repo, issue_number, body });
+            }

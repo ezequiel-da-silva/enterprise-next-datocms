@@ -142,6 +142,12 @@ GitHub: **Actions → DatoCMS schema release (produção) → Run workflow** ([`
 1. Settings → Environments → criar `datocms-production` (opcional: required reviewers para aprovar cada execução).
 2. Secret `DATOCMS_PROD_CMA_TOKEN` nesse environment: token **CMA** do projecto `201057` com permissão de schema e environments. Não reutilizar `DATOCMS_API_TOKEN` (é CDA, só leitura).
 
+**Aviso no PR** ([`dato-migrations-check.yml`](../.github/workflows/dato-migrations-check.yml)): em todo PR para `main`, compara `migrations/` com o `schema_migration` da produção e comenta quando falta alguma (e actualiza o comentário para ✅ quando já não falta). Só avisa — não bloqueia o PR nem corre o release (o merge **não** aplica schema). Não precisa de `npm ci`: fala com a CMA por `fetch` ([`dato-migrations-pending-ci.mjs`](../scripts/dato-migrations-pending-ci.mjs)) e aborta se o token não for do site `201057`. Configuração única:
+
+1. No projecto `201057`: criar um role só de leitura de conteúdo e um token CMA com esse role (sem schema, sem environments). Nunca reutilizar `DATOCMS_API_TOKEN` (CDA) nem `DATOCMS_PROD_CMA_TOKEN` (escrita).
+2. Settings → Secrets and variables → Actions → **repository secret** `DATOCMS_PROD_CMA_READONLY_TOKEN`. Repository, não o environment `datocms-production`: esse pode exigir aprovação e o aviso ficaria à espera dela.
+3. Sem o secret, PRs de fork e Dependabot, o check termina com um `notice` e não comenta.
+
 Depois do promote, o primary antigo fica como sandbox no Dato. Apaga-o quando já não precisares de rollback (o Free tem poucos sandboxes).
 
 - **Ordem de deploy:** a migration tem de estar promovida em produção antes (ou junto) do deploy de `main`; senão as queries novas quebram.
