@@ -47,6 +47,8 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - Touch targets: `touch-target` / `touch-target-text` on header controls
 - Forms: `Field` + `aria-describedby`; errors use `role="alert"`
 
+**Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, contact, cart (empty) and account.
+
 **Manual (Lighthouse / keyboard):** Tab order, `aria-expanded` on menus, no hover-only submenus.
 
 **Anti-patterns:** Redundant `aria-label` matching visible text; submenu without keyboard support.
@@ -66,6 +68,8 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - No `dynamic()` on Server Components in Structured Text blocks
 
 **Measure:** `npm run build && npm run start` — not `next dev` for Lighthouse.
+
+**Real users:** Vercel Speed Insights, after cookie consent (enable it in the Vercel dashboard; see `SPEED_INSIGHTS_ENABLED` in `.env.example`). Target at p75: LCP < 2.5 s, INP < 200 ms, CLS < 0.1. Server errors: filter Vercel Logs by `scope` / `level:error` ([SECURITY.md → Logs de erro](./SECURITY.md#logs-de-erro)).
 
 **Anti-patterns:** Inflated `sizes="100vw"`; duplicate sticky headers; client-only theme boot.
 

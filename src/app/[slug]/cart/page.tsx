@@ -2,10 +2,10 @@ import { removeCartLine, updateCartLine } from "@/app/actions/cart";
 import { CartView } from "@/components/sections/cart-view";
 import { isAppLocale } from "@/constants/i18n";
 import { getProductsIndexPage, productsIndexPath } from "@/infra/datocms/get-products-index-page";
+import { getCartCopy } from "@/infra/datocms/get-ui-strings";
 import { getCartFromCookie } from "@/infra/shopify/cart";
 import { buildMetadata } from "@/lib/seo";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
-import { cartCopy } from "@/lib/i18n/cart-copy";
 import { CART_COOKIE, cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import { activeAccessToken, CUSTOMER_COOKIE, readCustomerSession } from "@/lib/shopify/customer-session";
 import type { Metadata } from "next";
@@ -19,7 +19,7 @@ type CartPageProps = {
 export async function generateMetadata({ params }: CartPageProps): Promise<Metadata> {
   const { slug } = await params;
   if (!isCartEnabled() || !isAppLocale(slug)) return buildUnavailableMetadata("Cart");
-  const copy = cartCopy(slug);
+  const copy = await getCartCopy(slug);
   return buildMetadata({
     title: copy.title,
     description: copy.checkoutNote,
@@ -35,13 +35,15 @@ export default async function CartPage({ params }: CartPageProps) {
   const { isEnabled } = await draftMode();
   const cookieStore = await cookies();
   const session = readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value);
-  const [cart, catalog] = await Promise.all([
+  const [cart, catalog, copy] = await Promise.all([
     getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, slug, activeAccessToken(session)),
     getProductsIndexPage(slug, isEnabled),
+    getCartCopy(slug),
   ]);
   return (
     <CartView
       locale={slug}
+      copy={copy}
       cart={cart}
       shopPath={productsIndexPath(slug, catalog)}
       actions={{ updateLine: updateCartLine, removeLine: removeCartLine }}

@@ -1,7 +1,7 @@
 import type { AppLocale } from "@/constants/i18n";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
 import type { StorefrontMoney, StorefrontProduct } from "@/infra/shopify/storefront";
-import { returnPolicyFor, shippingDetailsFor } from "@/lib/seo/merchant-policy";
+import { returnPolicyFor, shippingDetailsFor, type MarketPolicy } from "@/lib/seo/merchant-policy";
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 
@@ -22,7 +22,8 @@ export function buildProductPageJsonLd(input: {
   /** Brand when Shopify has no `vendor` (organization name). */
   brandName: string;
   now?: Date;
-  env?: Record<string, string | undefined>;
+  /** Shipping/returns of the locale's market (Dato `market_policy`); `null` omits both blocks. */
+  policy?: MarketPolicy | null;
 }): Record<string, unknown>[] {
   const description = input.description?.trim() || undefined;
   const pageGraph = buildPageWebPageJsonLd({
@@ -37,7 +38,8 @@ export function buildProductPageJsonLd(input: {
   const storefront = input.storefront;
   const country = shopifyCountryFromLocale(input.locale);
   const validUntil = priceValidUntil(input.now ?? new Date());
-  const returnPolicy = returnPolicyFor(country, input.env);
+  const policy = input.policy ?? null;
+  const returnPolicy = returnPolicyFor(policy, country);
 
   type OfferSource = { price: StorefrontMoney; available: boolean; name: string | null; sku: string | null };
   const offerSources: OfferSource[] = !storefront
@@ -51,7 +53,7 @@ export function buildProductPageJsonLd(input: {
         }))
       : [{ price: storefront.priceRange.minVariantPrice, available: storefront.availableForSale, name: null, sku: null }];
   const offers = offerSources.map((entry) => {
-    const shipping = shippingDetailsFor(country, entry.price.currencyCode, input.env);
+    const shipping = shippingDetailsFor(policy, country, entry.price.currencyCode);
     return {
       "@type": "Offer",
       ...(entry.name ? { name: entry.name } : {}),

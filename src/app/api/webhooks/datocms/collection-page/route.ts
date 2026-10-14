@@ -1,3 +1,4 @@
+import { logError } from "@/infra/observability/log-error";
 import { pushShopifyCollectionCopy } from "@/infra/shopify/admin-collection-copy";
 import { parseCollectionPageTitleSync } from "@/lib/datocms/parse-collection-page-title-sync";
 import { isSecretEqual } from "@/lib/security/compare-secret";
@@ -58,6 +59,10 @@ export async function POST(request: NextRequest) {
     if (result.reason === "not_configured") {
       return NextResponse.json({ error: "Webhook not configured", missing: result.missing }, { status: 500 });
     }
+    logError("webhook.datocms.collection-page", "Sync failed", {
+      detail: result.detail,
+      context: { reason: result.reason },
+    });
     return NextResponse.json({ error: "Sync failed", detail: result.detail }, { status: 500 });
   }
 

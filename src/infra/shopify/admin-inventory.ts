@@ -1,3 +1,4 @@
+import { logError } from "@/infra/observability/log-error";
 import { SHOPIFY_ADMIN_API_VERSION } from "@/infra/shopify/api-version";
 import { resolveAdminAccessToken } from "@/lib/shopify/admin-access-token";
 
@@ -40,8 +41,8 @@ export async function productHandleForInventoryItem(inventoryItemId: string): Pr
     const item = asRecord(asRecord(asRecord(json)?.data)?.inventoryItem);
     const handle = asRecord(asRecord(item?.variant)?.product)?.handle;
     return typeof handle === "string" && handle.trim() ? handle.trim() : null;
-  } catch {
-    console.error("[productHandleForInventoryItem] Admin GraphQL failed");
+  } catch (err) {
+    logError("shopify.admin-inventory", "Admin GraphQL failed", { error: err });
     return null;
   }
 }

@@ -3,13 +3,15 @@ import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import type { AppLocale } from "@/constants/i18n";
 import type { CustomerOrder, CustomerOverview } from "@/infra/shopify/customer-account";
-import { accountCopy, type AccountCopy, type AccountErrorCode } from "@/lib/i18n/account-copy";
+import type { AccountCopy, AccountErrorCode } from "@/lib/i18n/account-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import { accountPath } from "@/lib/shopify/customer-session";
 
 type AccountViewProps = {
   locale: AppLocale;
+  /** Resolved on the server (CMS `ui_string` over the built-in copy). */
+  copy: AccountCopy;
   /** `null` = signed out; `"error"` = signed in but the Customer Account API call failed. */
   customer: CustomerOverview | "error" | null;
   error?: AccountErrorCode | null;
@@ -55,8 +57,7 @@ function OrderItem({ order, locale, copy }: { order: CustomerOrder; locale: AppL
   );
 }
 
-export function AccountView({ locale, customer, error }: AccountViewProps) {
-  const copy = accountCopy(locale);
+export function AccountView({ locale, copy, customer, error }: AccountViewProps) {
   const loginHref = `/api/account/login?locale=${locale}`;
   const message = error ? copy.errors[error] : customer === "error" ? copy.loadError : null;
 

@@ -75,11 +75,11 @@ Quota CDA é **por conta**. O sandbox `develop` no projecto `201057` **não** is
 | Profile | Projecto | `siteId` | Admin |
 |---------|----------|----------|--------|
 | `default` | Boilerplate DATO (produção) | `201057` | `https://boilerplate-dato.admin.datocms.com` |
-| `staging` | Boilerplate DATO - staging | `236043` | `https://boilerplate-dato-staging-8167.admin.datocms.com` |
+| `staging` | Boilerplate DATO - Staging | `236271` | `https://boilerplate-dato-staging-9776.admin.datocms.com` |
 
 ```bash
 npx datocms login   # conta que vê o Staging
-npx datocms link --profile=staging --site-id=236043
+npx datocms link --profile=staging --site-id=236271
 ```
 
 As migrations deste repo são **incrementais** sobre o boilerplate **já evoluído** neste repo. **Não** corras `migrations:run` num projecto Staging vazio (`image_block` 404). Um projecto criado a partir do **template oficial Dato** também não chega: o `image_block` do starter só tem um campo (`image`) e faltam `asset` / `asset_desktop`, `cta_banner`, `card`, `global_setting`, Shopify, etc.
@@ -90,17 +90,17 @@ Se a conta de produção estiver **suspensa por cota** (`Cannot duplicate a bloc
 
 Desbloqueio (duplicação com IDs iguais): upgrade temporário na conta de produção → Duplicate (só models/fields) → transferir/convidar Staging — ou esperar o reset da cota. Support (`support@datocms.com`) pode desbloquear a duplicação pontual.
 
-**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `236043` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
+**Sem duplicar** (cota isolada na conta nova): recrear o schema actual no `236271` com as mesmas **api keys** GraphQL (IDs CMA novos). Não uses `migrations:run` no Staging vazio.
 
 ```bash
-npx datocms login   # conta que vê o projecto 236043
-npx datocms link --profile=staging --site-id=236043
+npx datocms login   # conta que vê o projecto 236271
+npx datocms link --profile=staging --site-id=236271
 npx datocms cma:script scripts/bootstrap-staging-schema.ts --profile=staging
 ```
 
 O script recusa `siteId` `201057`. Marca as migrations já no repo como aplicadas em `schema_migration`. Conteúdo (páginas/posts) não é copiado.
 
-Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`236043`), nunca CMA no `DATOCMS_API_TOKEN`.
+Tokens: Vercel **Production** continua com CDA de `201057`. Preview + `.env` local: CDA **publicado** e **draft** do Staging (`236271`), nunca CMA no `DATOCMS_API_TOKEN`.
 
 ### Fluxo de migrations (Staging → Produção)
 
@@ -284,6 +284,43 @@ A query `LEGAL_PAGE_BY_SLUG` é independente de `PAGE_BY_SLUG`: em ambientes sem
 
 Não promover este schema de `develop` para `main` até o front estar pronto no primary.
 
+## Textos de interface (`ui_string`)
+
+Singleton **🔤 UI strings** com campos **localizados** agrupados por área: **🍪 Cookies** (banner de consentimento e link do rodapé), **🛒 Cart** e **👤 Account**. Todos são opcionais: **campo vazio = texto padrão do código** (`src/lib/i18n/{consent,cart,account}-copy.ts`). Os textos legais do banner de cookies são editáveis sem developer.
+
+- Campos tipados, não chave/valor: o mapa [`ui-strings-fields.ts`](../src/lib/i18n/ui-strings-fields.ts) liga cada chave do copy ao campo CDA, e `ui-strings-fields.test.ts` falha se a migration `uiStringsSingleton` divergir.
+- Placeholders: `{count}` nos rótulos do ícone do carrinho (`cart_link_label_one` + `cart_link_label_other`, só valem juntos) e `{name}` na saudação da conta (`account_greeting`).
+- A query ([`ui-strings-query.ts`](../src/infra/datocms/ui-strings-query.ts)) **não usa `fallbackLocales`**: um campo vazio em `pt_BR` cai no texto português do código, não no inglês.
+- O layout resolve as copies uma vez (`get-ui-strings.ts`, React `cache()`) e passa-as por props, inclusive ao banner (client component). Erro da CDA, modelo ainda inexistente ou campo vazio nunca quebram a UI: vale o texto do código.
+- Fica de fora: `error.tsx` / `global-error.tsx` (têm de funcionar com o CMS fora), `financialStatus` da conta, reviews, tema, listagens e flags lidas pelo CSP.
+- O texto aparece sem metadados de Content Link (`stripStega`), porque vai para `aria-label` e mensagens de action.
+
+Seed (uma vez por ambiente, depois da migration): preenche **só campos vazios** com os textos atuais, para o editor ver o copy real.
+
+```bash
+npx datocms cma:script scripts/seed-ui-strings.ts --profile=staging
+npx datocms cma:script scripts/seed-ui-strings.ts --profile=default
+```
+
+Alterar materialmente o texto legal do banner não reabre o consentimento já dado: isso exigiria subir a versão (`v1`) do cookie `nd-consent`.
+
+## Política de mercado (`market_policy`)
+
+Coleção **🚚 Market policy**: um registo por país (**US**, **BR**, **ES**, os mercados Shopify de `shopifyCountryFromLocale`). Alimenta `Offer.shippingDetails` e `Offer.hasMerchantReturnPolicy` no JSON-LD do PDP e **substitui** as antigas variáveis `SEO_SHIPPING_*` / `SEO_RETURN_*`.
+
+| Campo | Notas |
+|-------|-------|
+| `country` | obrigatório e único |
+| `shipping_rate` | na moeda da oferta do mercado; `0` = frete grátis |
+| `handling_days_min/max`, `transit_days_min/max` | dias; `max` vazio = igual ao mínimo |
+| `return_days` | 1–365 |
+| `return_fees` | `free` (loja paga) ou `customer` (cliente paga) |
+
+- **Os valores têm de bater com o checkout e as políticas da Shopify**: o Google compara o JSON-LD com a página.
+- Campo vazio ou inválido omite só o bloco afetado (envio exige taxa + os dois prazos; devolução exige prazo + quem paga). Sem registo para o país, nenhum dos dois blocos é publicado.
+- Só conteúdo **publicado** é lido (o modelo tem draft mode: publique para a mudança valer). Sem deploy: o webhook invalida `datocms:market-policy`; sem webhook, ISR de 300s.
+- **Antes de apagar `SEO_*` da Vercel**: aplicar a migration em produção e publicar os 3 registos, senão o JSON-LD perde envio e devolução até lá.
+
 ## Revalidação on-demand
 
 Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `datocms:navigation`, …) e ISR de 300s. Sem webhook, uma publicação no Dato só aparece no site depois desse intervalo (ou de um redeploy).
@@ -293,7 +330,7 @@ Os fetches publicados usam `next.tags` (`datocms:page`, `page:en:page-two`, `dat
 Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache do Dato**. Para não esgotar 100k calls:
 
 - O **proxy** aplica CSP em todos os paths, mas **não** chama `getRedirects()` em `/api`, `robots.txt`, `sitemap.xml`, `manifest.webmanifest`, `llms.txt` nem icons.
-- O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`) e **uma** de `global_setting` (404 + páginas índice). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
+- O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`), **uma** de `global_setting` (404 + páginas índice) e **uma** de `ui_string` (por locale, ISR 300s). O PDP acrescenta **uma** de `market_policy` (partilhada por todos os mercados). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
 - **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
 - Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
 - `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
@@ -334,6 +371,8 @@ Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testa
 | `item` modelo `page` | `datocms:page`, `page:{locale}:{slug}`, sitemap, search |
 | `post` / `author` / `category` | famílias `datocms:blog` + slug (`post:…`, `author-posts:{id}`, …) |
 | `navigation` / `global_setting` | `datocms:navigation` / `datocms:global-settings` + por locale |
+| `ui_string` | `datocms:ui-strings` + `ui-strings:{locale}` |
+| `market_policy` | `datocms:market-policy` |
 | `redirect` | `datocms:redirects` |
 | `product_page` | `datocms:product`, `product:{handle}`, sitemap |
 | `collection_page` | `datocms:collection`, `collection:{handle}`, sitemap |

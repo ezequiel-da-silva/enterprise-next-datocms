@@ -97,12 +97,28 @@ describe("proxy", () => {
       vi.unstubAllEnvs();
     });
 
-    it("leaves GA and Shopify consent hosts out by default", async () => {
+    it("leaves GA, Shopify consent and Speed Insights hosts out by default", async () => {
       vi.stubEnv("GA_MEASUREMENT_ID", "");
       vi.stubEnv("SHOPIFY_STOREFRONT_PUBLIC_TOKEN", "");
+      vi.stubEnv("VERCEL", "");
+      vi.stubEnv("SPEED_INSIGHTS_ENABLED", "");
       const header = await csp();
       expect(header).not.toContain("google");
+      expect(header).not.toContain("vercel-scripts");
       expect(header).not.toMatch(/connect-src[^;]*myshopify/);
+    });
+
+    it("allows the Speed Insights host when it is enabled", async () => {
+      vi.stubEnv("VERCEL", "1");
+      const header = await csp();
+      expect(header).toMatch(/script-src[^;]*https:\/\/va\.vercel-scripts\.com/);
+      expect(header).toMatch(/connect-src[^;]*https:\/\/va\.vercel-scripts\.com/);
+    });
+
+    it("keeps Speed Insights out when forced off on Vercel", async () => {
+      vi.stubEnv("VERCEL", "1");
+      vi.stubEnv("SPEED_INSIGHTS_ENABLED", "0");
+      expect(await csp()).not.toContain("vercel-scripts");
     });
 
     it("allows GA4 hosts when a measurement ID is set", async () => {

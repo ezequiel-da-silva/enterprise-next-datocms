@@ -12,6 +12,7 @@ import { getRedirects, pickRedirectRecords } from "@/infra/datocms/get-redirects
 import { shouldLookupCmsRedirects } from "@/lib/datocms/cms-redirect-lookup";
 import { matchRedirect } from "@/lib/datocms/match-redirect";
 import { GA_CSP_HOSTS, readGaMeasurementId } from "@/lib/analytics/ga-config";
+import { SPEED_INSIGHTS_CSP_HOST, isSpeedInsightsEnabled } from "@/lib/analytics/speed-insights-config";
 import { shopifyPrivacyCspHosts } from "@/lib/shopify/customer-privacy-config";
 
 const DATO_ADMIN_FRAME =
@@ -28,16 +29,23 @@ function createNonce(): string {
 }
 
 /**
- * Hosts only present when the matching env is set (consent-gated GA4, Shopify Customer Privacy).
- * In prod `strict-dynamic` ignores script hosts; they are listed for dev, where it is off.
+ * Hosts only present when the matching env is set (consent-gated GA4, Shopify Customer Privacy,
+ * Vercel Speed Insights). In prod `strict-dynamic` ignores script hosts; they are listed for dev,
+ * where it is off. Speed Insights reports to same-origin `/_vercel/speed-insights/*`, so
+ * `va.vercel-scripts.com` only matters for its dev debug build and `dsn` mode.
  */
 function optionalCspHosts(): { script: string; connect: string; img: string } {
   const ga = readGaMeasurementId() ? GA_CSP_HOSTS.join(" ") : "";
   const shopify = shopifyPrivacyCspHosts();
+  const speedInsights = isSpeedInsightsEnabled() ? SPEED_INSIGHTS_CSP_HOST : "";
   const join = (...parts: string[]) => parts.filter(Boolean).map((p) => ` ${p}`).join("");
   return {
-    script: join(ga && "https://www.googletagmanager.com", shopify.length ? "https://cdn.shopify.com" : ""),
-    connect: join(ga, ...shopify),
+    script: join(
+      ga && "https://www.googletagmanager.com",
+      shopify.length ? "https://cdn.shopify.com" : "",
+      speedInsights,
+    ),
+    connect: join(ga, ...shopify, speedInsights),
     img: join(ga),
   };
 }

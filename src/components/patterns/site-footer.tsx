@@ -6,7 +6,6 @@ import type { NavigationData, NavItemRecord } from "@/infra/datocms/types-naviga
 import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
-import { consentCopy } from "@/lib/i18n/consent-copy";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import Image from "next/image";
@@ -77,9 +76,11 @@ function FooterMenuColumn({ item, locale }: { item: NavItemRecord; locale: AppLo
 type SiteFooterProps = {
   data: NavigationData | null;
   locale: AppLocale;
+  /** Label of the cookie preferences button (CMS `ui_string` over the built-in copy). */
+  cookiePreferencesLabel: string;
 };
 
-export function SiteFooter({ data, locale }: SiteFooterProps) {
+export function SiteFooter({ data, locale, cookiePreferencesLabel }: SiteFooterProps) {
   const footerLogo = data?.footerLogo;
   const footerMenu = data?.footerMenu?.filter(Boolean) ?? [];
   const social = data?.socialLinks?.filter(Boolean) ?? [];
@@ -144,7 +145,7 @@ export function SiteFooter({ data, locale }: SiteFooterProps) {
               ))}
             </nav>
           ) : null}
-          <CookiePreferencesButton label={consentCopy(locale).manage} />
+          <CookiePreferencesButton label={cookiePreferencesLabel} />
         </div>
       </Container>
     </footer>

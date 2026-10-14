@@ -36,6 +36,9 @@ type GlobalHeaderProps = {
   cartCount?: number | null;
   /** `null`/omitido = conta desligada; booleano = cookie `nd-customer` presente. */
   accountSignedIn?: boolean | null;
+  /** Accessible names of the icon links (CMS `ui_string` over the built-in copy). */
+  cartLinkLabel?: string;
+  accountLinkLabel?: string;
 };
 
 export function GlobalHeader({
@@ -47,6 +50,8 @@ export function GlobalHeader({
   initialThemeMode,
   cartCount,
   accountSignedIn,
+  cartLinkLabel = "",
+  accountLinkLabel = "",
 }: GlobalHeaderProps) {
   const logo = data?.logo;
   const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
@@ -140,8 +145,10 @@ export function GlobalHeader({
               {themeToggle}
             </div>
           )}
-          {typeof accountSignedIn === "boolean" ? <AccountLink locale={locale} signedIn={accountSignedIn} /> : null}
-          {typeof cartCount === "number" ? <CartLink locale={locale} count={cartCount} /> : null}
+          {typeof accountSignedIn === "boolean" ? (
+            <AccountLink locale={locale} signedIn={accountSignedIn} label={accountLinkLabel} />
+          ) : null}
+          {typeof cartCount === "number" ? <CartLink locale={locale} count={cartCount} label={cartLinkLabel} /> : null}
         </div>
       </Container>
     </header>

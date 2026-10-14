@@ -25,6 +25,12 @@ O proxy em [`src/proxy.ts`](../src/proxy.ts) aplica CSP estrita e HSTS só quand
 
 Hosts de terceiros entram na CSP só quando a env correspondente existe: GA4 (`GA_MEASUREMENT_ID`) e Shopify Customer Privacy (`SHOPIFY_STOREFRONT_PUBLIC_TOKEN`). Os dois scripts só carregam depois da escolha no banner de cookies ([SHOPIFY.md → Consentimento de cookies](./SHOPIFY.md#consentimento-de-cookies)). `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` é o único token que chega ao browser, e tem de ser o **público**.
 
+O Vercel Speed Insights (Web Vitals de usuários reais) também só monta depois de "Aceitar todos". Reporta para `/_vercel/speed-insights/*` no mesmo origin, então a CSP só ganha `https://va.vercel-scripts.com` quando ele está ativo (`VERCEL=1` ou `SPEED_INSIGHTS_ENABLED=1`).
+
+### Logs de erro
+
+Erros críticos de servidor passam por `logError`/`logWarn` ([`src/infra/observability/log-error.ts`](../src/infra/observability/log-error.ts)): uma linha JSON `{ ts, env, level, scope, message, detail?, context?, error? }`. Em produção `error` leva só o nome (o texto cru pode trazer payloads); `detail` fica, porque a Shopify nomeia o scope em falta. Na Vercel, filtra em Logs por `scope` (`webhook.shopify.product`, `webhook.datocms.*`, `account.callback`, `action.cart`, `contact.send`, `security.rate-limit`, `cms.*`, `shopify.admin-*`) ou por `level:error`, e liga um Log Drain ou alerta a esse filtro.
+
 ```bash
 npm run build
 npm run start:prod

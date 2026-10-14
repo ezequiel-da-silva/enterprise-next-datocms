@@ -1,6 +1,5 @@
 import { IconButton } from "@/components/atoms/icon-button";
 import type { AppLocale } from "@/constants/i18n";
-import { accountCopy } from "@/lib/i18n/account-copy";
 import { accountPath } from "@/lib/shopify/customer-session";
 import Link from "next/link";
 
@@ -8,13 +7,15 @@ type AccountLinkProps = {
   locale: AppLocale;
   /** From the presence of the `nd-customer` cookie only — no network call in the layout. */
   signedIn: boolean;
+  /** Accessible name, e.g. "My account" / "Sign in". */
+  label: string;
 };
 
-export function AccountLink({ locale, signedIn }: AccountLinkProps) {
+export function AccountLink({ locale, signedIn, label }: AccountLinkProps) {
   return (
     <IconButton asChild className="relative inline-flex items-center justify-center border-border bg-muted hover:bg-muted/80">
       <Link href={accountPath(locale)}>
-        <span className="sr-only">{accountCopy(locale).linkLabel(signedIn)}</span>
+        <span className="sr-only">{label}</span>
         <svg
           aria-hidden
           className="h-5 w-5"

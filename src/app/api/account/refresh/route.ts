@@ -1,5 +1,6 @@
 import { linkCookieCart, localeFromPath, redirectTo, safeNextPath } from "@/app/api/account/account-route-utils";
 import { DEFAULT_APP_LOCALE } from "@/constants/i18n";
+import { logWarn } from "@/infra/observability/log-error";
 import { refreshCustomerTokens, sessionFromTokens } from "@/infra/shopify/customer-account";
 import {
   accountPath,
@@ -27,6 +28,7 @@ export async function GET(request: NextRequest) {
   const updated = tokens ? sessionFromTokens(tokens, session) : null;
   const sealed = updated ? sealCustomerSession(updated) : null;
   if (!updated || !sealed) {
+    if (session?.refreshToken) logWarn("account.refresh", "Token refresh failed; session cleared");
     response.cookies.delete(CUSTOMER_COOKIE);
     return response;
   }
