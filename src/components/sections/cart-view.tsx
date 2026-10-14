@@ -6,7 +6,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { CART_MAX_QUANTITY } from "@/core/entities/cart";
 import type { StorefrontCart, StorefrontCartLine } from "@/infra/shopify/cart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import { cartCopy, type CartCopy } from "@/lib/i18n/cart-copy";
+import type { CartCopy } from "@/lib/i18n/cart-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { cartPath } from "@/lib/shopify/cart-cookie";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
@@ -22,6 +22,8 @@ export type CartViewActions = {
 
 type CartViewProps = {
   locale: AppLocale;
+  /** Resolved on the server (CMS `ui_strings` over the built-in copy). */
+  copy: CartCopy;
   cart: StorefrontCart | null;
   shopPath: string;
   actions: CartViewActions;
@@ -127,8 +129,7 @@ function CartLineItem({ line, locale, copy, actions }: CartLineItemProps) {
   );
 }
 
-export function CartView({ locale, cart, shopPath, actions }: CartViewProps) {
-  const copy = cartCopy(locale);
+export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProps) {
   const lines = cart?.lines ?? [];
   const subtotal = cart?.subtotal;
 

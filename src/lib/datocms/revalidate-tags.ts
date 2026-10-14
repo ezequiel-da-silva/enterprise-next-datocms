@@ -20,6 +20,8 @@ export const DATOCMS_CACHE_TAGS = {
   legal: "datocms:legal",
   product: "datocms:product",
   collection: "datocms:collection",
+  uiStrings: "datocms:ui-strings",
+  marketPolicy: "datocms:market-policy",
 } as const;
 
 /** Famílias usadas em todos os fetches publicados (webhook CDA / payload desconhecido). */
@@ -28,6 +30,7 @@ export function coarseDatocmsCacheTags(): string[] {
     `navigation:${locale}`,
     `site-seo:${locale}`,
     `global-settings:${locale}`,
+    `ui-strings:${locale}`,
   ]);
   return uniqueTags([
     DATOCMS_CACHE_TAGS.page,
@@ -45,6 +48,8 @@ export function coarseDatocmsCacheTags(): string[] {
     DATOCMS_CACHE_TAGS.legal,
     DATOCMS_CACHE_TAGS.product,
     DATOCMS_CACHE_TAGS.collection,
+    DATOCMS_CACHE_TAGS.uiStrings,
+    DATOCMS_CACHE_TAGS.marketPolicy,
     ...localePairs,
   ]);
 }
@@ -185,6 +190,10 @@ function tagsForApiKey(
       return [DATOCMS_CACHE_TAGS.navigation, ...APP_LOCALES.map((locale) => `navigation:${locale}`)];
     case "global_setting":
       return [DATOCMS_CACHE_TAGS.globalSettings, ...APP_LOCALES.map((locale) => `global-settings:${locale}`)];
+    case "ui_strings":
+      return [DATOCMS_CACHE_TAGS.uiStrings, ...APP_LOCALES.map((locale) => `ui-strings:${locale}`)];
+    case "market_policy":
+      return [DATOCMS_CACHE_TAGS.marketPolicy];
     case "redirect":
       return [DATOCMS_CACHE_TAGS.redirects];
     case "legal_page": {

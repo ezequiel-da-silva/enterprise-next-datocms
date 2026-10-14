@@ -16,7 +16,7 @@ import {
   type CartMutationResult,
 } from "@/infra/shopify/cart";
 import { logError } from "@/infra/observability/log-error";
-import { cartCopy } from "@/lib/i18n/cart-copy";
+import { getCartCopy } from "@/infra/datocms/get-ui-strings";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/infra/security/rate-limit";
 import { CART_COOKIE, cartCookieOptions, isCartEnabled } from "@/lib/shopify/cart-cookie";
@@ -54,7 +54,7 @@ async function guard(): Promise<"ok" | "disabled" | "limited"> {
 
 export async function addToCart(_prev: CartActionState, formData: FormData): Promise<CartActionState> {
   const locale = readLocale(formData);
-  const copy = cartCopy(locale);
+  const copy = await getCartCopy(locale);
   const gate = await guard();
   if (gate === "limited") return { status: "error", message: copy.errorRateLimit };
   if (gate === "disabled") return { status: "error", message: copy.errorGeneric };

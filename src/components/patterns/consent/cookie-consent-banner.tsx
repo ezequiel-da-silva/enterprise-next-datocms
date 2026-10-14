@@ -3,15 +3,15 @@
 import { useEffect, useId, useRef } from "react";
 import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
-import type { AppLocale } from "@/constants/i18n";
 import type { ConsentState } from "@/lib/consent/consent-cookie";
-import { consentCopy } from "@/lib/i18n/consent-copy";
+import type { ConsentCopy } from "@/lib/i18n/consent-copy";
 import type { ShopifyPrivacyConfig } from "@/lib/shopify/customer-privacy-config";
 import { setConsent, takeBannerFocusRequest, useConsent } from "./consent-store";
 import { syncShopifyConsent } from "./shopify-customer-privacy";
 
 type CookieConsentBannerProps = {
-  locale: AppLocale;
+  /** Resolved on the server (CMS `ui_strings` over the built-in copy). */
+  copy: ConsentCopy;
   privacyPolicyUrl: string | null;
   shopifyPrivacy: ShopifyPrivacyConfig | null;
 };
@@ -21,9 +21,8 @@ type CookieConsentBannerProps = {
  * choices have the same visual weight. Keeps `scroll-padding-bottom` in sync so focused elements
  * are not hidden underneath it.
  */
-export function CookieConsentBanner({ locale, privacyPolicyUrl, shopifyPrivacy }: CookieConsentBannerProps) {
+export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: CookieConsentBannerProps) {
   const consent = useConsent();
-  const copy = consentCopy(locale);
   const titleId = useId();
   const descriptionId = useId();
   const regionRef = useRef<HTMLElement>(null);

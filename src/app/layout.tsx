@@ -9,6 +9,7 @@ import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, REQ
 import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
 import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
+import { getAccountCopy, getCartCopy, getConsentCopy } from "@/infra/datocms/get-ui-strings";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { ConsentRoot } from "@/components/patterns/consent/consent-root";
 import { getCartFromCookie } from "@/infra/shopify/cart";
@@ -135,7 +136,12 @@ export default async function RootLayout({
         ?.totalQuantity ?? 0)
     : null;
   const initialConsent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value);
-  const privacyPolicyUrl = await getShopPrivacyPolicyUrl();
+  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy] = await Promise.all([
+    getShopPrivacyPolicyUrl(),
+    getConsentCopy(appLocale),
+    getCartCopy(appLocale),
+    getAccountCopy(appLocale),
+  ]);
   const themeCss = buildThemeCssVariables();
 
   const siteJsonLd = buildSiteJsonLdGraph(identity, searchPath);
@@ -172,14 +178,16 @@ export default async function RootLayout({
             initialThemeMode={initialThemeMode}
             cartCount={cartCount}
             accountSignedIn={accountEnabled ? customerSession !== null : null}
+            cartLinkLabel={cartCopy.linkLabel(cartCount ?? 0)}
+            accountLinkLabel={accountCopy.linkLabel(customerSession !== null)}
           />
         </div>
         <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
           {children}
         </main>
-        <SiteFooter data={navigation} locale={appLocale} />
+        <SiteFooter data={navigation} locale={appLocale} cookiePreferencesLabel={consentCopy.manage} />
         <ConsentRoot
-          locale={appLocale}
+          copy={consentCopy}
           initialConsent={initialConsent}
           gaMeasurementId={readGaMeasurementId()}
           speedInsightsEnabled={isSpeedInsightsEnabled()}

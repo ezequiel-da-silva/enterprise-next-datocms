@@ -1,9 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { logError, logWarn } from "@/infra/observability/log-error";
+import { logError, logWarn, logWarnThrottled } from "@/infra/observability/log-error";
 
 afterEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+  vi.useRealTimers();
 });
 
 describe("logError", () => {
@@ -37,5 +38,20 @@ describe("logWarn", () => {
     const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
     logWarn("account.callback", "login failed", { context: { stage: "exchange" } });
     expect(JSON.parse(String(spy.mock.calls[0]?.[0]))).toMatchObject({ level: "warn", context: { stage: "exchange" } });
+  });
+});
+
+describe("logWarnThrottled", () => {
+  it("logs once per key inside the window and again after it", () => {
+    vi.useFakeTimers();
+    const spy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    logWarnThrottled("k1", "scope", "fallback");
+    logWarnThrottled("k1", "scope", "fallback");
+    logWarnThrottled("k2", "scope", "fallback");
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    vi.advanceTimersByTime(5 * 60 * 1000 + 1);
+    logWarnThrottled("k1", "scope", "fallback");
+    expect(spy).toHaveBeenCalledTimes(3);
   });
 });

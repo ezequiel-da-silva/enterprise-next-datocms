@@ -38,3 +38,18 @@ export function logError(scope: string, message: string, options?: LogOptions): 
 export function logWarn(scope: string, message: string, options?: LogOptions): void {
   emit("warn", scope, message, options);
 }
+
+const THROTTLE_WINDOW_MS = 5 * 60 * 1000;
+const lastThrottled = new Map<string, number>();
+
+/**
+ * `logWarn` at most once per `key` per window (per server instance). For fallbacks hit on every
+ * request (CMS down, model not migrated yet) where one line per render would drown the logs.
+ */
+export function logWarnThrottled(key: string, scope: string, message: string, options?: LogOptions): void {
+  const now = Date.now();
+  const last = lastThrottled.get(key);
+  if (last !== undefined && now - last < THROTTLE_WINDOW_MS) return;
+  lastThrottled.set(key, now);
+  emit("warn", scope, message, options);
+}
