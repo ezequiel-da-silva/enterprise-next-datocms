@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.45.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.44.0...next-dato-v0.45.0) (2026-10-15)
+
+
+### Features
+
+* **ui:** add loading skeletons for product, collection and account routes ([33229e9](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/33229e982d82555f18861be9059e241cb99cfa61))
+
+
+### Bug Fixes
+
+* **codegen:** introspect the CDA without strict mode to match runtime reads ([18b5396](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/18b53964334258fb69789f9019f3ffbe1b140c48))
+
 ## [0.44.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.43.0...next-dato-v0.44.0) (2026-10-15)
 
 
