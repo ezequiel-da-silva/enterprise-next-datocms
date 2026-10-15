@@ -146,7 +146,9 @@ GitHub: **Actions → DatoCMS schema release (produção) → Run workflow** ([`
 
 1. No projecto `201057` (produção): Configuration → API tokens → criar um token **CDA só publicado** (sem acesso CMA, sem rascunhos). Pode ser um token novo só para isto; custa 1 query por PR na quota CDA.
 2. Settings → Secrets and variables → Actions → **repository secret** `DATOCMS_PROD_CDA_TOKEN`. Repository, não o environment `datocms-production`: esse pode exigir aprovação e o aviso ficaria à espera dela. Não reutilizar `DATOCMS_API_TOKEN` (o da CI pode apontar para o Staging).
-3. Sem o secret, PRs de fork e Dependabot, o check termina com um `notice` e não comenta. Se a CDA não devolver nenhuma migration (token de outro projecto, ou o modelo sem registos publicados), termina com um `warning` em vez de acusar tudo como pendente. Um token do Staging não é detectável por esta via: o aviso reportaria o Staging, por isso o secret tem de ser o da produção.
+3. Sem o secret, PRs de fork e Dependabot, o check termina com um `notice` e não comenta.
+
+O comentário é uma checklist fixa, na ordem do release: pré-requisitos (login, ninguém no admin), dry-run, release, seed e conteúdo, e só então o merge. O passo de seed remete ao **cabeçalho de cada migration pendente**, por isso toda migration que precise de seed ou de registos criados à mão tem de o dizer no comentário do topo do ficheiro (comando exacto ou o que criar no admin). Ex.: [`1790700000_uiStringsSingleton.ts`](../migrations/1790700000_uiStringsSingleton.ts), [`1790800000_marketPolicy.ts`](../migrations/1790800000_marketPolicy.ts). Se a CDA não devolver nenhuma migration (token de outro projecto, ou o modelo sem registos publicados), termina com um `warning` em vez de acusar tudo como pendente. Um token do Staging não é detectável por esta via: o aviso reportaria o Staging, por isso o secret tem de ser o da produção.
 
 Depois do promote, o primary antigo fica como sandbox no Dato. Apaga-o quando já não precisares de rollback (o Free tem poucos sandboxes).
 

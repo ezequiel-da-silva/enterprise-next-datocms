@@ -9,6 +9,9 @@ import { Client } from "datocms/lib/cma-client-node";
  * compara o JSON-LD com a página. Campo opcional vazio omite o bloco correspondente.
  *
  * Os api keys espelham `MARKET_POLICY_FIELDS` em `src/lib/seo/merchant-policy.ts`; `merchant-policy.test.ts` guarda a paridade.
+ *
+ * Depois de aplicar (em cada projecto): sem seed. Criar e publicar no admin um registo por país
+ * (BR, US, ES) com os valores do checkout da Shopify. Sem registo publicado, o JSON-LD omite frete e devolução.
  */
 
 const COUNTRIES = ["US", "BR", "ES"] as const;
