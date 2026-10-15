@@ -8,6 +8,10 @@ import { Client } from "datocms/lib/cma-client-node";
  * `ui-strings-fields.test.ts` falha se divergirem.
  *
  * Placeholders: `{count}` (rótulo do carrinho) e `{name}` (saudação da conta).
+ *
+ * Depois de aplicar (em cada projecto), preencher com os textos do código — só campos vazios:
+ *   npx datocms cma:script scripts/seed-ui-strings.ts --profile=staging
+ *   npx datocms cma:script scripts/seed-ui-strings.ts --profile=default
  */
 
 type Spec = { key: string; label: string; multiline?: boolean; hint?: string };
