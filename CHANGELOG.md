@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.44.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.43.0...next-dato-v0.44.0) (2026-10-15)
+
+
+### Features
+
+* **cms:** add ui_strings singleton with code defaults for cookies, cart and account copy ([3306ab1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/3306ab1de8a1768f45a2105dd51946ca2e7b691f))
+* **cms:** drive product shipping and return JSON-LD from market_policy ([871965b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/871965b3aa5cf90be653b74c83dc2ce621256a69))
+
+
+### Bug Fixes
+
+* **cms:** avoid explicit unknown in ui_string seed script ([d49c428](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d49c4286d584313f92abe9186cbaed3d7cf25a83))
+* **cms:** rename ui_strings model api key to singular ui_string ([017e58e](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/017e58e9951ecd09339cc68f9db9b93e32b9a598))
+* **deps:** skip optional peer resolution so npm ci accepts the lock file ([b45083d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b45083d79fc53c31a194410dba05e31ad786d575))
+
+
+### Chores
+
+* **cms:** point staging profile to new Dato project 236271 ([09bc20d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/09bc20d89fc3466af0720b75533a0de7f3f983a2))
+
+
+### CI
+
+* **cms:** read production migrations through the CDA instead of a CMA token ([341b0fb](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/341b0fbfaefc2115fd050168b62286f5c9c855f7))
+* **cms:** turn the migrations warning into an ordered release checklist ([5815ad7](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/5815ad7ea47c07329e184febaff5cf45ca8efb91))
+* **cms:** warn on PRs when production lacks Dato migrations ([01d0258](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/01d0258cf7bab92953201316d25ca60da658f56f))
+* run Lighthouse only on the home page ([2c7dd82](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/2c7dd822a52b5ad8deda6366c7d3825416adac7c))
+
 ## [0.43.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.42.0...next-dato-v0.43.0) (2026-10-13)
 
 
