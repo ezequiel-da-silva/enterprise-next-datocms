@@ -106,6 +106,8 @@ type TextSectionMediaBlocks_LinkRecord_Fragment = { __typename: 'LinkRecord', id
 
 type TextSectionMediaBlocks_LogoGridRecord_Fragment = { __typename: 'LogoGridRecord', id: string };
 
+type TextSectionMediaBlocks_MarketPolicyRecord_Fragment = { __typename: 'MarketPolicyRecord', id: string };
+
 type TextSectionMediaBlocks_NavItemModularRecord_Fragment = { __typename: 'NavItemModularRecord', id: string };
 
 type TextSectionMediaBlocks_NavItemSimpleRecord_Fragment = { __typename: 'NavItemSimpleRecord', id: string };
@@ -152,6 +154,8 @@ type TextSectionMediaBlocks_TextHeaderRecord_Fragment = { __typename: 'TextHeade
 
 type TextSectionMediaBlocks_TextSectionRecord_Fragment = { __typename: 'TextSectionRecord', id: string };
 
+type TextSectionMediaBlocks_UiStringRecord_Fragment = { __typename: 'UiStringRecord', id: string };
+
 type TextSectionMediaBlocks_UserReviewRecord_Fragment = { __typename: 'UserReviewRecord', id: string };
 
 type TextSectionMediaBlocks_VideoBlockRecord_Fragment = { __typename: 'VideoBlockRecord', id: string, _editingUrl?: string | null, asset: { url: string, title: string | null, width: number | null, height: number | null, video: { muxPlaybackId: string, streamingUrl: string, mp4Url: string | null, thumbnailUrl: string, width: number, height: number, duration: number | null } | null } | null };
@@ -180,6 +184,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_LegalPageRecord_Fragment
   | TextSectionMediaBlocks_LinkRecord_Fragment
   | TextSectionMediaBlocks_LogoGridRecord_Fragment
+  | TextSectionMediaBlocks_MarketPolicyRecord_Fragment
   | TextSectionMediaBlocks_NavItemModularRecord_Fragment
   | TextSectionMediaBlocks_NavItemSimpleRecord_Fragment
   | TextSectionMediaBlocks_NavigationRecord_Fragment
@@ -203,6 +208,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_TeamSectionRecord_Fragment
   | TextSectionMediaBlocks_TextHeaderRecord_Fragment
   | TextSectionMediaBlocks_TextSectionRecord_Fragment
+  | TextSectionMediaBlocks_UiStringRecord_Fragment
   | TextSectionMediaBlocks_UserReviewRecord_Fragment
   | TextSectionMediaBlocks_VideoBlockRecord_Fragment
 ;
