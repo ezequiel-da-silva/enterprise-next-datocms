@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { productHandleForInventoryItem } from "@/infra/shopify/admin-inventory";
-import { resetShopifyAdminTokenCacheForTests } from "@/lib/shopify/admin-access-token";
+import { resetShopifyAdminTokenCacheForTests } from "@/infra/shopify/admin-access-token";
 
 const KEYS = ["SHOPIFY_STORE_DOMAIN", "SHOPIFY_CLIENT_ID", "SHOPIFY_API_SECRET_KEY", "SHOPIFY_ADMIN_ACCESS_TOKEN"] as const;
 const snapshot: Partial<Record<(typeof KEYS)[number], string | undefined>> = {};

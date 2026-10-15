@@ -46,9 +46,3 @@ export function readShopifyWebhookEnv():
   }
   return { ok: false, missing: missingKeys(parsed.error) };
 }
-
-export function logMissingShopifyWebhookEnv(missing: string[]): void {
-  console.error(
-    `[shopify webhook] Missing environment variable${missing.length === 1 ? "" : "s"}: ${missing.join(", ")}`,
-  );
-}

@@ -37,6 +37,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
         <div style={{ maxWidth: "28rem", textAlign: "center" }}>
           <h1 style={{ fontSize: "1.5rem", margin: 0 }}>{copy.title}</h1>
           <p style={{ marginTop: "0.75rem", opacity: 0.8 }}>{copy.description}</p>
+          {error.digest ? (
+            <p style={{ marginTop: "0.5rem", fontSize: "0.75rem", opacity: 0.8 }}>
+              {copy.reference}: <code style={{ userSelect: "all" }}>{error.digest}</code>
+            </p>
+          ) : null}
           {process.env.NODE_ENV === "development" && error.message ? (
             <pre
               style={{

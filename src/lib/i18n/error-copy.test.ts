@@ -8,6 +8,7 @@ describe("error copy", () => {
     expect(copy.title).toBeTruthy();
     expect(copy.description).toBeTruthy();
     expect(copy.retry).toBeTruthy();
+    expect(copy.reference).toBeTruthy();
   });
 
   it("uses Brazilian Portuguese, not European", () => {

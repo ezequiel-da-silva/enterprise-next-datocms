@@ -30,6 +30,11 @@ export default function Error({ error, reset }: ErrorProps) {
         {copy.title}
       </h1>
       <p className="mt-3 text-muted-foreground">{copy.description}</p>
+      {error.digest ? (
+        <p className="mt-2 text-xs text-muted-foreground">
+          {copy.reference}: <code className="font-mono select-all">{error.digest}</code>
+        </p>
+      ) : null}
       {process.env.NODE_ENV === "development" && error.message ? (
         <pre className="mt-4 w-full overflow-auto rounded-md bg-muted p-3 text-left text-xs text-muted-foreground">
           {error.message}

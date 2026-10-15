@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { pushShopifyProductTitle } from "@/infra/shopify/admin-product-title";
-import { resetShopifyAdminTokenCacheForTests } from "@/lib/shopify/admin-access-token";
+import { resetShopifyAdminTokenCacheForTests } from "@/infra/shopify/admin-access-token";
 
 const KEYS = [
   "SHOPIFY_STORE_DOMAIN",
