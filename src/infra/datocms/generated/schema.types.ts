@@ -7,10 +7,14 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** Represents `true` or `false` values. */
   BooleanType: { input: boolean; output: boolean; }
   CustomData: { input: Record<string, unknown>; output: Record<string, unknown>; }
+  /** A ISO 8601 compliant datetime value */
   DateTime: { input: string; output: string; }
+  /** Represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point). */
   FloatType: { input: number; output: number; }
+  /** Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. */
   IntType: { input: number; output: number; }
   ItemId: { input: string; output: string; }
   JsonField: { input: unknown; output: unknown; }
@@ -77,12 +81,14 @@ export type AuthorModelOrderBy =
   | 'id_ASC'
   | 'id_DESC';
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecord = RecordInterface & {
   __typename?: 'AuthorRecord';
   _allAuthorBioLocales?: Maybe<Array<AuthorModelAuthorBioFieldMultiLocaleField>>;
   _allAuthorSlugLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allSeoAnalysisLocales?: Maybe<Array<JsonFieldMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -90,6 +96,7 @@ export type AuthorRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -106,52 +113,62 @@ export type AuthorRecord = RecordInterface & {
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecord_AllAuthorBioLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecord_AllAuthorSlugLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecord_AllSeoAnalysisLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecordAuthorBioArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecordAuthorSlugArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ✍️ Author (author) */
 export type AuthorRecordSeoAnalysisArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 🏞️ Banner Image (banner_image_block) */
 export type BannerImageBlockRecord = RecordInterface & {
   __typename?: 'BannerImageBlockRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -162,19 +179,23 @@ export type BannerImageBlockRecord = RecordInterface & {
 };
 
 
+/** Block of type 🏞️ Banner Image (banner_image_block) */
 export type BannerImageBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 👤 Blog listing configuration (blog_listing_config) */
 export type BlogListingConfigRecord = RecordInterface & {
   __typename?: 'BlogListingConfigRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -189,23 +210,29 @@ export type BlogListingConfigRecord = RecordInterface & {
 };
 
 
+/** Block of type 👤 Blog listing configuration (blog_listing_config) */
 export type BlogListingConfigRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter Boolean fields */
 export type BooleanFilter = {
+  /** Search for records with an exact match */
   eq?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+/** Block of type 🎑 Card Image (card_image_block) */
 export type CardImageBlockRecord = RecordInterface & {
   __typename?: 'CardImageBlockRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -216,19 +243,23 @@ export type CardImageBlockRecord = RecordInterface & {
 };
 
 
+/** Block of type 🎑 Card Image (card_image_block) */
 export type CardImageBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 📂 CARD (card) */
 export type CardRecord = RecordInterface & {
   __typename?: 'CardRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -249,19 +280,23 @@ export type CardRecord = RecordInterface & {
 };
 
 
+/** Block of type 📂 CARD (card) */
 export type CardRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 🎡 Carousel Setting (carousel_setting) */
 export type CarouselSettingRecord = RecordInterface & {
   __typename?: 'CarouselSettingRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -275,6 +310,7 @@ export type CarouselSettingRecord = RecordInterface & {
 };
 
 
+/** Block of type 🎡 Carousel Setting (carousel_setting) */
 export type CarouselSettingRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -337,6 +373,7 @@ export type CategoryModelOrderBy =
   | 'id_ASC'
   | 'id_DESC';
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecord = RecordInterface & {
   __typename?: 'CategoryRecord';
   _allCategoryDescriptionLocales?: Maybe<Array<CategoryModelCategoryDescriptionFieldMultiLocaleField>>;
@@ -344,6 +381,7 @@ export type CategoryRecord = RecordInterface & {
   _allCategorySlugLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allSeoAnalysisLocales?: Maybe<Array<JsonFieldMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -351,6 +389,7 @@ export type CategoryRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -366,49 +405,58 @@ export type CategoryRecord = RecordInterface & {
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecord_AllCategoryDescriptionLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecord_AllCategoryNameLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecord_AllCategorySlugLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecord_AllSeoAnalysisLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecordCategoryDescriptionArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecordCategoryNameArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecordCategorySlugArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📕 Category (category) */
 export type CategoryRecordSeoAnalysisArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -463,12 +511,14 @@ export type CollectionPageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecord = RecordInterface & {
   __typename?: 'CollectionPageRecord';
   _allDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allSeoLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -476,6 +526,7 @@ export type CollectionPageRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -489,27 +540,32 @@ export type CollectionPageRecord = RecordInterface & {
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecord_AllDescriptionLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecord_AllSeoLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecord_AllTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecordDescriptionArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -517,12 +573,14 @@ export type CollectionPageRecordDescriptionArgs = {
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecordSeoArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🛍️ Collection page (collection_page) */
 export type CollectionPageRecordTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -552,19 +610,24 @@ export type ColorField = {
   red: Scalars['IntType']['output'];
 };
 
+/** Specifies how to filter Color fields */
 export type ColorFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+/** Block of type 🎨 Color theme (color_theme) */
 export type ColorThemeRecord = RecordInterface & {
   __typename?: 'ColorThemeRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -578,6 +641,7 @@ export type ColorThemeRecord = RecordInterface & {
 };
 
 
+/** Block of type 🎨 Color theme (color_theme) */
 export type ColorThemeRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -590,15 +654,18 @@ export type ContactFormSectionModelIntroField = {
   value: Scalars['JsonField']['output'];
 };
 
+/** Block of type ☎️ Contact form section (contact_form_section) */
 export type ContactFormSectionRecord = RecordInterface & {
   __typename?: 'ContactFormSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -612,21 +679,25 @@ export type ContactFormSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type ☎️ Contact form section (contact_form_section) */
 export type ContactFormSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 export type ContentListingSectionModelListingConfigField = BlogListingConfigRecord | ShopifyListingConfigRecord;
 
+/** Block of type 👨‍👨‍👦‍👦 Content listing section (content_listing_section) */
 export type ContentListingSectionRecord = RecordInterface & {
   __typename?: 'ContentListingSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -644,29 +715,41 @@ export type ContentListingSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 👨‍👨‍👦‍👦 Content listing section (content_listing_section) */
 export type ContentListingSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by creation datetime */
 export type CreatedAtFilter = {
+  /** Filter records with a value that's within the specified minute range. Seconds and milliseconds are truncated from the argument. */
   eq?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with a value that's strictly greater than the one specified. Seconds and milliseconds are truncated from the argument. */
   gt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's greater than or equal to than the one specified. Seconds and milliseconds are truncated from the argument. */
   gte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's less than the one specified. Seconds and milliseconds are truncated from the argument. */
   lt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's less or equal than the one specified. Seconds and milliseconds are truncated from the argument. */
   lte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's outside the specified minute range. Seconds and milliseconds are truncated from the argument. */
   neq?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+/** Block of type 🅾️ CTA Banner (cta_banner) */
 export type CtaBannerRecord = RecordInterface & {
   __typename?: 'CtaBannerRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -684,19 +767,23 @@ export type CtaBannerRecord = RecordInterface & {
 };
 
 
+/** Block of type 🅾️ CTA Banner (cta_banner) */
 export type CtaBannerRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type ⁉️ FAQ group (faq_group) */
 export type FaqGroupRecord = RecordInterface & {
   __typename?: 'FaqGroupRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -712,6 +799,7 @@ export type FaqGroupRecord = RecordInterface & {
 };
 
 
+/** Block of type ⁉️ FAQ group (faq_group) */
 export type FaqGroupRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -732,15 +820,18 @@ export type FaqItemModelQuestionField = {
   value: Scalars['JsonField']['output'];
 };
 
+/** Block of type ❓ FAQ item (faq_item) */
 export type FaqItemRecord = RecordInterface & {
   __typename?: 'FaqItemRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -751,6 +842,7 @@ export type FaqItemRecord = RecordInterface & {
 };
 
 
+/** Block of type ❓ FAQ item (faq_item) */
 export type FaqItemRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -760,15 +852,18 @@ export type FaviconType =
   | 'icon'
   | 'msApplication';
 
+/** Block of type 🗄️ Feature GRID (feature_grid) */
 export type FeatureGridRecord = RecordInterface & {
   __typename?: 'FeatureGridRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -782,6 +877,7 @@ export type FeatureGridRecord = RecordInterface & {
 };
 
 
+/** Block of type 🗄️ Feature GRID (feature_grid) */
 export type FeatureGridRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -789,6 +885,7 @@ export type FeatureGridRecord_SeoMetaTagsArgs = {
 export type FileField = FileFieldInterface & {
   __typename?: 'FileField';
   _createdAt: Scalars['DateTime']['output'];
+  /** The DatoCMS URL where you can edit this entity. To use this field, you need to set a X-Base-Editing-Url header in the request */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   alt?: Maybe<Scalars['String']['output']>;
@@ -828,9 +925,9 @@ export type FileFieldAltArgs = {
 
 export type FileFieldBlurUpThumbArgs = {
   imgixParams?: InputMaybe<ImgixParams>;
-  punch?: InputMaybe<Scalars['Float']['input']>;
-  quality?: InputMaybe<Scalars['Int']['input']>;
-  size?: InputMaybe<Scalars['Int']['input']>;
+  punch?: Scalars['Float']['input'];
+  quality?: Scalars['Int']['input'];
+  size?: Scalars['Int']['input'];
 };
 
 
@@ -866,6 +963,7 @@ export type FileFieldUrlArgs = {
 
 export type FileFieldInterface = {
   _createdAt: Scalars['DateTime']['output'];
+  /** The DatoCMS URL where you can edit this entity. To use this field, you need to set a X-Base-Editing-Url header in the request */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   alt?: Maybe<Scalars['String']['output']>;
@@ -905,9 +1003,9 @@ export type FileFieldInterfaceAltArgs = {
 
 export type FileFieldInterfaceBlurUpThumbArgs = {
   imgixParams?: InputMaybe<ImgixParams>;
-  punch?: InputMaybe<Scalars['Float']['input']>;
-  quality?: InputMaybe<Scalars['Int']['input']>;
-  size?: InputMaybe<Scalars['Int']['input']>;
+  punch?: Scalars['Float']['input'];
+  quality?: Scalars['Int']['input'];
+  size?: Scalars['Int']['input'];
 };
 
 
@@ -941,18 +1039,36 @@ export type FileFieldInterfaceUrlArgs = {
   imgixParams?: InputMaybe<ImgixParams>;
 };
 
+/** Specifies how to filter Single-file/image fields */
 export type FileFilter = {
+  /** Search for records with an exact match. The specified value must be an Upload ID */
   eq?: InputMaybe<Scalars['UploadId']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records that have one of the specified uploads */
   in?: InputMaybe<Array<InputMaybe<Scalars['UploadId']['input']>>>;
+  /** Exclude records with an exact match. The specified value must be an Upload ID */
   neq?: InputMaybe<Scalars['UploadId']['input']>;
+  /** Filter records that do not have one of the specified uploads */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['UploadId']['input']>>>;
 };
 
-export type FocalPoint = {
-  __typename?: 'FocalPoint';
-  x: Scalars['FloatType']['output'];
-  y: Scalars['FloatType']['output'];
+/** Specifies how to filter Floating-point fields */
+export type FloatFilter = {
+  /** Search for records with an exact match */
+  eq?: InputMaybe<Scalars['FloatType']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
+  exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with a value that's strictly greater than the one specified */
+  gt?: InputMaybe<Scalars['FloatType']['input']>;
+  /** Filter records with a value that's greater than or equal to the one specified */
+  gte?: InputMaybe<Scalars['FloatType']['input']>;
+  /** Filter records with a value that's less than the one specified */
+  lt?: InputMaybe<Scalars['FloatType']['input']>;
+  /** Filter records with a value that's less or equal than the one specified */
+  lte?: InputMaybe<Scalars['FloatType']['input']>;
+  /** Exclude records with an exact match */
+  neq?: InputMaybe<Scalars['FloatType']['input']>;
 };
 
 export type GlobalSeoField = {
@@ -978,11 +1094,13 @@ export type GlobalSettingModelDescription404FieldMultiLocaleField = {
   value?: Maybe<GlobalSettingModelDescription404Field>;
 };
 
+/** Record of type ⚙️ Global setting (global_setting) */
 export type GlobalSettingRecord = RecordInterface & {
   __typename?: 'GlobalSettingRecord';
   _allDescription404Locales?: Maybe<Array<GlobalSettingModelDescription404FieldMultiLocaleField>>;
   _allTitle404Locales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -990,6 +1108,7 @@ export type GlobalSettingRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1006,41 +1125,49 @@ export type GlobalSettingRecord = RecordInterface & {
 };
 
 
+/** Record of type ⚙️ Global setting (global_setting) */
 export type GlobalSettingRecord_AllDescription404LocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⚙️ Global setting (global_setting) */
 export type GlobalSettingRecord_AllTitle404LocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⚙️ Global setting (global_setting) */
 export type GlobalSettingRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⚙️ Global setting (global_setting) */
 export type GlobalSettingRecordDescription404Args = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⚙️ Global setting (global_setting) */
 export type GlobalSettingRecordTitle404Args = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 🏙️ Hero Image (hero_image_block) */
 export type HeroImageBlockRecord = RecordInterface & {
   __typename?: 'HeroImageBlockRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1051,6 +1178,7 @@ export type HeroImageBlockRecord = RecordInterface & {
 };
 
 
+/** Block of type 🏙️ Hero Image (hero_image_block) */
 export type HeroImageBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -1063,15 +1191,18 @@ export type HeroSectionModelSubtitleHeroField = {
   value: Scalars['JsonField']['output'];
 };
 
+/** Block of type 🔝 Hero section (hero_section) */
 export type HeroSectionRecord = RecordInterface & {
   __typename?: 'HeroSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1089,6 +1220,7 @@ export type HeroSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔝 Hero section (hero_section) */
 export type HeroSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -1099,15 +1231,18 @@ export type HeroSectionRecordMultiLocaleField = {
   value?: Maybe<HeroSectionRecord>;
 };
 
+/** Block of type 🌅 Image (image_block) */
 export type ImageBlockRecord = RecordInterface & {
   __typename?: 'ImageBlockRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1118,19 +1253,23 @@ export type ImageBlockRecord = RecordInterface & {
 };
 
 
+/** Block of type 🌅 Image (image_block) */
 export type ImageBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 🎠 Image Gallery (image_gallery_block) */
 export type ImageGalleryBlockRecord = RecordInterface & {
   __typename?: 'ImageGalleryBlockRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1140,183 +1279,1579 @@ export type ImageGalleryBlockRecord = RecordInterface & {
 };
 
 
+/** Block of type 🎠 Image Gallery (image_gallery_block) */
 export type ImageGalleryBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 export type ImgixParams = {
+  /**
+   * Aspect Ratio
+   *
+   * Specifies an aspect ratio to maintain when resizing and cropping the image
+   *
+   * Depends on: `fit=crop`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/aspect-ratio)
+   */
   ar?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Automatic
+   *
+   * Applies automatic enhancements to images.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/automatic)
+   */
   auto?: InputMaybe<Array<ImgixParamsAuto>>;
+  /**
+   * Background Color
+   *
+   * Colors the background of padded and partially-transparent images.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/background-color)
+   */
   bg?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Background Removal
+   *
+   * Removes background from image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-removal)
+   */
   bgRemove?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Background Removal Fallback
+   *
+   * Overrides default fallback behavior for bg-remove failures.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-removal-fallback)
+   */
   bgRemoveFallback?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Background Removal Foreground Type
+   *
+   * Specifies the image foreground type for background removal.
+   *
+   * Depends on: `bg-remove=true`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-removal-foreground-type)
+   */
   bgRemoveFgType?: InputMaybe<Array<ImgixParamsBgRemoveFgType>>;
+  /**
+   * Background Removal Semi Transparency
+   *
+   * Enables background removal while retaining semi-transparent areas.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-removal-semi-transparency)
+   */
   bgRemoveSemiTransparency?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Background Replacement
+   *
+   * Replaces background from image using a string based prompt.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-replacement)
+   */
   bgReplace?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Background Replace Fallback
+   *
+   * Overrides default fallback behavior for bg-replace failures.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-replace-fallback)
+   */
   bgReplaceFallback?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Background Replacement Negative Prompt
+   *
+   * Provides a negative text suggestion for background replacement.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/background/background-replacement-negative-prompt)
+   */
   bgReplaceNegPrompt?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Blend
+   *
+   * Specifies the location of the blend image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend)
+   */
   blend?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Blend Align
+   *
+   * Changes the blend alignment relative to the parent image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-align)
+   */
   blendAlign?: InputMaybe<Array<ImgixParamsBlendAlign>>;
+  /**
+   * Blend Alpha
+   *
+   * Changes the alpha of the blend image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-alpha)
+   */
   blendAlpha?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Blend Color
+   *
+   * Specifies a color to use when applying the blend.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-color)
+   */
   blendColor?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Blend Crop
+   *
+   * Specifies the type of crop for blend images.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-crop)
+   */
   blendCrop?: InputMaybe<Array<ImgixParamsBlendCrop>>;
+  /**
+   * Blend Fit
+   *
+   * Specifies the fit mode for blend images.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-fit)
+   */
   blendFit?: InputMaybe<ImgixParamsBlendFit>;
+  /**
+   * Blend Height
+   *
+   * Adjusts the height of the blend image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-height)
+   */
   blendH?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Blend Mode
+   *
+   * Sets the blend mode for a blend image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-mode)
+   */
   blendMode?: InputMaybe<ImgixParamsBlendMode>;
+  /**
+   * Blend Padding
+   *
+   * Applies padding to the blend image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-padding)
+   */
   blendPad?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Blend Size
+   *
+   * Adjusts the size of the blend image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-size)
+   */
   blendSize?: InputMaybe<ImgixParamsBlendSize>;
+  /**
+   * Blend Width
+   *
+   * Adjusts the width of the blend image.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-width)
+   */
   blendW?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Blend X Position
+   *
+   * Adjusts the x-offset of the blend image relative to its parent.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-x-position)
+   */
   blendX?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Blend Y Position
+   *
+   * Adjusts the y-offset of the blend image relative to its parent.
+   *
+   * Depends on: `blend`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/blending/blend-y-position)
+   */
   blendY?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Gaussian Blur
+   *
+   * Applies a gaussian blur to an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/gaussian-blur)
+   */
   blur?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Border Size & Color
+   *
+   * Applies a border to an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size)
+   */
   border?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Border Bottom
+   *
+   * Sets bottom border of an image.
+   *
+   * Depends on: `border`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/border-bottom)
+   */
   borderBottom?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Border Left
+   *
+   * Sets left border of an image.
+   *
+   * Depends on: `border`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/border-left)
+   */
   borderLeft?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Outer Border Radius
+   *
+   * Sets the outer radius of the image's border in pixels.
+   *
+   * Depends on: `border`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/outer-border-radius)
+   */
   borderRadius?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Inner Border Radius
+   *
+   * Sets the inner radius of the image's border in pixels.
+   *
+   * Depends on: `border`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/inner-border-radius)
+   */
   borderRadiusInner?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Border Right
+   *
+   * Sets right border of an image.
+   *
+   * Depends on: `border`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/border-right)
+   */
   borderRight?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Border Top
+   *
+   * Sets top border of an image.
+   *
+   * Depends on: `border`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/border-top)
+   */
   borderTop?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Brightness
+   *
+   * Adjusts the brightness of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/brightness)
+   */
   bri?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Client Hints
+   *
+   * Sets one or more Client-Hints headers
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/client-hints)
+   */
   ch?: InputMaybe<Array<ImgixParamsCh>>;
+  /**
+   * Chroma Subsampling
+   *
+   * Specifies the output chroma subsampling rate.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/chroma-subsampling)
+   */
   chromasub?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Color Quantization
+   *
+   * Limits the number of unique colors in an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/color-quantization)
+   */
   colorquant?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Palette Color Count
+   *
+   * Specifies how many colors to include in a palette-extraction response.
+   *
+   * Depends on: `palette`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/color-palette/palette-color-count)
+   */
   colors?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Contrast
+   *
+   * Adjusts the contrast of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/contrast)
+   */
   con?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Mask Corner Radius
+   *
+   * Specifies the radius value for a rounded corner mask.
+   *
+   * Depends on: `mask=corners`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/mask-image/mask-corner-radius)
+   */
   cornerRadius?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Crop Mode
+   *
+   * Specifies how to crop an image.
+   *
+   * Depends on: `fit=crop`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/crop-mode)
+   */
   crop?: InputMaybe<Array<ImgixParamsCrop>>;
+  /**
+   * Color Space
+   *
+   * Specifies the color space of the output image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/color-space)
+   */
   cs?: InputMaybe<ImgixParamsCs>;
+  /**
+   * Download
+   *
+   * Forces a URL to use send-file in its response.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/download)
+   */
   dl?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Dots Per Inch
+   *
+   * Sets the DPI value in the EXIF header.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/dots-per-inch)
+   */
   dpi?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Device Pixel Ratio
+   *
+   * Adjusts the device-pixel ratio of the output image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/device-pixel-ratio)
+   */
   dpr?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Duotone
+   *
+   * Applies a duotone effect to the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/duotone)
+   */
   duotone?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Duotone Alpha
+   *
+   * Changes the alpha of the duotone effect atop the source image.
+   *
+   * Depends on: `duotone`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/duotone-alpha)
+   */
   duotoneAlpha?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Exposure
+   *
+   * Adjusts the exposure of the output image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/exposure)
+   */
   exp?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Url Expiration Timestamp
+   *
+   * A Unix timestamp specifying a UTC time. Requests made to this URL after that time will output a 404 status code.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/expiration)
+   */
   expires?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Face Blur
+   *
+   * Specifies the amount of blur to apply to detected faces. Defaults to 0.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/face-detection/face-blur)
+   */
   faceBlur?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Face Pixelation
+   *
+   * Specifies the pixelation amount of the face.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/face-detection/face-pixelation)
+   */
   facePixel?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Face Index
+   *
+   * Selects a face to crop to.
+   *
+   * Depends on: `fit=facearea`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/face-detection/face-index)
+   */
   faceindex?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Face Padding
+   *
+   * Adjusts padding around a selected face.
+   *
+   * Depends on: `fit=facearea`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/face-detection/face-padding)
+   */
   facepad?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Json Face Data
+   *
+   * Specifies that face data should be included in output when combined with `fm=json`.
+   *
+   * Depends on: `fm=json`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/face-detection/json-face-data)
+   */
   faces?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Fill Mode
+   *
+   * Determines how to fill in additional space created by the fit setting
+   *
+   * Depends on: `fit`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-mode)
+   */
   fill?: InputMaybe<ImgixParamsFill>;
+  /**
+   * Fill Color
+   *
+   * Sets the fill color for images with additional space created by the fit setting
+   *
+   * Depends on: `fill=solid`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-color)
+   */
   fillColor?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fill Generative Fallback
+   *
+   * Sets the fallback behavior for generative fill.
+   *
+   * Depends on: `fit=fill`, `fill=gen`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-generative-fallback)
+   */
   fillGenFallback?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Fill Generative Negative Prompt
+   *
+   * Provides a negative text suggestion to the generative fill parameter. Used to reduce the probability of a subject, detail, or object appearing in generative output.
+   *
+   * Depends on: `fit=fill`, `fill=gen`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-generative-negative-prompt)
+   */
   fillGenNegPrompt?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fill Generative Position
+   *
+   * Sets the position of the Origin Image in relation to the generative fill.
+   *
+   * Depends on: `fit=fill`, `fill=gen`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-generative-position)
+   */
   fillGenPos?: InputMaybe<Array<ImgixParamsFillGenPos>>;
+  /**
+   * Fill Generative Prompt
+   *
+   * Provides a text suggestion to the generative fill parameter.
+   *
+   * Depends on: `fit=fill`, `fill=gen`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-generative-prompt)
+   */
   fillGenPrompt?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fill Generative Seed
+   *
+   * Sets the generative seed value. Used to generate similar outputs from different prompts.
+   *
+   * Depends on: `fit=fill`, `fill=gen`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-generative-seed)
+   */
   fillGenSeed?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Fill Gradient Color Space
+   *
+   * Defines the color space as linear, sRGB, Oklab, HSL, or LCH for gradient color interpolation
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-color-space)
+   */
   fillGradientCs?: InputMaybe<ImgixParamsFillGradientCs>;
+  /**
+   * Fill Gradient Linear
+   *
+   * Blends a gradient between two colors, {color1} and {color2}, along a straight path
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-linear)
+   */
   fillGradientLinear?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fill Gradient Linear Direction
+   *
+   * The fill-gradient-linear-direction specifies the gradient's direction, flowing towards the bottom, top, right, or left
+   *
+   * Depends on: `fit=fill`, `fill=gen`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-linear-direction)
+   */
   fillGradientLinearDirection?: InputMaybe<Array<ImgixParamsFillGradientLinearDirection>>;
+  /**
+   * Fill Gradient Radial
+   *
+   * The fill-gradient-radial parameter creates a circular gradient transitioning from a central color (Color1) to an outer color (Color2)
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-radial)
+   */
   fillGradientRadial?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fill Gradient Radial Radius
+   *
+   * Parameter defines the radial gradient's radius as pixels or a percentage (0.0-1.0) of the image's smallest dimension
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-radial-radius)
+   */
   fillGradientRadialRadius?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Fill Gradient Radial X
+   *
+   * Specifies the location of the radial gradient's center along the x-axis, using either a pixel value or a floating point percentage (ranging from 0.0 to 1.0) of the image's width
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-radial-x)
+   */
   fillGradientRadialX?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Fill Gradient Radial Y
+   *
+   * Parameter sets the radial gradient's center on the y-axis, using pixels or a 0.0 to 1.0 percentage of the image's height
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-radial-y)
+   */
   fillGradientRadialY?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Fill Gradient Type
+   *
+   * Specifies if a gradient is radial (circular) or linear (straight)
+   *
+   * Depends on: `fit=fill`, `fill=gradient`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/fill-gradient-type)
+   */
   fillGradientType?: InputMaybe<ImgixParamsFillGradientType>;
+  /**
+   * Resize Fit Mode
+   *
+   * Specifies how to map the source image to the output image dimensions.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/resize-fit-mode)
+   */
   fit?: InputMaybe<ImgixParamsFit>;
+  /**
+   * Flip Axis
+   *
+   * Flips an image on a specified axis.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/rotation/flip-axis)
+   */
   flip?: InputMaybe<ImgixParamsFlip>;
+  /**
+   * Output Format
+   *
+   * Changes the format of the output image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/output-format)
+   */
   fm?: InputMaybe<ImgixParamsFm>;
+  /**
+   * Focal Point Debug
+   *
+   * Displays crosshairs identifying the location of the set focal point
+   *
+   * Depends on: `fit=crop`, `crop=focalpoint`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/focal-point-crop/focal-point-debug)
+   */
   fpDebug?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Focal Point X Position
+   *
+   * Sets the relative horizontal value for the focal point of an image
+   *
+   * Depends on: `fit=crop`, `crop=focalpoint`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/focal-point-crop/focal-point-x-position)
+   */
   fpX?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Focal Point Y Position
+   *
+   * Sets the relative vertical value for the focal point of an image
+   *
+   * Depends on: `fit=crop`, `crop=focalpoint`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/focal-point-crop/focal-point-y-position)
+   */
   fpY?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Focal Point Zoom
+   *
+   * Sets the relative zoom value for the focal point of an image
+   *
+   * Depends on: `fit=crop`, `crop=focalpoint`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/focal-point-crop/focal-point-zoom)
+   */
   fpZ?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Frames Per Second
+   *
+   * Specifies the framerate of the generated image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation/frames-per-second)
+   */
   fps?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Frame Selection
+   *
+   * Specifies the frame of an animated image to use.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation/frame-selection)
+   */
   frame?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Gamma
+   *
+   * Adjusts the gamma of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/gamma)
+   */
   gam?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Animated Gif Quality
+   *
+   * Specifies the quality of the animated gif. The higher the value, the better more compression is applied.
+   *
+   * Depends on: `fm=gif`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation/animated-gif-quality)
+   */
   gifQ?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Grid Colors
+   *
+   * Sets grid colors for the transparency checkerboard grid.
+   *
+   * Depends on: `transparency`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/grid-colors)
+   */
   gridColors?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Grid Size
+   *
+   * Sets grid size for the transparency checkerboard grid.
+   *
+   * Depends on: `transparency`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/grid-size)
+   */
   gridSize?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Image Height
+   *
+   * Adjusts the height of the output image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/image-height)
+   */
   h?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Highlight
+   *
+   * Adjusts the highlights of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/highlight)
+   */
   high?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Halftone
+   *
+   * Applies a half-tone effect to the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/halftone)
+   */
   htn?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Hue Shift
+   *
+   * Adjusts the hue of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/hue-shift)
+   */
   hue?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Frame Interval
+   *
+   * Displays every Nth frame starting with the first frame.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation/frame-interval)
+   */
   interval?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Invert
+   *
+   * Inverts the colors on the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/invert)
+   */
   invert?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Iptc Passthrough
+   *
+   * Determine if IPTC data should be passed for JPEG images.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/iptc-passthrough)
+   */
   iptc?: InputMaybe<ImgixParamsIptc>;
+  /**
+   * Jpg Progressive
+   *
+   * Specifies whether or not a jpg/jpeg uses progressive (true) or baseline (false)
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/jpg-progressive)
+   */
   jpgProgressive?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Animation Loop Count
+   *
+   * Specifies the number of times an animated image should repeat. A value of 0 means infinite looping.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation)
+   */
   loop?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Lossless Compression
+   *
+   * Specifies that the output image should be a lossless variant.
+   *
+   * Depends on: `fm=webp`, `fm=jxr`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/lossless-compression)
+   */
   lossless?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * License Plate Blur
+   *
+   * Specifies the amount of blur to apply to detected license plates. Defaults to 0.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/license-plate-detection/license-plate-blur)
+   */
   lpBlur?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark Image Url
+   *
+   * Specifies the location of the watermark image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-image-url)
+   */
   mark?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Watermark Alignment Mode
+   *
+   * Changes the watermark alignment relative to the parent image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-alignment-mode)
+   */
   markAlign?: InputMaybe<Array<ImgixParamsMarkAlign>>;
+  /**
+   * Watermark Alpha
+   *
+   * Changes the alpha of the watermark image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-alpha)
+   */
   markAlpha?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark Base Url
+   *
+   * Changes base URL of the watermark image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-base-url)
+   */
   markBase?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Watermark Fit Mode
+   *
+   * Specifies the fit mode for watermark images.
+   *
+   * Depends on: `mark`, `markw`, `markh`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-fit-mode)
+   */
   markFit?: InputMaybe<ImgixParamsMarkFit>;
+  /**
+   * Watermark Height
+   *
+   * Adjusts the height of the watermark image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-height)
+   */
   markH?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Watermark If Minimum Height
+   *
+   * Displays the watermark if rendered base image pixel height is equal to or larger than the supplied value
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-if-minimum-height)
+   */
   markIfMinHeight?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark If Minimum Width
+   *
+   * Displays the watermark if rendered base image pixel width is equal to or larger than the supplied value
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-if-minimum-width)
+   */
   markIfMinWidth?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark Padding
+   *
+   * Applies padding to the watermark image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-padding)
+   */
   markPad?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark Rotation
+   *
+   * Rotates a watermark or tiled watermarks by a specified number of degrees.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-rotation)
+   */
   markRot?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Watermark Scale
+   *
+   * Adjusts the scale of the watermark image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-scale)
+   */
   markScale?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark Tile
+   *
+   * Adds tiled watermark.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-tile)
+   */
   markTile?: InputMaybe<ImgixParamsMarkTile>;
+  /**
+   * Watermark Width
+   *
+   * Adjusts the width of the watermark image.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-width)
+   */
   markW?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Watermark X Position
+   *
+   * Adjusts the x-offset of the watermark image relative to its parent.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-x-position)
+   */
   markX?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Watermark Y Position
+   *
+   * Adjusts the y-offset of the watermark image relative to its parent.
+   *
+   * Depends on: `mark`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/watermark/watermark-y-position)
+   */
   markY?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Mask Type
+   *
+   * Defines the type of mask and specifies the URL if that type is selected.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/mask-image/mask-type)
+   */
   mask?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Mask Background Color
+   *
+   * Colors the background of the transparent mask area of images
+   *
+   * Depends on: `mask`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/mask-image/mask-background-color)
+   */
   maskBg?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Maximum Height
+   *
+   * Specifies the maximum height of the output image in pixels.
+   *
+   * Depends on: `fit=crop`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/maximum-height)
+   */
   maxH?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Maximum Width
+   *
+   * Specifies the maximum width of the output image in pixels.
+   *
+   * Depends on: `fit=crop`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/maximum-width)
+   */
   maxW?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Minimum Height
+   *
+   * Specifies the minimum height of the output image in pixels.
+   *
+   * Depends on: `fit=crop`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/minimum-height)
+   */
   minH?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Minimum Width
+   *
+   * Specifies the minimum width of the output image in pixels.
+   *
+   * Depends on: `fit=crop`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/minimum-width)
+   */
   minW?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Monochrome
+   *
+   * Applies a monochrome effect to the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/monochrome)
+   */
   monochrome?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Noise Reduction Bound
+   *
+   * Reduces the noise in an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/noise-reduction/noise-reduction-bound)
+   */
   nr?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Noise Reduction Sharpen
+   *
+   * Provides a threshold by which to sharpen an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/noise-reduction/noise-reduction-sharpen)
+   */
   nrs?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Object Removal Negative Prompt
+   *
+   * Provides a negative text suggestion to object-removal-prompt. Used to reduce the probability of a subject, detail, or object appearing in generative output.
+   *
+   * Depends on: `object-removal-rect`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/object-manipulation/object-removal-negative-prompt)
+   */
   objectRemovalNegativePrompt?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Object Removal Prompt
+   *
+   * Suggest auto generative fill for the object-removal-rect parameter
+   *
+   * Depends on: `object-removal-rect`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/object-manipulation/object-removal-prompt)
+   */
   objectRemovalPrompt?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Object Removal
+   *
+   * Using a specified rectangle, an object is removed from the image
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/object-manipulation/object-removal)
+   */
   objectRemovalRect?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Object Removal Seed
+   *
+   * Sets the generative seed value for object-removal. Used to generate new outputs from the same prompt
+   *
+   * Depends on: `object-removal-rect`, `object-removal-prompt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/object-manipulation/object-removal-seed)
+   */
   objectRemovalSeed?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Orientation
+   *
+   * Changes the image orientation.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/rotation/orientation)
+   */
   orient?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Padding
+   *
+   * Pads an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/padding)
+   */
   pad?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Padding Bottom
+   *
+   * Sets bottom padding of an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/padding-bottom)
+   */
   padBottom?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Padding Left
+   *
+   * Sets left padding of an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/padding-left)
+   */
   padLeft?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Padding Right
+   *
+   * Sets right padding of an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/padding-right)
+   */
   padRight?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Padding Top
+   *
+   * Sets top padding of an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/border-and-padding/padding-top)
+   */
   padTop?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Pdf Page Number
+   *
+   * Selects a page from a PDF for display.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/pdf/pdf-page-number)
+   */
   page?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Color Palette Extraction
+   *
+   * Specifies an output format for palette-extraction.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/color-palette/color-palette-extraction)
+   */
   palette?: InputMaybe<ImgixParamsPalette>;
+  /**
+   * Pdf Annotation
+   *
+   * Enables or disables PDF annotation.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/pdf/pdf-annotation)
+   */
   pdfAnnotation?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Css Prefix
+   *
+   * Specifies a CSS prefix for all classes in palette-extraction.
+   *
+   * Depends on: `palette=css`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/color-palette/css-prefix)
+   */
   prefix?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Pixellate
+   *
+   * Applies a pixelation effect to an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/pixellate)
+   */
   px?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Output Quality
+   *
+   * Adjusts the quality of an output image.
+   *
+   * Depends on: `fm=avif`, `fm=jpg`, `fm=pjpg`, `fm=webp`, `fm=jxr`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/output-quality)
+   */
   q?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Rasterize Bypass
+   *
+   * Bypasses all rendering parameters (including default parameters) and serves the original image. Works for svg+xml,x-eps,pdf, and vnd.adobe.illustrator.
+   */
   rasterizeBypass?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Source Rectangle Region
+   *
+   * Crops an image to a specified rectangle.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/source-rectangle-region)
+   */
   rect?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Reverse
+   *
+   * Reverses the frame order on the source animation.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation/reverse)
+   */
   reverse?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Rotation
+   *
+   * Rotates an image by a specified number of degrees.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/rotation/rotation)
+   */
   rot?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Rotation Type
+   *
+   * Changes the rotation type.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/rotation/rotation-type)
+   */
   rotType?: InputMaybe<ImgixParamsRotType>;
+  /**
+   * Saturation
+   *
+   * Adjusts the saturation of an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/saturation)
+   */
   sat?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Sepia Tone
+   *
+   * Applies a sepia effect to an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/stylize/sepia-tone)
+   */
   sepia?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Shadow
+   *
+   * Adjusts the highlights of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/shadow)
+   */
   shad?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Sharpen
+   *
+   * Adjusts the sharpness of the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/sharpen)
+   */
   sharp?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Frame Skip
+   *
+   * Skips every Nth frame starting with the first frame.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/animation/frame-skip)
+   */
   skip?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Bypasses any [DatoCMS Automatic Image Optimization](https://www.datocms.com/docs/cdn-settings/advanced-asset-settings) that might be set up for the project.
+   *
+   * Exercise caution when using this parameter, as it could significantly increase your bandwidth costs.
+   */
   skipDefaultOptimizations?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Sanitize Svg
+   *
+   * Specifies whether to sanitize an SVG.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/format/sanitize-svg)
+   */
   svgSanitize?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Transparency
+   *
+   * Adds checkerboard behind images which support transparency.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/fill/transparency)
+   */
   transparency?: InputMaybe<ImgixParamsTransparency>;
+  /**
+   * Trim Image
+   *
+   * Trims the source image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-image)
+   */
   trim?: InputMaybe<ImgixParamsTrim>;
+  /**
+   * Trim Alpha
+   *
+   * Specifies a trim alpha on a trim operation.
+   *
+   * Depends on: `trim=alpha`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-alpha)
+   */
   trimAlpha?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Trim Color
+   *
+   * Specifies a trim color on a trim operation.
+   *
+   * Depends on: `trim=color`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-color)
+   */
   trimColor?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Trim Mean Difference
+   *
+   * Specifies the mean difference on a trim operation.
+   *
+   * Depends on: `trim=auto`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-mean-difference)
+   */
   trimMd?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Trim Padding
+   *
+   * Pads the area of the source image before trimming.
+   *
+   * Depends on: `trim`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-padding)
+   */
   trimPad?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Trim Standard Deviation
+   *
+   * Specifies the standard deviation on a trim operation.
+   *
+   * Depends on: `trim=auto`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-standard-deviation)
+   */
   trimSd?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Trim Tolerance
+   *
+   * Specifies the tolerance on a trim operation.
+   *
+   * Depends on: `trim=color`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/trim/trim-tolerance)
+   */
   trimTol?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Text String
+   *
+   * Sets the text string to render.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-string)
+   */
   txt?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Text Align
+   *
+   * Sets the vertical and horizontal alignment of rendered text relative to the base image.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-align)
+   */
   txtAlign?: InputMaybe<Array<ImgixParamsTxtAlign>>;
+  /**
+   * Text Clipping Mode
+   *
+   * Sets the clipping properties of rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-clipping-mode)
+   */
   txtClip?: InputMaybe<Array<ImgixParamsTxtClip>>;
+  /**
+   * Text Color
+   *
+   * Specifies the color of rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-color)
+   */
   txtColor?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Text Fit Mode
+   *
+   * Specifies the fit approach for rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-fit-mode)
+   */
   txtFit?: InputMaybe<ImgixParamsTxtFit>;
+  /**
+   * Text Font
+   *
+   * Selects a font for rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-font)
+   */
   txtFont?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Text Leading
+   *
+   * Sets the leading (line spacing) for rendered text. Only works on the multi-line text endpoint.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/typesetting-endpoint/text-leading)
+   */
   txtLead?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text Outline
+   *
+   * Outlines the rendered text with a specified color.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-outline)
+   */
   txtLine?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text Outline Color
+   *
+   * Specifies a text outline color.
+   *
+   * Depends on: `txt`, `txtline`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-outline-color)
+   */
   txtLineColor?: InputMaybe<Scalars['String']['input']>;
+  /**
+   * Text Padding
+   *
+   * Specifies the padding (in device-independent pixels) between a textbox and the edges of the base image.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-padding)
+   */
   txtPad?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text Shadow
+   *
+   * Applies a shadow to rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-shadow)
+   */
   txtShad?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Text Font Size
+   *
+   * Sets the font size of rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-font-size)
+   */
   txtSize?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text Tracking
+   *
+   * Sets the tracking (letter spacing) for rendered text. Only works on the multi-line text endpoint.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/typesetting-endpoint/text-tracking)
+   */
   txtTrack?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text Width
+   *
+   * Sets the width of rendered text.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-width)
+   */
   txtWidth?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text X Position
+   *
+   * Sets the horizontal (x) position of the text in pixels relative to the left edge of the base image.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-x-position)
+   */
   txtX?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Text Y Position
+   *
+   * Sets the vertical (y) position of the text in pixels relative to the top edge of the base image.
+   *
+   * Depends on: `txt`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/text/text-y-position)
+   */
   txtY?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Super Resolution
+   *
+   * Uses generative AI fill to upscale low resolution images.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/super-resolution)
+   */
   upscale?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Super Resolution Fallback
+   *
+   * Overrides default fallback behavior for super resolution failures
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/super-resolution)
+   */
   upscaleFallback?: InputMaybe<Scalars['BooleanType']['input']>;
+  /**
+   * Unsharp Mask
+   *
+   * Sharpens the source image using an unsharp mask.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/unsharp-mask)
+   */
   usm?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Unsharp Mask Radius
+   *
+   * Specifies the radius for an unsharp mask operation.
+   *
+   * Depends on: `usm`
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/unsharp-mask-radius)
+   */
   usmrad?: InputMaybe<Scalars['FloatType']['input']>;
+  /**
+   * Vibrance
+   *
+   * Adjusts the vibrance of an image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/adjustment/vibrance)
+   */
   vib?: InputMaybe<Scalars['IntType']['input']>;
+  /**
+   * Image Width
+   *
+   * Adjusts the width of the output image.
+   *
+   * [Open Imgix reference »](https://docs.imgix.com/apis/rendering/size/image-width)
+   */
   w?: InputMaybe<Scalars['FloatType']['input']>;
 };
 
@@ -1514,24 +3049,39 @@ export type ImgixParamsTxtClip =
 export type ImgixParamsTxtFit =
   | 'max';
 
+/** Specifies how to filter by usage */
 export type InUseFilter = {
+  /** Search uploads that are currently used by some record or not */
   eq?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+/** Specifies how to filter Integer fields */
 export type IntegerFilter = {
+  /** Search for records with an exact match */
   eq?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with a value that's strictly greater than the one specified */
   gt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with a value that's greater than or equal to the one specified */
   gte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with a value that's less than the one specified */
   lt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Filter records with a value that's less or equal than the one specified */
   lte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Exclude records with an exact match */
   neq?: InputMaybe<Scalars['IntType']['input']>;
 };
 
+/** Specifies how to filter by ID */
 export type ItemIdFilter = {
+  /** Search the record with the specified ID */
   eq?: InputMaybe<Scalars['ItemId']['input']>;
+  /** Search records with the specified IDs */
   in?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
+  /** Exclude the record with the specified ID */
   neq?: InputMaybe<Scalars['ItemId']['input']>;
+  /** Search records that do not have the specified IDs */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
 };
 
@@ -1546,7 +3096,9 @@ export type JsonFieldMultiLocaleField = {
   value?: Maybe<Scalars['JsonField']['output']>;
 };
 
+/** Specifies how to filter JSON fields */
 export type JsonFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
@@ -1608,6 +3160,7 @@ export type LegalPageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord = RecordInterface & {
   __typename?: 'LegalPageRecord';
   _allContentLocales?: Maybe<Array<LegalPageModelContentFieldMultiLocaleField>>;
@@ -1615,6 +3168,7 @@ export type LegalPageRecord = RecordInterface & {
   _allSeoSettingsSocialLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -1622,6 +3176,7 @@ export type LegalPageRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1635,71 +3190,89 @@ export type LegalPageRecord = RecordInterface & {
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord_AllContentLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord_AllSeoAnalysisLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord_AllSeoSettingsSocialLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord_AllTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecordContentArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecordSeoAnalysisArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecordSeoSettingsSocialArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🏛️ Legal Page (legal_page) */
 export type LegalPageRecordTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter Single-link fields */
 export type LinkFilter = {
+  /** Search for records with an exact match. The specified value must be a Record ID */
   eq?: InputMaybe<Scalars['ItemId']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records linked to one of the specified records */
   in?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
+  /** Exclude records with an exact match. The specified value must be a Record ID */
   neq?: InputMaybe<Scalars['ItemId']['input']>;
+  /** Filter records not linked to one of the specified records */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
 };
 
+/** Block of type 🔗 Link (link) */
 export type LinkRecord = RecordInterface & {
   __typename?: 'LinkRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1719,33 +3292,47 @@ export type LinkRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔗 Link (link) */
 export type LinkRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter Multiple-links fields */
 export type LinksFilter = {
+  /** Filter records linked to all of the specified records. The specified values must be Record IDs */
   allIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
+  /** Filter records linked to at least one of the specified records. The specified values must be Record IDs */
   anyIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
+  /** Search for records with an exact match. The specified values must be Record IDs */
   eq?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records not linked to any of the specified records. The specified values must be Record IDs */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['ItemId']['input']>>>;
 };
 
+/** Specifies how to filter by locale */
 export type LocalesFilter = {
+  /** Filter records that are localized in all the specified locales */
   allIn?: InputMaybe<Array<SiteLocale>>;
+  /** Filter records that are localized in at least one of the specified locales */
   anyIn?: InputMaybe<Array<SiteLocale>>;
+  /** Filter records that are not localized in any of the specified locales */
   notIn?: InputMaybe<Array<SiteLocale>>;
 };
 
+/** Block of type 🎆 Logo GRID (logo_grid) */
 export type LogoGridRecord = RecordInterface & {
   __typename?: 'LogoGridRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1758,7 +3345,99 @@ export type LogoGridRecord = RecordInterface & {
 };
 
 
+/** Block of type 🎆 Logo GRID (logo_grid) */
 export type LogoGridRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+export type MarketPolicyModelFilter = {
+  AND?: InputMaybe<Array<InputMaybe<MarketPolicyModelFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<MarketPolicyModelFilter>>>;
+  _createdAt?: InputMaybe<CreatedAtFilter>;
+  _firstPublishedAt?: InputMaybe<PublishedAtFilter>;
+  _isValid?: InputMaybe<BooleanFilter>;
+  _publicationScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _publishedAt?: InputMaybe<PublishedAtFilter>;
+  _status?: InputMaybe<StatusFilter>;
+  _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
+  _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  country?: InputMaybe<StringFilter>;
+  handlingDaysMax?: InputMaybe<IntegerFilter>;
+  handlingDaysMin?: InputMaybe<IntegerFilter>;
+  id?: InputMaybe<ItemIdFilter>;
+  returnDays?: InputMaybe<IntegerFilter>;
+  returnFees?: InputMaybe<StringFilter>;
+  shippingRate?: InputMaybe<FloatFilter>;
+  transitDaysMax?: InputMaybe<IntegerFilter>;
+  transitDaysMin?: InputMaybe<IntegerFilter>;
+};
+
+export type MarketPolicyModelOrderBy =
+  | '_createdAt_ASC'
+  | '_createdAt_DESC'
+  | '_firstPublishedAt_ASC'
+  | '_firstPublishedAt_DESC'
+  | '_isValid_ASC'
+  | '_isValid_DESC'
+  | '_publicationScheduledAt_ASC'
+  | '_publicationScheduledAt_DESC'
+  | '_publishedAt_ASC'
+  | '_publishedAt_DESC'
+  | '_status_ASC'
+  | '_status_DESC'
+  | '_unpublishingScheduledAt_ASC'
+  | '_unpublishingScheduledAt_DESC'
+  | '_updatedAt_ASC'
+  | '_updatedAt_DESC'
+  | 'country_ASC'
+  | 'country_DESC'
+  | 'handlingDaysMax_ASC'
+  | 'handlingDaysMax_DESC'
+  | 'handlingDaysMin_ASC'
+  | 'handlingDaysMin_DESC'
+  | 'id_ASC'
+  | 'id_DESC'
+  | 'returnDays_ASC'
+  | 'returnDays_DESC'
+  | 'returnFees_ASC'
+  | 'returnFees_DESC'
+  | 'shippingRate_ASC'
+  | 'shippingRate_DESC'
+  | 'transitDaysMax_ASC'
+  | 'transitDaysMax_DESC'
+  | 'transitDaysMin_ASC'
+  | 'transitDaysMin_DESC';
+
+/** Record of type 🚚 Market policy (market_policy) */
+export type MarketPolicyRecord = RecordInterface & {
+  __typename?: 'MarketPolicyRecord';
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  country?: Maybe<Scalars['String']['output']>;
+  handlingDaysMax?: Maybe<Scalars['IntType']['output']>;
+  handlingDaysMin?: Maybe<Scalars['IntType']['output']>;
+  id: Scalars['ItemId']['output'];
+  returnDays?: Maybe<Scalars['IntType']['output']>;
+  returnFees?: Maybe<Scalars['String']['output']>;
+  shippingRate?: Maybe<Scalars['FloatType']['output']>;
+  transitDaysMax?: Maybe<Scalars['IntType']['output']>;
+  transitDaysMin?: Maybe<Scalars['IntType']['output']>;
+};
+
+
+/** Record of type 🚚 Market policy (market_policy) */
+export type MarketPolicyRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -1775,19 +3454,25 @@ export type MuxThumbnailFormatType =
   | 'png';
 
 export type MuxThumbnailRotation =
+  /** Rotate 90° clockwise */
   | 'ROTATE_90'
+  /** Rotate 180° clockwise */
   | 'ROTATE_180'
+  /** Rotate 270° clockwise */
   | 'ROTATE_270';
 
+/** Block of type 🔗 Nav item (modular) (nav_item_modular) */
 export type NavItemModularRecord = RecordInterface & {
   __typename?: 'NavItemModularRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1801,6 +3486,7 @@ export type NavItemModularRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔗 Nav item (modular) (nav_item_modular) */
 export type NavItemModularRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -1811,15 +3497,18 @@ export type NavItemModularRecordListListNonNullMultiLocaleField = {
   value: Array<NavItemModularRecord>;
 };
 
+/** Block of type 🔗 Nav item (simple) (nav_item_simple) */
 export type NavItemSimpleRecord = RecordInterface & {
   __typename?: 'NavItemSimpleRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1833,6 +3522,7 @@ export type NavItemSimpleRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔗 Nav item (simple) (nav_item_simple) */
 export type NavItemSimpleRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -1857,6 +3547,7 @@ export type NavigationModelCopyrightTextFieldMultiLocaleField = {
   value?: Maybe<NavigationModelCopyrightTextField>;
 };
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord = RecordInterface & {
   __typename?: 'NavigationRecord';
   _allCopyrightTextLocales?: Maybe<Array<NavigationModelCopyrightTextFieldMultiLocaleField>>;
@@ -1867,6 +3558,7 @@ export type NavigationRecord = RecordInterface & {
   _allMenuLinksLocales?: Maybe<Array<NavItemModularRecordListListNonNullMultiLocaleField>>;
   _allSocialLinksLocales?: Maybe<Array<SocialLinkRecordListListNonNullMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -1874,6 +3566,7 @@ export type NavigationRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1894,89 +3587,107 @@ export type NavigationRecord = RecordInterface & {
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllCopyrightTextLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllFooterMenuLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllHeaderSearchPlaceholderLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllHeaderSearchSubmitLabelLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllLegalLinksLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllMenuLinksLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_AllSocialLinksLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordCopyrightTextArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordFooterMenuArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordHeaderSearchPlaceholderArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordHeaderSearchSubmitLabelArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordLegalLinksArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordMenuLinksArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type ⛓️ Navigation (navigation) */
 export type NavigationRecordSocialLinksArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by image orientation */
 export type OrientationFilter = {
+  /** Search uploads with the specified orientation */
   eq?: InputMaybe<UploadOrientation>;
+  /** Exclude uploads with the specified orientation */
   neq?: InputMaybe<UploadOrientation>;
 };
 
@@ -2029,6 +3740,7 @@ export type PageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
+/** Record of type 📚 Page (page) */
 export type PageRecord = RecordInterface & {
   __typename?: 'PageRecord';
   _allContentPageLocales?: Maybe<Array<PageModelContentPageFieldListListNonNullMultiLocaleField>>;
@@ -2038,6 +3750,7 @@ export type PageRecord = RecordInterface & {
   _allSlugLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -2045,6 +3758,7 @@ export type PageRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2059,71 +3773,84 @@ export type PageRecord = RecordInterface & {
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_AllContentPageLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_AllHeroPageLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_AllSeoAnalysisLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_AllSeoSettingsSocialLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_AllSlugLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_AllTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecordContentPageArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecordHeroPageArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecordSeoAnalysisArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecordSeoSettingsSocialArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecordSlugArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📚 Page (page) */
 export type PageRecordTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -2190,6 +3917,7 @@ export type PostModelPostContentFieldMultiLocaleField = {
   value?: Maybe<PostModelPostContentField>;
 };
 
+/** Record of type 📝 Post (post) */
 export type PostRecord = RecordInterface & {
   __typename?: 'PostRecord';
   _allExcerptLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -2199,6 +3927,7 @@ export type PostRecord = RecordInterface & {
   _allSeoAnalysisLocales?: Maybe<Array<JsonFieldMultiLocaleField>>;
   _allSeoSettingsSocialLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -2206,6 +3935,7 @@ export type PostRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2223,42 +3953,50 @@ export type PostRecord = RecordInterface & {
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_AllExcerptLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_AllPostContentLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_AllPostSlugLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_AllPostTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_AllSeoAnalysisLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_AllSeoSettingsSocialLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecordExcerptArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -2266,44 +4004,52 @@ export type PostRecordExcerptArgs = {
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecordPostContentArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecordPostSlugArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecordPostTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecordSeoAnalysisArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 📝 Post (post) */
 export type PostRecordSeoSettingsSocialArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 💸 Pricing Card (pricing_card) */
 export type PricingCardRecord = RecordInterface & {
   __typename?: 'PricingCardRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2323,24 +4069,29 @@ export type PricingCardRecord = RecordInterface & {
 };
 
 
+/** Block of type 💸 Pricing Card (pricing_card) */
 export type PricingCardRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Block of type 💸 Pricing Card (pricing_card) */
 export type PricingCardRecordFeaturesArgs = {
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** Block of type 💵 Pricing Section (pricing_section) */
 export type PricingSectionRecord = RecordInterface & {
   __typename?: 'PricingSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2351,6 +4102,7 @@ export type PricingSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 💵 Pricing Section (pricing_section) */
 export type PricingSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -2399,12 +4151,14 @@ export type ProductPageModelOrderBy =
   | 'title_ASC'
   | 'title_DESC';
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord = RecordInterface & {
   __typename?: 'ProductPageRecord';
   _allDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allSeoLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -2412,6 +4166,7 @@ export type ProductPageRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2425,27 +4180,32 @@ export type ProductPageRecord = RecordInterface & {
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord_AllDescriptionLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord_AllSeoLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord_AllTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecordDescriptionArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -2453,140 +4213,215 @@ export type ProductPageRecordDescriptionArgs = {
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecordSeoArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecordTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by publication datetime */
 export type PublishedAtFilter = {
+  /** Filter records with a value that's within the specified minute range. Seconds and milliseconds are truncated from the argument. */
   eq?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with a value that's strictly greater than the one specified. Seconds and milliseconds are truncated from the argument. */
   gt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's greater than or equal to than the one specified. Seconds and milliseconds are truncated from the argument. */
   gte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's less than the one specified. Seconds and milliseconds are truncated from the argument. */
   lt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's less or equal than the one specified. Seconds and milliseconds are truncated from the argument. */
   lte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's outside the specified minute range. Seconds and milliseconds are truncated from the argument. */
   neq?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+/** The query root for this schema */
 export type Query = {
   __typename?: 'Query';
+  /** Returns meta information regarding a record collection */
   _allAuthorsMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allCategoriesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allCollectionPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allLegalPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
+  _allMarketPoliciesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allPostsMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allProductPagesMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allRedirectsMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allSchemaMigrationsMeta: CollectionMetadata;
+  /** Returns meta information regarding an assets collection */
   _allUploadsMeta: CollectionMetadata;
+  /** Returns meta information regarding a record collection */
   _allUserReviewsMeta: CollectionMetadata;
+  /** Returns the single instance record */
   _site: Site;
+  /** Returns a collection of records */
   allAuthors: Array<AuthorRecord>;
+  /** Returns a collection of records */
   allCategories: Array<CategoryRecord>;
+  /** Returns a collection of records */
   allCollectionPages: Array<CollectionPageRecord>;
+  /** Returns a collection of records */
   allLegalPages: Array<LegalPageRecord>;
+  /** Returns a collection of records */
+  allMarketPolicies: Array<MarketPolicyRecord>;
+  /** Returns a collection of records */
   allPages: Array<PageRecord>;
+  /** Returns a collection of records */
   allPosts: Array<PostRecord>;
+  /** Returns a collection of records */
   allProductPages: Array<ProductPageRecord>;
+  /** Returns a collection of records */
   allRedirects: Array<RedirectRecord>;
+  /** Returns a collection of records */
   allSchemaMigrations: Array<SchemaMigrationRecord>;
+  /** Returns a collection of assets */
   allUploads: Array<FileField>;
+  /** Returns a collection of records */
   allUserReviews: Array<UserReviewRecord>;
+  /** Returns a specific record */
   author?: Maybe<AuthorRecord>;
+  /** Returns a specific record */
   category?: Maybe<CategoryRecord>;
+  /** Returns a specific record */
   collectionPage?: Maybe<CollectionPageRecord>;
+  /** Returns the single instance record */
   globalSetting?: Maybe<GlobalSettingRecord>;
+  /** Returns a specific record */
   legalPage?: Maybe<LegalPageRecord>;
+  /** Returns a specific record */
+  marketPolicy?: Maybe<MarketPolicyRecord>;
+  /** Returns the single instance record */
   navigation?: Maybe<NavigationRecord>;
+  /** Returns a specific record */
   page?: Maybe<PageRecord>;
+  /** Returns a specific record */
   post?: Maybe<PostRecord>;
+  /** Returns a specific record */
   productPage?: Maybe<ProductPageRecord>;
+  /** Returns a specific record */
   redirect?: Maybe<RedirectRecord>;
+  /** Returns a specific record */
   schemaMigration?: Maybe<SchemaMigrationRecord>;
+  /** Returns the single instance record */
+  uiString?: Maybe<UiStringRecord>;
+  /** Returns a specific asset */
   upload?: Maybe<FileField>;
+  /** Returns a specific record */
   userReview?: Maybe<UserReviewRecord>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllAuthorsMetaArgs = {
   filter?: InputMaybe<AuthorModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllCategoriesMetaArgs = {
   filter?: InputMaybe<CategoryModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllCollectionPagesMetaArgs = {
   filter?: InputMaybe<CollectionPageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllLegalPagesMetaArgs = {
   filter?: InputMaybe<LegalPageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
+export type Query_AllMarketPoliciesMetaArgs = {
+  filter?: InputMaybe<MarketPolicyModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
 export type Query_AllPagesMetaArgs = {
   filter?: InputMaybe<PageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllPostsMetaArgs = {
   filter?: InputMaybe<PostModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllProductPagesMetaArgs = {
   filter?: InputMaybe<ProductPageModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllRedirectsMetaArgs = {
   filter?: InputMaybe<RedirectModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllSchemaMigrationsMetaArgs = {
   filter?: InputMaybe<SchemaMigrationModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllUploadsMetaArgs = {
   filter?: InputMaybe<UploadFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_AllUserReviewsMetaArgs = {
   filter?: InputMaybe<UserReviewModelFilter>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type Query_SiteArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type QueryAllAuthorsArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<AuthorModelFilter>;
@@ -2597,6 +4432,7 @@ export type QueryAllAuthorsArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllCategoriesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<CategoryModelFilter>;
@@ -2607,6 +4443,7 @@ export type QueryAllCategoriesArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllCollectionPagesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<CollectionPageModelFilter>;
@@ -2617,6 +4454,7 @@ export type QueryAllCollectionPagesArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllLegalPagesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<LegalPageModelFilter>;
@@ -2627,6 +4465,18 @@ export type QueryAllLegalPagesArgs = {
 };
 
 
+/** The query root for this schema */
+export type QueryAllMarketPoliciesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<MarketPolicyModelFilter>;
+  first?: InputMaybe<Scalars['IntType']['input']>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<MarketPolicyModelOrderBy>>>;
+  skip?: InputMaybe<Scalars['IntType']['input']>;
+};
+
+
+/** The query root for this schema */
 export type QueryAllPagesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<PageModelFilter>;
@@ -2637,6 +4487,7 @@ export type QueryAllPagesArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllPostsArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<PostModelFilter>;
@@ -2647,6 +4498,7 @@ export type QueryAllPostsArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllProductPagesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<ProductPageModelFilter>;
@@ -2657,6 +4509,7 @@ export type QueryAllProductPagesArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllRedirectsArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<RedirectModelFilter>;
@@ -2667,6 +4520,7 @@ export type QueryAllRedirectsArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllSchemaMigrationsArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<SchemaMigrationModelFilter>;
@@ -2677,6 +4531,7 @@ export type QueryAllSchemaMigrationsArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllUploadsArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<UploadFilter>;
@@ -2687,6 +4542,7 @@ export type QueryAllUploadsArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAllUserReviewsArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<UserReviewModelFilter>;
@@ -2697,6 +4553,7 @@ export type QueryAllUserReviewsArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryAuthorArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<AuthorModelFilter>;
@@ -2705,6 +4562,7 @@ export type QueryAuthorArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryCategoryArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<CategoryModelFilter>;
@@ -2713,6 +4571,7 @@ export type QueryCategoryArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryCollectionPageArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<CollectionPageModelFilter>;
@@ -2721,12 +4580,14 @@ export type QueryCollectionPageArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryGlobalSettingArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type QueryLegalPageArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<LegalPageModelFilter>;
@@ -2735,12 +4596,23 @@ export type QueryLegalPageArgs = {
 };
 
 
+/** The query root for this schema */
+export type QueryMarketPolicyArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  filter?: InputMaybe<MarketPolicyModelFilter>;
+  locale?: InputMaybe<SiteLocale>;
+  orderBy?: InputMaybe<Array<InputMaybe<MarketPolicyModelOrderBy>>>;
+};
+
+
+/** The query root for this schema */
 export type QueryNavigationArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** The query root for this schema */
 export type QueryPageArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<PageModelFilter>;
@@ -2749,6 +4621,7 @@ export type QueryPageArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryPostArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<PostModelFilter>;
@@ -2757,6 +4630,7 @@ export type QueryPostArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryProductPageArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<ProductPageModelFilter>;
@@ -2765,6 +4639,7 @@ export type QueryProductPageArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryRedirectArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<RedirectModelFilter>;
@@ -2773,6 +4648,7 @@ export type QueryRedirectArgs = {
 };
 
 
+/** The query root for this schema */
 export type QuerySchemaMigrationArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<SchemaMigrationModelFilter>;
@@ -2781,6 +4657,14 @@ export type QuerySchemaMigrationArgs = {
 };
 
 
+/** The query root for this schema */
+export type QueryUiStringArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** The query root for this schema */
 export type QueryUploadArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<UploadFilter>;
@@ -2789,6 +4673,7 @@ export type QueryUploadArgs = {
 };
 
 
+/** The query root for this schema */
 export type QueryUserReviewArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   filter?: InputMaybe<UserReviewModelFilter>;
@@ -2798,12 +4683,14 @@ export type QueryUserReviewArgs = {
 
 export type RecordInterface = {
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2859,15 +4746,18 @@ export type RedirectModelOrderBy =
   | 'toPathRedirect_ASC'
   | 'toPathRedirect_DESC';
 
+/** Record of type 🔁 Redirect (redirect) */
 export type RedirectRecord = RecordInterface & {
   __typename?: 'RedirectRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2879,14 +4769,20 @@ export type RedirectRecord = RecordInterface & {
 };
 
 
+/** Record of type 🔁 Redirect (redirect) */
 export type RedirectRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by upload type */
 export type ResolutionFilter = {
+  /** Search uploads with the specified resolution */
   eq?: InputMaybe<ResolutionType>;
+  /** Search uploads with the specified resolutions */
   in?: InputMaybe<Array<InputMaybe<ResolutionType>>>;
+  /** Exclude uploads with the specified resolution */
   neq?: InputMaybe<ResolutionType>;
+  /** Search uploads without the specified resolutions */
   notIn?: InputMaybe<Array<InputMaybe<ResolutionType>>>;
 };
 
@@ -2911,15 +4807,18 @@ export type ResponsiveImage = {
   width: Scalars['IntType']['output'];
 };
 
+/** Block of type 💭 Reviews Section (reviews_section) */
 export type ReviewsSectionRecord = RecordInterface & {
   __typename?: 'ReviewsSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2931,6 +4830,7 @@ export type ReviewsSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 💭 Reviews Section (reviews_section) */
 export type ReviewsSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -2972,15 +4872,18 @@ export type SchemaMigrationModelOrderBy =
   | 'name_ASC'
   | 'name_DESC';
 
+/** Record of type Schema migration (schema_migration) */
 export type SchemaMigrationRecord = RecordInterface & {
   __typename?: 'SchemaMigrationRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -2990,6 +4893,7 @@ export type SchemaMigrationRecord = RecordInterface & {
 };
 
 
+/** Record of type Schema migration (schema_migration) */
 export type SchemaMigrationRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3002,15 +4906,18 @@ export type SearchSectionModelIntroField = {
   value: Scalars['JsonField']['output'];
 };
 
+/** Block of type 🔍 Search section (search_section) */
 export type SearchSectionRecord = RecordInterface & {
   __typename?: 'SearchSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3026,6 +4933,7 @@ export type SearchSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔍 Search section (search_section) */
 export type SearchSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3045,19 +4953,24 @@ export type SeoFieldMultiLocaleField = {
   value?: Maybe<SeoField>;
 };
 
+/** Specifies how to filter SEO meta tags fields */
 export type SeoFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
 };
 
+/** Block of type 🗣️ Shopify listing configuration (shopify_listing_config) */
 export type ShopifyListingConfigRecord = RecordInterface & {
   __typename?: 'ShopifyListingConfigRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3070,6 +4983,7 @@ export type ShopifyListingConfigRecord = RecordInterface & {
 };
 
 
+/** Block of type 🗣️ Shopify listing configuration (shopify_listing_config) */
 export type ShopifyListingConfigRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3099,22 +5013,30 @@ export type SiteLocale =
   | 'es'
   | 'pt_BR';
 
+/** Specifies how to filter Slug fields */
 export type SlugFilter = {
+  /** Search for records with an exact match */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Filter records that have one of the specified slugs */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude records with an exact match */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Filter records that do have one of the specified slugs */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+/** Block of type 🌎 Social Link (social_link) */
 export type SocialLinkRecord = RecordInterface & {
   __typename?: 'SocialLinkRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3128,6 +5050,7 @@ export type SocialLinkRecord = RecordInterface & {
 };
 
 
+/** Block of type 🌎 Social Link (social_link) */
 export type SocialLinkRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3138,15 +5061,18 @@ export type SocialLinkRecordListListNonNullMultiLocaleField = {
   value: Array<SocialLinkRecord>;
 };
 
+/** Block of type ⭐ Stat Card (stat_card) */
 export type StatCardRecord = RecordInterface & {
   __typename?: 'StatCardRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3159,19 +5085,23 @@ export type StatCardRecord = RecordInterface & {
 };
 
 
+/** Block of type ⭐ Stat Card (stat_card) */
 export type StatCardRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Block of type 🤩 Stats Section (stats_section) */
 export type StatsSectionRecord = RecordInterface & {
   __typename?: 'StatsSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3182,26 +5112,35 @@ export type StatsSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 🤩 Stats Section (stats_section) */
 export type StatsSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by status */
 export type StatusFilter = {
+  /** Search the record with the specified status */
   eq?: InputMaybe<ItemStatus>;
+  /** Search records with the specified statuses */
   in?: InputMaybe<Array<InputMaybe<ItemStatus>>>;
+  /** Exclude the record with the specified status */
   neq?: InputMaybe<ItemStatus>;
+  /** Search records without the specified statuses */
   notIn?: InputMaybe<Array<InputMaybe<ItemStatus>>>;
 };
 
+/** Block of type ➡️ Step card (step_card) */
 export type StepCardRecord = RecordInterface & {
   __typename?: 'StepCardRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3215,24 +5154,29 @@ export type StepCardRecord = RecordInterface & {
 };
 
 
+/** Block of type ➡️ Step card (step_card) */
 export type StepCardRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Block of type ➡️ Step card (step_card) */
 export type StepCardRecordDescriptionArgs = {
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** Block of type ⏭️ Steps Section (steps_section) */
 export type StepsSectionRecord = RecordInterface & {
   __typename?: 'StepsSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3243,19 +5187,30 @@ export type StepsSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type ⏭️ Steps Section (steps_section) */
 export type StepsSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter Single-line string fields */
 export type StringFilter = {
+  /** Search for records with an exact match */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not [DEPRECATED] */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records that equal one of the specified values */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Filter records with the specified field set as blank (null or empty string) */
   isBlank?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field present (neither null, nor empty string) */
   isPresent?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude records with an exact match */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Filter records that do not equal one of the specified values */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude records based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
@@ -3271,23 +5226,32 @@ export type StringMultiLocaleField = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+/** Specifies how to filter Structured Text fields values */
 export type StructuredTextFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not [DEPRECATED] */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field set as blank (null or single empty paragraph) */
   isBlank?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field present (neither null, nor empty string) */
   isPresent?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude records based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Block of type 🔽 Tab item (tab_item) */
 export type TabItemRecord = RecordInterface & {
   __typename?: 'TabItemRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3304,24 +5268,29 @@ export type TabItemRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔽 Tab item (tab_item) */
 export type TabItemRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Block of type 🔽 Tab item (tab_item) */
 export type TabItemRecordDescriptionArgs = {
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** Block of type ⬇️ Tabs section (tabs_section) */
 export type TabsSectionRecord = RecordInterface & {
   __typename?: 'TabsSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3332,6 +5301,7 @@ export type TabsSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type ⬇️ Tabs section (tabs_section) */
 export type TabsSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3343,15 +5313,18 @@ export type Tag = {
   tag: Scalars['String']['output'];
 };
 
+/** Block of type 🧑‍🦱 Team Section (team_section) */
 export type TeamSectionRecord = RecordInterface & {
   __typename?: 'TeamSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3362,27 +5335,37 @@ export type TeamSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 🧑‍🦱 Team Section (team_section) */
 export type TeamSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter text fields */
 export type TextFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not [DEPRECATED] */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field set as blank (null or empty string) */
   isBlank?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with the specified field present (neither null, nor empty string) */
   isPresent?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude records based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Block of type 🔤 Text header (text_header) */
 export type TextHeaderRecord = RecordInterface & {
   __typename?: 'TextHeaderRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3396,6 +5379,7 @@ export type TextHeaderRecord = RecordInterface & {
 };
 
 
+/** Block of type 🔤 Text header (text_header) */
 export type TextHeaderRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3410,15 +5394,18 @@ export type TextSectionModelBodyField = {
   value: Scalars['JsonField']['output'];
 };
 
+/** Block of type 🅾️ Text section (text_section) */
 export type TextSectionRecord = RecordInterface & {
   __typename?: 'TextSectionRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3430,73 +5417,819 @@ export type TextSectionRecord = RecordInterface & {
 };
 
 
+/** Block of type 🅾️ Text section (text_section) */
 export type TextSectionRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by upload type */
 export type TypeFilter = {
+  /** Search uploads with the specified type */
   eq?: InputMaybe<UploadType>;
+  /** Search uploads with the specified types */
   in?: InputMaybe<Array<InputMaybe<UploadType>>>;
+  /** Exclude uploads with the specified type */
   neq?: InputMaybe<UploadType>;
+  /** Search uploads without the specified types */
   notIn?: InputMaybe<Array<InputMaybe<UploadType>>>;
 };
 
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord = RecordInterface & {
+  __typename?: 'UiStringRecord';
+  _allAccountDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountErrorLoginLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountErrorRateLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountErrorUnavailableLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountGreetingAnonymousLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountGreetingLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountLinkLabelSignedInLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountLinkLabelSignedOutLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountLoadErrorLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountNoOrdersLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountOrdersTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountSignInLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountSignOutLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountSignedOutIntroLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountViewOrderHintLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allAccountViewOrderLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartAddToCartLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartAddedLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartAddingLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartCheckoutLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartCheckoutNoteLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartCheckoutUnavailableLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartContinueShoppingLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartEachLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartEmptyLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartErrorGenericLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartErrorRateLimitLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartLinkLabelOneLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartLinkLabelOtherLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartQuantityLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartRemoveLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartSoldOutLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartSubtotalLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartUpdateLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartViewCartLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCookiesAcceptAllLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCookiesDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCookiesManageLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCookiesPrivacyPolicyLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCookiesRejectNonEssentialLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCookiesTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _locales: Array<SiteLocale>;
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  accountDescription?: Maybe<Scalars['String']['output']>;
+  accountErrorLogin?: Maybe<Scalars['String']['output']>;
+  accountErrorRate?: Maybe<Scalars['String']['output']>;
+  accountErrorUnavailable?: Maybe<Scalars['String']['output']>;
+  accountGreeting?: Maybe<Scalars['String']['output']>;
+  accountGreetingAnonymous?: Maybe<Scalars['String']['output']>;
+  accountLinkLabelSignedIn?: Maybe<Scalars['String']['output']>;
+  accountLinkLabelSignedOut?: Maybe<Scalars['String']['output']>;
+  accountLoadError?: Maybe<Scalars['String']['output']>;
+  accountNoOrders?: Maybe<Scalars['String']['output']>;
+  accountOrdersTitle?: Maybe<Scalars['String']['output']>;
+  accountSignIn?: Maybe<Scalars['String']['output']>;
+  accountSignOut?: Maybe<Scalars['String']['output']>;
+  accountSignedOutIntro?: Maybe<Scalars['String']['output']>;
+  accountTitle?: Maybe<Scalars['String']['output']>;
+  accountViewOrder?: Maybe<Scalars['String']['output']>;
+  accountViewOrderHint?: Maybe<Scalars['String']['output']>;
+  cartAddToCart?: Maybe<Scalars['String']['output']>;
+  cartAdded?: Maybe<Scalars['String']['output']>;
+  cartAdding?: Maybe<Scalars['String']['output']>;
+  cartCheckout?: Maybe<Scalars['String']['output']>;
+  cartCheckoutNote?: Maybe<Scalars['String']['output']>;
+  cartCheckoutUnavailable?: Maybe<Scalars['String']['output']>;
+  cartContinueShopping?: Maybe<Scalars['String']['output']>;
+  cartEach?: Maybe<Scalars['String']['output']>;
+  cartEmpty?: Maybe<Scalars['String']['output']>;
+  cartErrorGeneric?: Maybe<Scalars['String']['output']>;
+  cartErrorRateLimit?: Maybe<Scalars['String']['output']>;
+  cartLinkLabelOne?: Maybe<Scalars['String']['output']>;
+  cartLinkLabelOther?: Maybe<Scalars['String']['output']>;
+  cartQuantity?: Maybe<Scalars['String']['output']>;
+  cartRemove?: Maybe<Scalars['String']['output']>;
+  cartSoldOut?: Maybe<Scalars['String']['output']>;
+  cartSubtotal?: Maybe<Scalars['String']['output']>;
+  cartTitle?: Maybe<Scalars['String']['output']>;
+  cartUpdate?: Maybe<Scalars['String']['output']>;
+  cartViewCart?: Maybe<Scalars['String']['output']>;
+  cookiesAcceptAll?: Maybe<Scalars['String']['output']>;
+  cookiesDescription?: Maybe<Scalars['String']['output']>;
+  cookiesManage?: Maybe<Scalars['String']['output']>;
+  cookiesPrivacyPolicy?: Maybe<Scalars['String']['output']>;
+  cookiesRejectNonEssential?: Maybe<Scalars['String']['output']>;
+  cookiesTitle?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ItemId']['output'];
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountDescriptionLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountErrorLoginLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountErrorRateLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountErrorUnavailableLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountGreetingAnonymousLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountGreetingLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountLinkLabelSignedInLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountLinkLabelSignedOutLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountLoadErrorLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountNoOrdersLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountOrdersTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountSignInLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountSignOutLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountSignedOutIntroLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountViewOrderHintLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllAccountViewOrderLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartAddToCartLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartAddedLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartAddingLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartCheckoutLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartCheckoutNoteLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartCheckoutUnavailableLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartContinueShoppingLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartEachLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartEmptyLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartErrorGenericLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartErrorRateLimitLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartLinkLabelOneLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartLinkLabelOtherLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartQuantityLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartRemoveLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartSoldOutLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartSubtotalLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartUpdateLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartViewCartLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCookiesAcceptAllLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCookiesDescriptionLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCookiesManageLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCookiesPrivacyPolicyLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCookiesRejectNonEssentialLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCookiesTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountDescriptionArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountErrorLoginArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountErrorRateArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountErrorUnavailableArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountGreetingArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountGreetingAnonymousArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountLinkLabelSignedInArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountLinkLabelSignedOutArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountLoadErrorArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountNoOrdersArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountOrdersTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountSignInArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountSignOutArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountSignedOutIntroArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountViewOrderArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordAccountViewOrderHintArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartAddToCartArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartAddedArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartAddingArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartCheckoutArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartCheckoutNoteArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartCheckoutUnavailableArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartContinueShoppingArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartEachArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartEmptyArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartErrorGenericArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartErrorRateLimitArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartLinkLabelOneArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartLinkLabelOtherArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartQuantityArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartRemoveArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartSoldOutArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartSubtotalArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartUpdateArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartViewCartArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCookiesAcceptAllArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCookiesDescriptionArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCookiesManageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCookiesPrivacyPolicyArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCookiesRejectNonEssentialArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCookiesTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+/** Specifies how to filter by update datetime */
 export type UpdatedAtFilter = {
+  /** Filter records with a value that's within the specified minute range. Seconds and milliseconds are truncated from the argument. */
   eq?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter records with a value that's strictly greater than the one specified. Seconds and milliseconds are truncated from the argument. */
   gt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's greater than or equal to than the one specified. Seconds and milliseconds are truncated from the argument. */
   gte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's less than the one specified. Seconds and milliseconds are truncated from the argument. */
   lt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's less or equal than the one specified. Seconds and milliseconds are truncated from the argument. */
   lte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter records with a value that's outside the specified minute range. Seconds and milliseconds are truncated from the argument. */
   neq?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+/** Specifies how to filter by default alt */
 export type UploadAltFilter = {
+  /** Search the uploads with the specified alt */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Filter uploads with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Search uploads with the specified values as default alt */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude the uploads with the specified alt */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Search uploads that do not have the specified values as default alt */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Specifies how to filter by auhtor */
 export type UploadAuthorFilter = {
+  /** Filter uploads with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Specifies how to filter by basename */
 export type UploadBasenameFilter = {
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Specifies how to filter by colors */
 export type UploadColorsFilter = {
+  /** Filter uploads that have all of the specified colors */
   allIn?: InputMaybe<Array<InputMaybe<ColorBucketType>>>;
+  /** Filter uploads that have at least one of the specified colors */
   anyIn?: InputMaybe<Array<InputMaybe<ColorBucketType>>>;
+  /** Filter uploads that have the specified colors */
   contains?: InputMaybe<ColorBucketType>;
+  /** Search for uploads with an exact match */
   eq?: InputMaybe<Array<InputMaybe<ColorBucketType>>>;
+  /** Filter uploads that do not have any of the specified colors */
   notIn?: InputMaybe<Array<InputMaybe<ColorBucketType>>>;
 };
 
+/** Specifies how to filter by copyright */
 export type UploadCopyrightFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Specifies how to filter by creation datetime */
 export type UploadCreatedAtFilter = {
+  /** Search for uploads with an exact match */
   eq?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's strictly greater than the one specified */
   gt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's greater than or equal to the one specified */
   gte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's less than the one specified */
   lt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's less or equal than the one specified */
   lte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Exclude uploads with an exact match */
   neq?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+/** Specifies how to filter by filename */
 export type UploadFilenameFilter = {
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
@@ -3529,48 +6262,81 @@ export type UploadFilter = {
   width?: InputMaybe<UploadWidthFilter>;
 };
 
+/** Specifies how to filter by format */
 export type UploadFormatFilter = {
+  /** Search the asset with the specified format */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets with the specified formats */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude the asset with the specified format */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets that do not have the specified formats */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+/** Specifies how to filter by height */
 export type UploadHeightFilter = {
+  /** Search assets with the specified height */
   eq?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger than the specified height */
   gt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger or equal to the specified height */
   gte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets smaller than the specified height */
   lt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger or equal to the specified height */
   lte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search assets that do not have the specified height */
   neq?: InputMaybe<Scalars['IntType']['input']>;
 };
 
+/** Specifies how to filter by ID */
 export type UploadIdFilter = {
+  /** Search the asset with the specified ID */
   eq?: InputMaybe<Scalars['UploadId']['input']>;
+  /** Search assets with the specified IDs */
   in?: InputMaybe<Array<InputMaybe<Scalars['UploadId']['input']>>>;
+  /** Exclude the asset with the specified ID */
   neq?: InputMaybe<Scalars['UploadId']['input']>;
+  /** Search assets that do not have the specified IDs */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['UploadId']['input']>>>;
 };
 
+/** Specifies how to filter by MD5 */
 export type UploadMd5Filter = {
+  /** Search the asset with the specified MD5 */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets with the specified MD5s */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude the asset with the specified MD5 */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets that do not have the specified MD5s */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+/** Specifies how to filter by mime type */
 export type UploadMimeTypeFilter = {
+  /** Search the asset with the specified mime type */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets with the specified mime types */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude the asset with the specified mime type */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets that do not have the specified mime types */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
+/** Specifies how to filter by notes */
 export type UploadNotesFilter = {
+  /** Filter records with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
@@ -3599,37 +6365,63 @@ export type UploadOrientation =
   | 'portrait'
   | 'square';
 
+/** Specifies how to filter by path */
 export type UploadPathFilter = {
+  /** Search the asset with the specified path */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets with the specified paths */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude the asset with the specified path */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets that do not have the specified paths */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
+/** Specifies how to filter by size */
 export type UploadSizeFilter = {
+  /** Search assets with the specified size (in bytes) */
   eq?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger than the specified size (in bytes) */
   gt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger or equal to the specified size (in bytes) */
   gte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets smaller than the specified size (in bytes) */
   lt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger or equal to the specified size (in bytes) */
   lte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search assets that do not have the specified size (in bytes) */
   neq?: InputMaybe<Scalars['IntType']['input']>;
 };
 
+/** Specifies how to filter by tags */
 export type UploadTagsFilter = {
+  /** Filter uploads linked to all of the specified tags */
   allIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Filter uploads linked to at least one of the specified tags */
   anyIn?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Filter uploads linked to the specified tag */
   contains?: InputMaybe<Scalars['String']['input']>;
+  /** Search for uploads with an exact match */
   eq?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Filter uploads not linked to any of the specified tags */
   notIn?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+/** Specifies how to filter by default title */
 export type UploadTitleFilter = {
+  /** Search the asset with the specified title */
   eq?: InputMaybe<Scalars['String']['input']>;
+  /** Filter assets with the specified field defined (i.e. with any value) or not */
   exists?: InputMaybe<Scalars['BooleanType']['input']>;
+  /** Search assets with the specified as default title */
   in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Filter uploads based on a regular expression */
   matches?: InputMaybe<StringMatchesFilter>;
+  /** Exclude the asset with the specified title */
   neq?: InputMaybe<Scalars['String']['input']>;
+  /** Search assets that do not have the specified as default title */
   notIn?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** Exclude uploads based on a regular expression */
   notMatches?: InputMaybe<StringMatchesFilter>;
 };
 
@@ -3643,12 +6435,19 @@ export type UploadType =
   | 'spreadsheet'
   | 'video';
 
+/** Specifies how to filter by update datetime */
 export type UploadUpdatedAtFilter = {
+  /** Search for uploads with an exact match */
   eq?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's strictly greater than the one specified */
   gt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's greater than or equal to the one specified */
   gte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's less than the one specified */
   lt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Filter uploads with a value that's less or equal than the one specified */
   lte?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Exclude uploads with an exact match */
   neq?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -3663,6 +6462,7 @@ export type UploadVideoField = {
   mp4Url?: Maybe<Scalars['String']['output']>;
   muxAssetId: Scalars['String']['output'];
   muxPlaybackId: Scalars['String']['output'];
+  /** Default poster frame, in seconds into the video. Resolves to the record-level field override when present, otherwise the upload-level default. `null` means Mux's default (middle of the video). */
   posterTime?: Maybe<Scalars['Float']['output']>;
   streamingUrl: Scalars['String']['output'];
   thumbhash?: Maybe<Scalars['String']['output']>;
@@ -3680,9 +6480,9 @@ export type UploadVideoFieldAltArgs = {
 
 export type UploadVideoFieldBlurUpThumbArgs = {
   imgixParams?: InputMaybe<ImgixParams>;
-  punch?: InputMaybe<Scalars['Float']['input']>;
-  quality?: InputMaybe<Scalars['Int']['input']>;
-  size?: InputMaybe<Scalars['Int']['input']>;
+  punch?: Scalars['Float']['input'];
+  quality?: Scalars['Int']['input'];
+  size?: Scalars['Int']['input'];
 };
 
 
@@ -3709,12 +6509,19 @@ export type UploadVideoFieldTitleArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
+/** Specifies how to filter by width */
 export type UploadWidthFilter = {
+  /** Search assets with the specified width */
   eq?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger than the specified width */
   gt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger or equal to the specified width */
   gte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets smaller than the specified width */
   lt?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search all assets larger or equal to the specified width */
   lte?: InputMaybe<Scalars['IntType']['input']>;
+  /** Search assets that do not have the specified width */
   neq?: InputMaybe<Scalars['IntType']['input']>;
 };
 
@@ -3764,11 +6571,13 @@ export type UserReviewModelOrderBy =
   | 'rating_ASC'
   | 'rating_DESC';
 
+/** Record of type 💬 User Review (user_review) */
 export type UserReviewRecord = RecordInterface & {
   __typename?: 'UserReviewRecord';
   _allAuthorNameLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCommentLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
@@ -3776,6 +6585,7 @@ export type UserReviewRecord = RecordInterface & {
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3789,43 +6599,51 @@ export type UserReviewRecord = RecordInterface & {
 };
 
 
+/** Record of type 💬 User Review (user_review) */
 export type UserReviewRecord_AllAuthorNameLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
+/** Record of type 💬 User Review (user_review) */
 export type UserReviewRecord_AllCommentLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
+/** Record of type 💬 User Review (user_review) */
 export type UserReviewRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 💬 User Review (user_review) */
 export type UserReviewRecordAuthorNameArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
 
+/** Record of type 💬 User Review (user_review) */
 export type UserReviewRecordCommentArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
   markdown?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+/** Block of type 📺 Video (video_block) */
 export type VideoBlockRecord = RecordInterface & {
   __typename?: 'VideoBlockRecord';
   _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
   _firstPublishedAt: Scalars['DateTime']['output'];
   _isValid: Scalars['BooleanType']['output'];
   _modelApiKey: Scalars['String']['output'];
   _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
   _seoMetaTags: Array<Tag>;
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
@@ -3835,6 +6653,7 @@ export type VideoBlockRecord = RecordInterface & {
 };
 
 
+/** Block of type 📺 Video (video_block) */
 export type VideoBlockRecord_SeoMetaTagsArgs = {
   locale?: InputMaybe<SiteLocale>;
 };
@@ -3843,3 +6662,9 @@ export type VideoMp4Res =
   | 'high'
   | 'low'
   | 'medium';
+
+export type FocalPoint = {
+  __typename?: 'focalPoint';
+  x: Scalars['FloatType']['output'];
+  y: Scalars['FloatType']['output'];
+};

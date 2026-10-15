@@ -1,11 +1,13 @@
 # Único codegen que fala com a CDA. Uso: npm run codegen:schema
 # Ambiente: DATOCMS_ENVIRONMENT do .env (o SDL no Git é o schema contra o qual o commit foi tipado).
+# Os headers espelham os de src/infra/datocms/client.ts. Sem X-Exclude-Invalid: o runtime não usa
+# strict mode, e com ele o Dato estreita os tipos (AltTitleFileField, width/height não-nulos) e o SDL
+# deixa de descrever os dados que o app recebe.
 schema:
   - https://graphql.datocms.com/:
       headers:
         Authorization: Bearer ${DATOCMS_API_TOKEN}
         X-Environment: ${DATOCMS_ENVIRONMENT}
-        X-Exclude-Invalid: true
 generates:
   src/infra/datocms/generated/schema.graphql:
     plugins:

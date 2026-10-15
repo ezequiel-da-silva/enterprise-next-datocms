@@ -342,7 +342,7 @@ Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache d
 - **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
 - Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
 - `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
-- `npm run codegen` / `codegen:check` / pre-push **não** chamam a CDA: usam o SDL em `generated/schema.graphql`. Só `npm run codegen:schema` (ou `codegen:from-dato`) introspecta, após mudar o modelo. Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
+- `npm run codegen` / `codegen:check` / pre-push **não** chamam a CDA: usam o SDL em `generated/schema.graphql`. Só `npm run codegen:schema` (ou `codegen:from-dato`) introspecta, após mudar o modelo. O dump não envia `X-Exclude-Invalid` porque o cliente do app também não: com strict mode o Dato estreita os tipos (`AltTitleFileField`, `width`/`height` não-nulos) e os tipos gerados deixariam de descrever o que o runtime recebe. Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
 
 Rota: [`POST /api/revalidate`](../src/app/api/revalidate/route.ts).
 
