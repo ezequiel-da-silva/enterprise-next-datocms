@@ -4,6 +4,8 @@ export type ErrorCopy = {
   title: string;
   description: string;
   retry: string;
+  /** Label for `error.digest`, the id that also appears in the server log line. */
+  reference: string;
 };
 
 export const ERROR_COPY: Record<AppLocale, ErrorCopy> = {
@@ -11,16 +13,19 @@ export const ERROR_COPY: Record<AppLocale, ErrorCopy> = {
     title: "Something went wrong",
     description: "An unexpected error occurred. Try again or come back later.",
     retry: "Try again",
+    reference: "Reference code",
   },
   pt: {
     title: "Algo deu errado",
     description: "Ocorreu um erro inesperado. Tente novamente ou volte mais tarde.",
     retry: "Tentar novamente",
+    reference: "Código de referência",
   },
   es: {
     title: "Algo salió mal",
     description: "Se produjo un error inesperado. Inténtalo de nuevo o vuelve más tarde.",
     retry: "Intentar de nuevo",
+    reference: "Código de referencia",
   },
 };
 
