@@ -41,9 +41,3 @@ export function readShopifyAdminCredentials():
   if (parsed.success) return { ok: true, data: parsed.data };
   return { ok: false, missing: missingKeys(parsed.error) };
 }
-
-export function logMissingShopifyAdminEnv(missing: string[]): void {
-  console.error(
-    `[shopify admin] Missing environment variable${missing.length === 1 ? "" : "s"}: ${missing.join(", ")}`,
-  );
-}

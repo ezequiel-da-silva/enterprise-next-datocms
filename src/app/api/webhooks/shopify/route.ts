@@ -3,7 +3,8 @@ import { syncProductPageFromShopify } from "@/infra/datocms/sync-product-page";
 import { logError, logWarn } from "@/infra/observability/log-error";
 import { productHandleForInventoryItem } from "@/infra/shopify/admin-inventory";
 import { SHOPIFY_CATALOG_TAG, SHOPIFY_PRODUCTS_TAG, shopifyProductTag } from "@/lib/shopify/cache-tags";
-import { logMissingShopifyWebhookEnv, readShopifyWebhookEnv } from "@/lib/shopify/env";
+import { logMissingShopifyWebhookEnv } from "@/infra/shopify/log-missing-env";
+import { readShopifyWebhookEnv } from "@/lib/shopify/env";
 import { isShopifyHmacValid } from "@/lib/shopify/hmac";
 import {
   isCollectionWebhookTopic,

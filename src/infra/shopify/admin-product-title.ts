@@ -1,6 +1,6 @@
 import { logError } from "@/infra/observability/log-error";
 import { SHOPIFY_ADMIN_API_VERSION } from "@/infra/shopify/api-version";
-import { resolveAdminAccessToken } from "@/lib/shopify/admin-access-token";
+import { resolveAdminAccessToken } from "@/infra/shopify/admin-access-token";
 import {
   DATO_ES_SHOPIFY_CANDIDATES,
   DATO_PT_SHOPIFY_CANDIDATES,

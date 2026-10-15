@@ -389,7 +389,7 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 | `src/lib/datocms/parse-product-page-title-sync.ts` | Payload Dato `product_page` |
 | `src/infra/datocms/sync-product-page.ts` | CMA upsert (EN no update se mudou) |
 | `src/lib/shopify/locale-map.ts` | Dato `pt-BR`/`es` → Shopify `pt`/`es` |
-| `src/lib/shopify/admin-access-token.ts` | Client credentials + cache Admin |
+| `src/infra/shopify/admin-access-token.ts` | Client credentials + cache Admin |
 | `src/infra/shopify/admin-product-title.ts` | `productUpdate` + `translationsRegister` |
 | `src/infra/shopify/api-version.ts` | Versões Storefront + Admin (`2026-07`); backfills `.mjs` têm cópia local |
 | `src/infra/shopify/storefront.ts` | GraphQL Storefront (`SHOPIFY_STOREFRONT_API_VERSION`) |

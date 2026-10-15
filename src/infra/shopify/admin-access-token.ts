@@ -1,8 +1,6 @@
-import {
-  logMissingShopifyAdminEnv,
-  readShopifyAdminCredentials,
-  readShopifyAdminTokenOverride,
-} from "@/lib/shopify/admin-env";
+import { logError } from "@/infra/observability/log-error";
+import { logMissingShopifyAdminEnv } from "@/infra/shopify/log-missing-env";
+import { readShopifyAdminCredentials, readShopifyAdminTokenOverride } from "@/lib/shopify/admin-env";
 import { normalizeShopDomain } from "@/lib/shopify/parse-product-webhook";
 
 const REFRESH_SKEW_MS = 60_000;
@@ -52,11 +50,12 @@ async function fetchClientCredentialsToken(
   const record = asRecord(json);
   const token = typeof record?.access_token === "string" ? record.access_token.trim() : "";
   if (!response.ok || !token) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("[resolveAdminAccessToken] client credentials failed", json);
-    } else {
-      console.error("[resolveAdminAccessToken] client credentials failed");
-    }
+    // Only Shopify's error text: the full body could echo the token on a partial success.
+    const description = record?.error_description ?? record?.error;
+    logError("shopify.admin-token", "Client credentials failed", {
+      detail: typeof description === "string" ? description : undefined,
+      context: { status: response.status },
+    });
     return null;
   }
   const expiresIn =
@@ -103,11 +102,7 @@ export async function resolveAdminAccessToken(
     cached = { token: issued.token, expiresAt: now + issued.expiresInSec * 1000 };
     return { ok: true, domain: credentials.data.SHOPIFY_STORE_DOMAIN, token: issued.token };
   } catch (err) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("[resolveAdminAccessToken] OAuth request failed", err);
-    } else {
-      console.error("[resolveAdminAccessToken] OAuth request failed");
-    }
+    logError("shopify.admin-token", "OAuth request failed", { error: err });
     return { ok: false, reason: "oauth_error" };
   }
 }

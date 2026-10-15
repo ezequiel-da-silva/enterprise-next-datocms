@@ -3,7 +3,7 @@ import {
   resetShopifyAdminTokenCacheForTests,
   resolveAdminAccessToken,
   seedShopifyAdminTokenCacheForTests,
-} from "@/lib/shopify/admin-access-token";
+} from "@/infra/shopify/admin-access-token";
 
 const KEYS = [
   "SHOPIFY_STORE_DOMAIN",
@@ -87,5 +87,31 @@ describe("resolveAdminAccessToken", () => {
 
     await expect(resolveAdminAccessToken()).resolves.toMatchObject({ token: "fresh-token" });
     expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
+  it("logs one structured line with only Shopify's error text when OAuth is rejected", async () => {
+    process.env.SHOPIFY_STORE_DOMAIN = "shop.myshopify.com";
+    process.env.SHOPIFY_CLIENT_ID = "cid";
+    process.env.SHOPIFY_API_SECRET_KEY = "secret";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 400,
+        json: async () => ({ error: "invalid_client", error_description: "Client authentication failed", echo: "secret" }),
+      }),
+    );
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(resolveAdminAccessToken()).resolves.toEqual({ ok: false, reason: "oauth_error" });
+    expect(spy).toHaveBeenCalledOnce();
+    const line = String(spy.mock.calls[0]?.[0]);
+    expect(JSON.parse(line)).toMatchObject({
+      scope: "shopify.admin-token",
+      detail: "Client authentication failed",
+      context: { status: 400 },
+    });
+    expect(line).not.toContain("secret");
+    spy.mockRestore();
   });
 });
