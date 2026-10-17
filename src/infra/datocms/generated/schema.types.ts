@@ -5480,6 +5480,7 @@ export type UiStringRecord = RecordInterface & {
   _allCookiesPrivacyPolicyLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesRejectNonEssentialLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpLowStockLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
   /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
@@ -5538,6 +5539,7 @@ export type UiStringRecord = RecordInterface & {
   cookiesRejectNonEssential?: Maybe<Scalars['String']['output']>;
   cookiesTitle?: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
+  pdpLowStock?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -5808,6 +5810,12 @@ export type UiStringRecord_AllCookiesRejectNonEssentialLocalesArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllCookiesTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpLowStockLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -6127,6 +6135,13 @@ export type UiStringRecordCookiesRejectNonEssentialArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordCookiesTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpLowStockArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };

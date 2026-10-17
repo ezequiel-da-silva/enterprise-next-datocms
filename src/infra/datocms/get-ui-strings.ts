@@ -8,8 +8,10 @@ import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
 import { ACCOUNT_COPY, type AccountCopy } from "@/lib/i18n/account-copy";
 import { CART_COPY, type CartCopy } from "@/lib/i18n/cart-copy";
 import { CONSENT_COPY, type ConsentCopy } from "@/lib/i18n/consent-copy";
+import { PDP_COPY, type PdpCopy, resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
+import { cleanOverride } from "@/lib/i18n/merge-copy";
 import { resolveAccountCopy, resolveCartCopy, resolveConsentCopy } from "@/lib/i18n/resolve-ui-copy";
-import type { UiStringsRecord } from "@/lib/i18n/ui-strings-fields";
+import { PDP_LOW_STOCK_FIELD, type UiStringsRecord } from "@/lib/i18n/ui-strings-fields";
 import { cache } from "react";
 
 /**
@@ -50,4 +52,15 @@ export async function getCartCopy(locale: AppLocale): Promise<CartCopy> {
 
 export async function getAccountCopy(locale: AppLocale): Promise<AccountCopy> {
   return resolveAccountCopy(ACCOUNT_COPY[locale], await loadUiStrings(locale));
+}
+
+export async function getPdpCopy(locale: AppLocale): Promise<PdpCopy> {
+  const base = PDP_COPY[locale];
+  const record = await loadUiStrings(locale);
+  const template =
+    cleanOverride(record?.[PDP_LOW_STOCK_FIELD as keyof NonNullable<typeof record>]) ?? base.lowStockTemplate;
+  return {
+    lowStockTemplate: template,
+    lowStock: (count) => resolveLowStockMessage(template, count),
+  };
 }

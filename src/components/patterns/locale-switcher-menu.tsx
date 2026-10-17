@@ -138,8 +138,8 @@ export function LocaleSwitcherMenu({
         id={listId}
         hidden={!open}
         className={cn(
-          "absolute right-0 z-50 mt-1 min-w-[12rem] overflow-hidden rounded-lg border border-border bg-background py-1 shadow-lg",
-          block ? "left-0 w-full" : "",
+          "absolute right-0 z-50 min-w-[12rem] overflow-hidden rounded-lg border border-border bg-background py-1 shadow-lg",
+          block ? "bottom-full left-0 mb-1 w-full" : "mt-1",
         )}
       >
         {options.map((option) => (

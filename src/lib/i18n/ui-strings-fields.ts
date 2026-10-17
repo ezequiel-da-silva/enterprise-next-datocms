@@ -37,7 +37,7 @@ export const CART_FIELDS = {
   checkout: "cartCheckout",
   checkoutNote: "cartCheckoutNote",
   checkoutUnavailable: "cartCheckoutUnavailable",
-} as const satisfies Record<Exclude<keyof CartCopy, "linkLabel">, string>;
+} as const satisfies Record<Exclude<keyof CartCopy, "linkLabel" | "closeDrawer">, string>;
 
 /** `{count}` templates replacing `CartCopy.linkLabel(count)`; both are needed to override. */
 export const CART_LINK_FIELDS = {
@@ -75,6 +75,8 @@ export const ACCOUNT_TEMPLATE_FIELDS = {
   linkSignedOut: "accountLinkLabelSignedOut",
 } as const;
 
+export const PDP_LOW_STOCK_FIELD = "pdpLowStock";
+
 export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(CONSENT_FIELDS),
   ...Object.values(CART_FIELDS),
@@ -82,6 +84,7 @@ export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(ACCOUNT_FIELDS),
   ...Object.values(ACCOUNT_ERROR_FIELDS),
   ...Object.values(ACCOUNT_TEMPLATE_FIELDS),
+  PDP_LOW_STOCK_FIELD,
 ] as const;
 
 export type UiStringsFieldName = (typeof UI_STRINGS_FIELD_NAMES)[number];

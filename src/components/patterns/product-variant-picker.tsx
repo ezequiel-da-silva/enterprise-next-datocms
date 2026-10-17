@@ -1,6 +1,8 @@
 "use client";
 
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
+import { LowStockBadge } from "@/components/patterns/low-stock-badge";
+import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
@@ -18,6 +20,7 @@ export type ProductPickerVariant = {
   availabilityLabel: string;
   options: { name: string; value: string }[];
   image: ProductPickerImage | null;
+  quantityAvailable: number | null;
 };
 
 export type ProductPickerCopy = {
@@ -38,6 +41,7 @@ type ProductVariantPickerProps = {
   copy: ProductPickerCopy;
   /** Only set when the cart is enabled and every variant id is a Shopify ProductVariant gid. */
   cart?: ProductPickerCart;
+  lowStockTemplate: string;
 };
 
 const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
@@ -62,7 +66,7 @@ function selectionOf(variant: ProductPickerVariant | undefined): Record<string, 
   return Object.fromEntries((variant?.options ?? []).map((option) => [option.name, option.value]));
 }
 
-export function ProductVariantPicker({ variants, images, copy, cart }: ProductVariantPickerProps) {
+export function ProductVariantPicker({ variants, images, copy, cart, lowStockTemplate }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(
@@ -103,6 +107,10 @@ export function ProductVariantPicker({ variants, images, copy, cart }: ProductVa
         <div aria-live="polite" className="space-y-1">
           <p className="text-lg font-medium text-foreground">{selected.priceLabel}</p>
           <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
+          <LowStockBadge
+            quantityAvailable={selected.quantityAvailable}
+            message={resolveLowStockMessage(lowStockTemplate, selected.quantityAvailable ?? 0)}
+          />
         </div>
       ) : null}
 

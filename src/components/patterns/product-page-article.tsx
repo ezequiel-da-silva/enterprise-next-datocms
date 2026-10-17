@@ -33,6 +33,8 @@ type ProductPageArticleProps = {
   addToCartAction?: AddToCartAction;
   /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
   cartCopy: CartCopy;
+  /** Template with `{count}`; resolved in the client picker when inventory is low. */
+  lowStockTemplate: string;
   /** Shipping/returns of the locale's market (Dato `market_policy`); `null` omits both JSON-LD blocks. */
   marketPolicy: MarketPolicy | null;
 };
@@ -70,6 +72,7 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
         availabilityLabel: availabilityLabel(locale, storefront.availableForSale),
         options: [],
         image: null,
+        quantityAvailable: null,
       },
     ];
   }
@@ -80,6 +83,7 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
     availabilityLabel: availabilityLabel(locale, variant.availableForSale),
     options: variant.selectedOptions,
     image: toPickerImage(variant.image, `${title} — ${variant.title}`),
+    quantityAvailable: variant.quantityAvailable,
   }));
 }
 
@@ -114,6 +118,7 @@ export function ProductPageArticle({
   storefront,
   addToCartAction,
   cartCopy,
+  lowStockTemplate,
   marketPolicy,
 }: ProductPageArticleProps) {
   const path = productPagePath(locale, handle);
@@ -153,6 +158,7 @@ export function ProductPageArticle({
           images={pickerImages(title, storefront)}
           copy={pickerCopy(locale)}
           cart={pickerCart(locale, cartCopy, variants, addToCartAction)}
+          lowStockTemplate={lowStockTemplate}
         />
       ) : null}
     </Container>

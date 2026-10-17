@@ -20,6 +20,8 @@ export type CartCopy = {
   checkout: string;
   checkoutNote: string;
   checkoutUnavailable: string;
+  /** Close the quick-cart drawer (dialog dismiss control). */
+  closeDrawer: string;
   /** Accessible name for the header cart link, e.g. "Carrinho, 2 itens". */
   linkLabel: (count: number) => string;
 };
@@ -44,6 +46,7 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     checkout: "Checkout",
     checkoutNote: "Shipping and taxes are calculated at checkout.",
     checkoutUnavailable: "Checkout is temporarily unavailable.",
+    closeDrawer: "Close cart",
     linkLabel: (count) => `Cart, ${count} ${count === 1 ? "item" : "items"}`,
   },
   pt: {
@@ -65,6 +68,7 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     checkout: "Finalizar compra",
     checkoutNote: "Frete e impostos são calculados no checkout.",
     checkoutUnavailable: "O checkout está temporariamente indisponível.",
+    closeDrawer: "Fechar carrinho",
     linkLabel: (count) => `Carrinho, ${count} ${count === 1 ? "item" : "itens"}`,
   },
   es: {
@@ -86,6 +90,7 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     checkout: "Finalizar compra",
     checkoutNote: "El envío y los impuestos se calculan en el checkout.",
     checkoutUnavailable: "El checkout no está disponible temporalmente.",
+    closeDrawer: "Cerrar carrito",
     linkLabel: (count) => `Carrito, ${count} ${count === 1 ? "artículo" : "artículos"}`,
   },
 };

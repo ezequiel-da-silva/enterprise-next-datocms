@@ -1,6 +1,9 @@
 import { buildThemeCssVariables } from "@/config/theme.config";
 import { DraftChrome, DraftContentLink } from "@/components/patterns/draft-chrome";
 import { SkipLink } from "@/components/patterns/skip-link";
+import { getCartSnapshot, removeCartLine, updateCartLine } from "@/app/actions/cart";
+import { toCartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
+import { CartChrome } from "@/components/patterns/cart-chrome";
 import { GlobalHeader } from "@/components/patterns/global-header";
 import { SiteFooter } from "@/components/patterns/site-footer";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
@@ -145,6 +148,31 @@ export default async function RootLayout({
   const themeCss = buildThemeCssVariables();
 
   const siteJsonLd = buildSiteJsonLdGraph(identity, searchPath);
+  const cartEnabled = isCartEnabled();
+
+  const pageChrome = (
+    <>
+      <div className="site-chrome sticky top-0 z-50 overflow-visible">
+        <DraftChrome />
+        <GlobalHeader
+          data={navigation}
+          locale={appLocale}
+          localeHrefs={localeHrefs}
+          searchPath={searchPath}
+          searchQuery={searchQuery}
+          initialThemeMode={initialThemeMode}
+          cartCount={cartCount}
+          accountSignedIn={accountEnabled ? customerSession !== null : null}
+          cartLinkLabel={cartCopy.linkLabel(cartCount ?? 0)}
+          accountLinkLabel={accountCopy.linkLabel(customerSession !== null)}
+        />
+      </div>
+      <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
+        {children}
+      </main>
+      <SiteFooter data={navigation} locale={appLocale} cookiePreferencesLabel={consentCopy.manage} />
+    </>
+  );
 
   return (
     <html
@@ -167,25 +195,18 @@ export default async function RootLayout({
         />
         <SkipLink locale={appLocale} />
         <JsonLdScript graph={siteJsonLd} />
-        <div className="site-chrome sticky top-0 z-50 overflow-visible">
-          <DraftChrome />
-          <GlobalHeader
-            data={navigation}
+        {cartEnabled ? (
+          <CartChrome
             locale={appLocale}
-            localeHrefs={localeHrefs}
-            searchPath={searchPath}
-            searchQuery={searchQuery}
-            initialThemeMode={initialThemeMode}
-            cartCount={cartCount}
-            accountSignedIn={accountEnabled ? customerSession !== null : null}
-            cartLinkLabel={cartCopy.linkLabel(cartCount ?? 0)}
-            accountLinkLabel={accountCopy.linkLabel(customerSession !== null)}
-          />
-        </div>
-        <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
-          {children}
-        </main>
-        <SiteFooter data={navigation} locale={appLocale} cookiePreferencesLabel={consentCopy.manage} />
+            copy={toCartDrawerCopy(cartCopy)}
+            loadCartSnapshot={getCartSnapshot}
+            lineActions={{ updateLine: updateCartLine, removeLine: removeCartLine }}
+          >
+            {pageChrome}
+          </CartChrome>
+        ) : (
+          pageChrome
+        )}
         <ConsentRoot
           copy={consentCopy}
           initialConsent={initialConsent}

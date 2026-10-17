@@ -1,6 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import { AccountLink } from "@/components/patterns/account-link";
-import { CartLink } from "@/components/patterns/cart-link";
+import { CartHeaderButton } from "@/components/patterns/cart-header-button";
 import { HeaderNav } from "@/components/patterns/header-nav";
 import { HeaderSearch } from "@/components/patterns/header-search";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
@@ -96,16 +96,16 @@ export function GlobalHeader({
       <Container
         size="lg"
         name="GlobalHeader"
-        className="flex min-h-14 items-center gap-x-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top,0px))]"
+        className="flex min-h-14 items-center gap-x-3 py-3 pt-[max(0.75rem,env(safe-area-inset-top,0px))] lg:gap-x-4"
       >
         <Link
           href={homeHref}
-          className="relative z-10 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="touch-target relative z-10 shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <span className="sr-only">{homeLabel}</span>
           {logo?.url ? (
             <span
-              className="relative block h-9 max-w-[10rem] shrink-0 overflow-hidden"
+              className="relative block h-9 max-w-[10rem] shrink-0 overflow-hidden px-1"
               style={{
                 aspectRatio: `${logo.width ?? 160} / ${logo.height ?? 40}`,
               }}
@@ -127,7 +127,7 @@ export function GlobalHeader({
           )}
         </Link>
 
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
           {menuLinks.length > 0 ? (
             <HeaderNav
               menuLinks={menuLinks}
@@ -137,18 +137,35 @@ export function GlobalHeader({
               searchBlock={searchBlock}
               localeSwitcher={localeSwitcher}
               localeSwitcherBlock={localeSwitcherBlock}
+              accountBlock={
+                typeof accountSignedIn === "boolean" ? (
+                  <AccountLink
+                    locale={locale}
+                    signedIn={accountSignedIn}
+                    label={accountLinkLabel}
+                    variant="menu-row"
+                  />
+                ) : undefined
+              }
             />
           ) : (
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="hidden shrink-0 items-center gap-3 lg:flex">
               {searchToggle}
               {localeSwitcher}
               {themeToggle}
             </div>
           )}
           {typeof accountSignedIn === "boolean" ? (
-            <AccountLink locale={locale} signedIn={accountSignedIn} label={accountLinkLabel} />
+            <AccountLink
+              locale={locale}
+              signedIn={accountSignedIn}
+              label={accountLinkLabel}
+              className="hidden lg:inline-flex"
+            />
           ) : null}
-          {typeof cartCount === "number" ? <CartLink locale={locale} count={cartCount} label={cartLinkLabel} /> : null}
+          {typeof cartCount === "number" ? (
+            <CartHeaderButton locale={locale} count={cartCount} label={cartLinkLabel} />
+          ) : null}
         </div>
       </Container>
     </header>

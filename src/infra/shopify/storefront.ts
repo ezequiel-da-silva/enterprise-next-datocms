@@ -251,6 +251,8 @@ export type StorefrontCollectionProduct = {
   title: string;
   availableForSale: boolean;
   featuredImage: StorefrontProductImage | null;
+  /** Second gallery image for card hover; null when only one image exists. */
+  hoverImage: StorefrontProductImage | null;
   priceRange: { minVariantPrice: StorefrontMoney };
 };
 
@@ -292,6 +294,14 @@ const COLLECTION_PRODUCT_FIELDS = `
     altText
     width
     height
+  }
+  images(first: 2) {
+    nodes {
+      url
+      altText
+      width
+      height
+    }
   }
   priceRange {
     minVariantPrice {
@@ -338,11 +348,18 @@ function mapCollectionProduct(value: unknown): StorefrontCollectionProduct | nul
   if (typeof record.handle !== "string" || typeof record.title !== "string") return null;
   const minPrice = readMoney(asRecord(record.priceRange)?.minVariantPrice);
   if (!minPrice) return null;
+  const featuredImage = readImage(record.featuredImage);
+  const imageNodes = asRecord(record.images)?.nodes;
+  const gallery = Array.isArray(imageNodes)
+    ? imageNodes.map(readImage).filter((img): img is NonNullable<ReturnType<typeof readImage>> => img !== null)
+    : [];
+  const second = gallery.find((img) => img.url !== featuredImage?.url) ?? null;
   return {
     handle: record.handle,
     title: record.title,
     availableForSale: record.availableForSale === true,
-    featuredImage: readImage(record.featuredImage),
+    featuredImage,
+    hoverImage: second,
     priceRange: { minVariantPrice: minPrice },
   };
 }
@@ -517,6 +534,8 @@ export async function getStorefrontProductsByHandles(
           title: product.title,
           availableForSale: product.availableForSale,
           featuredImage: product.featuredImage,
+          hoverImage:
+            product.images.find((img) => img?.url && img.url !== product.featuredImage?.url) ?? null,
           priceRange: product.priceRange,
         } satisfies StorefrontCollectionProduct,
       ]),

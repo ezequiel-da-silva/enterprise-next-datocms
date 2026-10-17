@@ -102,7 +102,18 @@ describe("getStorefrontProductByHandle", () => {
                   title: "Hat",
                   handle: "hat",
                   availableForSale: true,
-                  featuredImage: null,
+                  featuredImage: {
+                    url: "https://cdn.shopify.com/hat.jpg",
+                    altText: "Hat",
+                    width: 800,
+                    height: 800,
+                  },
+                  images: {
+                    nodes: [
+                      { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
+                      { url: "https://cdn.shopify.com/hat-alt.jpg", altText: null, width: 800, height: 800 },
+                    ],
+                  },
                   priceRange: { minVariantPrice: { amount: "19.00", currencyCode: "BRL" } },
                 },
               ],
@@ -117,6 +128,7 @@ describe("getStorefrontProductByHandle", () => {
     expect(collection?.handle).toBe("hydrogen");
     expect(collection?.products).toHaveLength(1);
     expect(collection?.products[0]?.handle).toBe("hat");
+    expect(collection?.products[0]?.hoverImage?.url).toBe("https://cdn.shopify.com/hat-alt.jpg");
     const body = JSON.parse(String(fetchMock.mock.calls[0]?.[1]?.body)) as {
       variables: { country: string };
     };
