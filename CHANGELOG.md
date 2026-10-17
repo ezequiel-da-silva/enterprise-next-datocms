@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.46.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.45.0...next-dato-v0.46.0) (2026-10-17)
+
+
+### Features
+
+* **cart:** implement cart drawer with quick access and low stock notifications ([01ddc7e](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/01ddc7e4b62db88a374d2d9b9b74036888c4c638))
+* **ui:** enhance UI strings handling for low stock notifications ([285f3ce](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/285f3cea08b62006f5fd4077ddd33aa05feb7e05))
+
 ## [0.45.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.44.0...next-dato-v0.45.0) (2026-10-15)
 
 
