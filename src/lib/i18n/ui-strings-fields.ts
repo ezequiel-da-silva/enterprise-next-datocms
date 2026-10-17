@@ -37,7 +37,7 @@ export const CART_FIELDS = {
   checkout: "cartCheckout",
   checkoutNote: "cartCheckoutNote",
   checkoutUnavailable: "cartCheckoutUnavailable",
-} as const satisfies Record<Exclude<keyof CartCopy, "linkLabel">, string>;
+} as const satisfies Record<Exclude<keyof CartCopy, "linkLabel" | "closeDrawer">, string>;
 
 /** `{count}` templates replacing `CartCopy.linkLabel(count)`; both are needed to override. */
 export const CART_LINK_FIELDS = {
@@ -74,6 +74,11 @@ export const ACCOUNT_TEMPLATE_FIELDS = {
   linkSignedIn: "accountLinkLabelSignedIn",
   linkSignedOut: "accountLinkLabelSignedOut",
 } as const;
+
+export const PDP_LOW_STOCK_FIELD = "pdpLowStock";
+
+/** Included in GET_UI_STRINGS after migration `1790900000_pdpLowStockUiString` is applied and codegen is refreshed. */
+export const UI_STRINGS_OPTIONAL_FIELD_NAMES = [PDP_LOW_STOCK_FIELD] as const;
 
 export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(CONSENT_FIELDS),

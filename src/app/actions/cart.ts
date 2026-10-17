@@ -7,10 +7,12 @@ import {
   removeCartLineSchema,
   updateCartLineSchema,
   type CartActionState,
+  type CartSnapshot,
 } from "@/core/entities/cart";
 import {
   addCartLines,
   createCart,
+  getCartFromCookie,
   removeCartLines,
   updateCartLines,
   type CartMutationResult,
@@ -19,6 +21,7 @@ import { logError } from "@/infra/observability/log-error";
 import { getCartCopy } from "@/infra/datocms/get-ui-strings";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/infra/security/rate-limit";
+import { toCartSnapshot } from "@/lib/shopify/cart-snapshot";
 import { CART_COOKIE, cartCookieOptions, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import { activeAccessToken, CUSTOMER_COOKIE, readCustomerSession } from "@/lib/shopify/customer-session";
 import { refresh } from "next/cache";
@@ -78,7 +81,21 @@ export async function addToCart(_prev: CartActionState, formData: FormData): Pro
   }
 
   await persist(result, "add");
-  return { status: "success", message: copy.added, totalQuantity: result.cart.totalQuantity };
+  return {
+    status: "success",
+    message: copy.added,
+    totalQuantity: result.cart.totalQuantity,
+    cart: toCartSnapshot(result.cart),
+  };
+}
+
+/** Fresh cart snapshot for the header quick-cart drawer. */
+export async function getCartSnapshot(locale: AppLocale): Promise<CartSnapshot | null> {
+  if (!isCartEnabled()) return null;
+  const cookieStore = await cookies();
+  const session = readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value);
+  const cart = await getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, locale, activeAccessToken(session));
+  return cart ? toCartSnapshot(cart) : null;
 }
 
 export async function updateCartLine(formData: FormData): Promise<void> {

@@ -165,9 +165,9 @@ describe("autoSourceCollectionHandle", () => {
 
 describe("applyProductLimit", () => {
   const products = [
-    { handle: "a", title: "A", availableForSale: true, featuredImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
-    { handle: "b", title: "B", availableForSale: true, featuredImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
-    { handle: "c", title: "C", availableForSale: true, featuredImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "a", title: "A", availableForSale: true, featuredImage: null, hoverImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "b", title: "B", availableForSale: true, featuredImage: null, hoverImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "c", title: "C", availableForSale: true, featuredImage: null, hoverImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
   ];
 
   it("does not slice pagination or load_more", () => {
@@ -190,6 +190,7 @@ describe("overlayDatoTitles", () => {
           title: "Hat",
           availableForSale: true,
           featuredImage: null,
+          hoverImage: null,
           priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
         },
       ],
@@ -206,6 +207,7 @@ describe("publishedStorefrontProducts", () => {
       title: "Hat",
       availableForSale: true,
       featuredImage: null,
+      hoverImage: null,
       priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
     },
     {
@@ -213,6 +215,7 @@ describe("publishedStorefrontProducts", () => {
       title: "Ghost",
       availableForSale: true,
       featuredImage: null,
+      hoverImage: null,
       priceRange: { minVariantPrice: { amount: "5", currencyCode: "USD" } },
     },
   ];

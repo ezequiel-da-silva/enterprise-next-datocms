@@ -16,6 +16,7 @@ type CatalogProductCardProps = {
 export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: CatalogProductCardProps) {
   const href = productPagePath(locale, product.handle);
   const image = product.featuredImage;
+  const hoverImage = product.hoverImage;
   const price = product.priceRange.minVariantPrice;
 
   return (
@@ -26,14 +27,34 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
       >
         <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-muted">
           {image?.url ? (
-            <Image
-              src={image.url}
-              alt={image.altText?.trim() || product.title}
-              width={image.width && image.width > 0 ? image.width : 600}
-              height={image.height && image.height > 0 ? image.height : 600}
-              sizes={sizes}
-              className="h-full w-full object-cover motion-safe:transition motion-safe:duration-300 motion-safe:group-hover:scale-[1.02]"
-            />
+            <>
+              <Image
+                src={image.url}
+                alt={image.altText?.trim() || product.title}
+                width={image.width && image.width > 0 ? image.width : 600}
+                height={image.height && image.height > 0 ? image.height : 600}
+                sizes={sizes}
+                loading="lazy"
+                className={[
+                  "h-full w-full object-cover",
+                  hoverImage?.url
+                    ? "motion-safe:transition-opacity motion-safe:duration-300 motion-safe:group-hover:opacity-0"
+                    : "",
+                ].join(" ")}
+              />
+              {hoverImage?.url ? (
+                <Image
+                  src={hoverImage.url}
+                  alt=""
+                  width={hoverImage.width && hoverImage.width > 0 ? hoverImage.width : 600}
+                  height={hoverImage.height && hoverImage.height > 0 ? hoverImage.height : 600}
+                  sizes={sizes}
+                  loading="lazy"
+                  aria-hidden
+                  className="absolute inset-0 h-full w-full object-cover opacity-0 motion-safe:transition-opacity motion-safe:duration-300 motion-safe:group-hover:opacity-100 motion-reduce:opacity-0"
+                />
+              ) : null}
+            </>
           ) : null}
         </div>
         <div className="flex flex-1 flex-col gap-2 p-4">

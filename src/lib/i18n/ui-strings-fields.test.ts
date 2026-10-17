@@ -5,7 +5,7 @@ import { ACCOUNT_COPY } from "@/lib/i18n/account-copy";
 import { CART_COPY } from "@/lib/i18n/cart-copy";
 import { CONSENT_COPY } from "@/lib/i18n/consent-copy";
 import { resolveAccountCopy, resolveCartCopy, resolveConsentCopy } from "@/lib/i18n/resolve-ui-copy";
-import { UI_STRINGS_FIELD_NAMES } from "@/lib/i18n/ui-strings-fields";
+import { UI_STRINGS_FIELD_NAMES, UI_STRINGS_OPTIONAL_FIELD_NAMES } from "@/lib/i18n/ui-strings-fields";
 
 function camelToSnake(name: string): string {
   return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -16,13 +16,18 @@ describe("ui_string field map", () => {
     expect(new Set(UI_STRINGS_FIELD_NAMES).size).toBe(UI_STRINGS_FIELD_NAMES.length);
   });
 
-  it("matches the api keys created by the Dato migration", () => {
-    const migration = readFileSync(
-      join(process.cwd(), "migrations", "1790700000_uiStringsSingleton.ts"),
-      "utf8",
-    );
-    const apiKeys = [...migration.matchAll(/key: "([a-z_]+)"/g)].map((match) => match[1]).sort();
-    const expected = UI_STRINGS_FIELD_NAMES.map(camelToSnake).sort();
+  it("matches the api keys created by the Dato migrations", () => {
+    const migrationFiles = ["1790700000_uiStringsSingleton.ts", "1790900000_pdpLowStockUiString.ts"];
+    const apiKeys = migrationFiles
+      .flatMap((file) =>
+        [
+          ...readFileSync(join(process.cwd(), "migrations", file), "utf8").matchAll(
+            /(?:key|api_key): "([a-z_]+)"/g,
+          ),
+        ].map((match) => match[1]),
+      )
+      .sort();
+    const expected = [...UI_STRINGS_FIELD_NAMES, ...UI_STRINGS_OPTIONAL_FIELD_NAMES].map(camelToSnake).sort();
     expect(apiKeys).toEqual(expected);
   });
 });

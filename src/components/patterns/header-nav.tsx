@@ -6,10 +6,11 @@ import { navLinkAriaProps } from "@/lib/a11y/nav-link";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
 import { homeBreadcrumbLabel, homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
+import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
 import { cn } from "@/lib/cn";
 import Link from "next/link";
 import { createPortal } from "react-dom";
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useCallback, useId, useRef, useState, type ReactNode } from "react";
 
 function resolveHref(raw: string, locale: AppLocale): string | null {
   const t = raw.trim();
@@ -213,6 +214,8 @@ type HeaderNavProps = {
   localeSwitcher: ReactNode;
   /** Variante de largura total para o painel móvel. */
   localeSwitcherBlock: ReactNode;
+  /** Link de conta em largura total no drawer móvel. */
+  accountBlock?: ReactNode;
 };
 
 export function HeaderNav({
@@ -223,6 +226,7 @@ export function HeaderNav({
   searchBlock,
   localeSwitcher,
   localeSwitcherBlock,
+  accountBlock,
 }: HeaderNavProps) {
   const panelId = useId();
   const dialogTitleId = useId();
@@ -232,80 +236,22 @@ export function HeaderNav({
   const close = useCallback(() => setOpen(false), []);
   const labels = mobileMenuLabels(locale);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, close]);
-
-  // `lg:hidden` esconde o painel no desktop; sem isto o `inert` e o scroll lock ficavam presos.
-  useEffect(() => {
-    if (!open) return;
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const onChange = (e: MediaQueryListEvent) => {
-      if (e.matches) close();
-    };
-    mq.addEventListener("change", onChange);
-    return () => mq.removeEventListener("change", onChange);
-  }, [open, close]);
-
-  useEffect(() => {
-    const main = document.getElementById("conteudo-principal");
-    const footer = document.querySelector("footer");
-    if (open) {
-      main?.setAttribute("inert", "");
-      footer?.setAttribute("inert", "");
-      document.body.style.overflow = "hidden";
-      requestAnimationFrame(() => {
-        const first = panelRef.current?.querySelector<HTMLElement>("button, a[href]");
-        first?.focus();
-      });
-    } else {
-      main?.removeAttribute("inert");
-      footer?.removeAttribute("inert");
-      document.body.style.overflow = "";
-    }
-    return () => {
-      main?.removeAttribute("inert");
-      footer?.removeAttribute("inert");
-      document.body.style.overflow = "";
-    };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open || !panelRef.current) return;
-    const panel = panelRef.current;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Tab") return;
-      const focusables = panel.querySelectorAll<HTMLElement>(
-        'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (focusables.length === 0) return;
-      const first = focusables[0]!;
-      const last = focusables[focusables.length - 1]!;
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    panel.addEventListener("keydown", onKeyDown);
-    return () => panel.removeEventListener("keydown", onKeyDown);
-  }, [open]);
-
   const handleClose = useCallback(() => {
     close();
     requestAnimationFrame(() => menuButtonRef.current?.focus());
   }, [close]);
 
+  useModalDialog({
+    open,
+    panelRef,
+    returnFocusRef: menuButtonRef,
+    onClose: handleClose,
+    closeOnMediaQuery: "(min-width: 1024px)",
+  });
+
   return (
     <>
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-3 lg:gap-3">
         <nav aria-label="Principal" className="hidden min-w-0 lg:block">
           <ul className="flex max-w-full flex-wrap items-center justify-end gap-2">
             {menuLinks.map((item) => (
@@ -315,11 +261,10 @@ export function HeaderNav({
             ))}
           </ul>
         </nav>
-        {/* Com o drawer aberto o painel da busca ficaria por baixo do backdrop. */}
-        {open ? null : searchToggle}
-        {/* Um compacto no header; no drawer o block monta só depois do clique. */}
-        {open ? null : localeSwitcher}
-        {open ? null : themeToggle}
+        {/* Desktop: busca/idioma/tema na barra; mobile: só no drawer. */}
+        {searchToggle ? <div className="hidden lg:contents">{searchToggle}</div> : null}
+        {localeSwitcher ? <div className="hidden lg:contents">{localeSwitcher}</div> : null}
+        {themeToggle ? <div className="hidden lg:contents">{themeToggle}</div> : null}
         <button
           ref={menuButtonRef}
           type="button"
@@ -364,22 +309,19 @@ export function HeaderNav({
                   <span id={dialogTitleId} className="text-sm font-semibold text-foreground">
                     {labels.title}
                   </span>
-                  <div className="flex shrink-0 items-center gap-2">
-                    {themeToggle}
-                    <button
-                      type="button"
-                      className="touch-target cursor-pointer rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-                      onClick={handleClose}
-                    >
-                      <span className="sr-only">{labels.dismiss}</span>
-                      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                        <path d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="touch-target cursor-pointer rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                    onClick={handleClose}
+                  >
+                    <span className="sr-only">{labels.dismiss}</span>
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                      <path d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </div>
                 <div
-                  className="flex-1 overflow-y-auto px-4 py-4"
+                  className="flex flex-1 flex-col overflow-y-auto px-4 py-4"
                   onClick={(e) => {
                     if (e.target instanceof HTMLAnchorElement) handleClose();
                   }}
@@ -395,7 +337,13 @@ export function HeaderNav({
                     </Link>
                     <MobileNavList items={menuLinks} locale={locale} depth={0} />
                   </nav>
-                  <div className="mt-4 border-t border-border pt-4">{localeSwitcherBlock}</div>
+                  {accountBlock ? (
+                    <div className="mt-4 border-t border-border pt-4">{accountBlock}</div>
+                  ) : null}
+                  <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
+                    {localeSwitcherBlock}
+                    {themeToggle}
+                  </div>
                 </div>
               </div>
             </div>,

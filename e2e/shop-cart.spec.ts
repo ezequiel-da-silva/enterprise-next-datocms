@@ -44,13 +44,20 @@ test.describe("shop cart", () => {
 
     await button!.click();
     await expect(page.getByRole("status")).toContainText("Adicionado ao carrinho.");
-    await expect(page.getByRole("link", { name: "Carrinho, 1 item" })).toBeVisible();
+    const drawer = page.getByRole("dialog");
+    await expect(drawer).toBeVisible();
+    await expect(drawer.getByRole("heading", { name: "Carrinho" })).toBeVisible();
+    await drawer.getByRole("spinbutton", { name: "Quantidade" }).fill("2");
+    await drawer.getByRole("button", { name: "Atualizar" }).click();
+    await expect(page.getByRole("button", { name: "Carrinho, 2 itens" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(drawer).toBeHidden();
 
     await page.goto("/pt/cart");
     await expect(page.getByRole("heading", { level: 1, name: "Carrinho" })).toBeVisible();
     await page.getByRole("spinbutton", { name: "Quantidade" }).fill("2");
     await page.getByRole("button", { name: "Atualizar" }).click();
-    await expect(page.getByRole("link", { name: "Carrinho, 2 itens" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Carrinho, 2 itens" })).toBeVisible();
 
     const checkout = page.getByRole("link", { name: "Finalizar compra" });
     const checkoutUrl = new URL((await checkout.getAttribute("href")) ?? "");
@@ -62,6 +69,6 @@ test.describe("shop cart", () => {
 
     await page.getByRole("button", { name: "Remover" }).click();
     await expect(page.getByText("Seu carrinho está vazio.")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Carrinho, 0 itens" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Carrinho, 0 itens" })).toBeVisible();
   });
 });
