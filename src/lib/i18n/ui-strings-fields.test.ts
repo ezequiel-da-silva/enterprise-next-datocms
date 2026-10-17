@@ -5,7 +5,7 @@ import { ACCOUNT_COPY } from "@/lib/i18n/account-copy";
 import { CART_COPY } from "@/lib/i18n/cart-copy";
 import { CONSENT_COPY } from "@/lib/i18n/consent-copy";
 import { resolveAccountCopy, resolveCartCopy, resolveConsentCopy } from "@/lib/i18n/resolve-ui-copy";
-import { UI_STRINGS_FIELD_NAMES, UI_STRINGS_OPTIONAL_FIELD_NAMES } from "@/lib/i18n/ui-strings-fields";
+import { UI_STRINGS_FIELD_NAMES } from "@/lib/i18n/ui-strings-fields";
 
 function camelToSnake(name: string): string {
   return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
@@ -27,7 +27,7 @@ describe("ui_string field map", () => {
         ].map((match) => match[1]),
       )
       .sort();
-    const expected = [...UI_STRINGS_FIELD_NAMES, ...UI_STRINGS_OPTIONAL_FIELD_NAMES].map(camelToSnake).sort();
+    const expected = [...UI_STRINGS_FIELD_NAMES].map(camelToSnake).sort();
     expect(apiKeys).toEqual(expected);
   });
 });

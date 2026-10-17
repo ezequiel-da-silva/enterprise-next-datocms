@@ -5608,6 +5608,12 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allPdpLowStockLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _createdAt: DateTime!
   """Editing URL"""
   _editingUrl: String
@@ -5996,6 +6002,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   id: ItemId!
+  pdpLowStock(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
 }
 
 """Specifies how to filter by update datetime"""

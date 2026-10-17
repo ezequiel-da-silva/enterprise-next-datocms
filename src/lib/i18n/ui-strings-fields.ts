@@ -77,9 +77,6 @@ export const ACCOUNT_TEMPLATE_FIELDS = {
 
 export const PDP_LOW_STOCK_FIELD = "pdpLowStock";
 
-/** Included in GET_UI_STRINGS after migration `1790900000_pdpLowStockUiString` is applied and codegen is refreshed. */
-export const UI_STRINGS_OPTIONAL_FIELD_NAMES = [PDP_LOW_STOCK_FIELD] as const;
-
 export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(CONSENT_FIELDS),
   ...Object.values(CART_FIELDS),
@@ -87,6 +84,7 @@ export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(ACCOUNT_FIELDS),
   ...Object.values(ACCOUNT_ERROR_FIELDS),
   ...Object.values(ACCOUNT_TEMPLATE_FIELDS),
+  PDP_LOW_STOCK_FIELD,
 ] as const;
 
 export type UiStringsFieldName = (typeof UI_STRINGS_FIELD_NAMES)[number];

@@ -58,9 +58,7 @@ export async function getPdpCopy(locale: AppLocale): Promise<PdpCopy> {
   const base = PDP_COPY[locale];
   const record = await loadUiStrings(locale);
   const template =
-    record && PDP_LOW_STOCK_FIELD in record
-      ? (cleanOverride(record[PDP_LOW_STOCK_FIELD as keyof typeof record]) ?? base.lowStockTemplate)
-      : base.lowStockTemplate;
+    cleanOverride(record?.[PDP_LOW_STOCK_FIELD as keyof NonNullable<typeof record>]) ?? base.lowStockTemplate;
   return {
     lowStockTemplate: template,
     lowStock: (count) => resolveLowStockMessage(template, count),
