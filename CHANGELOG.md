@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.47.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.46.0...next-dato-v0.47.0) (2026-10-19)
+
+
+### Features
+
+* **cart:** enhance cart functionality and UI components ([adbeb15](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/adbeb1595b7c52baa4aa5f343d82e65d88607e02))
+
 ## [0.46.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.45.0...next-dato-v0.46.0) (2026-10-17)
 
 
