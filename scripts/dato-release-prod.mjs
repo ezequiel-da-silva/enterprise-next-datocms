@@ -5,7 +5,12 @@
  *
  *   npm run dato:release:prod:dry
  *   npm run dato:release:prod
- *   node scripts/dato-release-prod.mjs [--dry-run] [--skip-promote] [--force] [--destination=<env>]
+ *   node scripts/dato-release-prod.mjs [--dry-run] [--skip-promote] [--force] [--in-place] [--destination=<env>]
+ *
+ * Fork (default): sandbox `main-post-migrations` → promote (primary continua `main`).
+ * `--in-place`: migrations no primary `main` sem fork (plano Free / PLAN_UPGRADE_REQUIRED no fork).
+ *   Não combinar com maintenance:on — o primary fica read-only e a migration falha (MAINTENANCE_MODE).
+ *   Só para migrations estritamente aditivas.
  *
  * Auth: `npx datocms login` localmente; no CI, `DATOCMS_PROD_CMA_TOKEN` (token CMA, nunca o CDA de `DATOCMS_API_TOKEN`).
  * `maintenance:off` corre sempre, mesmo quando um passo falha.
@@ -15,13 +20,21 @@ import { spawnSync } from "node:child_process";
 const PROFILE = "default";
 
 function parseArgs(argv) {
-  const parsed = { dryRun: false, skipPromote: false, force: false, destination: undefined, help: false };
+  const parsed = {
+    dryRun: false,
+    skipPromote: false,
+    force: false,
+    inPlace: false,
+    destination: undefined,
+    help: false,
+  };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--help") parsed.help = true;
     else if (arg === "--dry-run") parsed.dryRun = true;
     else if (arg === "--skip-promote") parsed.skipPromote = true;
     else if (arg === "--force") parsed.force = true;
+    else if (arg === "--in-place") parsed.inPlace = true;
     else if (arg.startsWith("--destination=")) parsed.destination = arg.slice("--destination=".length);
     else if (arg === "--destination") {
       parsed.destination = argv[i + 1];
@@ -34,9 +47,11 @@ function parseArgs(argv) {
   return parsed;
 }
 
+/** Fork temporário alinhado ao primary `main` (mesmo padrão da CLI quando `--destination` omite). */
+const DEFAULT_RELEASE_DESTINATION = "main-post-migrations";
+
 function defaultDestination() {
-  const stamp = new Date().toISOString().slice(0, 16).replace(/[-:]/g, "").replace("T", "-");
-  return `release-${stamp}`;
+  return process.env.DATOCMS_RELEASE_DESTINATION?.trim() || DEFAULT_RELEASE_DESTINATION;
 }
 
 const tokenArgs = process.env.DATOCMS_PROD_CMA_TOKEN?.trim()
@@ -59,7 +74,7 @@ function datocms(args, { allowFailure = false } = {}) {
 const args = parseArgs(process.argv.slice(2));
 if (args.help) {
   console.log(
-    "Uso: node scripts/dato-release-prod.mjs [--dry-run] [--skip-promote] [--force] [--destination=<env>]",
+    "Uso: node scripts/dato-release-prod.mjs [--dry-run] [--skip-promote] [--force] [--in-place] [--destination=<env>]",
   );
   process.exit(process.argv.includes("--help") ? 0 : 1);
 }
@@ -76,7 +91,12 @@ if (pendingStatus === 0) {
   process.exit(0);
 }
 
-datocms(["migrations:run", `--destination=${destination}`, "--dry-run"]);
+if (args.inPlace) {
+  datocms(["migrations:run", "--in-place", "--allow-primary", "--source=main", "--dry-run"]);
+} else {
+  datocms(["environments:destroy", destination], { allowFailure: true });
+  datocms(["migrations:run", `--destination=${destination}`, "--dry-run"]);
+}
 
 if (args.dryRun) {
   console.log(`\nDry-run concluído. Nada foi alterado em produção.`);
@@ -85,15 +105,27 @@ if (args.dryRun) {
 
 let failed = false;
 try {
-  datocms(["maintenance:on", ...(args.force ? ["--force"] : [])]);
-  datocms(["migrations:run", `--destination=${destination}`]);
-
-  if (args.skipPromote) {
-    console.log(`\nSandbox "${destination}" criado com as migrations. Confere no admin e promove com:`);
-    console.log(`  npm run dato:promote:prod -- ${destination}`);
+  if (args.inPlace) {
+    console.log(
+      "\nIn-place no primary `main` (sem maintenance — o modo manutenção bloqueia alterações de schema).",
+    );
+    datocms(["migrations:run", "--in-place", "--allow-primary", "--source=main"]);
+    console.log("\nMigrations aplicadas em `main`. Confere no admin e apaga sandboxes obsoletos se quiseres.");
   } else {
-    datocms(["environments:promote", destination]);
-    console.log(`\n"${destination}" é agora o primary de produção.`);
+    datocms(["maintenance:on", ...(args.force ? ["--force"] : [])]);
+    datocms(["environments:destroy", destination], { allowFailure: true });
+    datocms(["migrations:run", `--destination=${destination}`]);
+
+    if (args.skipPromote) {
+      console.log(`\nSandbox "${destination}" criado com as migrations. Confere no admin e promove com:`);
+      console.log(`  npm run dato:promote:prod -- ${destination}`);
+    } else {
+      datocms(["environments:promote", destination]);
+      console.log(
+        `\nSandbox "${destination}" promovido. O primary de produção continua a ser \`main\` (DATOCMS_ENVIRONMENT=main).`,
+      );
+      console.log(`Apaga sandboxes antigos (ex. \`main-bkp-*\`) no admin quando já não precisares de rollback.`);
+    }
   }
 } catch (error) {
   failed = true;

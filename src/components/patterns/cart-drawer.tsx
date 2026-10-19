@@ -10,7 +10,8 @@ import { useId, useRef } from "react";
 import { createPortal } from "react-dom";
 
 export function CartDrawer() {
-  const { open, cart, locale, copy, cartHref, lineActions, close, returnFocusRef, syncCart } = useCartDrawer();
+  const { open, cart, locale, copy, cartHref, lineActions, close, returnFocusRef, applyCartSnapshot } =
+    useCartDrawer();
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
 
@@ -69,7 +70,7 @@ export function CartDrawer() {
                   locale={locale}
                   copy={copy}
                   lineActions={lineActions}
-                  syncCart={syncCart}
+                  onApplySnapshot={applyCartSnapshot}
                   onNavigateProduct={close}
                 />
               ))}

@@ -28,6 +28,7 @@ type CartDrawerContextValue = {
   openFromServer: (returnFocus?: HTMLElement | null) => Promise<void>;
   close: () => void;
   syncCart: () => Promise<void>;
+  applyCartSnapshot: (snapshot: CartSnapshot) => void;
 };
 
 const CartDrawerContext = createContext<CartDrawerContextValue | null>(null);
@@ -88,6 +89,10 @@ export function CartDrawerProvider({
     setCart(await loadCartSnapshot(locale));
   }, [locale, loadCartSnapshot]);
 
+  const applyCartSnapshot = useCallback((snapshot: CartSnapshot) => {
+    setCart(snapshot);
+  }, []);
+
   const value = useMemo(
     () => ({
       open,
@@ -101,8 +106,9 @@ export function CartDrawerProvider({
       openFromServer,
       close,
       syncCart,
+      applyCartSnapshot,
     }),
-    [open, cart, locale, copy, lineActions, openWithCart, openFromServer, close, syncCart],
+    [open, cart, locale, copy, lineActions, openWithCart, openFromServer, close, syncCart, applyCartSnapshot],
   );
 
   return <CartDrawerContext.Provider value={value}>{children}</CartDrawerContext.Provider>;

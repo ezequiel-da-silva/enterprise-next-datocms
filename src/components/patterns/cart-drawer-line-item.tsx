@@ -4,44 +4,22 @@ import { Button } from "@/components/atoms/button";
 import { Input } from "@/components/atoms/input";
 import type { CartDrawerLineActions } from "@/components/patterns/cart-drawer-line-actions";
 import type { AppLocale } from "@/constants/i18n";
-import { CART_MAX_QUANTITY, type CartSnapshotLine } from "@/core/entities/cart";
+import { CART_MAX_QUANTITY, type CartSnapshot, type CartSnapshotLine } from "@/core/entities/cart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useActionState, useEffect } from "react";
 import { useFormStatus } from "react-dom";
-
-type SyncCartAfterSubmitProps = {
-  syncCart: () => Promise<void>;
-};
-
-function SyncCartAfterSubmit({ syncCart }: SyncCartAfterSubmitProps) {
-  const { pending } = useFormStatus();
-  const router = useRouter();
-  const wasPending = useRef(false);
-
-  useEffect(() => {
-    if (wasPending.current && !pending) {
-      void (async () => {
-        await syncCart();
-        router.refresh();
-      })();
-    }
-    wasPending.current = pending;
-  }, [pending, syncCart, router]);
-
-  return null;
-}
 
 type CartDrawerLineItemProps = {
   line: CartSnapshotLine;
   locale: AppLocale;
   copy: CartDrawerCopy;
   lineActions: CartDrawerLineActions;
-  syncCart: () => Promise<void>;
+  onApplySnapshot: (snapshot: CartSnapshot) => void;
   onNavigateProduct: () => void;
 };
 
@@ -50,13 +28,24 @@ export function CartDrawerLineItem({
   locale,
   copy,
   lineActions,
-  syncCart,
+  onApplySnapshot,
   onNavigateProduct,
 }: CartDrawerLineItemProps) {
   const quantityId = `drawer-cart-qty-${line.id.replace(/\W/g, "")}`;
+  const router = useRouter();
+  const [updateSnapshot, updateAction, updatePending] = useActionState(lineActions.updateLine, null);
+  const [removeSnapshot, removeAction, removePending] = useActionState(lineActions.removeLine, null);
+  const pending = updatePending || removePending;
+
+  useEffect(() => {
+    const snapshot = updateSnapshot ?? removeSnapshot;
+    if (!snapshot) return;
+    onApplySnapshot(snapshot);
+    router.refresh();
+  }, [updateSnapshot, removeSnapshot, onApplySnapshot, router]);
 
   return (
-    <li className="flex flex-col gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0">
+    <li className="flex flex-col gap-3 border-b border-border pb-4 last:border-b-0 last:pb-0" aria-busy={pending}>
       <div className="flex gap-3">
         <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
           {line.image?.url ? (
@@ -91,13 +80,14 @@ export function CartDrawerLineItem({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 pl-[4.75rem]">
-        <form action={lineActions.updateLine} className="flex items-center gap-2">
+        <form action={updateAction} className="flex items-center gap-2">
           <input type="hidden" name="lineId" value={line.id} />
           <input type="hidden" name="locale" value={locale} />
           <label htmlFor={quantityId} className="text-sm text-muted-foreground">
             {copy.quantity}
           </label>
           <Input
+            key={line.quantity}
             id={quantityId}
             name="quantity"
             type="number"
@@ -108,13 +98,11 @@ export function CartDrawerLineItem({
             className="w-16 text-center"
           />
           <UpdateButton label={copy.update} />
-          <SyncCartAfterSubmit syncCart={syncCart} />
         </form>
-        <form action={lineActions.removeLine}>
+        <form action={removeAction}>
           <input type="hidden" name="lineId" value={line.id} />
           <input type="hidden" name="locale" value={locale} />
           <RemoveButton label={copy.remove} />
-          <SyncCartAfterSubmit syncCart={syncCart} />
         </form>
       </div>
     </li>

@@ -16,7 +16,7 @@ on:
         type: boolean
         default: false
       destination:
-        description: "Nome do sandbox (vazio = release-<data>)"
+        description: "Sandbox fork (vazio = main-post-migrations; primary CDA continua main)"
         type: string
         required: false
 

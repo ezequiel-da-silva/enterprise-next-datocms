@@ -36,7 +36,7 @@ export const ACCOUNT_COPY: Record<AppLocale, AccountCopy> = {
     viewOrderHint: "(opens in a new tab)",
     loadError: "We could not load your account. Please sign in again.",
     errors: {
-      login: "Sign-in did not complete. Please try again.",
+      login: "Sign-in did not complete. Check the steps below and try again.",
       rate: "Too many attempts. Wait a minute and try again.",
       unavailable: "Sign-in is temporarily unavailable.",
     },
@@ -65,7 +65,7 @@ export const ACCOUNT_COPY: Record<AppLocale, AccountCopy> = {
     viewOrderHint: "(abre em nova aba)",
     loadError: "Não foi possível carregar sua conta. Entre novamente.",
     errors: {
-      login: "O login não foi concluído. Tente novamente.",
+      login: "Não foi possível concluir o login. Siga os passos abaixo e tente novamente.",
       rate: "Muitas tentativas. Aguarde um minuto e tente novamente.",
       unavailable: "O login está temporariamente indisponível.",
     },
@@ -94,7 +94,7 @@ export const ACCOUNT_COPY: Record<AppLocale, AccountCopy> = {
     viewOrderHint: "(se abre en una pestaña nueva)",
     loadError: "No pudimos cargar tu cuenta. Inicia sesión de nuevo.",
     errors: {
-      login: "El inicio de sesión no se completó. Inténtalo de nuevo.",
+      login: "No se pudo completar el inicio de sesión. Sigue los pasos abajo e inténtalo de nuevo.",
       rate: "Demasiados intentos. Espera un minuto e inténtalo de nuevo.",
       unavailable: "El inicio de sesión no está disponible temporalmente.",
     },

@@ -98,26 +98,52 @@ export async function getCartSnapshot(locale: AppLocale): Promise<CartSnapshot |
   return cart ? toCartSnapshot(cart) : null;
 }
 
-export async function updateCartLine(formData: FormData): Promise<void> {
-  if ((await guard()) !== "ok") return;
+async function updateCartLineMutation(formData: FormData): Promise<CartSnapshot | null> {
+  if ((await guard()) !== "ok") return null;
   const input = updateCartLineSchema.safeParse({
     lineId: formData.get("lineId"),
     quantity: formData.get("quantity"),
   });
   const cartId = await readCartId();
-  if (!input.success || !cartId) return;
+  if (!input.success || !cartId) return null;
   const locale = readLocale(formData);
   const result =
     input.data.quantity === 0
       ? await removeCartLines(cartId, [input.data.lineId], locale)
       : await updateCartLines(cartId, [{ id: input.data.lineId, quantity: input.data.quantity }], locale);
   await persist(result, input.data.quantity === 0 ? "remove" : "update");
+  return result.ok ? toCartSnapshot(result.cart) : null;
+}
+
+async function removeCartLineMutation(formData: FormData): Promise<CartSnapshot | null> {
+  if ((await guard()) !== "ok") return null;
+  const input = removeCartLineSchema.safeParse({ lineId: formData.get("lineId") });
+  const cartId = await readCartId();
+  if (!input.success || !cartId) return null;
+  const result = await removeCartLines(cartId, [input.data.lineId], readLocale(formData));
+  await persist(result, "remove");
+  return result.ok ? toCartSnapshot(result.cart) : null;
+}
+
+export async function updateCartLine(formData: FormData): Promise<void> {
+  await updateCartLineMutation(formData);
 }
 
 export async function removeCartLine(formData: FormData): Promise<void> {
-  if ((await guard()) !== "ok") return;
-  const input = removeCartLineSchema.safeParse({ lineId: formData.get("lineId") });
-  const cartId = await readCartId();
-  if (!input.success || !cartId) return;
-  await persist(await removeCartLines(cartId, [input.data.lineId], readLocale(formData)), "remove");
+  await removeCartLineMutation(formData);
+}
+
+/** Quick-cart drawer: returns fresh snapshot for `useActionState`. */
+export async function updateCartLineForDrawer(
+  _prev: CartSnapshot | null,
+  formData: FormData,
+): Promise<CartSnapshot | null> {
+  return updateCartLineMutation(formData);
+}
+
+export async function removeCartLineForDrawer(
+  _prev: CartSnapshot | null,
+  formData: FormData,
+): Promise<CartSnapshot | null> {
+  return removeCartLineMutation(formData);
 }

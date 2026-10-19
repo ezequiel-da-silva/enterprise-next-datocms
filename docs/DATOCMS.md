@@ -132,10 +132,21 @@ Atalho para os passos acima: [`scripts/dato-release-prod.mjs`](../scripts/dato-r
 ```bash
 npm run dato:release:prod:dry                   # status + dry-run, não altera nada
 npm run dato:release:prod                       # maintenance on → fork + migrations → promote → maintenance off
-node scripts/dato-release-prod.mjs --skip-promote   # cria o sandbox release-<data> sem promover
+node scripts/dato-release-prod.mjs --skip-promote   # cria o sandbox main-post-migrations sem promover
 ```
 
 Sai sem fazer nada se a produção não tiver migrations pendentes. `maintenance:off` corre sempre, mesmo quando um passo falha. Se houver editores ativos, `maintenance:on` recusa; `--force` só com acordo da equipa (o fork perde edições feitas no primary durante a release).
+
+O fork temporário chama-se **`main-post-migrations`** (igual ao default da CLI ao forkar o primary `main`). Não uses `--destination=main`: o ambiente `main` já existe. Depois do **promote**, o primary continua **`main`** no admin e na CDA (`DATOCMS_ENVIRONMENT=main`), alinhado ao Staging. Override opcional: `DATOCMS_RELEASE_DESTINATION`.
+
+Se o fork falhar com **`PLAN_UPGRADE_REQUIRED`** (`limit: items`), o plano não consegue duplicar o conteúdo — usa release **in-place** (só migrations aditivas):
+
+```bash
+npm run dato:release:prod:dry -- --in-place
+npm run dato:release:prod -- --in-place
+```
+
+**Não** ligues `maintenance:on` antes do in-place: com manutenção o primary fica read-only e a migration falha (`MAINTENANCE_MODE`). O fluxo fork+promote continua a usar maintenance para bloquear editores durante o fork.
 
 GitHub: **Actions → DatoCMS schema release (produção) → Run workflow** ([`.github/workflows/dato-release.yml`](../.github/workflows/dato-release.yml)). Começa com `dry_run` ligado. Configuração única:
 
