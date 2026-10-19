@@ -6,6 +6,8 @@ import type { CustomerOrder, CustomerOverview } from "@/infra/shopify/customer-a
 import type { AccountCopy, AccountErrorCode } from "@/lib/i18n/account-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
+import { AccountOAuthLocalNotice } from "@/components/patterns/account-oauth-local-notice";
+import type { AccountOAuthLocalNotice as AccountOAuthLocalNoticeContent } from "@/lib/shopify/account-oauth-setup-hint";
 import { accountPath } from "@/lib/shopify/customer-session";
 
 type AccountViewProps = {
@@ -15,6 +17,8 @@ type AccountViewProps = {
   /** `null` = signed out; `"error"` = signed in but the Customer Account API call failed. */
   customer: CustomerOverview | "error" | null;
   error?: AccountErrorCode | null;
+  /** When set, shown under the sign-in button (localhost OAuth setup). */
+  oauthLocalNotice?: AccountOAuthLocalNoticeContent | null;
 };
 
 function formatOrderDate(locale: AppLocale, iso: string): string {
@@ -57,9 +61,12 @@ function OrderItem({ order, locale, copy }: { order: CustomerOrder; locale: AppL
   );
 }
 
-export function AccountView({ locale, copy, customer, error }: AccountViewProps) {
+export function AccountView({ locale, copy, customer, error, oauthLocalNotice }: AccountViewProps) {
   const loginHref = `/api/account/login?locale=${locale}`;
-  const message = error ? copy.errors[error] : customer === "error" ? copy.loadError : null;
+  const hideLoginErrorBecauseNotice = error === "login" && oauthLocalNotice != null;
+  const message = error && !hideLoginErrorBecauseNotice ? copy.errors[error] : customer === "error" ? copy.loadError : null;
+  const loginErrorWithNotice =
+    error === "login" && oauthLocalNotice != null ? copy.errors.login : null;
 
   return (
     <Container as="section" size="sm" name="AccountView" className="py-12">
@@ -113,6 +120,12 @@ export function AccountView({ locale, copy, customer, error }: AccountViewProps)
           <Button asChild className="touch-target">
             <a href={loginHref}>{copy.signIn}</a>
           </Button>
+          {loginErrorWithNotice ? (
+            <p role="alert" className="text-sm text-destructive">
+              {loginErrorWithNotice}
+            </p>
+          ) : null}
+          {oauthLocalNotice ? <AccountOAuthLocalNotice notice={oauthLocalNotice} /> : null}
         </div>
       )}
     </Container>

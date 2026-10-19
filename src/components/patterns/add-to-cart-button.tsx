@@ -31,11 +31,15 @@ export function AddToCartButton({ action, variantId, available, locale, cartHref
   const formRef = useRef<HTMLFormElement>(null);
   const drawer = useOptionalCartDrawer();
 
+  const openedSuccessKeyRef = useRef<string | null>(null);
+
   useEffect(() => {
-    if (state.status === "success" && drawer) {
-      const trigger = formRef.current?.querySelector<HTMLElement>('button[type="submit"]');
-      drawer.openWithCart(state.cart, trigger ?? null);
-    }
+    if (state.status !== "success" || !drawer) return;
+    const key = `${state.cart.id}:${state.totalQuantity}`;
+    if (openedSuccessKeyRef.current === key) return;
+    openedSuccessKeyRef.current = key;
+    const trigger = formRef.current?.querySelector<HTMLElement>('button[type="submit"]');
+    drawer.openWithCart(state.cart, trigger ?? null);
   }, [state, drawer]);
 
   return (

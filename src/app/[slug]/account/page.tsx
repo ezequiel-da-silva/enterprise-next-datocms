@@ -1,6 +1,7 @@
 import { AccountView } from "@/components/sections/account-view";
 import { isAppLocale } from "@/constants/i18n";
-import { getCustomerOverview } from "@/infra/shopify/customer-account";
+import { customerAccountRedirectUri, getCustomerOverview } from "@/infra/shopify/customer-account";
+import { accountOAuthLocalNotice } from "@/lib/shopify/account-oauth-setup-hint";
 import { getAccountCopy } from "@/infra/datocms/get-ui-strings";
 import { isAccountErrorCode } from "@/lib/i18n/account-copy";
 import { buildMetadata } from "@/lib/seo";
@@ -43,12 +44,32 @@ export default async function AccountPage({ params, searchParams }: AccountPageP
   const session = readCustomerSession((await cookies()).get(CUSTOMER_COOKIE)?.value);
   if (session && isSessionExpiring(session)) {
     if (session.refreshToken) redirect(`/api/account/refresh?next=${encodeURIComponent(accountPath(slug))}`);
-    return <AccountView locale={slug} copy={await getAccountCopy(slug)} customer={null} error={error} />;
+    const oauthLocalNotice = accountOAuthLocalNotice(slug, customerAccountRedirectUri());
+    return (
+      <AccountView
+        locale={slug}
+        copy={await getAccountCopy(slug)}
+        customer={null}
+        error={error}
+        oauthLocalNotice={oauthLocalNotice}
+      />
+    );
   }
+
+  const oauthCallbackUrl = customerAccountRedirectUri();
+  const oauthLocalNotice = accountOAuthLocalNotice(slug, oauthCallbackUrl);
 
   const [copy, customer] = await Promise.all([
     getAccountCopy(slug),
     session ? getCustomerOverview(session.accessToken).then((overview) => overview ?? "error") : null,
   ]);
-  return <AccountView locale={slug} copy={copy} customer={customer} error={error} />;
+  return (
+    <AccountView
+      locale={slug}
+      copy={copy}
+      customer={customer}
+      error={error}
+      oauthLocalNotice={customer ? null : oauthLocalNotice}
+    />
+  );
 }

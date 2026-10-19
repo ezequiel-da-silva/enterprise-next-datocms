@@ -1,7 +1,11 @@
 import { buildThemeCssVariables } from "@/config/theme.config";
 import { DraftChrome, DraftContentLink } from "@/components/patterns/draft-chrome";
 import { SkipLink } from "@/components/patterns/skip-link";
-import { getCartSnapshot, removeCartLine, updateCartLine } from "@/app/actions/cart";
+import {
+  getCartSnapshot,
+  removeCartLineForDrawer,
+  updateCartLineForDrawer,
+} from "@/app/actions/cart";
 import { toCartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
 import { CartChrome } from "@/components/patterns/cart-chrome";
 import { GlobalHeader } from "@/components/patterns/global-header";
@@ -200,7 +204,7 @@ export default async function RootLayout({
             locale={appLocale}
             copy={toCartDrawerCopy(cartCopy)}
             loadCartSnapshot={getCartSnapshot}
-            lineActions={{ updateLine: updateCartLine, removeLine: removeCartLine }}
+            lineActions={{ updateLine: updateCartLineForDrawer, removeLine: removeCartLineForDrawer }}
           >
             {pageChrome}
           </CartChrome>
