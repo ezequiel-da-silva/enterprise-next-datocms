@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "better-writing": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/better-writing/SKILL.md",
+      "computedHash": "ce45d0cb11dea15e38ebb87fd8ac26944aef9ea30db0a644a91506aa70b571bc"
+    },
     "datocms-cda": {
       "source": "datocms/agent-skills",
       "sourceType": "github",
@@ -48,6 +54,12 @@
       "sourceType": "github",
       "skillPath": "skills/datocms-setup/SKILL.md",
       "computedHash": "3f0652f26a1b0f6c25fd5119f0cdff94a796f85cf2ecd3273f2445ed31f4dd7c"
+    },
+    "interface-review": {
+      "source": "jakubkrehel/skills",
+      "sourceType": "github",
+      "skillPath": "skills/interface-review/SKILL.md",
+      "computedHash": "a9c11cb2615f3f04a000c39fa355bfdcfebad3b381ee6bfa932ed19e06db2740"
     }
   }
 }
