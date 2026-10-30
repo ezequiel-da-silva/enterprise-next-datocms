@@ -69,7 +69,7 @@ export function AccountView({ locale, copy, customer, error, oauthLocalNotice }:
     error === "login" && oauthLocalNotice != null ? copy.errors.login : null;
 
   return (
-    <Container as="section" size="sm" name="AccountView" className="py-12">
+    <Container as="section" size="sm" name="AccountView" data-ui-section="AccountView" className="py-12">
       <header className="space-y-4">
         <BreadcrumbNav
           locale={locale}
@@ -99,7 +99,7 @@ export function AccountView({ locale, copy, customer, error, oauthLocalNotice }:
             </Button>
           </div>
 
-          <section aria-labelledby="account-orders-title" className="space-y-2">
+          <section data-ui-section="AccountOrders" aria-labelledby="account-orders-title" className="space-y-2">
             <h2 id="account-orders-title" className="text-2xl font-semibold tracking-tight text-foreground">
               {copy.ordersTitle}
             </h2>

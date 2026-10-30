@@ -134,7 +134,7 @@ export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProp
   const subtotal = cart?.subtotal;
 
   return (
-    <Container as="section" size="sm" name="CartView" className="py-12">
+    <Container as="section" size="sm" name="CartView" data-ui-section="CartView" className="py-12">
       <header className="space-y-4">
         <BreadcrumbNav
           locale={locale}

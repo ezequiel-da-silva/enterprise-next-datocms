@@ -40,6 +40,7 @@ export function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        data-ui-section="CartDrawer"
         className="absolute right-0 top-0 flex h-full w-[min(100%,24rem)] flex-col border-l border-border bg-background shadow-xl"
       >
         <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">

@@ -8,7 +8,7 @@ import type { ElementType, HTMLAttributes, ReactNode } from "react";
  * - md (5xl): páginas e listagens (default)
  * - lg (6xl): header, footer e secções wide
  *
- * Identificação no DOM (como `data-cms-block` nos blocos CMS):
+ * Identificação no DOM (como `data-cms-block`/`data-cms-record` no CMS e `data-ui-section` na UI):
  * `data-container="Container"` + `data-container-size="md"`.
  * Usa `name` para instâncias nomeadas (ex.: `name="GlobalHeader"`).
  */

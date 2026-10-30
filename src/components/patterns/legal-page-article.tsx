@@ -4,6 +4,7 @@ import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
 import type { LegalPageRecord } from "@/infra/datocms/types-legal";
+import { cmsRecordAttrs } from "@/lib/datocms/cms-block-attrs";
 import { structuredTextHasHeadingLevel } from "@/lib/datocms/structured-text-has-heading";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
@@ -44,7 +45,13 @@ export async function LegalPageArticle({
   return (
     <>
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
-      <Container as="article" size="sm" name="LegalPageArticle" className="py-12">
+      <Container
+        as="article"
+        size="sm"
+        name="LegalPageArticle"
+        {...cmsRecordAttrs({ __typename: "LegalPageRecord", id: page.id })}
+        className="py-12"
+      >
         <BreadcrumbNav locale={locale} items={breadcrumbItems} />
         <div className="mt-4">
           {!bodyHasH1 ? (
