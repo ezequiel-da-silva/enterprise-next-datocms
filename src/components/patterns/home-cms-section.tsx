@@ -6,7 +6,7 @@ type HomeCmsSectionProps = {
 export function HomeCmsSection({ locales, error }: HomeCmsSectionProps) {
   if (error) {
     return (
-      <section aria-labelledby="cms-heading" className="rounded-lg border border-border p-6">
+      <section data-ui-section="HomeCmsStatus" aria-labelledby="cms-heading" className="rounded-lg border border-border p-6">
         <h2 id="cms-heading" className="text-lg font-semibold text-foreground">
           DatoCMS
         </h2>
@@ -19,7 +19,7 @@ export function HomeCmsSection({ locales, error }: HomeCmsSectionProps) {
   }
 
   return (
-    <section aria-labelledby="cms-heading" className="rounded-lg border border-border p-6">
+    <section data-ui-section="HomeCmsStatus" aria-labelledby="cms-heading" className="rounded-lg border border-border p-6">
       <h2 id="cms-heading" className="text-lg font-semibold text-foreground">
         Conteúdo via DatoCMS
       </h2>

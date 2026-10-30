@@ -40,12 +40,20 @@ export function CartDrawer() {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        data-ui-section="CartDrawer"
         className="absolute right-0 top-0 flex h-full w-[min(100%,24rem)] flex-col border-l border-border bg-background shadow-xl"
       >
         <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-          <h2 id={titleId} className="text-base font-semibold text-foreground">
-            {copy.title}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 id={titleId} className="text-base font-semibold text-foreground">
+              {copy.title}
+            </h2>
+            {cart && cart.totalQuantity > 0 ? (
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {cart.totalQuantity} {cart.totalQuantity === 1 ? "item" : locale === "pt" ? "itens" : "items"}
+              </span>
+            ) : null}
+          </div>
           <button
             type="button"
             className="touch-target cursor-pointer rounded-md text-muted-foreground hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

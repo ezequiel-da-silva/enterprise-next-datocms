@@ -118,7 +118,7 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
   );
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12">
+    <div className="mx-auto w-full max-w-5xl px-4 py-12" data-cms-record="CategoryRecord" data-cms-record-id={category.id}>
       <JsonLdScript graph={jsonLd} />
       <BreadcrumbNav
         locale={locale}
@@ -164,7 +164,7 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
         ) : null}
       </header>
 
-      <section className="mt-10" aria-labelledby="categoria-artigos">
+      <section data-ui-section="CategoryPosts" className="mt-10" aria-labelledby="categoria-artigos">
         <h2 id="categoria-artigos" className="text-xl font-semibold tracking-tight text-foreground">
           Artigos nesta categoria
         </h2>

@@ -34,6 +34,7 @@ export type CartSnapshotLine = {
   quantity: number;
   productTitle: string;
   productHandle: string;
+  variantTitle?: string | null;
   unitPrice: CartSnapshotMoney;
   total: CartSnapshotMoney;
   image: { url: string; alt: string } | null;

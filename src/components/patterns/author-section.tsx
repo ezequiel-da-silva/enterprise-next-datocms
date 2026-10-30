@@ -2,6 +2,7 @@ import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-pic
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { AppLocale } from "@/constants/i18n";
 import type { AuthorDetailRecord } from "@/infra/datocms/types-blog";
+import { cmsRecordAttrs } from "@/lib/datocms/cms-block-attrs";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import Link from "next/link";
@@ -31,7 +32,11 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
   const role = author.authorRole?.trim() ?? "";
 
   return (
-    <section className="mt-12 rounded-xl border border-border bg-muted/20 p-6 ring-1 ring-border/40" aria-labelledby={`autor-${author.id}`}>
+    <section
+      {...cmsRecordAttrs({ __typename: "AuthorRecord", id: author.id })}
+      className="mt-12 rounded-xl border border-border bg-muted/20 p-6 ring-1 ring-border/40"
+      aria-labelledby={`autor-${author.id}`}
+    >
       <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
         <div className="shrink-0 overflow-hidden rounded-full border border-border bg-background shadow-sm ring-2 ring-border/50">
           {avatarMobile?.url ? (

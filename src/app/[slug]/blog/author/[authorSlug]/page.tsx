@@ -124,7 +124,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
   const jsonLd = [...listingLd, buildAuthorPersonJsonLd(locale, authorSlug, author)];
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12">
+    <div className="mx-auto w-full max-w-5xl px-4 py-12" data-cms-record="AuthorRecord" data-cms-record-id={author.id}>
       <JsonLdScript graph={jsonLd} />
       <BreadcrumbNav
         locale={locale}
@@ -165,7 +165,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
         </div>
       </header>
 
-      <section className="mt-10" aria-labelledby="autor-artigos">
+      <section data-ui-section="AuthorPosts" className="mt-10" aria-labelledby="autor-artigos">
         <h2 id="autor-artigos" className="text-xl font-semibold tracking-tight text-foreground">
           Artigos
         </h2>

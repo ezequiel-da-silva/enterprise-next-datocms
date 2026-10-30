@@ -1,6 +1,5 @@
 import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
-import { Input } from "@/components/atoms/input";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import type { AppLocale } from "@/constants/i18n";
 import { CART_MAX_QUANTITY } from "@/core/entities/cart";
@@ -46,8 +45,12 @@ type CartLineItemProps = {
 };
 
 function CartLineItem({ line, locale, copy, actions }: CartLineItemProps) {
-  const quantityId = `cart-qty-${line.id.replace(/\W/g, "")}`;
   const variant = variantLabel(line);
+  const decreaseLabel =
+    locale === "pt" ? "Diminuir quantidade" : locale === "es" ? "Disminuir cantidad" : "Decrease quantity";
+  const increaseLabel =
+    locale === "pt" ? "Aumentar quantidade" : locale === "es" ? "Aumentar cantidad" : "Increase quantity";
+
   return (
     <li className="grid grid-cols-[4.5rem_minmax(0,1fr)] gap-x-4 gap-y-4 border-b border-border py-6 sm:grid-cols-[6rem_minmax(0,1fr)]">
       <div className="row-span-2">
@@ -85,25 +88,58 @@ function CartLineItem({ line, locale, copy, actions }: CartLineItemProps) {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <form action={actions.updateLine} className="flex items-center gap-2">
+        <form
+          action={actions.updateLine}
+          className="inline-flex items-center rounded-lg border border-border bg-background shadow-xs"
+        >
           <input type="hidden" name="lineId" value={line.id} />
           <input type="hidden" name="locale" value={locale} />
-          <label htmlFor={quantityId} className="text-sm text-muted-foreground">
-            {copy.quantity}
-          </label>
-          <Input
-            id={quantityId}
+          <button
+            type="submit"
             name="quantity"
-            type="number"
-            inputMode="numeric"
-            min={0}
-            max={CART_MAX_QUANTITY}
-            defaultValue={line.quantity}
-            className="w-16 text-center"
-          />
-          <Button type="submit" variant="outline" className="touch-target">
-            {copy.update}
-          </Button>
+            value={line.quantity - 1}
+            disabled={line.quantity <= 1}
+            aria-label={`${decreaseLabel}: ${line.productTitle}`}
+            className="flex h-8 w-8 items-center justify-center rounded-l-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+          <span className="min-w-8 px-2 text-center text-sm font-semibold tabular-nums text-foreground">
+            {line.quantity}
+          </span>
+          <button
+            type="submit"
+            name="quantity"
+            value={line.quantity + 1}
+            disabled={line.quantity >= CART_MAX_QUANTITY}
+            aria-label={`${increaseLabel}: ${line.productTitle}`}
+            className="flex h-8 w-8 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
         </form>
         <form action={actions.removeLine}>
           <input type="hidden" name="lineId" value={line.id} />
@@ -134,7 +170,7 @@ export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProp
   const subtotal = cart?.subtotal;
 
   return (
-    <Container as="section" size="sm" name="CartView" className="py-12">
+    <Container as="section" size="sm" name="CartView" data-ui-section="CartView" className="py-12">
       <header className="space-y-4">
         <BreadcrumbNav
           locale={locale}
