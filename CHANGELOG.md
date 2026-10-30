@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.48.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.47.0...next-dato-v0.48.0) (2026-10-30)
+
+
+### Features
+
+* **data-name:** add blog author and category dynamic pages along with UI components and DatoCMS utilities ([14ba3dc](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/14ba3dc52241acc4a16a9bfed565627b7bdad841))
+* **dependencies:** update next and eslint-config-next to latest versions ([8ec98ee](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8ec98ee57894cd1be086e33ccbf1865665bbfdad))
+* **skills:** add better-writing and interface-review skills with documentation ([7165949](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/716594995203a7c6f8ce73f2694f87d7686f7e22))
+
 ## [0.47.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.46.0...next-dato-v0.47.0) (2026-10-19)
 
 
