@@ -38,6 +38,7 @@ describe("toCartSnapshot", () => {
           quantity: 2,
           productTitle: "Hat",
           productHandle: "hat",
+          variantTitle: "Default",
           unitPrice: { amount: "10.00", currencyCode: "USD" },
           total: { amount: "20.00", currencyCode: "USD" },
           image: { url: "https://cdn.shopify.com/hat.jpg", alt: "Hat" },

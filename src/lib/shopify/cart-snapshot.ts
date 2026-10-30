@@ -7,6 +7,8 @@ function mapLine(line: StorefrontCartLine): CartSnapshotLine {
     quantity: line.quantity,
     productTitle: line.productTitle,
     productHandle: line.productHandle,
+    variantTitle:
+      line.variantTitle && line.variantTitle !== "Default Title" ? line.variantTitle : null,
     unitPrice: { amount: line.unitPrice.amount, currencyCode: line.unitPrice.currencyCode },
     total: { amount: line.total.amount, currencyCode: line.total.currencyCode },
     image: line.image?.url
