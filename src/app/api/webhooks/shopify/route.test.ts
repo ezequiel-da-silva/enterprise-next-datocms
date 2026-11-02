@@ -33,7 +33,7 @@ describe("POST /api/webhooks/shopify", () => {
     );
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({ error: "Webhook not configured" });
-    const logged = errorSpy.mock.calls.map((call) => String(call[0])).join("\n");
+    const logged = errorSpy.mock.calls.map((call: readonly unknown[]) => String(call[0])).join("\n");
     expect(logged).toContain("SHOPIFY_API_SECRET_KEY");
     expect(logged).not.toContain('"missing":[');
   });

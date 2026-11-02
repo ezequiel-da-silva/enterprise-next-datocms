@@ -37,6 +37,8 @@ describe("POST /api/webhooks/datocms/collection-page", () => {
     );
     expect(res.status).toBe(500);
     await expect(res.json()).resolves.toEqual({ error: "Webhook not configured" });
-    expect(errorSpy.mock.calls.map((call) => String(call[0])).join("\n")).toContain("DATOCMS_REVALIDATE_SECRET");
+    expect(errorSpy.mock.calls.map((call: readonly unknown[]) => String(call[0])).join("\n")).toContain(
+      "DATOCMS_REVALIDATE_SECRET",
+    );
   });
 });
