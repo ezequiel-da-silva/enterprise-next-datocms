@@ -64,21 +64,44 @@ function imageOverlay(record: HeroSectionRecord) {
   return record.imageOverlay ?? readCdaObject<NonNullable<HeroSectionRecord["imageOverlay"]>>(record as Record<string, unknown>, "imageOverlay", "image_overlay");
 }
 
-function HeroButtons({ record, locale }: { record: HeroSectionRecord; locale: AppLocale }) {
-  if (!readCdaBool(record, "showButton", "show_button")) return null;
-  const items = buttons(record).filter((link) => {
+function heroCtaLinks(record: HeroSectionRecord, locale: AppLocale): LinkBlockRecord[] {
+  if (!readCdaBool(record, "showButton", "show_button")) return [];
+  return buttons(record).filter((link) => {
     const label = (link.ctaLabel ?? "").trim();
     return label.length > 0 && resolveLinkBlock(link, locale) != null;
   });
+}
+
+function HeroButtons({ record, locale }: { record: HeroSectionRecord; locale: AppLocale }) {
+  const items = heroCtaLinks(record, locale);
   if (items.length === 0) return null;
   return (
     <div className="mt-8 flex flex-wrap gap-3">
-      {items.map((link) => (
-        <Button key={link.id} asChild variant="primary">
-          <SmartLink record={link} locale={locale} />
+      {items.map((link, index) => (
+        <Button key={link.id} asChild variant={index === 0 ? "primary" : "outline"}>
+          <SmartLink record={link} locale={locale} tone="inherit" />
         </Button>
       ))}
     </div>
+  );
+}
+
+/** Repeats the hero's first CTA. The home uses this at the bottom when no closing banner exists. */
+export function HeroPrimaryRepeat({
+  record,
+  locale,
+}: {
+  record: HeroSectionRecord;
+  locale: AppLocale;
+}) {
+  const link = heroCtaLinks(record, locale)[0];
+  if (!link) return null;
+  return (
+    <section className="not-prose mt-12 flex flex-wrap">
+      <Button asChild variant="primary">
+        <SmartLink record={link} locale={locale} tone="inherit" />
+      </Button>
+    </section>
   );
 }
 
@@ -213,10 +236,10 @@ export function HeroSectionBlock({
           <div className="min-w-0">
             <div
               className={cn(
-                "rounded-2xl border px-6 py-8 shadow-lg ring-1 backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-lg",
+                "rounded-2xl border px-6 py-8 shadow-lg ring-1",
                 hasOverlayBg
-                  ? "border-white/15 bg-black/55 text-white ring-black/30 supports-[backdrop-filter]:bg-black/45 [&_a]:text-white [&_a]:underline-offset-4 [&_a]:hover:text-white/90"
-                  : "border-border bg-background/95 text-foreground ring-border/60",
+                  ? "border-white/15 bg-black/80 text-white ring-black/30"
+                  : "border-border bg-background/95 text-foreground ring-border/60 backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-lg",
               )}
             >
               {title ? (
@@ -232,7 +255,7 @@ export function HeroSectionBlock({
                 contentLinkGroup={contentLinkGroup}
                 className={
                   hasOverlayBg
-                    ? "mt-4 text-lg text-white/95 [&_p]:mt-0 [&_a]:text-white"
+                    ? "mt-4 text-lg text-white [&_p]:mt-0 [&_a]:text-white"
                     : "mt-4 text-lg text-muted-foreground [&_p]:mt-0 [&_a]:text-primary"
                 }
               />

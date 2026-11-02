@@ -69,6 +69,7 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
 
   const directives = [
     "default-src 'self'",
+    "object-src 'none'",
     `script-src 'self' 'nonce-${nonce}'${scriptExtra}${optional.script}`,
     /* Fontes via next/font: ficheiros em /_next/static — cobertos por font-src 'self'. Sem fonts.googleapis.com / gstatic. */
     ...styleDirectives,

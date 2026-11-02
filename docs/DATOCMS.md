@@ -360,7 +360,7 @@ Rota: [`POST /api/revalidate`](../src/app/api/revalidate/route.ts).
 | | |
 |--|--|
 | URL | `https://<domínio>/api/revalidate` |
-| Auth | Header `Authorization: Bearer <DATOCMS_REVALIDATE_SECRET>` **ou** `?token=<secret>` |
+| Auth | Header `Authorization: Bearer <DATOCMS_REVALIDATE_SECRET>` apenas. `?token=` é ignorado (o segredo iria para logs de acesso e `Referer`). |
 | Secret | Variável **Secret** na Vercel: `DATOCMS_REVALIDATE_SECRET` (não reutilizar o preview secret) |
 
 Não é preciso Turso/Postgres: este repo não passa as tags opacas da CDA ao `fetch` (limite de 64 no Next). O webhook mapeia o payload Dato para as **mesmas** strings dos `get-*.ts`.

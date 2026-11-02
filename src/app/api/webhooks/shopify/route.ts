@@ -34,10 +34,7 @@ function unauthorized(): NextResponse {
 
 function missingEnvResponse(missing: string[]): NextResponse {
   logMissingShopifyWebhookEnv(missing);
-  return NextResponse.json(
-    { error: "Webhook not configured", missing },
-    { status: 500 },
-  );
+  return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
 }
 
 /**

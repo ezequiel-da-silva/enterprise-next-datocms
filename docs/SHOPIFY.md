@@ -126,7 +126,7 @@ A rota Shopify → Dato: HMAC do **corpo cru** → loja igual a `SHOPIFY_STORE_D
 
 O webhook Dato **Next.js revalidate** (`POST /api/revalidate`) só invalida cache. O título Dato → Shopify é **outro** webhook (passo 4b).
 
-Respostas Shopify: **500** env em falta; **401** HMAC, loja ou tópico inválidos; **400** JSON/payload; **200** `{ "success": true }`.
+Respostas Shopify: **500** `{ "error": "Webhook not configured" }` quando falta env (os nomes ficam só no log); **401** HMAC, loja ou tópico inválidos; **400** JSON/payload; **200** `{ "success": true }`.
 
 #### Cache do catálogo e estoque
 

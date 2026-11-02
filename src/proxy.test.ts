@@ -54,6 +54,12 @@ describe("proxy", () => {
     }
   });
 
+  it("blocks legacy object plugins and does not require cross-origin isolation", async () => {
+    const res = await proxy(makeRequest(`/${DEFAULT_APP_LOCALE}`));
+    expect(res.headers.get("content-security-policy")).toContain("object-src 'none'");
+    expect(res.headers.get("cross-origin-embedder-policy")).toBeNull();
+  });
+
   it("emits a per-request nonce inside the CSP", async () => {
     const a = (await proxy(makeRequest(`/${DEFAULT_APP_LOCALE}`))).headers.get("content-security-policy") ?? "";
     const b = (await proxy(makeRequest(`/${DEFAULT_APP_LOCALE}`))).headers.get("content-security-policy") ?? "";

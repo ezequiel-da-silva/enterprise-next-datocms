@@ -1,5 +1,5 @@
 import { Container } from "@/components/atoms/container";
-import { HeroSectionBlock } from "@/components/patterns/hero-section-block";
+import { HeroPrimaryRepeat, HeroSectionBlock } from "@/components/patterns/hero-section-block";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { PageContentBlocks } from "@/components/patterns/page-content-blocks";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
@@ -68,6 +68,8 @@ export async function CmsPageArticle({
   const heroH1 = heroFirstBlockSuppliesH1(page.heroPage);
   const wideLayout = heroH1 || Boolean(page.heroPage) || page.contentPage.length > 0;
   const isHome = page.slug.toLowerCase() === "home";
+  const lastBlock = page.contentPage.at(-1);
+  const homeClosesWithCta = lastBlock?.__typename === "CtaBannerRecord";
   const breadcrumbItems = isHome
     ? [{ label: homeBreadcrumbLabel(locale), href: canonicalPath }]
     : crumbsToNavItems([
@@ -121,6 +123,9 @@ export async function CmsPageArticle({
             searchFormAction={canonicalPath}
             searchResults={searchResults}
           />
+          {isHome && page.heroPage && !homeClosesWithCta ? (
+            <HeroPrimaryRepeat record={page.heroPage} locale={locale} />
+          ) : null}
         </div>
       </Container>
     </>

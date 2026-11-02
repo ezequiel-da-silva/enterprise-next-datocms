@@ -13,7 +13,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 - Nonce por request: `crypto.getRandomValues` → header `x-nonce` (`NONCE_HEADER`).
 - Produção: `script-src` com nonce + `'strict-dynamic'`; `style-src` / `style-src-elem` com nonce; `style-src-attr 'unsafe-inline'` (necessário para `next/image`; preferir classes em vez de `style={{}}` na app).
 - Dev: `'unsafe-eval'` e `style-src`/`style-src-elem`/`style-src-attr` com `'unsafe-inline'` só para HMR — não copiar para prod.
-- Diretivas fixas: `default-src 'self'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`.
+- Diretivas fixas: `default-src 'self'`, `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `upgrade-insecure-requests`. Sem `Cross-Origin-Embedder-Policy` (bloquearia imagens Dato e Shopify).
 - Media do Dato: `img-src` inclui `www.datocms-assets.com` + `image.mux.com` (posters de vídeo) + `cdn.shopify.com` (PDP); `media-src` inclui `www.datocms-assets.com` + `*.mux.com` — wildcard recomendado pelo Mux, que entrega por vários CDNs (`stream.mux.com` redireciona para `*.fastly.mux.com`).
 - `frame-ancestors`: `'self'`, `plugins-cdn.datocms.com`, `DATOCMS_ADMIN_FRAME_ANCESTOR`.
 - Hosts condicionais (`optionalCspHosts`): Google (`GA_CSP_HOSTS`) só com `GA_MEASUREMENT_ID`; loja/checkout Shopify em `connect-src` e `cdn.shopify.com` em `script-src` só com `SHOPIFY_STOREFRONT_PUBLIC_TOKEN`. Trackers novos: entram atrás de `ConsentScript` e com host condicional, nunca fixo. Vercel Speed Insights (`isSpeedInsightsEnabled()`: `VERCEL=1` ou `SPEED_INSIGHTS_ENABLED`) reporta para `/_vercel/speed-insights/*` no mesmo origin; `va.vercel-scripts.com` só entra na CSP quando está ativo (build debug em dev e modo `dsn`).
@@ -60,7 +60,7 @@ Complementa `web-excellence.mdc` (SEO/perf/a11y). Prioridade: **defesa em profun
 ## APIs (`src/app/api/`)
 
 - `preview-links`: POST + `token` na query; CORS **só** origens DatoCMS (`resolveDatoCorsOrigin`) — sem `*`.
-- `revalidate`: POST do webhook Dato; `Authorization: Bearer` ou `?token=`; sem CORS `*`. Receita: [`docs/DATOCMS.md`](../../docs/DATOCMS.md).
+- `revalidate`: POST do webhook Dato; só `Authorization: Bearer` (`DATOCMS_REVALIDATE_SECRET`); `?token=` não autentica. O mesmo header nos webhooks `product-page` e `collection-page`. Sem CORS `*`. Receita: [`docs/DATOCMS.md`](../../docs/DATOCMS.md).
 - Respostas de erro genéricas em auth (401/422); sem vazar stack em produção.
 
 ## Cookies

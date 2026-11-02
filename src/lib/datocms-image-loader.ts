@@ -1,8 +1,9 @@
 import type { ImageLoaderProps } from "next/image";
 
 /**
- * Params Imgix do Dato (`www.datocms-assets.com`) — registado em `next.config.ts` como
- * `images.loaderFile` para não passar função de Server Components para `<Image />`.
+ * Loader de `next/image` (`images.loaderFile`).
+ * Dato (`www.datocms-assets.com`): Imgix `auto=format,compress`.
+ * Shopify (`cdn.shopify.com`): `width` no CDN. Outros hosts passam intactos.
  * @see https://www.datocms.com/docs/cdn-settings
  */
 const DEFAULT_QUALITY = 75;
@@ -16,13 +17,25 @@ function isDatoAssetSrc(src: string): boolean {
   }
 }
 
-export default function datoImageLoader({ src, width, quality }: ImageLoaderProps): string {
-  if (!isDatoAssetSrc(src)) {
-    return src;
+/** Shopify CDN accepts `width` and keeps its own compression. Hostname check avoids path spoofing. */
+function shopifyWidthUrl(src: string, width: number): string | null {
+  try {
+    const url = new URL(src);
+    if (url.hostname !== "cdn.shopify.com") return null;
+    url.searchParams.set("width", String(width));
+    return url.toString();
+  } catch {
+    return null;
   }
-  const sep = src.includes("?") ? "&" : "?";
-  const q = quality ?? DEFAULT_QUALITY;
-  return `${src}${sep}auto=format,compress&fit=max&w=${width}&q=${q}`;
+}
+
+export default function datoImageLoader({ src, width, quality }: ImageLoaderProps): string {
+  if (isDatoAssetSrc(src)) {
+    const sep = src.includes("?") ? "&" : "?";
+    const q = quality ?? DEFAULT_QUALITY;
+    return `${src}${sep}auto=format,compress&fit=max&w=${width}&q=${q}`;
+  }
+  return shopifyWidthUrl(src, width) ?? src;
 }
 
 /** Para `<picture>` / `srcSet` fora de `next/image`. */

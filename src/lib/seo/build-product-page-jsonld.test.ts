@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { StorefrontProduct, StorefrontVariant } from "@/infra/shopify/storefront";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
+import { getOrganizationId } from "@/lib/seo/site-config";
 import { normalizeMarketPolicy } from "@/lib/seo/merchant-policy";
 
 const money = (amount: string) => ({ amount, currencyCode: "BRL" });
@@ -91,7 +92,11 @@ describe("buildProductPageJsonLd", () => {
   it("puts the sku on Product when there is a single variant", () => {
     const product = productNode(buildProductPageJsonLd({ ...BASE, storefront: storefront({ variants: [variant({ sku: "HAT-1" })] }) }));
     expect(product.sku).toBe("HAT-1");
-    expect(product.offers).toMatchObject({ sku: "HAT-1" });
+    expect(product.offers).toMatchObject({
+      sku: "HAT-1",
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@id": getOrganizationId() },
+    });
   });
 
   it("uses the Shopify vendor as brand, falling back to the organization", () => {

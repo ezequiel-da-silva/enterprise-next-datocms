@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cartCookieOptions, cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { cartCookieOptions, cartPath, isCartEnabled, readCartCountCookie } from "@/lib/shopify/cart-cookie";
 
 describe("cart cookie", () => {
   afterEach(() => {
@@ -24,5 +24,17 @@ describe("cart cookie", () => {
 
   it("builds the cart path", () => {
     expect(cartPath("pt")).toBe("/pt/cart");
+  });
+
+  it("reads a badge count of 0 to 999", () => {
+    expect(readCartCountCookie(undefined)).toBe(0);
+    expect(readCartCountCookie("")).toBe(0);
+    expect(readCartCountCookie("3")).toBe(3);
+    expect(readCartCountCookie("999")).toBe(999);
+    expect(readCartCountCookie("1000")).toBe(0);
+    expect(readCartCountCookie("01")).toBe(1);
+    expect(readCartCountCookie("-1")).toBe(0);
+    expect(readCartCountCookie("2.5")).toBe(0);
+    expect(readCartCountCookie("1e2")).toBe(0);
   });
 });

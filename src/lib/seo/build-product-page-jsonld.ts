@@ -2,7 +2,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
 import type { StorefrontMoney, StorefrontProduct } from "@/infra/shopify/storefront";
 import { returnPolicyFor, shippingDetailsFor, type MarketPolicy } from "@/lib/seo/merchant-policy";
-import { getSiteBaseUrl } from "@/lib/seo/site-config";
+import { getOrganizationId, getSiteBaseUrl } from "@/lib/seo/site-config";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 
 /** One year ahead, `YYYY-MM-DD`: Storefront prices have no end date, Google recommends one. */
@@ -62,6 +62,8 @@ export function buildProductPageJsonLd(input: {
       priceCurrency: entry.price.currencyCode,
       priceValidUntil: validUntil,
       availability: entry.available ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      itemCondition: "https://schema.org/NewCondition",
+      seller: { "@id": getOrganizationId() },
       url,
       ...(shipping ? { shippingDetails: shipping } : {}),
       ...(returnPolicy ? { hasMerchantReturnPolicy: returnPolicy } : {}),

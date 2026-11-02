@@ -11,15 +11,14 @@ function getExpectedSecret(): string | undefined {
 
 function readProvidedSecret(request: NextRequest): string | null {
   const header = request.headers.get("authorization");
-  if (header && /^Bearer\s+/i.test(header)) {
-    return header.replace(/^Bearer\s+/i, "").trim();
-  }
-  return request.nextUrl.searchParams.get("token");
+  if (!header || !/^Bearer\s+/i.test(header)) return null;
+  return header.replace(/^Bearer\s+/i, "").trim();
 }
 
 /**
  * Webhook DatoCMS → `revalidateTag` das strings já usadas em `datocmsFetch`.
- * Auth: `Authorization: Bearer <DATOCMS_REVALIDATE_SECRET>` ou `?token=`.
+ * Auth: só `Authorization: Bearer <DATOCMS_REVALIDATE_SECRET>`. A query é ignorada
+ * para o segredo não cair em logs de acesso nem no Referer.
  */
 export async function POST(request: NextRequest) {
   const expected = getExpectedSecret();

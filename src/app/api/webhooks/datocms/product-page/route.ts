@@ -12,10 +12,15 @@ function getExpectedSecret(): string | undefined {
 
 function readProvidedSecret(request: NextRequest): string | null {
   const header = request.headers.get("authorization");
-  if (header && /^Bearer\s+/i.test(header)) {
-    return header.replace(/^Bearer\s+/i, "").trim();
-  }
-  return request.nextUrl.searchParams.get("token");
+  if (!header || !/^Bearer\s+/i.test(header)) return null;
+  return header.replace(/^Bearer\s+/i, "").trim();
+}
+
+function notConfigured(missing: string[]): NextResponse {
+  logError("webhook.datocms.product-page", "Missing environment variables", {
+    context: { missing: missing.join(",") },
+  });
+  return NextResponse.json({ error: "Webhook not configured" }, { status: 500 });
 }
 
 function unauthorized(): NextResponse {
@@ -24,13 +29,13 @@ function unauthorized(): NextResponse {
 
 /**
  * Webhook Dato `product_page` (publish/update) → título e descrição Shopify (EN + PT/ES).
- * Auth: mesmo secret que `/api/revalidate` (`DATOCMS_REVALIDATE_SECRET`).
+ * Auth: mesmo secret que `/api/revalidate` (`Authorization: Bearer`).
  * Token Admin: client credentials (cache) ou `SHOPIFY_ADMIN_ACCESS_TOKEN` opcional.
  */
 export async function POST(request: NextRequest) {
   const expected = getExpectedSecret();
   if (!expected) {
-    return NextResponse.json({ error: "Webhook not configured", missing: ["DATOCMS_REVALIDATE_SECRET"] }, { status: 500 });
+    return notConfigured(["DATOCMS_REVALIDATE_SECRET"]);
   }
   if (!isSecretEqual(readProvidedSecret(request), expected)) {
     return unauthorized();
@@ -59,7 +64,7 @@ export async function POST(request: NextRequest) {
   });
   if (!result.ok) {
     if (result.reason === "not_configured") {
-      return NextResponse.json({ error: "Webhook not configured", missing: result.missing }, { status: 500 });
+      return notConfigured(result.missing);
     }
     logError("webhook.datocms.product-page", "Sync failed", {
       detail: result.detail,
