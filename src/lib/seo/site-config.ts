@@ -1,7 +1,42 @@
-/** URL pública do site (sem barra final). */
+const LOCAL_SITE_URL = "http://localhost:3000";
+
+function stripTrailingSlash(url: string): string {
+  return url.endsWith("/") ? url.slice(0, -1) : url;
+}
+
+function vercelProductionHost(): string | undefined {
+  const raw = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (!raw) return undefined;
+  return raw.replace(/^https?:\/\//, "").replace(/\/$/, "");
+}
+
+/** `localhost` e `127.0.0.1` não servem de canonical em produção. */
+function isLoopbackUrl(url: string): boolean {
+  try {
+    const host = new URL(url).hostname;
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * URL pública do site, sem barra final.
+ * `NEXT_PUBLIC_SITE_URL` ganha quando é um host público. Na Vercel, loopback ou
+ * variável vazia caem em `VERCEL_PROJECT_PRODUCTION_URL` para canonical, sitemap e JSON-LD.
+ */
 export function getSiteBaseUrl(): string {
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  return raw.endsWith("/") ? raw.slice(0, -1) : raw;
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (configured && !isLoopbackUrl(configured)) {
+    return stripTrailingSlash(configured);
+  }
+
+  const productionHost = vercelProductionHost();
+  if (productionHost && !isLoopbackUrl(`https://${productionHost}`)) {
+    return `https://${productionHost}`;
+  }
+
+  return configured ? stripTrailingSlash(configured) : LOCAL_SITE_URL;
 }
 
 export function getSiteName(): string {

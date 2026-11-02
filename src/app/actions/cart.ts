@@ -22,7 +22,7 @@ import { getCartCopy } from "@/infra/datocms/get-ui-strings";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/infra/security/rate-limit";
 import { toCartSnapshot } from "@/lib/shopify/cart-snapshot";
-import { CART_COOKIE, cartCookieOptions, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { CART_COOKIE, CART_COUNT_COOKIE, cartCookieOptions, isCartEnabled } from "@/lib/shopify/cart-cookie";
 import { activeAccessToken, CUSTOMER_COOKIE, readCustomerSession } from "@/lib/shopify/customer-session";
 import { refresh } from "next/cache";
 import { cookies } from "next/headers";
@@ -44,7 +44,10 @@ async function persist(result: CartMutationResult, action: string): Promise<void
     logError("action.cart", "Cart mutation failed", { context: { action } });
     return;
   }
-  (await cookies()).set(CART_COOKIE, result.cart.id, cartCookieOptions());
+  const jar = await cookies();
+  const options = cartCookieOptions();
+  jar.set(CART_COOKIE, result.cart.id, options);
+  jar.set(CART_COUNT_COOKIE, String(result.cart.totalQuantity), options);
   refresh();
 }
 
@@ -95,7 +98,12 @@ export async function getCartSnapshot(locale: AppLocale): Promise<CartSnapshot |
   const cookieStore = await cookies();
   const session = readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value);
   const cart = await getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, locale, activeAccessToken(session));
-  return cart ? toCartSnapshot(cart) : null;
+  if (!cart) {
+    cookieStore.delete(CART_COUNT_COOKIE);
+    return null;
+  }
+  cookieStore.set(CART_COUNT_COOKIE, String(cart.totalQuantity), cartCookieOptions());
+  return toCartSnapshot(cart);
 }
 
 async function updateCartLineMutation(formData: FormData): Promise<CartSnapshot | null> {

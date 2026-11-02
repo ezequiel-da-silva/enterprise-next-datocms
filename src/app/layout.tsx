@@ -19,15 +19,13 @@ import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
 import { getAccountCopy, getCartCopy, getConsentCopy } from "@/infra/datocms/get-ui-strings";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { ConsentRoot } from "@/components/patterns/consent/consent-root";
-import { getCartFromCookie } from "@/infra/shopify/cart";
 import { getShopPrivacyPolicyUrl } from "@/infra/shopify/storefront";
 import { readGaMeasurementId } from "@/lib/analytics/ga-config";
 import { isSpeedInsightsEnabled } from "@/lib/analytics/speed-insights-config";
 import { CONSENT_COOKIE, parseConsent } from "@/lib/consent/consent-cookie";
 import { readShopifyPrivacyConfig } from "@/lib/shopify/customer-privacy-config";
-import { CART_COOKIE, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { CART_COUNT_COOKIE, isCartEnabled, readCartCountCookie } from "@/lib/shopify/cart-cookie";
 import {
-  activeAccessToken,
   CUSTOMER_COOKIE,
   isCustomerAccountEnabled,
   readCustomerSession,
@@ -139,8 +137,7 @@ export default async function RootLayout({
   const accountEnabled = isCustomerAccountEnabled();
   const customerSession = accountEnabled ? readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value) : null;
   const cartCount = isCartEnabled()
-    ? ((await getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, appLocale, activeAccessToken(customerSession)))
-        ?.totalQuantity ?? 0)
+    ? readCartCountCookie(cookieStore.get(CART_COUNT_COOKIE)?.value)
     : null;
   const initialConsent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value);
   const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy] = await Promise.all([

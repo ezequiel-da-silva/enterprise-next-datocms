@@ -1,10 +1,32 @@
 import { describe, expect, it } from "vitest";
-import {
+import datoImageLoader, {
   buildDatoSrcSet,
   clampLayoutDimensions,
   datoAssetUrlWithParams,
   DATO_DESKTOP_SRCSET_WIDTHS,
 } from "@/lib/datocms-image-loader";
+
+describe("datoImageLoader", () => {
+  it("keeps Imgix params on Dato assets", () => {
+    const src = "https://www.datocms-assets.com/x/y.jpg";
+    expect(datoImageLoader({ src, width: 640, quality: 75 })).toBe(
+      `${src}?auto=format,compress&fit=max&w=640&q=75`,
+    );
+  });
+
+  it("sets Shopify width and keeps the existing query", () => {
+    const src = "https://cdn.shopify.com/s/files/1/image.jpg?v=123";
+    const out = new URL(datoImageLoader({ src, width: 480, quality: 75 }));
+    expect(out.hostname).toBe("cdn.shopify.com");
+    expect(out.searchParams.get("width")).toBe("480");
+    expect(out.searchParams.get("v")).toBe("123");
+  });
+
+  it("leaves other hosts untouched", () => {
+    const src = "https://example.com/cdn.shopify.com/photo.jpg";
+    expect(datoImageLoader({ src, width: 320, quality: 75 })).toBe(src);
+  });
+});
 
 describe("buildDatoSrcSet", () => {
   it("builds comma-separated width descriptors", () => {

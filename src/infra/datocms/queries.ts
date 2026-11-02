@@ -1426,3 +1426,81 @@ export const LIST_COLLECTION_HANDLES = /* GraphQL */ `
     }
   }
 `;
+
+const LLMS_PAGE_FIELDS = `
+  title
+  slug
+  seoSettingsSocial {
+    description
+    noIndex
+  }
+`;
+
+const LLMS_COMMERCE_FIELDS = `
+  title
+  description
+  shopifyHandle
+  seo {
+    noIndex
+  }
+`;
+
+/** Catálogo citável de /llms.txt. Um alias por locale; first: 200, o mesmo teto do sitemap. */
+export const LLMS_CATALOG = /* GraphQL */ `
+  query LlmsCatalog {
+    pagesEn: allPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_PAGE_FIELDS}
+    }
+    pagesPtBR: allPages(locale: pt_BR, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_PAGE_FIELDS}
+    }
+    pagesEs: allPages(locale: es, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_PAGE_FIELDS}
+    }
+    postsEn: allPosts(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      postTitle
+      postSlug
+      excerpt
+      seoSettingsSocial { noIndex }
+    }
+    postsPtBR: allPosts(locale: pt_BR, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      postTitle
+      postSlug
+      excerpt
+      seoSettingsSocial { noIndex }
+    }
+    postsEs: allPosts(locale: es, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      postTitle
+      postSlug
+      excerpt
+      seoSettingsSocial { noIndex }
+    }
+    productsEn: allProductPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_COMMERCE_FIELDS}
+    }
+    productsPtBR: allProductPages(locale: pt_BR, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_COMMERCE_FIELDS}
+    }
+    productsEs: allProductPages(locale: es, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_COMMERCE_FIELDS}
+    }
+    collectionsEn: allCollectionPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_COMMERCE_FIELDS}
+    }
+    collectionsPtBR: allCollectionPages(locale: pt_BR, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_COMMERCE_FIELDS}
+    }
+    collectionsEs: allCollectionPages(locale: es, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_COMMERCE_FIELDS}
+    }
+    legalEn: allLegalPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_PAGE_FIELDS}
+    }
+    legalPtBR: allLegalPages(locale: pt_BR, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_PAGE_FIELDS}
+    }
+    legalEs: allLegalPages(locale: es, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
+      ${LLMS_PAGE_FIELDS}
+    }
+  }
+`;

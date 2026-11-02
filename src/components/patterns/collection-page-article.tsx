@@ -2,6 +2,7 @@ import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
+import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollection } from "@/infra/shopify/storefront";
 import { collectionPagePath } from "@/lib/datocms/collection-page-path";
@@ -40,6 +41,7 @@ export async function CollectionPageArticle({
 
   return (
     <Container as="article" size="lg" name="CollectionPage" className="py-12">
+      <ShopifyCdnPreconnect />
       <JsonLdScript graph={jsonLd} />
       <header className="space-y-4">
         <BreadcrumbNav

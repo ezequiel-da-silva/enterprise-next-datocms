@@ -9,6 +9,7 @@ import {
   type ProductPickerVariant,
 } from "@/components/patterns/product-variant-picker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
+import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
 import type { AppLocale } from "@/constants/i18n";
 import { isShopifyVariantId } from "@/core/entities/cart";
 import type { StorefrontProduct, StorefrontProductImage } from "@/infra/shopify/storefront";
@@ -136,6 +137,7 @@ export function ProductPageArticle({
 
   return (
     <Container as="article" size="sm" name="ProductPage" className="py-12">
+      <ShopifyCdnPreconnect />
       <JsonLdScript graph={jsonLd} />
       <header className="space-y-4">
         <BreadcrumbNav

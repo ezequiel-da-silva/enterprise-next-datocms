@@ -32,7 +32,7 @@ type GlobalHeaderProps = {
   searchQuery?: string;
   /** Cookie `nd-theme` no SSR — evita skeleton no ThemeToggle. */
   initialThemeMode?: ThemeMode;
-  /** `null`/omitido = carrinho desligado (`SHOPIFY_CART_ENABLED`); número = itens no cookie `nd-cart`. */
+  /** `null`/omitido = carrinho desligado (`SHOPIFY_CART_ENABLED`); número = itens no cookie `nd-cart-count`. */
   cartCount?: number | null;
   /** `null`/omitido = conta desligada; booleano = cookie `nd-customer` presente. */
   accountSignedIn?: boolean | null;

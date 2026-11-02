@@ -1,6 +1,7 @@
 import { Container } from "@/components/atoms/container";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { SectionTextHeader } from "@/components/patterns/section-text-header";
+import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
 import { BlogPostsSectionBlock } from "@/components/sections/blog-posts-section-block";
 import { ProductsSectionInteractive } from "@/components/sections/products-section-interactive";
 import type { AppLocale } from "@/constants/i18n";
@@ -88,6 +89,7 @@ export async function ContentListingSectionBlock({
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, copy.sectionLabel)}
     >
+      <ShopifyCdnPreconnect />
       <Container size="lg" name="ContentListingSection" className="flex flex-col gap-10">
         <SectionTextHeader header={header} headingId={headingId} />
         <ProductsSectionInteractive
