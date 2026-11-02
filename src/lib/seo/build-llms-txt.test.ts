@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildLlmsTxt, llmsBlurb } from "@/lib/seo/build-llms-txt";
+import { buildLlmsTxt, llmsBlurb, llmsPublicTitle } from "@/lib/seo/build-llms-txt";
 
 describe("llmsBlurb", () => {
   it("collapses whitespace and keeps a short line", () => {
@@ -10,6 +10,29 @@ describe("llmsBlurb", () => {
     const blurb = llmsBlurb(`${"palavra ".repeat(40)}fim`);
     expect(blurb?.endsWith("…")).toBe(true);
     expect(blurb!.length).toBeLessThanOrEqual(161);
+  });
+});
+
+describe("llmsPublicTitle", () => {
+  it("prefers the hero heading over the SEO title and the record title", () => {
+    expect(
+      llmsPublicTitle({
+        heroTitle: " Snowboards for the next run ",
+        seoTitle: "Homepage",
+        recordTitle: "The most meta content you'll read today",
+      }),
+    ).toBe("Snowboards for the next run");
+  });
+
+  it("uses the SEO title when the page has no hero heading", () => {
+    expect(llmsPublicTitle({ heroTitle: "  ", seoTitle: "Refund policy", recordTitle: "Legal" })).toBe(
+      "Refund policy",
+    );
+  });
+
+  it("falls back to the record title when hero and SEO titles are empty", () => {
+    expect(llmsPublicTitle({ heroTitle: null, seoTitle: "", recordTitle: "Contact" })).toBe("Contact");
+    expect(llmsPublicTitle({ recordTitle: "   " })).toBeUndefined();
   });
 });
 

@@ -1431,8 +1431,16 @@ const LLMS_PAGE_FIELDS = `
   title
   slug
   seoSettingsSocial {
+    title
     description
     noIndex
+  }
+`;
+
+const LLMS_CMS_PAGE_FIELDS = `
+  ${LLMS_PAGE_FIELDS}
+  heroPage {
+    titleHero
   }
 `;
 
@@ -1449,13 +1457,13 @@ const LLMS_COMMERCE_FIELDS = `
 export const LLMS_CATALOG = /* GraphQL */ `
   query LlmsCatalog {
     pagesEn: allPages(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
-      ${LLMS_PAGE_FIELDS}
+      ${LLMS_CMS_PAGE_FIELDS}
     }
     pagesPtBR: allPages(locale: pt_BR, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
-      ${LLMS_PAGE_FIELDS}
+      ${LLMS_CMS_PAGE_FIELDS}
     }
     pagesEs: allPages(locale: es, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
-      ${LLMS_PAGE_FIELDS}
+      ${LLMS_CMS_PAGE_FIELDS}
     }
     postsEn: allPosts(locale: en, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
       postTitle
