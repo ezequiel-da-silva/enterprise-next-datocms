@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.49.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.48.0...next-dato-v0.49.0) (2026-11-02)
+
+
+### Features
+
+* **security:** enhance security measures and documentation updates ([bf1366f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/bf1366fd7b67977077d81cefc18527bc6f68eae5))
+
+
+### Bug Fixes
+
+* **tests:** update error logging in webhook tests for better type safety ([8e3ae55](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8e3ae55aa753eee6ccf32219e192ddf05c2e1eb0))
+
 ## [0.48.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.47.0...next-dato-v0.48.0) (2026-10-30)
 
 
