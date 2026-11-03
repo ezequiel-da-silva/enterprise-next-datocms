@@ -6,13 +6,18 @@ import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { collectionPagePath } from "@/lib/datocms/collection-page-path";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
-import type { LlmsLink } from "@/lib/seo/build-llms-txt";
+import { llmsPublicTitle, type LlmsLink } from "@/lib/seo/build-llms-txt";
 import { getSiteBaseUrl } from "@/lib/seo/site-config";
 import { cache } from "react";
 
-type SeoBits = { description?: string | null; noIndex?: boolean | null } | null;
+type SeoBits = { title?: string | null; description?: string | null; noIndex?: boolean | null } | null;
 
-type PageRow = { title?: string | null; slug?: string | null; seoSettingsSocial?: SeoBits };
+type PageRow = {
+  title?: string | null;
+  slug?: string | null;
+  seoSettingsSocial?: SeoBits;
+  heroPage?: { titleHero?: string | null } | null;
+};
 
 type PostRow = {
   postTitle?: string | null;
@@ -74,7 +79,11 @@ function text(value: string | null | undefined): string | undefined {
 function pushPage(out: LlmsLink[], locale: AppLocale, row: PageRow): void {
   if (row.seoSettingsSocial?.noIndex === true) return;
   const slug = text(row.slug);
-  const title = text(row.title);
+  const title = llmsPublicTitle({
+    heroTitle: row.heroPage?.titleHero,
+    seoTitle: row.seoSettingsSocial?.title,
+    recordTitle: row.title,
+  });
   if (!slug || !title) return;
   out.push({
     title,

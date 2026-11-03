@@ -18,6 +18,23 @@ export type LlmsDocumentInput = {
 
 const BLURB_MAX = 160;
 
+function trimmed(value: string | null | undefined): string | undefined {
+  const next = value?.trim();
+  return next ? next : undefined;
+}
+
+/**
+ * Nome público de uma página CMS no /llms.txt.
+ * O h1 do hero ganha; sem hero, o título SEO; o título interno do record só evita um link sem nome.
+ */
+export function llmsPublicTitle(input: {
+  heroTitle?: string | null;
+  seoTitle?: string | null;
+  recordTitle?: string | null;
+}): string | undefined {
+  return trimmed(input.heroTitle) ?? trimmed(input.seoTitle) ?? trimmed(input.recordTitle);
+}
+
 /** Uma linha citável: espaços colapsados e corte perto de 160 caracteres. */
 export function llmsBlurb(value: string | null | undefined): string | undefined {
   const collapsed = value?.replace(/\s+/g, " ").trim();
