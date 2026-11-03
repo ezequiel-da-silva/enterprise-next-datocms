@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.50.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.49.0...next-dato-v0.50.0) (2026-11-03)
+
+
+### Features
+
+* **llms:** enhance LLMS catalog structure and SEO title handling ([ac9f2e6](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/ac9f2e63f53a3230bcec424ebf58a90dabd0ab82))
+
 ## [0.49.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.48.0...next-dato-v0.49.0) (2026-11-02)
 
 
