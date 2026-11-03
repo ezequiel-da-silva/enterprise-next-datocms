@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.51.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.50.0...next-dato-v0.51.0) (2026-11-03)
+
+
+### Features
+
+* **seo:** enhance image loading priority for better performance ([5f9154f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/5f9154fd6427cd44e40dbba218d5936a25c048b4))
+
 ## [0.50.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.49.0...next-dato-v0.50.0) (2026-11-03)
 
 
