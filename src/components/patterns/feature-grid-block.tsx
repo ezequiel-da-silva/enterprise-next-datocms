@@ -72,7 +72,7 @@ export async function FeatureGridBlock({ record, locale }: FeatureGridBlockProps
   const headingId = `feature-grid-${record.id}`;
   const cardHeading = header.title ? "h3" : "h2";
   const sectionLabel = FEATURE_GRID_COPY[locale].sectionLabel;
-  const items = resolved.map(({ card, content }) =>
+  const items = resolved.map(({ card, content }, index) =>
     options.variant === "cards" ? (
       <CardItem
         key={card.id}
@@ -80,6 +80,7 @@ export async function FeatureGridBlock({ record, locale }: FeatureGridBlockProps
         locale={locale}
         content={content}
         heading={cardHeading}
+        priority={index === 0}
       />
     ) : (
       <FullBleedCard
@@ -88,6 +89,7 @@ export async function FeatureGridBlock({ record, locale }: FeatureGridBlockProps
         locale={locale}
         content={content}
         heading={cardHeading}
+        priority={index === 0}
       />
     ),
   );

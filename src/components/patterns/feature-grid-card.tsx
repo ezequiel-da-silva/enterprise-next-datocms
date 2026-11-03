@@ -23,6 +23,8 @@ export type CardItemProps = {
   locale: AppLocale;
   content: FeatureGridCardContent;
   heading?: FeatureGridCardHeading;
+  /** Primeiro cartão visível: a imagem entra sem lazy. */
+  priority?: boolean;
 };
 
 function CatalogImage({
@@ -31,12 +33,14 @@ function CatalogImage({
   className,
   sizes,
   decorative = false,
+  priority = false,
 }: {
   image: StorefrontProductImage;
   alt: string;
   className: string;
   sizes: string;
   decorative?: boolean;
+  priority?: boolean;
 }) {
   return (
     <Image
@@ -46,6 +50,7 @@ function CatalogImage({
       height={image.height && image.height > 0 ? image.height : 600}
       sizes={sizes}
       className={className}
+      priority={priority}
     />
   );
 }
@@ -65,7 +70,7 @@ function maybeCatalogLink(href: string | null, children: ReactNode, className?: 
   );
 }
 
-export function CardItem({ card, locale, content, heading = "h3" }: CardItemProps) {
+export function CardItem({ card, locale, content, heading = "h3", priority = false }: CardItemProps) {
   const TitleTag = heading;
   const hasMedia = Boolean(content.catalogImage?.url || content.image?.url);
 
@@ -79,6 +84,7 @@ export function CardItem({ card, locale, content, heading = "h3" }: CardItemProp
                 image={content.catalogImage}
                 alt={content.title}
                 sizes={CARD_IMAGE_SIZES}
+                priority={priority}
                 className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
             ) : (
@@ -88,6 +94,7 @@ export function CardItem({ card, locale, content, heading = "h3" }: CardItemProp
                 className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                 sizes={CARD_IMAGE_SIZES}
                 fallbackAlt={content.title || undefined}
+                priority={priority}
               />
             )}
           </figure>
@@ -147,9 +154,11 @@ export type FullBleedCardProps = {
   locale: AppLocale;
   content: FeatureGridCardContent;
   heading?: FeatureGridCardHeading;
+  /** Primeiro cartão visível: a imagem entra sem lazy. */
+  priority?: boolean;
 };
 
-export function FullBleedCard({ card, locale, content, heading = "h3" }: FullBleedCardProps) {
+export function FullBleedCard({ card, locale, content, heading = "h3", priority = false }: FullBleedCardProps) {
   const TitleTag = heading;
   const imageIsDecorative = Boolean(content.title || content.description);
   const hasDatoImage = Boolean(content.image?.url);
@@ -165,6 +174,7 @@ export function FullBleedCard({ card, locale, content, heading = "h3" }: FullBle
             decorative={imageIsDecorative}
             className="h-full w-full object-cover"
             sizes={FULL_BLEED_SIZES}
+            priority={priority}
           />
         </figure>
       ) : hasDatoImage ? (
@@ -175,6 +185,7 @@ export function FullBleedCard({ card, locale, content, heading = "h3" }: FullBle
             decorative={imageIsDecorative}
             className="h-full w-full object-cover"
             sizes={FULL_BLEED_SIZES}
+            priority={priority}
           />
         </figure>
       ) : null}

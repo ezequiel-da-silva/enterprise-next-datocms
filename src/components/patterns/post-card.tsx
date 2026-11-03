@@ -12,6 +12,8 @@ type PostCardProps = {
   /** Default `h2` (índice do blog). Na Latest posts section usar `h3` se já houver título da secção. */
   headingLevel?: "h2" | "h3";
   sizes?: string;
+  /** Primeira capa visível: sem lazy, com fetchpriority high. */
+  priority?: boolean;
 };
 
 export function PostCard({
@@ -19,6 +21,7 @@ export function PostCard({
   locale,
   headingLevel = "h2",
   sizes = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px",
+  priority = false,
 }: PostCardProps) {
   const href = `/${locale}/blog/${post.postSlug}`;
   const cover = resolveSpecializedImage(post.coverImage);
@@ -46,6 +49,8 @@ export function PostCard({
               sizes={sizes}
               fallbackAlt={post.postTitle}
               decorative
+              priority={priority}
+              quality={60}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">Sem capa</div>

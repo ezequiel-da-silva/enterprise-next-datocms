@@ -169,8 +169,8 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
           Artigos nesta categoria
         </h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} locale={locale} />
+          {posts.map((post, index) => (
+            <PostCard key={post.id} post={post} locale={locale} priority={index === 0} />
           ))}
         </div>
       </section>

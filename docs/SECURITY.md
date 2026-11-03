@@ -113,4 +113,6 @@ Com HTTPS e domínio público:
 - `npm audit` não cobre SAST nem lógica de negócio (rate limit, abuse de Server Actions).
 - O gate (`security:audit`) usa `--omit=dev`: não vigia devDependencies. Rever com `security:audit:all` antes de releases.
 - HSTS em localhost não implica TLS real — validar SSL no deploy.
+- O admin de produção é `https://boilerplate-dato.admin.datocms.com` (site `201057`). Em Production, `DATOCMS_ADMIN_FRAME_ANCESTOR` deve ter esse valor, sem barra no fim. O fallback do código é o mesmo host.
+- Não submeter o domínio à lista de preload do HSTS enquanto algum subdomínio não for HTTPS para sempre. O header já inclui `preload`; retirar o domínio da lista depois exige espera.
 - CORS `*` em `/api/preview-links` é intencional para o plugin DatoCMS — não replicar em APIs novas.

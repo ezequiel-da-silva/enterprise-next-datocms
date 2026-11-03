@@ -142,7 +142,13 @@ export function BlogPostsCarousel({ posts, locale, headingLevel, setting }: Blog
               aria-label={`${index + 1} / ${posts.length}`}
               className="min-w-0 shrink-0 basis-full pl-4 md:basis-1/2 lg:basis-1/3"
             >
-              <PostCard post={post} locale={locale} headingLevel={headingLevel} sizes={CARD_SIZES} />
+              <PostCard
+                post={post}
+                locale={locale}
+                headingLevel={headingLevel}
+                sizes={CARD_SIZES}
+                priority={index === 0}
+              />
             </div>
           ))}
         </div>
