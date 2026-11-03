@@ -228,9 +228,15 @@ export function BlogPostsInteractive({
         ) : (
           <>
             <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
-              {visiblePosts.map((post) => (
+              {visiblePosts.map((post, index) => (
                 <li key={post.id} className="min-w-0">
-                  <PostCard post={post} locale={locale} headingLevel={headingLevel} sizes={CARD_SIZES} />
+                  <PostCard
+                    post={post}
+                    locale={locale}
+                    headingLevel={headingLevel}
+                    sizes={CARD_SIZES}
+                    priority={index === 0}
+                  />
                 </li>
               ))}
             </ul>

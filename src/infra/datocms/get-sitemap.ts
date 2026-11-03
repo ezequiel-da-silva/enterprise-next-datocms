@@ -47,6 +47,21 @@ function maxDate(a: Date, b: Date): Date {
   return a.getTime() >= b.getTime() ? a : b;
 }
 
+/** `_updatedAt` ilegível não pode virar Invalid Date — o renderer do sitemap rebenta com isso. */
+function updatedAt(value: string): Date {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+}
+
+function localeHomes(base: URL, now = new Date()): MetadataRoute.Sitemap {
+  return APP_LOCALES.map((locale) => ({
+    url: new URL(`/${locale}`, base).toString(),
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 1,
+  }));
+}
+
 function mergePagesBySlug(rows: SlugRow[][]): Map<string, Date> {
   const map = new Map<string, Date>();
   for (const list of rows) {
@@ -54,7 +69,7 @@ function mergePagesBySlug(rows: SlugRow[][]): Map<string, Date> {
       if (!isIndexable(row)) continue;
       const slug = row.slug?.trim();
       if (!slug) continue;
-      const t = new Date(row._updatedAt);
+      const t = updatedAt(row._updatedAt);
       const prev = map.get(slug);
       map.set(slug, prev ? maxDate(prev, t) : t);
     }
@@ -69,7 +84,14 @@ function appLocaleFromDatoKey(key: DatoLocaleKey): AppLocale {
 
 const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   const base = new URL(getSiteBaseUrl());
+  try {
+    return await collectSitemapEntries(base);
+  } catch {
+    return localeHomes(base);
+  }
+});
 
+async function collectSitemapEntries(base: URL): Promise<MetadataRoute.Sitemap> {
   const result = await datocmsFetch<SitemapSourcesData>({
     query: SITEMAP_SOURCES,
     tags: [SITEMAP_TAG],
@@ -77,15 +99,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   });
 
   if ("errors" in result) {
-    const now = new Date();
-    return [
-      ...APP_LOCALES.map((locale) => ({
-        url: new URL(`/${locale}`, base).toString(),
-        lastModified: now,
-        changeFrequency: "daily" as const,
-        priority: 1,
-      })),
-    ];
+    return localeHomes(base);
   }
 
   const d = result.data;
@@ -107,7 +121,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
       if (!slug || slug.toLowerCase() === "home") continue;
       entries.push({
         url: new URL(cmsPageCanonicalPath(slug, appLocale), base).toString(),
-        lastModified: new Date(row._updatedAt),
+        lastModified: updatedAt(row._updatedAt),
         changeFrequency: "monthly",
         priority: 0.5,
       });
@@ -136,7 +150,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
       if (!slug) continue;
       entries.push({
         url: new URL(`/${appLocale}/blog/${slug}`, base).toString(),
-        lastModified: new Date(row._updatedAt),
+        lastModified: updatedAt(row._updatedAt),
         changeFrequency: "weekly",
         priority: 0.8,
       });
@@ -156,7 +170,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
       if (!slug) continue;
       entries.push({
         url: new URL(`/${appLocale}/blog/category/${slug}`, base).toString(),
-        lastModified: new Date(row._updatedAt),
+        lastModified: updatedAt(row._updatedAt),
         changeFrequency: "weekly",
         priority: 0.6,
       });
@@ -180,7 +194,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
       authorSeen.add(key);
       entries.push({
         url: new URL(`/${appLocale}/blog/author/${slug}`, base).toString(),
-        lastModified: new Date(row._updatedAt),
+        lastModified: updatedAt(row._updatedAt),
         changeFrequency: "monthly",
         priority: 0.5,
       });
@@ -202,7 +216,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
         if (!slug) continue;
         entries.push({
           url: new URL(cmsPageCanonicalPath(slug, locale), base).toString(),
-          lastModified: new Date(row._updatedAt),
+          lastModified: updatedAt(row._updatedAt),
           changeFrequency: "monthly",
           priority: 0.4,
         });
@@ -224,7 +238,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
         if (!handle) continue;
         entries.push({
           url: new URL(`/${locale}/products/${handle}`, base).toString(),
-          lastModified: new Date(row._updatedAt),
+          lastModified: updatedAt(row._updatedAt),
           changeFrequency: "weekly",
           priority: 0.6,
         });
@@ -246,7 +260,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
         if (!handle) continue;
         entries.push({
           url: new URL(`/${locale}/collections/${handle}`, base).toString(),
-          lastModified: new Date(row._updatedAt),
+          lastModified: updatedAt(row._updatedAt),
           changeFrequency: "weekly",
           priority: 0.55,
         });
@@ -255,7 +269,7 @@ const loadSitemap = cache(async (): Promise<MetadataRoute.Sitemap> => {
   }
 
   return entries;
-});
+}
 
 export function getSitemapEntries(): Promise<MetadataRoute.Sitemap> {
   return loadSitemap();
