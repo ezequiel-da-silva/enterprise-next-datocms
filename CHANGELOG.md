@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.52.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.51.0...next-dato-v0.52.0) (2026-11-04)
+
+
+### Features
+
+* **image-loading:** add fetchPriority prop to CatalogImage for optimized loading behavior ([8afde3f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8afde3fd991cd3e879fc265b9138bf2c5444a53d))
+* **locale-switcher:** implement API for locale switching and add tests ([002de1f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/002de1f71ab8f913104da20de877bb5c904c1f92))
+
 ## [0.51.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.50.0...next-dato-v0.51.0) (2026-11-03)
 
 
