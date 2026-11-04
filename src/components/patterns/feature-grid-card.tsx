@@ -51,6 +51,7 @@ function CatalogImage({
       sizes={sizes}
       className={className}
       priority={priority}
+      fetchPriority={priority ? "high" : undefined}
     />
   );
 }
