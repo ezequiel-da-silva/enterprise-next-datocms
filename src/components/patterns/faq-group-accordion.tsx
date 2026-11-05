@@ -77,7 +77,10 @@ export function FaqGroupAccordion({ groupId, items, options }: FaqGroupAccordion
                 onKeyDown={(e) => onKeyDown(e, index)}
               >
                 <span>{item.question}</span>
-                <span className="text-muted-foreground" aria-hidden>
+                <span
+                  className="shrink-0 text-2xl leading-none font-light text-muted-foreground"
+                  aria-hidden
+                >
                   {isOpen ? "−" : "+"}
                 </span>
               </button>

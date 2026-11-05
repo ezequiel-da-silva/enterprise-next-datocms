@@ -126,18 +126,16 @@ function ReviewAvatar({ name, avatar }: { name: string; avatar?: FileFieldLike |
 
 function ReviewCard({ review, starsLabel }: { review: ParsedReview; starsLabel: string }) {
   return (
-    <article className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-sm">
+    <article className="flex h-full flex-col gap-4 rounded-xl border border-border bg-card p-5 text-card-foreground">
       <header className="flex items-center gap-3">
         <ReviewAvatar name={review.name} avatar={review.avatar} />
         <div className="min-w-0">
-          <p className="truncate font-medium text-card-foreground">{review.name}</p>
+          <h3 className="truncate text-base font-medium text-card-foreground">{review.name}</h3>
           {review.rating > 0 ? <StarRating rating={review.rating} label={starsLabel} /> : null}
         </div>
       </header>
       {review.comment ? (
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-          {review.comment}
-        </p>
+        <p className="type-body whitespace-pre-wrap">{review.comment}</p>
       ) : null}
     </article>
   );
@@ -188,9 +186,14 @@ export async function ReviewsSectionBlock({ record, locale, action }: ReviewsSec
       <Container size="lg" padded={false} name="ReviewsSection" className="flex flex-col gap-10">
         {header.title || header.description || aggregateLabel ? (
           <div className="flex flex-col gap-4">
-            <SectionTextHeader header={header} headingId={headingId} />
+            <SectionTextHeader
+              header={header}
+              headingId={headingId}
+              headingClassName="type-heading"
+              descriptionClassName="type-lead mt-2"
+            />
             {aggregate && aggregateLabel ? (
-              <p className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-2 text-center text-sm font-medium text-foreground">
+              <p className="flex flex-wrap items-center justify-center gap-2 text-center text-sm font-medium text-foreground">
                 <StarRating rating={aggregate.average} />
                 <span>{aggregateLabel}</span>
               </p>
