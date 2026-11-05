@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.53.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.52.0...next-dato-v0.53.0) (2026-11-05)
+
+
+### Features
+
+* **home-landing:** create setup script for home landing page with localized content ([cff3e07](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/cff3e07b5f40fff6585beeec24f106dc7f019e01))
+
 ## [0.52.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.51.0...next-dato-v0.52.0) (2026-11-04)
 
 
