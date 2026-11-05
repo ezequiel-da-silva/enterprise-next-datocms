@@ -79,7 +79,7 @@ function cardSurfaceClasses(theme: CtaBannerBgTheme): string {
  */
 const OVERLAY_OUTLINE_BUTTON =
   "border-white bg-transparent text-white hover:bg-white/15 hover:text-white";
-const OVERLAY_SOLID_BUTTON = "border-transparent bg-white text-slate-900 shadow-md hover:bg-white/90";
+const OVERLAY_SOLID_BUTTON = "border-transparent bg-white text-foreground hover:bg-white/90";
 const ON_PRIMARY_OUTLINE_BUTTON =
   "border-primary-foreground bg-transparent text-primary-foreground hover:bg-primary-foreground/15 hover:text-primary-foreground";
 
@@ -134,7 +134,7 @@ function CtaBannerButtons({
         const themeClass = buttonClassesForTheme(theme, isOverlay, isSecondary);
 
         return (
-          <Button key={link.id} asChild variant={variant} className={themeClass}>
+          <Button key={link.id} asChild variant={variant} className={cn("h-12", themeClass)}>
             <SmartLink record={link} locale={locale} tone="inherit" />
           </Button>
         );
@@ -199,7 +199,7 @@ function CtaBannerContent({
         <h2
           id={headingId}
           className={cn(
-            "type-heading md:text-4xl",
+            "type-heading",
             isOverlay ? "text-white" : undefined,
             eyebrow ? "mt-3" : undefined,
           )}
@@ -211,9 +211,9 @@ function CtaBannerContent({
       {description ? (
         <p
           className={cn(
-            "type-body mt-4 max-w-2xl md:text-lg",
+            "type-lead mt-4 max-w-2xl",
             isOverlay ? "text-white" : isPrimary ? "text-primary-foreground" : undefined,
-            options.variant !== "split" && "mx-auto",
+            options.variant !== "split" && "self-center",
           )}
         >
           {description}
