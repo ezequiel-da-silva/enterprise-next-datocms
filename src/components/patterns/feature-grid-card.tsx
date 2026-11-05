@@ -74,6 +74,7 @@ function maybeCatalogLink(href: string | null, children: ReactNode, className?: 
 export function CardItem({ card, locale, content, heading = "h3", priority = false }: CardItemProps) {
   const TitleTag = heading;
   const hasMedia = Boolean(content.catalogImage?.url || content.image?.url);
+  const isInteractive = Boolean(content.href || content.link);
 
   const body = (
     <>
@@ -141,8 +142,10 @@ export function CardItem({ card, locale, content, heading = "h3", priority = fal
       {...cmsBlockAttrs(card)}
       data-datocms-content-link-boundary=""
       className={cn(
-        "group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground",
-        "transition-colors duration-200 hover:border-foreground/20 motion-reduce:transition-none",
+        "group flex h-full w-full min-w-0 flex-col",
+        isInteractive
+          ? "overflow-hidden rounded-xl border border-border bg-card text-card-foreground transition-colors duration-200 hover:border-foreground/20 motion-reduce:transition-none"
+          : "text-foreground",
       )}
     >
       {maybeCatalogLink(content.href, body)}
@@ -191,16 +194,12 @@ export function FullBleedCard({ card, locale, content, heading = "h3", priority 
         </figure>
       ) : null}
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/55 to-black/20" aria-hidden />
-      <div className="relative z-10 mt-auto max-w-3xl p-6 text-left text-white sm:p-10 lg:p-14">
+      <div className="relative z-10 mt-auto p-6 text-left text-white sm:p-10 lg:p-14">
         {content.title ? (
-          <TitleTag className="text-balance text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
-            {content.title}
-          </TitleTag>
+          <TitleTag className={cn("type-heading", "text-white")}>{content.title}</TitleTag>
         ) : null}
         {content.description ? (
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/85 sm:text-lg">
-            {content.description}
-          </p>
+          <p className={cn("type-lead", "mt-3 text-white/85")}>{content.description}</p>
         ) : null}
         {content.priceLabel ? (
           <p className="mt-3 text-base text-white/85">{content.priceLabel}</p>
