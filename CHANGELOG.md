@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.54.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.53.0...next-dato-v0.54.0) (2026-11-05)
+
+
+### Features
+
+* **container:** update container component and layout rules for improved consistency ([75b3e27](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/75b3e272b0e7db4e966f07e01d4115a924410e7e))
+* **ui-visual:** enhance UI components and typography for improved design consistency ([98a3d3a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/98a3d3a194804b28021d51816c05957e31c72753))
+
+
+### Refactoring
+
+* **components:** update button and typography classes in CtaBannerBlock for consistency ([81cd450](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/81cd4507f72bed3225dcba2baa2f4b90b2a8eef3))
+* **components:** update CatalogProductCard and HeroSectionBlock for improved structure and layout ([d622df5](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/d622df516ffd5d91edaa7fbe07f96fd4098e95b1))
+* **components:** update FAQ and Reviews section for improved typography and structure ([b742d33](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b742d33836ad9abe6677dc1e822ceb181e59415b))
+* **components:** update PricingCard and PricingSectionBlock for improved styling and typography ([620c830](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/620c830868dfaf0b43d66f54633e4c04c3c69c57))
+* **components:** update typography classes in FaqGroupAccordion and FaqGroupBlock for consistency ([e0ce610](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/e0ce6103ff2dbb31d42e1f2bd6781aa8b4fbf122))
+* **components:** update typography classes in FeatureGridBlock and FeatureGridCard for consistency ([50d93d1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/50d93d11aed36464b0ffac0353e99d4ad276ccd5))
+
 ## [0.53.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.52.0...next-dato-v0.53.0) (2026-11-05)
 
 
