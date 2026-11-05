@@ -58,9 +58,9 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
           ) : null}
         </div>
         <div className="flex flex-1 flex-col gap-2 p-4">
-          <p className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
+          <h3 className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
             {product.title}
-          </p>
+          </h3>
           <p className="mt-auto pt-1 text-sm text-muted-foreground">
             {formatStorefrontMoney(locale, price.amount, price.currencyCode)}
           </p>
