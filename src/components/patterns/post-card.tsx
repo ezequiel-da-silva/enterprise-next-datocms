@@ -35,7 +35,7 @@ export function PostCard({
   const TitleTag = headingLevel;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-1 ring-border/40 transition hover:border-primary/25 hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
       <Link
         href={href}
         className="flex h-full flex-col rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
@@ -57,7 +57,7 @@ export function PostCard({
           )}
           {primaryCategory ? (
             <div className="absolute left-3 top-3">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-background/90 px-2.5 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground">
                 {colorHex ? (
                   <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className="shrink-0">
                     <circle cx="5" cy="5" r="5" fill={colorHex} />
@@ -67,7 +67,7 @@ export function PostCard({
               </span>
             </div>
           ) : null}
-          <div className="absolute bottom-3 left-3 rounded-md bg-background/85 px-2 py-1 text-xs text-muted-foreground backdrop-blur">
+          <div className="absolute bottom-3 left-3 rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground">
             <time dateTime={post._firstPublishedAt}>{dateLabel}</time>
           </div>
         </div>

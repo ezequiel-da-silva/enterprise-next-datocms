@@ -337,3 +337,25 @@
     color: hsl(var(--palette-primary));
   }
 }
+
+/*
+ * Escala tipográfica semântica (ui-visual): espelha o hero actual.
+ * Preferir estas classes a misturar text-* / font-* ad hoc em blocos novos.
+ */
+@layer utilities {
+  .type-display {
+    @apply text-balance text-4xl font-semibold tracking-tight text-foreground md:text-5xl;
+  }
+
+  .type-heading {
+    @apply text-balance text-2xl font-semibold tracking-tight text-foreground sm:text-3xl;
+  }
+
+  .type-lead {
+    @apply text-lg leading-relaxed text-muted-foreground;
+  }
+
+  .type-body {
+    @apply text-pretty text-base leading-relaxed text-muted-foreground;
+  }
+}

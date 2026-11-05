@@ -20,7 +20,7 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
   const price = product.priceRange.minVariantPrice;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm ring-1 ring-border/40 transition hover:border-primary/25 hover:shadow-md">
+    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
       <Link
         href={href}
         className="flex h-full flex-col rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

@@ -148,7 +148,7 @@ function CtaBannerImage({ block, fallbackAlt }: { block: CtaImageBlock; fallback
   if (!mobile?.url) return null;
 
   return (
-    <figure className="aspect-[21/9] overflow-hidden rounded-2xl border border-border/50 bg-background/50 shadow-sm [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
+    <figure className="aspect-[21/9] overflow-hidden rounded-xl border border-border bg-muted/30 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
       <DatoResponsivePicture
         mobile={mobile}
         desktop={desktop}
@@ -188,7 +188,7 @@ function CtaBannerContent({
         <p
           className={cn(
             "text-xs font-semibold uppercase tracking-[0.2em]",
-            isOverlay ? "text-white drop-shadow-sm" : isPrimary ? "text-primary-foreground" : "text-muted-foreground",
+            isOverlay ? "text-white" : isPrimary ? "text-primary-foreground" : "text-muted-foreground",
           )}
         >
           {eyebrow}
@@ -199,8 +199,8 @@ function CtaBannerContent({
         <h2
           id={headingId}
           className={cn(
-            "text-balance text-3xl font-semibold tracking-tight md:text-4xl",
-            isOverlay ? "text-white drop-shadow-sm" : undefined,
+            "type-heading md:text-4xl",
+            isOverlay ? "text-white" : undefined,
             eyebrow ? "mt-3" : undefined,
           )}
         >
@@ -211,8 +211,8 @@ function CtaBannerContent({
       {description ? (
         <p
           className={cn(
-            "mt-4 max-w-2xl text-pretty text-base leading-relaxed md:text-lg",
-            isOverlay ? "text-white drop-shadow-sm" : isPrimary ? "text-primary-foreground" : "text-muted-foreground",
+            "type-body mt-4 max-w-2xl md:text-lg",
+            isOverlay ? "text-white" : isPrimary ? "text-primary-foreground" : undefined,
             options.variant !== "split" && "mx-auto",
           )}
         >
@@ -258,9 +258,9 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
         <Container size="lg" padded={false} name="CtaBanner">
           <div
             className={cn(
-              "relative overflow-hidden rounded-3xl p-8 shadow-xl lg:p-16",
+              "relative overflow-hidden rounded-xl p-8 lg:p-16",
               "flex flex-col items-center text-center",
-              hasOverlayImage ? "text-white ring-1 ring-black/10" : cardSurfaceClasses(options.bgTheme),
+              hasOverlayImage ? "border border-border text-white" : cardSurfaceClasses(options.bgTheme),
             )}
           >
             {hasOverlayImage && imageBlock && mobileAsset ? (
@@ -301,7 +301,7 @@ export function CtaBannerBlock({ record, locale }: CtaBannerBlockProps) {
       className={cn(
         "not-prose my-12 w-full",
         /* A faixa já está dentro da largura do artigo: arredondar evita o bloco retangular duro. */
-        options.bgTheme !== "transparent" && "rounded-2xl",
+        options.bgTheme !== "transparent" && "rounded-xl",
         bgThemeClasses(options.bgTheme),
       )}
       {...landmark}

@@ -56,6 +56,7 @@ Uma rule global; dividir só quando um domínio crescer muito. Ao alterar UI, p�
 ## Boas práticas
 
 - Segurança detalhada: ver `security.mdc` (CSP, secrets, draft, validação).
+- Design visual (tokens, no card-soup, tipografia `.type-*`): ver `ui-visual.mdc` + checklist [`docs/UI-CHECKLIST.md`](../../docs/UI-CHECKLIST.md) (Playwright 1440 / 390 ao fechar UI).
 - `next.config.ts`: `poweredByHeader: false`, cache `/_next/static`.
 - Client boundary mínimo; `rel="noopener noreferrer"` em `target="_blank"`.
 - **Touch targets** (Lighthouse): classes `touch-target` (48×48px) e `touch-target-text` (`globals.css`) em botões/ícones e links de nav; `gap-2` entre controlos adjacentes no header.
@@ -67,6 +68,7 @@ Uma rule global; dividir só quando um domínio crescer muito. Ao alterar UI, p�
 - Submenu só com `:hover` (sem teclado / `aria-expanded`).
 - Dois `sticky top-0` sobrepostos; imagens hero com `sizes` inflado.
 - Botões `px-1.5 py-1.5` ou ícones `h-10` no header (falham “Touch targets” no Lighthouse).
+- Card soup: `border` + `ring` + `shadow` + `backdrop-blur` no mesmo nó; cores/gradientes fora dos tokens (`ui-visual.mdc`).
 
 ## Lighthouse manual (checklist rápido)
 

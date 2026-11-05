@@ -102,7 +102,7 @@ export function CardItem({ card, locale, content, heading = "h3", priority = fal
           {content.icon ? (
             <FeatureGridCardIcon
               icon={content.icon}
-              className="absolute bottom-0 left-6 translate-y-1/2 border border-border/60 bg-background shadow-sm"
+              className="absolute bottom-0 left-6 translate-y-1/2 border border-border bg-background"
             />
           ) : null}
         </div>
@@ -141,8 +141,8 @@ export function CardItem({ card, locale, content, heading = "h3", priority = fal
       {...cmsBlockAttrs(card)}
       data-datocms-content-link-boundary=""
       className={cn(
-        "group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-sm",
-        "transition duration-200 hover:border-primary/25 hover:shadow-md motion-reduce:transition-none",
+        "group flex h-full w-full min-w-0 flex-col overflow-hidden rounded-xl border border-border bg-card text-card-foreground",
+        "transition-colors duration-200 hover:border-foreground/20 motion-reduce:transition-none",
       )}
     >
       {maybeCatalogLink(content.href, body)}
@@ -222,7 +222,7 @@ export function FullBleedCard({ card, locale, content, heading = "h3", priority 
     <article
       {...cmsBlockAttrs(card)}
       data-datocms-content-link-boundary=""
-      className="relative flex h-[450px] overflow-hidden rounded-2xl bg-foreground text-background lg:h-[600px]"
+      className="relative flex h-[450px] overflow-hidden rounded-xl bg-foreground text-background lg:h-[600px]"
     >
       {maybeCatalogLink(content.href, body, "relative h-full")}
     </article>

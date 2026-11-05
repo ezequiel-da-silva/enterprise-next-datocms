@@ -119,7 +119,7 @@ function HeroSubtitle({
   const data = subtitleData(record);
   if (!data || !structuredTextValueHasContent(data.value)) return null;
   return (
-    <div className={cn("mt-4 text-lg text-muted-foreground [&_p]:mt-0", className)}>
+    <div className={cn("type-lead mt-4 [&_p]:mt-0", className)}>
       <StructuredTextRenderer
         data={data as unknown as CdaStructuredTextValue}
         contentLinkGroup={contentLinkGroup}
@@ -139,7 +139,7 @@ function HeroTitle({
   contentLinkGroup: boolean;
 }) {
   const heading = (
-    <h1 className={cn("text-balance text-4xl font-semibold tracking-tight text-foreground md:text-5xl", className)}>
+    <h1 className={cn("type-display", className)}>
       {title}
     </h1>
   );
@@ -181,7 +181,7 @@ export function HeroSectionBlock({
       >
         {textColumn}
         {showHeroImg && heroMobile ? (
-          <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
+          <figure className="aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted/30 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
             <DatoResponsivePicture
               mobile={heroMobile}
               desktop={heroImg.desktop}
@@ -208,7 +208,7 @@ export function HeroSectionBlock({
         {...cmsBlockAttrs(record)}
         data-datocms-content-link-boundary=""
         className={cn(
-          "not-prose relative mb-12 min-h-[280px] overflow-hidden rounded-2xl border border-border",
+          "not-prose relative mb-12 min-h-[280px] overflow-hidden rounded-xl border border-border",
           !hasOverlayBg && "bg-muted/40",
         )}
       >
@@ -236,10 +236,10 @@ export function HeroSectionBlock({
           <div className="min-w-0">
             <div
               className={cn(
-                "rounded-2xl border px-6 py-8 shadow-lg ring-1",
+                "rounded-xl border px-6 py-8",
                 hasOverlayBg
-                  ? "border-white/15 bg-black/80 text-white ring-black/30"
-                  : "border-border bg-background/95 text-foreground ring-border/60 backdrop-blur-md supports-[backdrop-filter]:backdrop-blur-lg",
+                  ? "border-white/15 bg-black/80 text-white"
+                  : "border-border bg-background text-foreground",
               )}
             >
               {title ? (
@@ -256,7 +256,7 @@ export function HeroSectionBlock({
                 className={
                   hasOverlayBg
                     ? "mt-4 text-lg text-white [&_p]:mt-0 [&_a]:text-white"
-                    : "mt-4 text-lg text-muted-foreground [&_p]:mt-0 [&_a]:text-primary"
+                    : "mt-4 [&_a]:text-primary"
                 }
               />
               <HeroButtons record={record} locale={locale} />
@@ -264,7 +264,7 @@ export function HeroSectionBlock({
           </div>
 
           {showHeroColumn ? (
-            <figure className="aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-muted/30 shadow-sm ring-1 ring-border/50 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
+            <figure className="aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted/30 [&>picture]:block [&>picture]:h-full [&>picture]:w-full">
               <DatoResponsivePicture
                 mobile={heroMobile!}
                 desktop={heroImg.desktop}
