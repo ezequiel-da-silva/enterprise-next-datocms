@@ -13,7 +13,7 @@ import {
 import type { CardRecord } from "@/infra/datocms/types-page";
 
 describe("resolve-feature-grid-card", () => {
-  it("reads icon JSON from camelCase or snake_case", () => {
+  it("reads icon JSON from camelCase, snake_case, or plugin stringified JSON", () => {
     expect(readCardIconJson({ iconCard: { prefix: "fas", iconName: "star" } })).toEqual({
       prefix: "fas",
       iconName: "star",
@@ -22,6 +22,11 @@ describe("resolve-feature-grid-card", () => {
       prefix: "far",
       iconName: "heart",
     });
+    expect(
+      readCardIconJson({
+        icon_card: JSON.stringify({ prefix: "fas", iconName: "truck", icon: [640, 512, [], "f0d1", "M"] }),
+      }),
+    ).toEqual({ prefix: "fas", iconName: "truck" });
   });
 
   it("respects has_icon, has_description, has_image and has_link toggles", () => {

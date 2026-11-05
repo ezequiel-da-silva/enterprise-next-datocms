@@ -62,10 +62,20 @@ export function resolveCardShowLink(record: Record<string, unknown>): boolean {
   return readCdaBool(record, "hasLink", "has_link");
 }
 
-/** Parses Font Awesome JSON from `icon_card` / `iconCard`. */
+/** Parses Font Awesome JSON from `icon_card` / `iconCard` (object or plugin stringified JSON). */
 export function readCardIconJson(record: Record<string, unknown>): DatoFontAwesomeIconJson | null {
-  const raw = record.iconCard ?? readCdaObject<Record<string, unknown>>(record, "iconCard", "icon_card");
-  if (!raw || typeof raw !== "object") return null;
+  const direct = record.iconCard ?? record.icon_card;
+  let raw: unknown = direct;
+  if (typeof raw === "string") {
+    try {
+      raw = JSON.parse(raw) as unknown;
+    } catch {
+      return null;
+    }
+  } else if (raw == null || typeof raw !== "object") {
+    raw = readCdaObject<Record<string, unknown>>(record, "iconCard", "icon_card");
+  }
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return null;
   const icon = raw as Record<string, unknown>;
   const prefix = typeof icon.prefix === "string" ? icon.prefix : undefined;
   const iconName = typeof icon.iconName === "string" ? icon.iconName : undefined;
