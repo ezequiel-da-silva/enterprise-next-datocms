@@ -50,8 +50,9 @@ Usar utilities em `globals.css` (escala do hero actual — não inventar extrabo
 ## 4. Layout e ritmo
 
 - Largura + gutter: só [`Container`](../../src/components/atoms/container.tsx) (`size` xs|sm|md|lg). **Não** repetir `mx-auto w-full max-w-* px-4` à mão.
+- Página CMS com hero/blocos: `CmsPageArticle` em `size="lg"` (mesma coluna do header/footer). Secções aninhadas: `padded={false}` no `Container` interior.
 - Ritmo entre blocos CMS (Fase 1): manter o padrão existente `not-prose my-12 w-full` (+ `py-6` interno quando já usado). **Não** introduzir `my-*` novos ad hoc; migração global para `py-*` fica noutro PR.
-- Secção full-bleed: `<section className="w-full …">` + `<Container size="lg">` no interior.
+- Secção full-bleed: `<section className="w-full …">` + `<Container size="lg" padded={false}>` quando o pai já tem gutter.
 
 ## 5. Blueprints (copiar antes de inventar)
 

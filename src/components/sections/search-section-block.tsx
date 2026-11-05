@@ -88,7 +88,7 @@ export function SearchSectionBlock({
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
-      <Container size="lg" name="SearchSection" className="flex flex-col gap-8">
+      <Container size="lg" padded={false} name="SearchSection" className="flex flex-col gap-8">
         {hasTextHeader ? (
           <SectionTextHeader header={header} headingId={headingId} align="left" />
         ) : null}

@@ -4,12 +4,12 @@ import type { ElementType, HTMLAttributes, ReactNode } from "react";
 /**
  * Larguras alinhadas aos wrappers atuais do site:
  * - xs (2xl): hero centrado / narrow
- * - sm (3xl): artigo / prose
- * - md (5xl): páginas e listagens (default)
- * - lg (6xl): header, footer e secções wide
+ * - sm (3xl): artigo / prose / PDP
+ * - md (5xl): legado / casos pontuais
+ * - lg (6xl): header, footer e página CMS com hero/blocos (mesma coluna)
  *
  * Identificação no DOM (como `data-cms-block`/`data-cms-record` no CMS e `data-ui-section` na UI):
- * `data-container="Container"` + `data-container-size="md"`.
+ * `data-container="Container"` + `data-container-size="lg"`.
  * Usa `name` para instâncias nomeadas (ex.: `name="GlobalHeader"`).
  */
 export const containerSizeClass = {

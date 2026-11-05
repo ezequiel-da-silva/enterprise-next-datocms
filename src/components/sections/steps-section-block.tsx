@@ -171,7 +171,7 @@ export function StepsSectionBlock({ record, locale }: StepsSectionBlockProps) {
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
-      <Container size="lg" name="StepsSection" className="flex flex-col gap-10">
+      <Container size="lg" padded={false} name="StepsSection" className="flex flex-col gap-10">
         <SectionTextHeader header={header} headingId={headingId} />
 
         <div className={cn("relative", stepsWidthClass(steps.length))}>

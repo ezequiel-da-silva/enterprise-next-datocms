@@ -185,7 +185,7 @@ export async function ReviewsSectionBlock({ record, locale, action }: ReviewsSec
     >
       {jsonLd ? <JsonLdScriptSync graph={jsonLd} nonce={nonce} /> : null}
 
-      <Container size="lg" name="ReviewsSection" className="flex flex-col gap-10">
+      <Container size="lg" padded={false} name="ReviewsSection" className="flex flex-col gap-10">
         {header.title || header.description || aggregateLabel ? (
           <div className="flex flex-col gap-4">
             <SectionTextHeader header={header} headingId={headingId} />

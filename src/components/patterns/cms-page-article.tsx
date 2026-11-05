@@ -88,7 +88,8 @@ export async function CmsPageArticle({
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
       <Container
         as="article"
-        size={wideLayout ? "md" : "sm"}
+        /* `lg` = mesma coluna do header/footer (`max-w-6xl`); `sm` só páginas sem hero/corpo. */
+        size={wideLayout ? "lg" : "sm"}
         name="CmsPageArticle"
         data-page-leading-hero={page.heroPage ? "" : undefined}
         className={

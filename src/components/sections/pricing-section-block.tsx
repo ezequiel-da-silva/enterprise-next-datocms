@@ -67,7 +67,7 @@ export function PricingSectionBlock({ record, locale }: PricingSectionBlockProps
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, locale === "pt" ? "Preços" : locale === "es" ? "Precios" : "Pricing")}
     >
-      <Container size="lg" name="PricingSection" className="flex flex-col gap-10">
+      <Container size="lg" padded={false} name="PricingSection" className="flex flex-col gap-10">
         <SectionTextHeader header={header} headingId={headingId} />
 
         <ul className={cn("m-0 grid list-none gap-6 p-0", plansGridClass(plans.length, hasPopular))}>
