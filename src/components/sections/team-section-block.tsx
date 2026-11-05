@@ -117,7 +117,7 @@ export async function TeamSectionBlock({ record, locale }: TeamSectionBlockProps
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       {jsonLd ? <JsonLdScriptSync graph={jsonLd} nonce={nonce} /> : null}
-      <Container size="lg" name="TeamSection" className="flex flex-col gap-10">
+      <Container size="lg" padded={false} name="TeamSection" className="flex flex-col gap-10">
         <SectionTextHeader header={header} headingId={headingId} />
 
         <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">

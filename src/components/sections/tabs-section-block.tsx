@@ -95,7 +95,7 @@ export function TabsSectionBlock({ record, locale }: TabsSectionBlockProps) {
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
-      <Container size="lg" name="TabsSection" className="flex flex-col gap-10">
+      <Container size="lg" padded={false} name="TabsSection" className="flex flex-col gap-10">
         <SectionTextHeader header={header} headingId={headingId} />
 
         <TabsSectionInteractive

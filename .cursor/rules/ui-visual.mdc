@@ -1,0 +1,75 @@
+---
+description: Restrições obrigatórias de design visual, hierarquia tipográfica e superfícies (next-dato)
+globs: "src/components/**/*.{tsx,jsx},src/app/**/*.{tsx,jsx}"
+alwaysApply: false
+---
+
+# Design visual (next-dato)
+
+Complementa `architecture.mdc` (Container) e `web-excellence.mdc` (a11y/perf). Checklist de fecho: [`docs/UI-CHECKLIST.md`](../../docs/UI-CHECKLIST.md).
+
+## 1. Tokens exclusivos
+
+- Fundos: `bg-background`, `bg-card`, `bg-muted`
+- Textos: `text-foreground`, `text-muted-foreground`, `text-primary` (+ `text-primary-foreground` em superfícies primary)
+- Bordas: `border-border` apenas (não inventar `border-input` / cores hex)
+
+**Proibido**
+
+- Cores soltas Tailwind fora da paleta (`bg-purple-*`, `from-indigo-*`, `text-blue-*`, …)
+- Gradientes decorativos de marketing (`bg-gradient-to-r from-violet-* to-indigo-*`)
+- Glow / sombra custom sem semântica (`shadow-[0_0_*]`)
+- Vidro genérico em cards: `bg-white/10` + `backdrop-blur` (ou equivalentes) em cartões opacos/informativos
+
+## 2. Superfície — no-card by default
+
+- Blocos de conteúdo agrupam com respiro (`gap-6`/`gap-8`, `space-y-4`), **não** com caixas.
+- Cartão só se for: (1) unidade clicável independente (produto, post), ou (2) contentor de formulário/checkout.
+- Quando houver cartão, **uma** propriedade de contorno:
+  - `border border-border` + `bg-card`, **ou**
+  - `shadow-sm` + fundo plano
+- **Proibido** no mesmo nó: `border` + `ring-1` + `shadow*` + `backdrop-blur` (qualquer combinação de três ou o trio completo).
+- Radii: `rounded-xl` em containers/cards; `rounded-lg` / `rounded-md` em controlos. Sem `rounded-3xl` arbitrário.
+- Hover de card: preferir `hover:border-foreground/20` (ou `transition-colors`), sem empilhar `hover:shadow-md` em cima de border.
+
+## 3. Tipografia
+
+Usar utilities em `globals.css` (escala do hero actual — não inventar extrabold / `text-6xl`):
+
+| Classe | Uso |
+|--------|-----|
+| `.type-display` | `h1` hero |
+| `.type-heading` | `h2` de secção |
+| `.type-lead` | Subtítulo / lead |
+| `.type-body` | Corpo / descrição |
+
+- Títulos: `text-foreground` + `tracking-tight` (já nas utilities)
+- Lead/corpo: `text-muted-foreground` — não pintar o título a muted
+- `text-balance` em títulos; `text-pretty` em parágrafos longos (já em `.type-body`)
+
+## 4. Layout e ritmo
+
+- Largura + gutter: só [`Container`](../../src/components/atoms/container.tsx) (`size` xs|sm|md|lg). **Não** repetir `mx-auto w-full max-w-* px-4` à mão.
+- Página CMS com hero/blocos: `CmsPageArticle` em `size="lg"` (mesma coluna do header/footer). Secções aninhadas: `padded={false}` no `Container` interior.
+- Ritmo entre blocos CMS (Fase 1): manter o padrão existente `not-prose my-12 w-full` (+ `py-6` interno quando já usado). **Não** introduzir `my-*` novos ad hoc; migração global para `py-*` fica noutro PR.
+- Secção full-bleed: `<section className="w-full …">` + `<Container size="lg" padded={false}>` quando o pai já tem gutter.
+
+## 5. Blueprints (copiar antes de inventar)
+
+| Papel | Path |
+|-------|------|
+| Hero | [`src/components/patterns/hero-section-block.tsx`](../../src/components/patterns/hero-section-block.tsx) |
+| Feature grid / cards | [`src/components/patterns/feature-grid-block.tsx`](../../src/components/patterns/feature-grid-block.tsx), [`feature-grid-card.tsx`](../../src/components/patterns/feature-grid-card.tsx) |
+| CTA | [`src/components/sections/cta-banner-block.tsx`](../../src/components/sections/cta-banner-block.tsx) |
+| Product card | [`src/components/patterns/catalog-product-card.tsx`](../../src/components/patterns/catalog-product-card.tsx) |
+| Post card | [`src/components/patterns/post-card.tsx`](../../src/components/patterns/post-card.tsx) |
+
+## 6. Excepções (não são card-soup)
+
+Não aplicar a regra de “sem blur / sem ring” a:
+
+- Header sticky e cookie banner (`bg-background/95` + `backdrop-blur` para legibilidade sobre hero)
+- Scrims de drawer / menu móvel (`backdrop-blur-sm` no overlay)
+- Foco visível: `focus-visible:outline-ring` / ring de foco a11y
+- Draft chrome âmbar (estado de sistema)
+- Scrim/gradiente **sobre fotografia** de hero/CTA overlay (legibilidade do texto), desde que o painel de texto não acumule border+ring+shadow+blur

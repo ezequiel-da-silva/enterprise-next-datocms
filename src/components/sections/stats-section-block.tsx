@@ -93,7 +93,7 @@ export function StatsSectionBlock({ record, locale }: StatsSectionBlockProps) {
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
-      <Container size="lg" name="StatsSection" className="flex flex-col gap-10">
+      <Container size="lg" padded={false} name="StatsSection" className="flex flex-col gap-10">
         <SectionTextHeader header={header} headingId={headingId} />
 
         <dl className={cn("m-0 grid list-none gap-6 p-0", statsGridClass(stats.length))}>

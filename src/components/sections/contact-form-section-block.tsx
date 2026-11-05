@@ -55,7 +55,7 @@ export function ContactFormSectionBlock({
       id={header.sectionId}
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
-      <Container size="lg" name="ContactFormSection" className="flex flex-col gap-8">
+      <Container size="lg" padded={false} name="ContactFormSection" className="flex flex-col gap-8">
         {hasTextHeader ? (
           <SectionTextHeader header={header} headingId={headingId} align="left" />
         ) : null}

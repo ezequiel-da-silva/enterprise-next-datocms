@@ -106,8 +106,8 @@ export async function FeatureGridBlock({ record, locale }: FeatureGridBlockProps
         header={header}
         headingId={headingId}
         className="mb-10"
-        headingClassName="text-3xl font-semibold md:text-4xl"
-        descriptionClassName="mt-4 text-lg leading-relaxed"
+        headingClassName="type-heading"
+        descriptionClassName="type-lead mt-4"
       />
 
       {resolved.length > 1 ? (

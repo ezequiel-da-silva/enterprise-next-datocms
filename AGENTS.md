@@ -48,7 +48,7 @@ CLI / schema / Agent Skills: `npx datocms login` then `whoami`. Project is linke
 
 ## Cursor rules (`.cursor/rules/`)
 
-Always on: `architecture`, `git-conventions`. Attached by globs: `web-excellence` (UI/SEO), `security` (proxy, API, actions, infra), `datocms-blocks`, `datocms-next`, `react-rsc`, `testing` — read the `.mdc` when touching those areas outside the globs.
+Always on: `architecture`, `git-conventions`. Attached by globs: `web-excellence` (UI/SEO), `ui-visual` (tokens, surfaces, type scale), `security` (proxy, API, actions, infra), `datocms-blocks`, `datocms-next`, `react-rsc`, `testing` — read the `.mdc` when touching those areas outside the globs. Visual close-out: [docs/UI-CHECKLIST.md](docs/UI-CHECKLIST.md).
 
 ## Project skills (`.cursor/skills/`)
 

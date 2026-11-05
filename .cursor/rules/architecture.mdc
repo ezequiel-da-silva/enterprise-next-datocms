@@ -33,9 +33,9 @@ Complements `web-excellence.mdc` and `security.mdc`. Full map: [`docs/ARCHITECTU
 ## Layout (`Container`)
 
 - Largura + gutter: [`Container`](../../src/components/atoms/container.tsx) — não repetir `mx-auto max-w-* px-4` à mão em páginas, chrome ou blocos novos.
-- Tamanhos: `xs` (2xl) · `sm` (3xl, artigo) · `md` (5xl, default) · `lg` (6xl, header/footer/secções wide).
+- Tamanhos: `xs` (2xl) · `sm` (3xl, artigo/PDP) · `md` (5xl) · `lg` (6xl — **chrome + página CMS com hero/blocos**, mesma coluna).
 - Identificação no DOM: `data-container` (default `"Container"`) + `data-container-size`; opcional `name="GlobalHeader"` etc. — paralelo a `data-cms-block` nos blocos CMS.
-- Secção full-bleed: `<section className="w-full …">` + `<Container size="lg">` no interior; `padded={false}` só se o pai já tiver gutter ou o bloco for nested.
+- Secção full-bleed: `<section className="w-full …">` + `<Container size="lg">` no interior; `padded={false}` quando o pai (`CmsPageArticle`, etc.) já aplica o gutter.
 - `as="article"|"section"|…` quando o landmark/semântica importar.
 
 ## Change discipline

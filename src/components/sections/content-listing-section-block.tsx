@@ -46,8 +46,13 @@ export function ContentListingSectionFallback({
       aria-busy="true"
       aria-label={header.title || label}
     >
-      <Container size="lg" name="ContentListingSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={`content-listing-${record.id}`} />
+      <Container size="lg" padded={false} name="ContentListingSection" className="flex flex-col gap-10">
+        <SectionTextHeader
+          header={header}
+          headingId={`content-listing-${record.id}`}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead"
+        />
         <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
           {["a", "b", "c"].map((key) => (
             <li key={key} className="min-w-0">
@@ -90,8 +95,13 @@ export async function ContentListingSectionBlock({
       {...sectionLandmarkProps(header, headingId, copy.sectionLabel)}
     >
       <ShopifyCdnPreconnect />
-      <Container size="lg" name="ContentListingSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={headingId} />
+      <Container size="lg" padded={false} name="ContentListingSection" className="flex flex-col gap-10">
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead"
+        />
         <ProductsSectionInteractive
           locale={locale}
           products={dataset}

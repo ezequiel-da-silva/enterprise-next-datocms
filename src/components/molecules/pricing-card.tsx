@@ -72,9 +72,9 @@ export function PricingCard({ plan, locale, reserveBadgeRow = false }: PricingCa
   return (
     <article
       className={cn(
-        "grid grid-rows-subgrid rounded-2xl border bg-card p-6 text-card-foreground shadow-sm",
+        "grid grid-rows-subgrid rounded-xl border bg-card p-6 text-card-foreground",
         reserveBadgeRow ? "row-span-5" : "row-span-4",
-        isPopular ? "border-primary ring-2 ring-primary/30" : "border-border",
+        isPopular ? "border-2 border-primary" : "border-border",
       )}
       aria-labelledby={`pricing-plan-${plan.id}`}
       aria-describedby={isPopular ? badgeId : undefined}
@@ -96,7 +96,7 @@ export function PricingCard({ plan, locale, reserveBadgeRow = false }: PricingCa
         <h3 id={`pricing-plan-${plan.id}`} className="text-xl font-semibold tracking-tight text-foreground">
           {name}
         </h3>
-        {description ? <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{description}</p> : null}
+        {description ? <p className="type-body mt-1.5">{description}</p> : null}
       </header>
 
       <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 self-start">
@@ -107,7 +107,7 @@ export function PricingCard({ plan, locale, reserveBadgeRow = false }: PricingCa
       {features.length > 0 ? (
         <ul className="flex flex-col gap-2.5 self-start">
           {features.map((feature) => (
-            <li key={feature} className="flex gap-2 text-sm leading-relaxed text-foreground">
+            <li key={feature} className="type-body flex gap-2">
               <CheckIcon />
               <span>{feature}</span>
             </li>
@@ -126,7 +126,7 @@ export function PricingCard({ plan, locale, reserveBadgeRow = false }: PricingCa
              * `border-border` sobre a superfície do card quase não se vê no tema escuro
              * (ambos ~L9-17%): borda e hover em `foreground` com alfa adaptam-se aos dois temas.
              */
-            className={cn("min-h-12 w-full", !isPopular && "border-foreground/50 hover:bg-foreground/10")}
+            className={cn("h-12 w-full", !isPopular && "border-foreground/50 hover:bg-foreground/10")}
           >
             <SmartLink record={resolvedCta} locale={locale} tone="inherit" />
           </Button>
