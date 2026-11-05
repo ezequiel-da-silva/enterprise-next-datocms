@@ -29,11 +29,11 @@ function readPlans(record: PricingSectionBlockRecord): PricingCardBlockRecord[] 
  */
 function plansGridClass(count: number, hasPopular: boolean): string {
   if (count <= 1) {
-    return "mx-auto max-w-xl grid-cols-1";
+    return "grid-cols-1";
   }
   if (count === 2) {
     return cn(
-      "mx-auto max-w-3xl grid-cols-1 sm:grid-cols-2",
+      "grid-cols-1 sm:grid-cols-2",
       hasPopular ? "sm:grid-rows-[auto_auto_auto_1fr_auto]" : "sm:grid-rows-[auto_auto_1fr_auto]",
     );
   }
@@ -68,7 +68,12 @@ export function PricingSectionBlock({ record, locale }: PricingSectionBlockProps
       {...sectionLandmarkProps(header, headingId, locale === "pt" ? "Preços" : locale === "es" ? "Precios" : "Pricing")}
     >
       <Container size="lg" padded={false} name="PricingSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={headingId} />
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
 
         <ul className={cn("m-0 grid list-none gap-6 p-0", plansGridClass(plans.length, hasPopular))}>
           {plans.map((plan) => (
