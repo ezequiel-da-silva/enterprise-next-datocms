@@ -55,8 +55,8 @@ export async function FaqGroupBlock({ record }: FaqGroupBlockProps) {
         headingId={headingId}
         align={options.headerAlignment}
         className="mb-6"
-        headingClassName="text-3xl font-semibold"
-        descriptionClassName="mt-2 text-lg"
+        headingClassName="type-heading"
+        descriptionClassName="type-lead mt-2"
       />
       <FaqGroupAccordion groupId={String(record.id)} items={items} options={options} />
     </section>

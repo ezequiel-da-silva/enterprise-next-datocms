@@ -54,21 +54,21 @@ export function FaqGroupAccordion({ groupId, items, options }: FaqGroupAccordion
   );
 
   return (
-    <div className="divide-y divide-border rounded-xl border border-border">
+    <div className="divide-y divide-border">
       {items.map((item, index) => {
         const isOpen = openIds.has(item.id);
         const triggerId = `${prefix}-trigger-${item.id}`;
         const panelId = `${prefix}-panel-${item.id}`;
 
         return (
-          <div key={item.id} className={cn("px-4 py-3", isOpen && "bg-muted/30")}>
+          <div key={item.id} className={cn("py-3", isOpen && "bg-muted/30")}>
             <h3 className="m-0">
               <button
                 type="button"
                 id={triggerId}
                 className={cn(
                   "flex min-h-12 w-full cursor-pointer items-center justify-between gap-4",
-                  "text-left font-medium text-foreground",
+                  "text-left font-semibold text-foreground",
                   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                 )}
                 aria-expanded={isOpen}
@@ -89,7 +89,7 @@ export function FaqGroupAccordion({ groupId, items, options }: FaqGroupAccordion
               hidden={!isOpen}
               className={cn(!isOpen && "hidden")}
             >
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.answer}</p>
+              <p className="type-body mt-3">{item.answer}</p>
             </div>
           </div>
         );
