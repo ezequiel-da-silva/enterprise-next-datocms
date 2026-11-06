@@ -183,7 +183,7 @@ export function BlogPostsInteractive({
                 role="radiogroup"
                 aria-label={copy.sortGroup}
                 aria-controls={listId}
-                className="inline-flex w-fit shrink-0 items-center gap-1 rounded-full border border-border bg-muted/60 p-1"
+                className="inline-flex w-fit shrink-0 items-center gap-1 rounded-lg border border-border bg-muted/60 p-1"
               >
                 {SORTS.map((value) => (
                   <SortChip
@@ -304,7 +304,7 @@ export function BlogPostsInteractive({
   );
 }
 
-const CHIP_BASE = "touch-target-text gap-2 rounded-full px-4 text-sm font-medium whitespace-nowrap";
+const CHIP_BASE = "touch-target-text gap-2 rounded-lg px-4 text-sm font-medium whitespace-nowrap";
 
 /** Abaixo de `sm` os filtros viram dois selects nativos lado a lado (picker do SO). */
 function FilterSelect({
@@ -328,7 +328,7 @@ function FilterSelect({
         id={selectId}
         name={name}
         aria-label={label}
-        className="filter-select min-h-12 w-full cursor-pointer appearance-none items-center truncate rounded-full border border-border bg-background py-2 pl-4 pr-9 text-sm font-medium text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="filter-select min-h-12 w-full cursor-pointer appearance-none items-center truncate rounded-lg border border-border bg-background py-2 pl-4 pr-9 text-sm font-medium text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
@@ -368,7 +368,7 @@ function CategoryChip({
       className={cn(
         CHIP_BASE,
         pressed
-          ? "border-primary bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+          ? "border-primary bg-primary text-primary-foreground hover:bg-primary/90"
           : "border-border bg-background text-muted-foreground hover:border-primary/30 hover:bg-muted hover:text-foreground",
       )}
       aria-pressed={pressed}
@@ -405,7 +405,7 @@ function SortChip({
       className={cn(
         CHIP_BASE,
         pressed
-          ? "bg-background text-foreground shadow-sm ring-1 ring-border hover:bg-background"
+          ? "border border-border bg-background text-foreground hover:bg-background"
           : "text-muted-foreground hover:bg-transparent hover:text-foreground",
       )}
       role="radio"

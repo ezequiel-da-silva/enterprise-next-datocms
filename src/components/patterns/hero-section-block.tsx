@@ -310,9 +310,9 @@ export function HeroSectionBlock({
 
   return (
     <section {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="not-prose mb-12">
-      <Container size="sm" padded={false} name="HeroText">
+      <div data-container="HeroText" className="w-full min-w-0">
         {textColumn}
-      </Container>
+      </div>
     </section>
   );
 }

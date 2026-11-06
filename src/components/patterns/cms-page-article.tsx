@@ -66,10 +66,10 @@ export async function CmsPageArticle({
       });
   const nonce = await getNonce();
   const heroH1 = heroFirstBlockSuppliesH1(page.heroPage);
-  const wideLayout = heroH1 || Boolean(page.heroPage) || page.contentPage.length > 0;
   const isHome = page.slug.toLowerCase() === "home";
   const lastBlock = page.contentPage.at(-1);
   const homeClosesWithCta = lastBlock?.__typename === "CtaBannerRecord";
+  const titleId = `cms-page-title-${page.id}`;
   const breadcrumbItems = isHome
     ? [{ label: homeBreadcrumbLabel(locale), href: canonicalPath }]
     : crumbsToNavItems([
@@ -80,7 +80,9 @@ export async function CmsPageArticle({
         },
       ]);
   const pageTitleHeading = (
-    <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{page.title}</h1>
+    <h1 id={titleId} className="type-display">
+      {page.title}
+    </h1>
   );
 
   return (
@@ -88,9 +90,10 @@ export async function CmsPageArticle({
       <JsonLdScriptSync graph={jsonLd} nonce={nonce} />
       <Container
         as="article"
-        /* `lg` = mesma coluna do header/footer (`max-w-6xl`); `sm` só páginas sem hero/corpo. */
-        size={wideLayout ? "lg" : "sm"}
+        /* `lg` = mesma coluna do header/footer (`max-w-6xl`). */
+        size="lg"
         name="CmsPageArticle"
+        aria-labelledby={!heroH1 ? titleId : undefined}
         data-page-leading-hero={page.heroPage ? "" : undefined}
         className={
           page.heroPage
