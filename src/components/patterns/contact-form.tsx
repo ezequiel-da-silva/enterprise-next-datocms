@@ -65,7 +65,7 @@ export function ContactForm({ action, successMessage, privacyNote }: ContactForm
 
   return (
     <form
-      className="mx-auto grid max-w-xl gap-6"
+      className="grid max-w-xl gap-6"
       noValidate
       aria-busy={isPending}
       action={formAction}
@@ -81,6 +81,7 @@ export function ContactForm({ action, successMessage, privacyNote }: ContactForm
           autoComplete="name"
           required
           {...register("name")}
+          className="rounded-lg shadow-none"
           aria-invalid={!!errors.name}
           aria-required="true"
         />
@@ -94,6 +95,7 @@ export function ContactForm({ action, successMessage, privacyNote }: ContactForm
           autoComplete="email"
           required
           {...register("email")}
+          className="rounded-lg shadow-none"
           aria-invalid={!!errors.email}
           aria-required="true"
         />
@@ -105,6 +107,7 @@ export function ContactForm({ action, successMessage, privacyNote }: ContactForm
           rows={6}
           required
           {...register("message")}
+          className="rounded-lg shadow-none"
           aria-invalid={!!errors.message}
           aria-required="true"
         />
@@ -125,18 +128,18 @@ export function ContactForm({ action, successMessage, privacyNote }: ContactForm
       </div>
 
       {state.status === "error" && state.message ? (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-xs text-destructive">
           {state.message}
         </p>
       ) : null}
 
       {state.status === "success" ? (
-        <p role="status" className="text-sm text-muted-foreground">
+        <p role="status" className="text-xs text-muted-foreground">
           {successMessage || state.message}
         </p>
       ) : null}
 
-      <Button type="submit" disabled={isPending} variant="primary">
+      <Button type="submit" disabled={isPending} variant="primary" className="h-12">
         {isPending ? "Enviando…" : "Enviar"}
       </Button>
 

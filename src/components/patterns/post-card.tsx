@@ -55,26 +55,29 @@ export function PostCard({
           ) : (
             <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">Sem capa</div>
           )}
-          {primaryCategory ? (
-            <div className="absolute left-3 top-3">
-              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground">
-                {colorHex ? (
-                  <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className="shrink-0">
-                    <circle cx="5" cy="5" r="5" fill={colorHex} />
-                  </svg>
-                ) : null}
-                {primaryCategory.categoryName}
-              </span>
-            </div>
-          ) : null}
-          <div className="absolute bottom-3 left-3 rounded-md border border-border bg-background px-2 py-1 text-xs text-muted-foreground">
-            <time dateTime={post._firstPublishedAt}>{dateLabel}</time>
-          </div>
         </div>
         <div className="flex flex-1 flex-col gap-2 p-4">
-          <TitleTag className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">{post.postTitle}</TitleTag>
+          {primaryCategory || dateLabel ? (
+            <p className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              {primaryCategory ? (
+                <span className="inline-flex items-center gap-1.5">
+                  {colorHex ? (
+                    <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className="shrink-0">
+                      <circle cx="5" cy="5" r="5" fill={colorHex} />
+                    </svg>
+                  ) : null}
+                  {primaryCategory.categoryName}
+                </span>
+              ) : null}
+              {primaryCategory && dateLabel ? <span aria-hidden>·</span> : null}
+              {dateLabel ? <time dateTime={post._firstPublishedAt}>{dateLabel}</time> : null}
+            </p>
+          ) : null}
+          <TitleTag className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
+            {post.postTitle}
+          </TitleTag>
           {excerpt ? (
-            <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">{excerptRaw}</p>
+            <p className="type-body line-clamp-3">{excerptRaw}</p>
           ) : null}
           {post.postAuthor?.authorName ? (
             <p className="mt-auto pt-1 text-sm text-muted-foreground">

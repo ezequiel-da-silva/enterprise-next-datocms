@@ -119,12 +119,12 @@ async function VideoBlockView({
       {...cmsBlockAttrs(record)}
       data-datocms-content-link-boundary=""
       data-datocms-content-link-url={record._editingUrl ?? undefined}
-      className="my-6"
+      className="my-8"
     >
       {videoLd ? <JsonLdScriptSync graph={videoLd} nonce={nonce} /> : null}
       <video
         controls
-        className="h-auto w-full max-w-full rounded-md"
+        className="h-auto w-full max-w-full rounded-xl"
         width={resolved.width ?? 16}
         height={resolved.height ?? 9}
         style={aspectStyle}
@@ -146,7 +146,7 @@ async function VideoBlockView({
           />
         ) : null}
       </video>
-      {v?.title ? <figcaption className="mt-2 text-sm text-muted-foreground">{v.title}</figcaption> : null}
+      {v?.title ? <figcaption className="mt-2 text-xs text-muted-foreground">{v.title}</figcaption> : null}
     </figure>
   );
 }
@@ -175,7 +175,7 @@ export function StructuredTextBlockView({
         <figure
           {...cmsBlockAttrs(record)}
           data-datocms-content-link-boundary=""
-          className="my-6 overflow-hidden rounded-md [&>picture]:block [&>picture]:h-full [&>picture]:w-full"
+          className="my-8 overflow-hidden rounded-xl [&>picture]:block [&>picture]:h-full [&>picture]:w-full"
           style={{ aspectRatio: `${w} / ${h}` }}
         >
           <DatoResponsivePicture
@@ -192,14 +192,14 @@ export function StructuredTextBlockView({
       const items = record.assets?.filter((a) => a?.url) ?? [];
       if (items.length === 0) return null;
       return (
-        <div {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-6 grid gap-3 sm:grid-cols-2">
+        <div {...cmsBlockAttrs(record)} data-datocms-content-link-boundary="" className="my-8 grid gap-3 sm:grid-cols-2">
           {items.map((img, i) => {
             const layout = clampLayoutDimensions(img.width ?? 800, img.height ?? 600);
             const blurDataURL = img.blurUpThumb?.trim() ?? "";
             return (
               <figure
                 key={`${record.id}-${i}`}
-                className="aspect-[4/3] overflow-hidden rounded-md border border-border"
+                className="aspect-[4/3] overflow-hidden rounded-xl border border-border"
               >
                 <Image
                   src={img.url}

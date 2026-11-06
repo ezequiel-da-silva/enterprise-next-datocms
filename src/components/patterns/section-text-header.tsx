@@ -13,7 +13,7 @@ type SectionTextHeaderProps = {
 export function SectionTextHeader({
   header,
   headingId,
-  align = "center",
+  align = "left",
   className,
   headingClassName,
   descriptionClassName,
@@ -21,17 +21,14 @@ export function SectionTextHeader({
   if (!header.title && !header.description) return null;
 
   const alignClass =
-    align === "left" ? "text-left" : align === "right" ? "text-right" : "mx-auto max-w-3xl text-center";
+    align === "center" ? "text-center" : align === "right" ? "text-right" : "text-left";
 
   return (
     <header className={cn(alignClass, className)}>
       {header.title ? (
         <h2
           id={headingId}
-          className={cn(
-            "text-balance text-2xl font-bold tracking-tight text-foreground sm:text-3xl",
-            headingClassName,
-          )}
+          className={cn("type-heading text-balance text-foreground", headingClassName)}
         >
           {header.title}
         </h2>
@@ -39,7 +36,7 @@ export function SectionTextHeader({
       {header.description ? (
         <p
           className={cn(
-            "text-base text-muted-foreground",
+            "type-lead text-muted-foreground",
             header.title && "mt-2",
             descriptionClassName,
           )}

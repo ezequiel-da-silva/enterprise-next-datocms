@@ -51,7 +51,12 @@ export function BlogPostsSectionFallback({
       aria-label={header.title || copy.sectionLabel}
     >
       <Container size="lg" padded={false} name="BlogPostsSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={`latest-posts-${record.id}`} />
+        <SectionTextHeader
+          header={header}
+          headingId={`latest-posts-${record.id}`}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
         <div className="flex flex-col gap-5 sm:gap-8">
           <div className="grid grid-cols-2 gap-2 border-b border-border/60 pb-4 sm:hidden">
             <Skeleton className="h-12 rounded-full" />
@@ -121,7 +126,12 @@ export async function BlogPostsSectionBlock({ record, locale, catalog }: BlogPos
       {...sectionLandmarkProps(header, headingId, copy.sectionLabel)}
     >
       <Container size="lg" padded={false} name="BlogPostsSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={headingId} />
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
 
         <BlogPostsInteractive
           key={`${options.displayType}-${options.initialCount}-${options.loadMoreStep}`}

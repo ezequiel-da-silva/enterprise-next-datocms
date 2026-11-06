@@ -39,7 +39,7 @@ function MemberAvatar({ member }: { member: TeamMember }) {
   const desktop = member.avatar?.assetDesktop;
   if (mobile?.url) {
     return (
-      <div className="aspect-square overflow-hidden rounded-2xl bg-muted [&>picture]:block [&>picture]:size-full">
+      <div className="aspect-square overflow-hidden rounded-xl bg-muted [&>picture]:block [&>picture]:size-full">
         <DatoResponsivePicture
           mobile={mobile}
           desktop={desktop}
@@ -54,7 +54,7 @@ function MemberAvatar({ member }: { member: TeamMember }) {
   }
   return (
     <div
-      className="flex aspect-square items-center justify-center rounded-2xl bg-muted text-2xl font-semibold tracking-wide text-muted-foreground"
+      className="flex aspect-square items-center justify-center rounded-xl bg-muted text-2xl font-semibold tracking-wide text-muted-foreground"
       aria-hidden
     >
       {authorInitials(member.authorName) || "?"}
@@ -75,17 +75,18 @@ function MemberCard({ member, locale }: { member: TeamMember; locale: AppLocale 
   );
 
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+    <article className="flex h-full flex-col">
       {profileHref ? (
-        <Link href={profileHref} className="group block min-w-0 rounded-md">
+        <Link
+          href={profileHref}
+          className="group block min-w-0 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
           {identity}
         </Link>
       ) : (
         <div className="min-w-0">{identity}</div>
       )}
-      {member.authorRole ? (
-        <p className="mt-1 text-sm text-muted-foreground">{member.authorRole}</p>
-      ) : null}
+      {member.authorRole ? <p className="type-body mt-1">{member.authorRole}</p> : null}
       {member.socialLinks.length > 0 ? (
         <ul className="mt-4 flex flex-wrap gap-2">
           {member.socialLinks.map((link) => (
@@ -118,7 +119,12 @@ export async function TeamSectionBlock({ record, locale }: TeamSectionBlockProps
     >
       {jsonLd ? <JsonLdScriptSync graph={jsonLd} nonce={nonce} /> : null}
       <Container size="lg" padded={false} name="TeamSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={headingId} />
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
 
         <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
           {members.map((member) => (

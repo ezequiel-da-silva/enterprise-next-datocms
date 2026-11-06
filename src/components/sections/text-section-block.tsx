@@ -53,10 +53,18 @@ export function TextSectionBlock({
     >
       <Container size="lg" padded={false} name="TextSection" className="flex flex-col gap-8">
         {hasTextHeader ? (
-          <SectionTextHeader header={header} headingId={headingId} align="left" />
+          <SectionTextHeader
+            header={header}
+            headingId={headingId}
+            align="left"
+            headingClassName="type-heading"
+            descriptionClassName="type-lead mt-2"
+          />
         ) : null}
         {hasBody ? (
-          <StructuredTextRenderer data={body} contentLinkGroup={contentLinkGroup} locale={locale} />
+          <div className="max-w-prose">
+            <StructuredTextRenderer data={body} contentLinkGroup={contentLinkGroup} locale={locale} />
+          </div>
         ) : null}
       </Container>
     </section>
