@@ -83,15 +83,8 @@ function stepsColumnsClass(count: number): string {
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 }
 
-/** Largura no wrapper, não no `ol`: as linhas de ligação são absolutas e não podem passar dos cards. */
-function stepsWidthClass(count: number): string | null {
-  if (count <= 1) return "mx-auto max-w-xl";
-  if (count === 2) return "mx-auto max-w-3xl";
-  return null;
-}
-
 /**
- * Linhas de ligação decorativas: ficam atrás da grelha (`z-0`) e os cards opacos tapam-nas,
+ * Linhas de ligação decorativas: ficam atrás da grelha (`z-0`) e os passos opacos tapam-nas,
  * por isso só aparecem nos vãos entre passos — sem contas de "último da fila" por breakpoint.
  * Vertical enquanto há uma só coluna; horizontal quando todos os passos ficam numa fila.
  */
@@ -123,7 +116,7 @@ function StepCard({ step, index, total }: { step: ParsedStep; index: number; tot
   return (
     <li className="relative min-w-0">
       <article
-        className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 text-card-foreground shadow-sm"
+        className="flex h-full flex-col bg-background p-6"
         aria-labelledby={headingId}
       >
         <span
@@ -132,11 +125,11 @@ function StepCard({ step, index, total }: { step: ParsedStep; index: number; tot
         >
           {numberLabel}
         </span>
-        <h3 id={headingId} className="text-lg font-semibold tracking-tight text-card-foreground">
+        <h3 id={headingId} className="text-lg font-semibold tracking-tight text-foreground">
           {step.title}
         </h3>
         {step.description ? (
-          <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+          <p className="type-body mt-2 whitespace-pre-line">{step.description}</p>
         ) : null}
         {step.image ? (
           <figure className="mt-4 overflow-hidden rounded-xl border border-border bg-muted/30">
@@ -172,10 +165,15 @@ export function StepsSectionBlock({ record, locale }: StepsSectionBlockProps) {
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       <Container size="lg" padded={false} name="StepsSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={headingId} />
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
 
-        <div className={cn("relative", stepsWidthClass(steps.length))}>
-          {/* A linha passa pelo centro dos cards e fica visível apenas nos vãos entre eles. */}
+        <div className="relative">
+          {/* A linha passa pelo centro dos passos e fica visível apenas nos vãos entre eles. */}
           {connector.vertical ? (
             <div
               aria-hidden

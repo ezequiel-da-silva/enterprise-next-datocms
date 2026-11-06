@@ -55,25 +55,23 @@ function readStats(record: StatsSectionBlockRecord): ParsedStat[] {
   return parsed;
 }
 
-/** 1 a 4 cards: nunca deixar colunas vazias nem espremer 4 métricas em ecrãs médios. */
+/** 1 a 4 métricas: nunca deixar colunas vazias nem espremer 4 em ecrãs médios. */
 function statsGridClass(count: number): string {
-  if (count <= 1) return "mx-auto max-w-xl grid-cols-1";
-  if (count === 2) return "mx-auto max-w-3xl grid-cols-1 sm:grid-cols-2";
+  if (count <= 1) return "grid-cols-1";
+  if (count === 2) return "grid-cols-1 sm:grid-cols-2";
   if (count === 3) return "grid-cols-1 md:grid-cols-3";
   return "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4";
 }
 
 function StatCard({ stat }: { stat: ParsedStat }) {
   return (
-    <div
-      className="flex h-full flex-col rounded-2xl border border-border bg-card p-6 text-center text-card-foreground shadow-sm"
-    >
+    <div className="flex h-full flex-col text-center">
       {/* Valor visual primeiro; DOM mantém dt → dd para leitores de ecrã. */}
       <dt className="order-2 mt-2 text-sm font-medium text-muted-foreground">{stat.label}</dt>
-      <dd className="order-1 text-4xl font-extrabold tracking-tight text-primary sm:text-5xl">{stat.value}</dd>
-      {stat.description ? (
-        <dd className="order-3 mt-2 text-sm leading-relaxed text-muted-foreground">{stat.description}</dd>
-      ) : null}
+      <dd className="order-1 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        {stat.value}
+      </dd>
+      {stat.description ? <dd className="type-body order-3 mt-2">{stat.description}</dd> : null}
     </div>
   );
 }
@@ -94,7 +92,12 @@ export function StatsSectionBlock({ record, locale }: StatsSectionBlockProps) {
       {...sectionLandmarkProps(header, headingId, FALLBACK_SECTION_LABEL[locale])}
     >
       <Container size="lg" padded={false} name="StatsSection" className="flex flex-col gap-10">
-        <SectionTextHeader header={header} headingId={headingId} />
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
 
         <dl className={cn("m-0 grid list-none gap-6 p-0", statsGridClass(stats.length))}>
           {stats.map((stat) => (
