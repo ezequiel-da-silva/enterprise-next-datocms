@@ -1,3 +1,4 @@
+import { Container } from "@/components/atoms/container";
 import { AuthorSection } from "@/components/patterns/author-section";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
@@ -108,7 +109,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const blogLabel = blogIndexLabel(blogPage);
 
   return (
-    <article className="mx-auto w-full max-w-3xl px-4 py-12">
+    <Container as="article" size="sm" name="BlogPost" className="py-12">
       <JsonLdScript graph={buildBlogPostJsonLdGraph(locale, postSlug, post)} />
       <header className="space-y-4">
         <BreadcrumbNav
@@ -119,11 +120,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             { name: post.postTitle, path: `/${locale}/blog/${postSlug}` },
           ])}
         />
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           <time dateTime={post._firstPublishedAt}>{dateLabel}</time>
         </p>
-        <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{post.postTitle}</h1>
-        {excerptLead ? <p className="text-lg leading-relaxed text-muted-foreground">{excerpt}</p> : null}
+        <h1 className="type-display">{post.postTitle}</h1>
+        {excerptLead ? <p className="type-lead">{excerpt}</p> : null}
         {post.postCategory?.length ? (
           <div className="flex flex-wrap gap-2">
             {post.postCategory.map((c) => {
@@ -156,7 +157,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </header>
 
       {coverMobile?.url ? (
-        <figure className="mt-8 overflow-hidden rounded-xl border border-border bg-muted shadow-sm ring-1 ring-border/40">
+        <figure className="mt-8 overflow-hidden rounded-xl border border-border bg-muted">
           <DatoResponsivePicture
             mobile={coverMobile}
             desktop={coverDesktop}
@@ -172,6 +173,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
 
       {post.postAuthor ? <AuthorSection author={post.postAuthor} locale={locale} contentLinkGroup={isEnabled} /> : null}
-    </article>
+    </Container>
   );
 }

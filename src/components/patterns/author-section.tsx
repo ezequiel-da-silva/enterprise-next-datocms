@@ -34,11 +34,11 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
   return (
     <section
       {...cmsRecordAttrs({ __typename: "AuthorRecord", id: author.id })}
-      className="mt-12 rounded-xl border border-border bg-muted/20 p-6 ring-1 ring-border/40"
+      className="mt-12 rounded-xl border border-border bg-muted/20 p-6"
       aria-labelledby={`autor-${author.id}`}
     >
       <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-        <div className="shrink-0 overflow-hidden rounded-full border border-border bg-background shadow-sm ring-2 ring-border/50">
+        <div className="shrink-0 overflow-hidden rounded-full border border-border bg-background">
           {avatarMobile?.url ? (
             <DatoResponsivePicture
               mobile={avatarMobile}
@@ -53,7 +53,7 @@ export function AuthorSection({ author, locale, contentLinkGroup }: AuthorSectio
         </div>
         <div className="min-w-0 flex-1 space-y-3">
           <div>
-            <h2 id={`autor-${author.id}`} className="text-lg font-semibold tracking-tight text-foreground">
+            <h2 id={`autor-${author.id}`} className="type-heading">
               {author.authorName}
             </h2>
             {role ? <p className="text-sm text-muted-foreground">{role}</p> : null}

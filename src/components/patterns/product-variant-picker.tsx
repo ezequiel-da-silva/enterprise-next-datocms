@@ -102,65 +102,10 @@ export function ProductVariantPicker({ variants, images, copy, cart, lowStockTem
   }
 
   return (
-    <div className="mt-6 space-y-8">
-      {selected ? (
-        <div aria-live="polite" className="space-y-1">
-          <p className="text-lg font-medium text-foreground">{selected.priceLabel}</p>
-          <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
-          <LowStockBadge
-            quantityAvailable={selected.quantityAvailable}
-            message={resolveLowStockMessage(lowStockTemplate, selected.quantityAvailable ?? 0)}
-          />
-        </div>
-      ) : null}
-
-      {showOptions
-        ? groups.map((group) => (
-            <fieldset key={group.name} className="space-y-3">
-              <legend className="text-sm font-medium text-foreground">{group.name}</legend>
-              <div className="flex flex-wrap gap-2">
-                {group.values.map((value) => {
-                  const pressed = selection[group.name] === value;
-                  const available = isValueAvailable(group.name, value);
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      aria-pressed={pressed}
-                      onClick={() => choose(group.name, value)}
-                      className={[
-                        "touch-target-text cursor-pointer rounded-md border text-sm font-medium transition",
-                        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                        pressed
-                          ? "border-primary bg-primary text-primary-foreground"
-                          : "border-border bg-background text-foreground hover:border-primary/50",
-                        available ? "" : "line-through opacity-60",
-                      ].join(" ")}
-                    >
-                      {value}
-                      {available ? null : <span className="sr-only"> {copy.unavailableSuffix}</span>}
-                    </button>
-                  );
-                })}
-              </div>
-            </fieldset>
-          ))
-        : null}
-
-      {cart && selected ? (
-        <AddToCartButton
-          action={cart.action}
-          variantId={selected.id}
-          available={selected.available}
-          locale={cart.locale}
-          cartHref={cart.cartHref}
-          copy={cart.copy}
-        />
-      ) : null}
-
+    <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
       {mainImage ? (
         <div className="space-y-3">
-          <figure className="overflow-hidden rounded-xl border border-border bg-muted shadow-sm ring-1 ring-border/40">
+          <figure className="overflow-hidden rounded-xl border border-border bg-muted/20">
             <Image
               key={mainImage.url}
               src={mainImage.url}
@@ -185,9 +130,9 @@ export function ProductVariantPicker({ variants, images, copy, cart, lowStockTem
                       aria-label={`${copy.thumbnailLabel} ${index + 1}`}
                       onClick={() => setActiveImageUrl(image.url)}
                       className={[
-                        "touch-target cursor-pointer overflow-hidden rounded-md border-2 p-0",
+                        "touch-target cursor-pointer overflow-hidden rounded-xl border border-border bg-muted/20 p-0",
                         "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                        pressed ? "border-primary" : "border-transparent hover:border-border",
+                        pressed ? "border-foreground" : "hover:border-foreground/40",
                       ].join(" ")}
                     >
                       <Image
@@ -206,7 +151,67 @@ export function ProductVariantPicker({ variants, images, copy, cart, lowStockTem
             </ul>
           ) : null}
         </div>
-      ) : null}
+      ) : (
+        <div />
+      )}
+
+      <div className="space-y-6">
+        {selected ? (
+          <div aria-live="polite" className="space-y-1">
+            <p className="type-heading">{selected.priceLabel}</p>
+            <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
+            <LowStockBadge
+              quantityAvailable={selected.quantityAvailable}
+              message={resolveLowStockMessage(lowStockTemplate, selected.quantityAvailable ?? 0)}
+            />
+          </div>
+        ) : null}
+
+        {showOptions
+          ? groups.map((group) => (
+              <div key={group.name} role="radiogroup" aria-label={group.name} className="space-y-3">
+                <p className="text-sm font-medium text-foreground">{group.name}</p>
+                <div className="flex flex-wrap gap-2">
+                  {group.values.map((value) => {
+                    const checked = selection[group.name] === value;
+                    const available = isValueAvailable(group.name, value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={checked}
+                        onClick={() => choose(group.name, value)}
+                        className={[
+                          "touch-target-text cursor-pointer rounded-lg border text-sm font-medium transition",
+                          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                          checked
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border bg-background text-foreground hover:border-foreground/40",
+                          available ? "" : "line-through opacity-60",
+                        ].join(" ")}
+                      >
+                        {value}
+                        {available ? null : <span className="sr-only"> {copy.unavailableSuffix}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          : null}
+
+        {cart && selected ? (
+          <AddToCartButton
+            action={cart.action}
+            variantId={selected.id}
+            available={selected.available}
+            locale={cart.locale}
+            cartHref={cart.cartHref}
+            copy={cart.copy}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

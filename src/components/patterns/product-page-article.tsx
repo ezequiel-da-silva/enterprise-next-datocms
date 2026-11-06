@@ -136,7 +136,7 @@ export function ProductPageArticle({
   const variants = storefront ? pickerVariants(locale, title, storefront) : null;
 
   return (
-    <Container as="article" size="sm" name="ProductPage" className="py-12">
+    <Container as="article" size="lg" name="ProductPage" className="py-12">
       <ShopifyCdnPreconnect />
       <JsonLdScript graph={jsonLd} />
       <header className="space-y-4">
@@ -148,10 +148,8 @@ export function ProductPageArticle({
             { name: title, path },
           ])}
         />
-        <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{title}</h1>
-        {description ? (
-          <p className="whitespace-pre-line text-lg text-muted-foreground">{description}</p>
-        ) : null}
+        <h1 className="type-display">{title}</h1>
+        {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
       </header>
 
       {storefront && variants ? (

@@ -52,10 +52,8 @@ export async function CollectionPageArticle({
             { name: title, path },
           ])}
         />
-        <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{title}</h1>
-        {description ? (
-          <p className="max-w-3xl whitespace-pre-line text-lg text-muted-foreground">{description}</p>
-        ) : null}
+        <h1 className="type-display">{title}</h1>
+        {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
       </header>
 
       {products.length > 0 ? (
@@ -67,7 +65,7 @@ export async function CollectionPageArticle({
           ))}
         </ul>
       ) : (
-        <p className="mt-10 text-muted-foreground">
+        <p className="type-body mt-10">
           {locale === "pt"
             ? "Nenhum produto nesta coleção."
             : locale === "es"

@@ -81,7 +81,7 @@ export function ProductsSectionInteractive({
               <Button
                 type="button"
                 variant="outline"
-                className="touch-target rounded-full"
+                className="touch-target rounded-lg"
                 aria-label={copy.previousPage}
                 disabled={safePage === 1}
                 onClick={() => setPage((current) => Math.max(1, current - 1))}
@@ -95,7 +95,7 @@ export function ProductsSectionInteractive({
                     key={pageNumber}
                     type="button"
                     variant={pageNumber === safePage ? "primary" : "outline"}
-                    className="touch-target rounded-full"
+                    className="touch-target rounded-lg"
                     aria-label={copy.page(pageNumber, pageCount)}
                     aria-current={pageNumber === safePage ? "true" : undefined}
                     onClick={() => setPage(pageNumber)}
@@ -107,7 +107,7 @@ export function ProductsSectionInteractive({
               <Button
                 type="button"
                 variant="outline"
-                className="touch-target rounded-full"
+                className="touch-target rounded-lg"
                 aria-label={copy.nextPage}
                 disabled={safePage === pageCount}
                 onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
