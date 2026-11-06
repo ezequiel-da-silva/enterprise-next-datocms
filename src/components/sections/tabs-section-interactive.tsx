@@ -155,20 +155,18 @@ export function TabsSectionInteractive({
             <div className="min-w-0">
               <h3 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{tab.title}</h3>
               {tab.description ? (
-                <p className="mt-3 whitespace-pre-line text-base leading-relaxed text-muted-foreground">
-                  {tab.description}
-                </p>
+                <p className="type-body mt-3 whitespace-pre-line">{tab.description}</p>
               ) : null}
               {tab.cta ? (
                 <div className="mt-6">
-                  <Button asChild variant="primary" className="min-h-12">
+                  <Button asChild variant="primary" className="h-12">
                     <SmartLink record={tab.cta} locale={locale} tone="inherit" />
                   </Button>
                 </div>
               ) : null}
             </div>
             {isSelected && tab.image?.asset ? (
-              <figure className="min-w-0 overflow-hidden rounded-2xl border border-border bg-muted/30">
+              <figure className="min-w-0 overflow-hidden rounded-xl border border-border bg-muted/30">
                 <DatoResponsivePicture
                   mobile={tab.image.asset}
                   desktop={tab.image.assetDesktop}
