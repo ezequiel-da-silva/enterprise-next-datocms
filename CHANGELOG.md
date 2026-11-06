@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.54.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.54.0...next-dato-v0.54.1) (2026-11-06)
+
+
+### Refactoring
+
+* **components:** enhance CmsPageArticle, HeroSectionBlock, and PostCard for improved accessibility and styling ([c3fee9a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/c3fee9af5b72189b7872f9113c0e322b8e016e77))
+* **components:** enhance ContactForm and ContactFormSectionBlock for improved styling and structure ([1487d7c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1487d7c3079fe7e67542196e08351a5177097f82))
+* **components:** enhance PostCard and BlogPostsSectionBlock for improved styling and structure ([8b4e9bb](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8b4e9bbcd07f42d9e82a8a6caba5d8e20e2e70b3))
+* **components:** enhance SearchForm and SearchResults for improved styling and structure ([8627e9a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8627e9a890a4f1b849785d8d56084f1dc0287923))
+* **components:** enhance StatsSectionBlock and StepsSectionBlock for improved styling and structure ([286e492](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/286e4928bc1f865ecd01ff581042f8dfb03a3aa1))
+* **components:** enhance TabsSectionBlock and TabsSectionInteractive for improved typography and structure ([515b59d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/515b59d1a36f3c17ca2a3c50a251d9a44bb94248))
+* **components:** enhance TextSectionBlock for improved styling and structure ([96b3171](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/96b317134b2ed7b2cfb1d259277c744c4b9975fe))
+* **components:** standardization of sections using ui-visual.mdc ([8a514cb](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8a514cbd0a8c8404f71d2b9763d781f6a7024594))
+* **components:** update LogoGridBlock for improved typography and structure ([b434736](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b434736631093bc24dc6118311bb8b3749bc2da2))
+* **components:** update TeamSectionBlock for improved styling and structure ([8810d9c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8810d9c3119cf85ca62ae362623a2f56f30668d5))
+
 ## [0.54.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.53.0...next-dato-v0.54.0) (2026-11-05)
 
 
