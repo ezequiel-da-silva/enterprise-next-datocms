@@ -90,10 +90,16 @@ export function SearchSectionBlock({
     >
       <Container size="lg" padded={false} name="SearchSection" className="flex flex-col gap-8">
         {hasTextHeader ? (
-          <SectionTextHeader header={header} headingId={headingId} align="left" />
+          <SectionTextHeader
+            header={header}
+            headingId={headingId}
+            align="left"
+            headingClassName="type-heading"
+            descriptionClassName="type-lead mt-2"
+          />
         ) : null}
         {hasIntro ? (
-          <div className="max-w-xl">
+          <div className="max-w-prose">
             <StructuredTextRenderer data={intro} contentLinkGroup={contentLinkGroup} locale={locale} />
           </div>
         ) : null}

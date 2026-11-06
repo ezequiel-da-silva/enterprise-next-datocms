@@ -49,21 +49,19 @@ export function SearchResults({
 }: SearchResultsProps) {
   if (error) {
     return (
-      <p className="text-sm text-muted-foreground" role="status">
+      <p className="type-body" role="status">
         {FALLBACK_ERROR[locale]}: {error}
       </p>
     );
   }
 
   if (!query.trim()) {
-    return (
-      <p className="text-sm text-muted-foreground">{emptyHint || FALLBACK_EMPTY[locale]}</p>
-    );
+    return <p className="type-body">{emptyHint || FALLBACK_EMPTY[locale]}</p>;
   }
 
   if (hits.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="type-body">
         {interpolateQuery(noResults || FALLBACK_NO_RESULTS[locale], query)}
       </p>
     );
@@ -72,9 +70,9 @@ export function SearchResults({
   const labels = kindLabel[locale];
 
   return (
-    <ul className="divide-y divide-border rounded-lg border border-border">
+    <ul className="m-0 divide-y divide-border p-0 list-none">
       {hits.map((hit) => (
-        <li key={`${hit.kind}-${hit.id}-${hit.href}`} className="px-4 py-3">
+        <li key={`${hit.kind}-${hit.id}-${hit.href}`} className="py-3">
           <div className="flex flex-wrap items-baseline gap-2">
             <Link className="font-medium text-foreground hover:underline" href={hit.href}>
               {hit.title}

@@ -46,11 +46,11 @@ export function SearchForm({
         placeholder={placeholder || FALLBACK_PLACEHOLDER[locale]}
         autoComplete="off"
         enterKeyHint="search"
-        className="min-h-12 flex-1 rounded-md border border-border bg-background px-3 text-sm text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="min-h-12 flex-1 rounded-lg border border-border bg-background px-3 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       />
       <button
         type="submit"
-        className="min-h-12 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="h-12 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         {submitLabel || FALLBACK_SUBMIT[locale]}
       </button>
