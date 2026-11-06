@@ -88,7 +88,12 @@ export function LogoGridBlock({ record }: LogoGridBlockProps) {
       {...sectionLandmarkProps(header, headingId, "Logos e Parceiros")}
     >
       <Container size="lg" padded={false} name="LogoGrid" className="flex flex-col gap-8">
-        <SectionTextHeader header={header} headingId={headingId} />
+        <SectionTextHeader
+          header={header}
+          headingId={headingId}
+          headingClassName="type-heading"
+          descriptionClassName="type-lead mt-2"
+        />
 
         {layoutStyle === "marquee" ? (
           <div
