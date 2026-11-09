@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.55.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.54.1...next-dato-v0.55.0) (2026-11-09)
+
+
+### Features
+
+* **wishlist:** implement wishlist functionality and integrate with product pages ([8ecb0db](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8ecb0db6fc8e43c4a4a04d38b6508da96d2160db))
+
+
+### Refactoring
+
+* **components:** enhance blog and author pages for improved layout and styling ([f80743f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/f80743fd6635018f4a4c4ac2f39f21d35e6bc932))
+
 ## [0.54.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.54.0...next-dato-v0.54.1) (2026-11-06)
 
 
