@@ -39,7 +39,7 @@ export default async function WishlistPage({ params }: WishlistPageProps) {
         <h1 className="type-display">{copy.title}</h1>
         <p className="type-lead">{copy.lead}</p>
       </header>
-      <WishlistView locale={slug} copy={copy} shopPath={productsIndexPath(slug, catalog)} />
+      <WishlistView locale={slug} shopPath={productsIndexPath(slug, catalog)} />
     </Container>
   );
 }
