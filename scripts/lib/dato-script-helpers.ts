@@ -168,6 +168,81 @@ export async function ensureNavLink(
   await publishIfDraftModel(client, await client.items.find(navigation.id), "navigation");
 }
 
+/**
+ * Appends a `navigation.footer_menu` item per locale pointing at `pathFor(locale)`.
+ * Same idempotency rules as {@link ensureNavLink}.
+ */
+export async function ensureFooterLink(
+  client: Client,
+  options: {
+    navItemTypeId: string;
+    locales: string[];
+    pathFor: (locale: string) => string;
+    labelFor: (locale: string) => string;
+    name: string;
+    stalePathsFor?: (locale: string) => string[];
+  },
+): Promise<void> {
+  const [navigation] = await client.items.list({ filter: { type: "navigation" }, nested: true });
+  if (!navigation) {
+    console.warn("  navigation não encontrada — footer não alterado.");
+    return;
+  }
+  const nestedFooter = asLocalized<Raw[]>(field(navigation, "footer_menu"));
+  let added = 0;
+  let removed = 0;
+  const nextFooter = Object.fromEntries(
+    options.locales.map((l) => {
+      const kept: BlockPayload[] = [];
+      let seen = false;
+      for (const block of nestedFooter[l] ?? []) {
+        const id = blockId(block);
+        if (!id) continue;
+        const raw = blockAttr(block, "nav_item_link");
+        const link = typeof raw === "string" ? raw.replace(/\/$/, "") : null;
+        if (link && link !== options.pathFor(l) && options.stalePathsFor?.(l).includes(link)) {
+          removed += 1;
+          continue;
+        }
+        if (link === options.pathFor(l)) {
+          if (seen) {
+            removed += 1;
+            continue;
+          }
+          seen = true;
+        }
+        kept.push(id);
+      }
+      if (seen) return [l, kept];
+      added += 1;
+      const label = options.labelFor(l);
+      return [
+        l,
+        [
+          ...kept,
+          buildBlockRecord({
+            item_type: ref(options.navItemTypeId),
+            nav_item_label: label,
+            nav_item_link: options.pathFor(l),
+            nav_item_link_aria: label,
+            open_in_new_tab: false,
+            submenu: [],
+          }),
+        ],
+      ];
+    }),
+  );
+
+  if (added === 0 && removed === 0) {
+    console.log(`  footer já tem o link ${options.name}`);
+    return;
+  }
+  await client.items.update(navigation.id, { footer_menu: nextFooter });
+  if (added > 0) console.log(`  item de footer adicionado (${options.name})`);
+  if (removed > 0) console.log(`  itens de footer duplicados/antigos removidos: ${removed}`);
+  await publishIfDraftModel(client, await client.items.find(navigation.id), "navigation");
+}
+
 /** Points a `global_setting` link field at `pageId` when empty (or when `force`). */
 export async function ensureGlobalSettingPage(
   client: Client,
