@@ -1,6 +1,7 @@
 import { Container } from "@/components/atoms/container";
 import { AccountLink } from "@/components/patterns/account-link";
 import { CartHeaderButton } from "@/components/patterns/cart-header-button";
+import { WishlistHeaderButton } from "@/components/patterns/wishlist-header-button";
 import { HeaderNav } from "@/components/patterns/header-nav";
 import { HeaderSearch } from "@/components/patterns/header-search";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
@@ -162,6 +163,9 @@ export function GlobalHeader({
               label={accountLinkLabel}
               className="hidden lg:inline-flex"
             />
+          ) : null}
+          {typeof cartCount === "number" || typeof accountSignedIn === "boolean" ? (
+            <WishlistHeaderButton locale={locale} />
           ) : null}
           {typeof cartCount === "number" ? (
             <CartHeaderButton locale={locale} count={cartCount} label={cartLinkLabel} />

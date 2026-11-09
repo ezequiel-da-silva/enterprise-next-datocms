@@ -10,6 +10,7 @@ import { toCartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
 import { CartChrome } from "@/components/patterns/cart-chrome";
 import { GlobalHeader } from "@/components/patterns/global-header";
 import { SiteFooter } from "@/components/patterns/site-footer";
+import { WishlistProvider } from "@/components/patterns/wishlist-provider";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { buildThemeBootScript } from "@/lib/theme-boot-script";
 import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, REQUEST_SEARCH_HEADER, appLocaleFromParam } from "@/constants/i18n";
@@ -196,18 +197,20 @@ export default async function RootLayout({
         />
         <SkipLink locale={appLocale} />
         <JsonLdScript graph={siteJsonLd} />
-        {cartEnabled ? (
-          <CartChrome
-            locale={appLocale}
-            copy={toCartDrawerCopy(cartCopy)}
-            loadCartSnapshot={getCartSnapshot}
-            lineActions={{ updateLine: updateCartLineForDrawer, removeLine: removeCartLineForDrawer }}
-          >
-            {pageChrome}
-          </CartChrome>
-        ) : (
-          pageChrome
-        )}
+        <WishlistProvider>
+          {cartEnabled ? (
+            <CartChrome
+              locale={appLocale}
+              copy={toCartDrawerCopy(cartCopy)}
+              loadCartSnapshot={getCartSnapshot}
+              lineActions={{ updateLine: updateCartLineForDrawer, removeLine: removeCartLineForDrawer }}
+            >
+              {pageChrome}
+            </CartChrome>
+          ) : (
+            pageChrome
+          )}
+        </WishlistProvider>
         <ConsentRoot
           copy={consentCopy}
           initialConsent={initialConsent}

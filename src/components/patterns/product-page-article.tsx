@@ -7,6 +7,7 @@ import {
   type ProductPickerCopy,
   type ProductPickerImage,
   type ProductPickerVariant,
+  type ProductPickerWishlist,
 } from "@/components/patterns/product-variant-picker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
@@ -62,7 +63,21 @@ function toPickerImage(image: StorefrontProductImage | null, fallbackAlt: string
   };
 }
 
+function parsePrice(amount: string): number {
+  const value = Number(amount);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function variantLabel(options: { name: string; value: string }[], fallbackTitle?: string): string | undefined {
+  if (options.length > 0) {
+    return options.map((option) => `${option.name}: ${option.value}`).join(" · ");
+  }
+  const trimmed = fallbackTitle?.trim();
+  return trimmed && trimmed !== "Default Title" ? trimmed : undefined;
+}
+
 function pickerVariants(locale: AppLocale, title: string, storefront: StorefrontProduct): ProductPickerVariant[] {
+  const itemId = storefront.handle || storefront.id;
   if (storefront.variants.length === 0) {
     const price = storefront.priceRange.minVariantPrice;
     return [
@@ -74,6 +89,10 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
         options: [],
         image: null,
         quantityAvailable: null,
+        itemId,
+        itemName: title,
+        price: parsePrice(price.amount),
+        currency: price.currencyCode || "USD",
       },
     ];
   }
@@ -85,6 +104,11 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
     options: variant.selectedOptions,
     image: toPickerImage(variant.image, `${title} — ${variant.title}`),
     quantityAvailable: variant.quantityAvailable,
+    itemId,
+    itemName: title,
+    price: parsePrice(variant.price.amount),
+    currency: variant.price.currencyCode || "USD",
+    itemVariant: variantLabel(variant.selectedOptions, variant.title),
   }));
 }
 
@@ -99,6 +123,25 @@ function pickerCart(
   }
   const { addToCart, adding, soldOut, viewCart } = copy;
   return { action, locale, cartHref: cartPath(locale), copy: { addToCart, adding, soldOut, viewCart } };
+}
+
+function pickerWishlist(
+  locale: AppLocale,
+  handle: string,
+  title: string,
+  storefront: StorefrontProduct,
+): ProductPickerWishlist {
+  const price = storefront.priceRange.minVariantPrice;
+  return {
+    locale,
+    item: {
+      handle,
+      title,
+      imageUrl: storefront.featuredImage?.url ?? null,
+      priceAmount: price.amount,
+      currencyCode: price.currencyCode,
+    },
+  };
 }
 
 function pickerImages(title: string, storefront: StorefrontProduct): ProductPickerImage[] {
@@ -158,6 +201,7 @@ export function ProductPageArticle({
           images={pickerImages(title, storefront)}
           copy={pickerCopy(locale)}
           cart={pickerCart(locale, cartCopy, variants, addToCartAction)}
+          wishlist={pickerWishlist(locale, handle, title, storefront)}
           lowStockTemplate={lowStockTemplate}
         />
       ) : null}

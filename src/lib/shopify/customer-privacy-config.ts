@@ -38,12 +38,18 @@ export function readShopifyPrivacyConfig(env: Env = process.env): ShopifyPrivacy
   return { storefrontAccessToken: token, checkoutRootDomain: checkout, storefrontRootDomain: storefront };
 }
 
+/** Shopify Monorail (Customer Privacy / consent-tracking-api telemetry). */
+export const SHOPIFY_MONORAIL_CSP_HOST = "https://monorail-edge.shopifysvc.com";
+
 /** Hosts the consent API talks to; added to `connect-src` only when the config is complete. */
 export function shopifyPrivacyCspHosts(env: Env = process.env): string[] {
   const config = readShopifyPrivacyConfig(env);
   if (!config) return [];
   const store = normalizeShopDomain(env.SHOPIFY_STORE_DOMAIN);
-  return [...new Set([store, config.checkoutRootDomain].filter(Boolean))].map((host) => `https://${host}`);
+  const shopHosts = [...new Set([store, config.checkoutRootDomain].filter(Boolean))].map(
+    (host) => `https://${host}`,
+  );
+  return [...shopHosts, SHOPIFY_MONORAIL_CSP_HOST];
 }
 
 export function toShopifyConsent(state: ConsentState): ShopifyTrackingConsent {

@@ -2,9 +2,13 @@
 
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
 import { LowStockBadge } from "@/components/patterns/low-stock-badge";
+import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
+import type { AppLocale } from "@/constants/i18n";
+import { trackViewItem } from "@/lib/analytics/ecommerce";
 import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
+import type { WishlistItem } from "@/lib/wishlist/types";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export type ProductPickerImage = {
   url: string;
@@ -21,6 +25,12 @@ export type ProductPickerVariant = {
   options: { name: string; value: string }[];
   image: ProductPickerImage | null;
   quantityAvailable: number | null;
+  /** GA4 item_id (product handle). */
+  itemId: string;
+  itemName: string;
+  price: number;
+  currency: string;
+  itemVariant?: string;
 };
 
 export type ProductPickerCopy = {
@@ -35,12 +45,19 @@ export type ProductPickerCart = {
   copy: AddToCartCopy;
 };
 
+export type ProductPickerWishlist = {
+  locale: AppLocale;
+  item: Omit<WishlistItem, "savedAt">;
+};
+
 type ProductVariantPickerProps = {
   variants: ProductPickerVariant[];
   images: ProductPickerImage[];
   copy: ProductPickerCopy;
   /** Only set when the cart is enabled and every variant id is a Shopify ProductVariant gid. */
   cart?: ProductPickerCart;
+  /** Product snapshot for localStorage wishlist (handle-level, not per variant). */
+  wishlist?: ProductPickerWishlist;
   lowStockTemplate: string;
 };
 
@@ -66,7 +83,14 @@ function selectionOf(variant: ProductPickerVariant | undefined): Record<string, 
   return Object.fromEntries((variant?.options ?? []).map((option) => [option.name, option.value]));
 }
 
-export function ProductVariantPicker({ variants, images, copy, cart, lowStockTemplate }: ProductVariantPickerProps) {
+export function ProductVariantPicker({
+  variants,
+  images,
+  copy,
+  cart,
+  wishlist,
+  lowStockTemplate,
+}: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(
@@ -76,6 +100,30 @@ export function ProductVariantPicker({ variants, images, copy, cart, lowStockTem
   const groups = useMemo(() => optionGroups(variants), [variants]);
   const showOptions = variants.length > 1 && groups.length > 0;
   const selected = variants.find((variant) => matchesAll(variant, selection)) ?? initial;
+
+  useEffect(() => {
+    if (!selected) return;
+    trackViewItem({
+      currency: selected.currency,
+      value: selected.price,
+      items: [
+        {
+          item_id: selected.itemId,
+          item_name: selected.itemName,
+          price: selected.price,
+          quantity: 1,
+          item_variant: selected.itemVariant,
+        },
+      ],
+    });
+  }, [
+    selected?.id,
+    selected?.currency,
+    selected?.price,
+    selected?.itemId,
+    selected?.itemName,
+    selected?.itemVariant,
+  ]);
 
   const gallery = useMemo(() => {
     const out = [...images];
@@ -157,13 +205,18 @@ export function ProductVariantPicker({ variants, images, copy, cart, lowStockTem
 
       <div className="space-y-6">
         {selected ? (
-          <div aria-live="polite" className="space-y-1">
-            <p className="type-heading">{selected.priceLabel}</p>
-            <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
-            <LowStockBadge
-              quantityAvailable={selected.quantityAvailable}
-              message={resolveLowStockMessage(lowStockTemplate, selected.quantityAvailable ?? 0)}
-            />
+          <div className="flex items-start justify-between gap-3">
+            <div aria-live="polite" className="min-w-0 flex-1 space-y-1">
+              <p className="type-heading">{selected.priceLabel}</p>
+              <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
+              <LowStockBadge
+                quantityAvailable={selected.quantityAvailable}
+                message={resolveLowStockMessage(lowStockTemplate, selected.quantityAvailable ?? 0)}
+              />
+            </div>
+            {wishlist ? (
+              <WishlistToggleButton locale={wishlist.locale} item={wishlist.item} className="shrink-0" />
+            ) : null}
           </div>
         ) : null}
 
@@ -209,6 +262,14 @@ export function ProductVariantPicker({ variants, images, copy, cart, lowStockTem
             locale={cart.locale}
             cartHref={cart.cartHref}
             copy={cart.copy}
+            currency={selected.currency}
+            item={{
+              item_id: selected.itemId,
+              item_name: selected.itemName,
+              price: selected.price,
+              quantity: 1,
+              item_variant: selected.itemVariant,
+            }}
           />
         ) : null}
       </div>

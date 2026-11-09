@@ -2,6 +2,7 @@ import { syncCollectionPageFromShopify } from "@/infra/datocms/sync-collection-p
 import { syncProductPageFromShopify } from "@/infra/datocms/sync-product-page";
 import { logError, logWarn } from "@/infra/observability/log-error";
 import { productHandleForInventoryItem } from "@/infra/shopify/admin-inventory";
+import { sendPurchaseMeasurementProtocol } from "@/lib/analytics/ecommerce";
 import { SHOPIFY_CATALOG_TAG, SHOPIFY_PRODUCTS_TAG, shopifyProductTag } from "@/lib/shopify/cache-tags";
 import { logMissingShopifyWebhookEnv } from "@/infra/shopify/log-missing-env";
 import { readShopifyWebhookEnv } from "@/lib/shopify/env";
@@ -11,6 +12,10 @@ import {
   parseShopifyCollectionWebhook,
 } from "@/lib/shopify/parse-collection-webhook";
 import { isInventoryWebhookTopic, parseShopifyInventoryWebhook } from "@/lib/shopify/parse-inventory-webhook";
+import {
+  isOrderPaidWebhookTopic,
+  parseShopifyOrderWebhook,
+} from "@/lib/shopify/parse-order-webhook";
 import {
   isProductWebhookTopic,
   normalizeShopDomain,
@@ -40,6 +45,7 @@ function missingEnvResponse(missing: string[]): NextResponse {
 /**
  * Shopify `products/*` e `collections/*` → upsert CMA de `product_page` / `collection_page`
  * + `revalidateTag` do cache Storefront. `inventory_levels/update` → só `revalidateTag`.
+ * `orders/paid` → GA4 Measurement Protocol `purchase` (sem sync Dato).
  * HMAC no corpo cru (`x-shopify-hmac-sha256`) com `SHOPIFY_API_SECRET_KEY`
  * (chave secreta do Dev Dashboard; o client id não entra no HMAC).
  */
@@ -72,7 +78,8 @@ export async function POST(request: NextRequest) {
   const isProduct = isProductWebhookTopic(topic);
   const isCollection = isCollectionWebhookTopic(topic);
   const isInventory = isInventoryWebhookTopic(topic);
-  if (!isProduct && !isCollection && !isInventory) {
+  const isOrderPaid = isOrderPaidWebhookTopic(topic);
+  if (!isProduct && !isCollection && !isInventory && !isOrderPaid) {
     return unauthorized();
   }
 
@@ -81,6 +88,31 @@ export async function POST(request: NextRequest) {
     parsed = rawBody.trim() ? JSON.parse(rawBody) : null;
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  if (isOrderPaid) {
+    const order = parseShopifyOrderWebhook(parsed);
+    if (!order) {
+      return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+    }
+    const mp = await sendPurchaseMeasurementProtocol({
+      transaction_id: order.name,
+      currency: order.currency,
+      value: order.totalPrice,
+      items: order.items,
+    });
+    if (!mp.ok) {
+      logError("webhook.shopify.order", "GA4 Measurement Protocol failed", {
+        context: { status: mp.status, order: order.name },
+      });
+      /* Still 200: Shopify retries would double-count if MP later succeeds. */
+      return NextResponse.json({ success: true, purchase: "mp_error" });
+    }
+    if (mp.skipped) {
+      logWarn("webhook.shopify.order", `GA4 purchase skipped (${mp.reason})`);
+      return NextResponse.json({ success: true, purchase: "skipped" });
+    }
+    return NextResponse.json({ success: true, purchase: "sent" });
   }
 
   if (isInventory) {

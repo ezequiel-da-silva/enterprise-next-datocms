@@ -228,6 +228,18 @@ Desligado por defeito. Com `SHOPIFY_CART_ENABLED=1`:
 - **PDP:** botão “Adicionar ao carrinho” no seletor de variantes. Só aparece quando todas as variantes têm id `gid://shopify/ProductVariant/…` (produtos sem variantes da Storefront não mostram o botão).
 - **Header:** ícone com contador → `/{locale}/cart`.
 - **`/{locale}/cart`:** linhas, quantidade (0 remove), remover, subtotal e link “Finalizar compra” para o `checkoutUrl` da Shopify. A página tem `noindex`; com a flag desligada devolve 404.
+- **`/{locale}/order/confirmation`:** thank-you branded (`noindex`). Query opcional `?order=#1001` só para mostrar o número — **não** dispara `purchase` no browser (evita fraude por URL). O evento GA4 `purchase` vem do webhook (abaixo).
+
+### GA4 `purchase` (headless)
+
+O checkout fica na Shopify; o Next **não** recebe um redirect automático pós-pagamento. A receita fecha assim:
+
+1. **GA4 Admin** → Data stream → Measurement Protocol API secrets → cria um secret → `GA_API_SECRET` na Vercel (junto com `GA_MEASUREMENT_ID`) → redeploy.
+2. **`shopify.app.toml`:** topic `orders/paid` + scope `read_orders`. Depois `npx shopify app deploy` e **atualizar a app na loja** (aprovar o scope novo).
+3. Webhook HMAC → `/api/webhooks/shopify` → Measurement Protocol `purchase` com `transaction_id` = `order.name`. Sem `GA_API_SECRET`, o webhook faz no-op e responde 200 (Shopify não deve repetir).
+4. **Não** actives um pixel GA4 de compra na Shopify em paralelo (double-count). O gtag do site continua a servir `view_item` / `add_to_cart` após consentimento.
+5. No editor Thank you / Order status da Shopify, adiciona um botão “Continuar a comprar” → `https://{teu-dominio}/{locale}/order/confirmation` (opcional `?order={name}`).
+6. Validar: pedido de teste → GA4 DebugView / Realtime com `purchase` e o `transaction_id` do pedido.
 
 Fluxo e segurança:
 
