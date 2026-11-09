@@ -1,3 +1,4 @@
+import { Container } from "@/components/atoms/container";
 import { PostCard } from "@/components/patterns/post-card";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
@@ -118,7 +119,13 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
   );
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12" data-cms-record="CategoryRecord" data-cms-record-id={category.id}>
+    <Container
+      size="lg"
+      name="BlogCategory"
+      className="py-12"
+      data-cms-record="CategoryRecord"
+      data-cms-record-id={category.id}
+    >
       <JsonLdScript graph={jsonLd} />
       <BreadcrumbNav
         locale={locale}
@@ -148,24 +155,24 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
                   <circle cx="5" cy="5" r="5" fill={colorHex} />
                 </svg>
               ) : null}
-              <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{category.categoryName}</h1>
+              <h1 className="type-display">{category.categoryName}</h1>
             </div>
             {category.categorySlug ? (
-              <p className="mt-1 text-sm text-muted-foreground">
-                <span className="font-mono text-xs">/{category.categorySlug}</span>
+              <p className="mt-1 text-xs text-muted-foreground">
+                <span className="font-mono">/{category.categorySlug}</span>
               </p>
             ) : null}
           </div>
         </div>
         {descData ? (
-          <div className="max-w-3xl">
+          <div className="type-body">
             <StructuredTextRenderer data={descData} contentLinkGroup={isEnabled} locale={locale} />
           </div>
         ) : null}
       </header>
 
       <section data-ui-section="CategoryPosts" className="mt-10" aria-labelledby="categoria-artigos">
-        <h2 id="categoria-artigos" className="text-xl font-semibold tracking-tight text-foreground">
+        <h2 id="categoria-artigos" className="type-heading">
           Artigos nesta categoria
         </h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -174,6 +181,6 @@ export default async function CategoryPostsPage({ params }: CategoryPageProps) {
           ))}
         </div>
       </section>
-    </div>
+    </Container>
   );
 }

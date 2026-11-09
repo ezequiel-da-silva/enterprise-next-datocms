@@ -3,6 +3,7 @@
 import { Button } from "@/components/atoms/button";
 import type { CartActionState } from "@/core/entities/cart";
 import { useOptionalCartDrawer } from "@/components/patterns/cart-drawer-context";
+import { trackAddToCart, type Ga4Item } from "@/lib/analytics/ecommerce";
 import Link from "next/link";
 import { useActionState, useEffect, useRef } from "react";
 
@@ -22,25 +23,51 @@ type AddToCartButtonProps = {
   locale: string;
   cartHref: string;
   copy: AddToCartCopy;
+  /** When set, fires GA4 `add_to_cart` after a successful cart mutation. */
+  currency?: string;
+  item?: Ga4Item;
 };
 
 const INITIAL_STATE: CartActionState = { status: "idle" };
 
-export function AddToCartButton({ action, variantId, available, locale, cartHref, copy }: AddToCartButtonProps) {
+export function AddToCartButton({
+  action,
+  variantId,
+  available,
+  locale,
+  cartHref,
+  copy,
+  currency,
+  item,
+}: AddToCartButtonProps) {
   const [state, formAction, pending] = useActionState(action, INITIAL_STATE);
   const formRef = useRef<HTMLFormElement>(null);
   const drawer = useOptionalCartDrawer();
 
   const openedSuccessKeyRef = useRef<string | null>(null);
+  const trackedSuccessKeyRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (state.status !== "success" || !drawer) return;
+    if (state.status !== "success") return;
     const key = `${state.cart.id}:${state.totalQuantity}`;
+
+    if (currency && item && trackedSuccessKeyRef.current !== key) {
+      trackedSuccessKeyRef.current = key;
+      const quantity = item.quantity ?? 1;
+      const price = item.price ?? 0;
+      trackAddToCart({
+        currency,
+        value: price * quantity,
+        items: [{ ...item, quantity }],
+      });
+    }
+
+    if (!drawer) return;
     if (openedSuccessKeyRef.current === key) return;
     openedSuccessKeyRef.current = key;
     const trigger = formRef.current?.querySelector<HTMLElement>('button[type="submit"]');
     drawer.openWithCart(state.cart, trigger ?? null);
-  }, [state, drawer]);
+  }, [state, drawer, currency, item]);
 
   return (
     <form ref={formRef} action={formAction} className="space-y-3">

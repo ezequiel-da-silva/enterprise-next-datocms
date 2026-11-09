@@ -1,3 +1,4 @@
+import { Container } from "@/components/atoms/container";
 import { PostCard } from "@/components/patterns/post-card";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
@@ -124,7 +125,13 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
   const jsonLd = [...listingLd, buildAuthorPersonJsonLd(locale, authorSlug, author)];
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12" data-cms-record="AuthorRecord" data-cms-record-id={author.id}>
+    <Container
+      size="lg"
+      name="BlogAuthor"
+      className="py-12"
+      data-cms-record="AuthorRecord"
+      data-cms-record-id={author.id}
+    >
       <JsonLdScript graph={jsonLd} />
       <BreadcrumbNav
         locale={locale}
@@ -136,7 +143,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
       />
 
       <header className="mt-4 flex flex-col gap-6 border-b border-border pb-10 sm:flex-row sm:items-start">
-        <div className="shrink-0 overflow-hidden rounded-full border border-border bg-background shadow-sm ring-2 ring-border/50">
+        <div className="shrink-0 overflow-hidden rounded-full border border-border bg-background">
           {avatarMobile?.url ? (
             <DatoResponsivePicture
               mobile={avatarMobile}
@@ -151,7 +158,7 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
         </div>
         <div className="min-w-0 flex-1 space-y-4">
           <div>
-            <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{author.authorName}</h1>
+            <h1 className="type-display">{author.authorName}</h1>
             {role ? <p className="mt-2 text-sm text-muted-foreground">{role}</p> : null}
             {socialHref ? (
               <p className="mt-2 text-sm">
@@ -161,12 +168,16 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
               </p>
             ) : null}
           </div>
-          {bioData ? <StructuredTextRenderer data={bioData} contentLinkGroup={isEnabled} locale={locale} /> : null}
+          {bioData ? (
+            <div className="type-body">
+              <StructuredTextRenderer data={bioData} contentLinkGroup={isEnabled} locale={locale} />
+            </div>
+          ) : null}
         </div>
       </header>
 
       <section data-ui-section="AuthorPosts" className="mt-10" aria-labelledby="autor-artigos">
-        <h2 id="autor-artigos" className="text-xl font-semibold tracking-tight text-foreground">
+        <h2 id="autor-artigos" className="type-heading">
           Artigos
         </h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -175,6 +186,6 @@ export default async function AuthorProfilePage({ params }: AuthorPageProps) {
           ))}
         </div>
       </section>
-    </div>
+    </Container>
   );
 }

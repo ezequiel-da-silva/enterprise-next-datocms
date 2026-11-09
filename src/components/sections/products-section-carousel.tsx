@@ -154,7 +154,7 @@ export function ProductsSectionCarousel({ products, locale, setting }: ProductsS
               <Button
                 type="button"
                 variant="outline"
-                className="touch-target rounded-full"
+                className="touch-target rounded-lg"
                 aria-label={copy.previousSlide}
                 disabled={!canScrollPrev}
                 onClick={() => emblaApi?.scrollPrev()}
@@ -164,7 +164,7 @@ export function ProductsSectionCarousel({ products, locale, setting }: ProductsS
               <Button
                 type="button"
                 variant="outline"
-                className="touch-target rounded-full"
+                className="touch-target rounded-lg"
                 aria-label={copy.nextSlide}
                 disabled={!canScrollNext}
                 onClick={() => emblaApi?.scrollNext()}

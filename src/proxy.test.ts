@@ -140,6 +140,7 @@ describe("proxy", () => {
       vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://example.com");
       const header = await csp();
       expect(header).toMatch(/connect-src[^;]*https:\/\/shop\.myshopify\.com/);
+      expect(header).toMatch(/connect-src[^;]*https:\/\/monorail-edge\.shopifysvc\.com/);
       expect(header).toMatch(/script-src[^;]*https:\/\/cdn\.shopify\.com/);
     });
   });

@@ -34,11 +34,15 @@ describe("readShopifyPrivacyConfig", () => {
 });
 
 describe("shopifyPrivacyCspHosts", () => {
-  it("lists store and checkout hosts once", () => {
-    expect(shopifyPrivacyCspHosts(BASE)).toEqual(["https://shop.myshopify.com"]);
+  it("lists store, checkout, and Monorail hosts when privacy is on", () => {
+    expect(shopifyPrivacyCspHosts(BASE)).toEqual([
+      "https://shop.myshopify.com",
+      "https://monorail-edge.shopifysvc.com",
+    ]);
     expect(shopifyPrivacyCspHosts({ ...BASE, SHOPIFY_CHECKOUT_DOMAIN: "checkout.example.com" })).toEqual([
       "https://shop.myshopify.com",
       "https://checkout.example.com",
+      "https://monorail-edge.shopifysvc.com",
     ]);
     expect(shopifyPrivacyCspHosts({})).toEqual([]);
   });

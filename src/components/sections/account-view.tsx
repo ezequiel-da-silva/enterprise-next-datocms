@@ -78,7 +78,7 @@ export function AccountView({ locale, copy, customer, error, oauthLocalNotice }:
             { name: copy.title, path: accountPath(locale) },
           ])}
         />
-        <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{copy.title}</h1>
+        <h1 className="type-display">{copy.title}</h1>
       </header>
 
       {message ? (
@@ -94,17 +94,17 @@ export function AccountView({ locale, copy, customer, error, oauthLocalNotice }:
               <p className="text-lg font-semibold text-foreground">{copy.greeting(customer.firstName)}</p>
               {customer.email ? <p className="break-all text-sm text-muted-foreground">{customer.email}</p> : null}
             </div>
-            <Button asChild variant="outline" className="touch-target">
+            <Button asChild variant="outline" className="touch-target h-12 rounded-lg">
               <a href={`/api/account/logout?locale=${locale}`}>{copy.signOut}</a>
             </Button>
           </div>
 
           <section data-ui-section="AccountOrders" aria-labelledby="account-orders-title" className="space-y-2">
-            <h2 id="account-orders-title" className="text-2xl font-semibold tracking-tight text-foreground">
+            <h2 id="account-orders-title" className="type-heading">
               {copy.ordersTitle}
             </h2>
             {customer.orders.length === 0 ? (
-              <p className="text-muted-foreground">{copy.noOrders}</p>
+              <p className="type-body">{copy.noOrders}</p>
             ) : (
               <ul className="m-0 list-none border-t border-border p-0">
                 {customer.orders.map((order) => (
@@ -116,8 +116,8 @@ export function AccountView({ locale, copy, customer, error, oauthLocalNotice }:
         </div>
       ) : (
         <div className="mt-8 space-y-4">
-          <p className="text-lg text-muted-foreground">{copy.signedOutIntro}</p>
-          <Button asChild className="touch-target">
+          <p className="type-lead">{copy.signedOutIntro}</p>
+          <Button asChild className="touch-target h-12 rounded-lg">
             <a href={loginHref}>{copy.signIn}</a>
           </Button>
           {loginErrorWithNotice ? (

@@ -1,3 +1,4 @@
+import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
@@ -20,7 +21,18 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
   const price = product.priceRange.minVariantPrice;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
+      <WishlistToggleButton
+        locale={locale}
+        className="absolute right-3 top-3 z-10"
+        item={{
+          handle: product.handle,
+          title: product.title,
+          imageUrl: image?.url ?? null,
+          priceAmount: price.amount,
+          currencyCode: price.currencyCode,
+        }}
+      />
       <Link
         href={href}
         className="flex h-full flex-col rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"

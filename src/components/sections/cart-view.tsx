@@ -90,7 +90,7 @@ function CartLineItem({ line, locale, copy, actions }: CartLineItemProps) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <form
           action={actions.updateLine}
-          className="inline-flex items-center rounded-lg border border-border bg-background shadow-xs"
+          className="inline-flex items-center rounded-lg border border-border bg-background"
         >
           <input type="hidden" name="lineId" value={line.id} />
           <input type="hidden" name="locale" value={locale} />
@@ -179,13 +179,13 @@ export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProp
             { name: copy.title, path: cartPath(locale) },
           ])}
         />
-        <h1 className="text-balance text-4xl font-semibold tracking-tight text-foreground">{copy.title}</h1>
+        <h1 className="type-display">{copy.title}</h1>
       </header>
 
       {lines.length === 0 ? (
         <div className="mt-8 space-y-4">
-          <p className="text-lg text-muted-foreground">{copy.empty}</p>
-          <Button asChild className="touch-target">
+          <p className="type-lead">{copy.empty}</p>
+          <Button asChild className="touch-target h-12 rounded-lg">
             <Link href={shopPath}>{copy.continueShopping}</Link>
           </Button>
         </div>
@@ -196,7 +196,7 @@ export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProp
               <CartLineItem key={line.id} line={line} locale={locale} copy={copy} actions={actions} />
             ))}
           </ul>
-          <div className="mx-auto mt-8 w-full max-w-md space-y-4 rounded-xl border border-border bg-muted/40 p-6">
+          <div className="mt-8 w-full max-w-md space-y-4 rounded-xl border border-border bg-muted/40 p-6">
             {subtotal ? (
               <p className="flex justify-between text-lg font-semibold text-foreground">
                 <span>{copy.subtotal}</span>
@@ -205,7 +205,7 @@ export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProp
             ) : null}
             <p className="text-sm text-muted-foreground">{copy.checkoutNote}</p>
             {cart?.checkoutUrl ? (
-              <Button asChild className="touch-target w-full">
+              <Button asChild className="touch-target h-12 w-full rounded-lg">
                 <a href={cart.checkoutUrl}>{copy.checkout}</a>
               </Button>
             ) : (
