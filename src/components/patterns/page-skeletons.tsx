@@ -80,19 +80,6 @@ export function AccountPageSkeleton() {
   );
 }
 
-/** Home and CMS `[pageSlug]` pages: title, lead, and one content block. */
-export function CmsPageSkeleton() {
-  return (
-    <PageSkeleton name="CmsPageSkeleton" size="lg">
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-2/3" />
-        <Skeleton className="h-4 w-1/2" />
-      </div>
-      <Skeleton className="mt-8 h-64 w-full rounded-xl" />
-    </PageSkeleton>
-  );
-}
-
 /** Wishlist grid: title plus three product cards. */
 export function WishlistPageSkeleton() {
   return (
