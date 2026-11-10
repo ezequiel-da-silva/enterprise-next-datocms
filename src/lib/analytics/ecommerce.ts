@@ -6,6 +6,15 @@ export type Ga4Item = {
   item_variant?: string;
 };
 
+/** Alias used by the client funnel helpers (`begin_checkout`, `remove_from_cart`, `view_item_list`). */
+export type EcommerceItem = Ga4Item;
+
+export type ViewItemListPayload = {
+  item_list_id?: string;
+  item_list_name?: string;
+  items: EcommerceItem[];
+};
+
 export type EcommercePayload = {
   currency: string;
   value: number;
@@ -48,6 +57,25 @@ export function trackViewItem(payload: EcommercePayload): void {
 /** GA4 `add_to_cart` — no-op without browser gtag (SSR or pre-consent). */
 export function trackAddToCart(payload: EcommercePayload): void {
   gtagSafe("event", "add_to_cart", withNormalizedPayload(payload));
+}
+
+/** GA4 `begin_checkout` — no-op without browser gtag (SSR or pre-consent). */
+export function trackBeginCheckout(payload: EcommercePayload): void {
+  gtagSafe("event", "begin_checkout", withNormalizedPayload(payload));
+}
+
+/** GA4 `remove_from_cart` — no-op without browser gtag (SSR or pre-consent). */
+export function trackRemoveFromCart(payload: EcommercePayload): void {
+  gtagSafe("event", "remove_from_cart", withNormalizedPayload(payload));
+}
+
+/** GA4 `view_item_list` — no-op without browser gtag (SSR or pre-consent). */
+export function trackViewItemList(payload: ViewItemListPayload): void {
+  gtagSafe("event", "view_item_list", {
+    ...(payload.item_list_id ? { item_list_id: payload.item_list_id } : {}),
+    ...(payload.item_list_name ? { item_list_name: payload.item_list_name } : {}),
+    items: payload.items,
+  });
 }
 
 /** GA4 `purchase` (browser) — no-op without gtag. Prefer Measurement Protocol for headless checkout. */

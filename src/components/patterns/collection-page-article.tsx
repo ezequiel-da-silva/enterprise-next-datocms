@@ -1,6 +1,7 @@
 import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
+import { ViewItemListTracker } from "@/components/patterns/view-item-list-tracker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
 import type { AppLocale } from "@/constants/i18n";
@@ -56,6 +57,7 @@ export async function CollectionPageArticle({
         {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
       </header>
 
+      <ViewItemListTracker itemListId={handle} itemListName={title} products={products} />
       {products.length > 0 ? (
         <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (

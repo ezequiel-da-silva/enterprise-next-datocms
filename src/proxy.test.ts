@@ -16,6 +16,7 @@ import { proxy } from "./proxy";
 
 const SECURITY_HEADERS = [
   "content-security-policy",
+  "x-frame-options",
   "x-content-type-options",
   "referrer-policy",
   "permissions-policy",
@@ -52,6 +53,7 @@ describe("proxy", () => {
     for (const header of SECURITY_HEADERS) {
       expect(res.headers.get(header), `missing ${header}`).toBeTruthy();
     }
+    expect(res.headers.get("x-frame-options")).toBe("DENY");
   });
 
   it("blocks legacy object plugins and does not require cross-origin isolation", async () => {
