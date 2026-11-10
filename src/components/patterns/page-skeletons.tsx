@@ -79,3 +79,43 @@ export function AccountPageSkeleton() {
     </PageSkeleton>
   );
 }
+
+/** Wishlist grid: title plus three product cards. */
+export function WishlistPageSkeleton() {
+  return (
+    <PageSkeleton name="WishlistPageSkeleton" size="lg">
+      <Skeleton className="h-10 w-1/2" />
+      <ul className="mt-8 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <li key={i} className="overflow-hidden rounded-xl border border-border">
+            <Skeleton className="aspect-square w-full rounded-none" />
+            <div className="space-y-2 p-4">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-1/3" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </PageSkeleton>
+  );
+}
+
+/** Cart page lines: title plus three rows with a thumbnail and two text bars. */
+export function CartPageSkeleton() {
+  return (
+    <PageSkeleton name="CartPageSkeleton" size="lg">
+      <Skeleton className="h-10 w-1/3" />
+      <ul className="mt-8 list-none space-y-6 p-0">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <li key={i} className="flex gap-4 border-b border-border pb-6">
+            <Skeleton className="h-20 w-20 shrink-0 rounded-lg" />
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-2">
+              <Skeleton className="h-5 w-2/3" />
+              <Skeleton className="h-4 w-1/4" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </PageSkeleton>
+  );
+}

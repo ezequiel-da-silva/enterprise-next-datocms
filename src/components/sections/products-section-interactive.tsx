@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/atoms/button";
 import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
+import { ViewItemListTracker } from "@/components/patterns/view-item-list-tracker";
 import { ProductsSectionCarousel } from "@/components/sections/products-section-carousel";
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
@@ -49,6 +50,7 @@ export function ProductsSectionInteractive({
 
   return (
     <div id={listId}>
+      <ViewItemListTracker itemListId="shop" itemListName="Shop" products={products} />
       <p className="sr-only" aria-live="polite">
         {visibleProducts.length === 0
           ? copy.empty

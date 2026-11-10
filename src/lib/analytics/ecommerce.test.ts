@@ -2,8 +2,11 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   sendPurchaseMeasurementProtocol,
   trackAddToCart,
+  trackBeginCheckout,
   trackPurchase,
+  trackRemoveFromCart,
   trackViewItem,
+  trackViewItemList,
 } from "@/lib/analytics/ecommerce";
 
 describe("ecommerce tracking", () => {
@@ -55,6 +58,40 @@ describe("ecommerce tracking", () => {
       items: [{ item_id: "board", item_name: "Board", price: 12.5, quantity: 1 }],
       transaction_id: "#1001",
     });
+  });
+
+  it("fires begin_checkout, remove_from_cart, and view_item_list through gtag", () => {
+    const gtag = vi.fn();
+    vi.stubGlobal("window", { gtag });
+    const item = { item_id: "board", item_name: "Board", price: 10, quantity: 1 };
+
+    trackBeginCheckout({ currency: "usd", value: 10, items: [item] });
+    trackRemoveFromCart({ currency: "eur", value: 20, items: [{ ...item, quantity: 2 }] });
+    trackViewItemList({ item_list_id: "shop", item_list_name: "Shop", items: [item] });
+
+    expect(gtag).toHaveBeenCalledWith("event", "begin_checkout", {
+      currency: "USD",
+      value: 10,
+      items: [item],
+    });
+    expect(gtag).toHaveBeenCalledWith("event", "remove_from_cart", {
+      currency: "EUR",
+      value: 20,
+      items: [{ ...item, quantity: 2 }],
+    });
+    expect(gtag).toHaveBeenCalledWith("event", "view_item_list", {
+      item_list_id: "shop",
+      item_list_name: "Shop",
+      items: [item],
+    });
+  });
+
+  it("no-ops the funnel events without window", () => {
+    expect(() => {
+      trackBeginCheckout({ currency: "USD", value: 1, items: [] });
+      trackRemoveFromCart({ currency: "USD", value: 1, items: [] });
+      trackViewItemList({ items: [] });
+    }).not.toThrow();
   });
 });
 

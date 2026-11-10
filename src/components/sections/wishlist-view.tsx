@@ -4,18 +4,18 @@ import { Button } from "@/components/atoms/button";
 import { useWishlist } from "@/components/patterns/wishlist-provider";
 import type { AppLocale } from "@/constants/i18n";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import type { WishlistCopy } from "@/lib/i18n/wishlist-copy";
+import { wishlistCopy } from "@/lib/i18n/wishlist-copy";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Image from "next/image";
 import Link from "next/link";
 
 type WishlistViewProps = {
   locale: AppLocale;
-  copy: WishlistCopy;
   shopPath: string;
 };
 
-export function WishlistView({ locale, copy, shopPath }: WishlistViewProps) {
+export function WishlistView({ locale, shopPath }: WishlistViewProps) {
+  const copy = wishlistCopy(locale);
   const { items, remove, ready } = useWishlist();
 
   if (!ready) {

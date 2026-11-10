@@ -39,12 +39,17 @@ export function WishlistHeaderButton({ locale }: WishlistHeaderButtonProps) {
     >
       <Link href={wishlistPath(locale)} aria-label={copy.linkLabel(badge)}>
         <HeartIcon />
-        {badge > 0 ? (
+        {!ready ? (
+          <span
+            aria-hidden
+            className="invisible absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-semibold"
+          />
+        ) : count > 0 ? (
           <span
             aria-hidden
             className="absolute -right-1 -top-1 flex min-h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-xs font-semibold text-primary-foreground"
           >
-            {badge > 99 ? "99+" : badge}
+            {count > 99 ? "99+" : count}
           </span>
         ) : null}
       </Link>

@@ -73,6 +73,7 @@ async function checkSecurityHeaders() {
 
   const required = [
     ["content-security-policy", "Content-Security-Policy"],
+    ["x-frame-options", "X-Frame-Options"],
     ["x-content-type-options", "X-Content-Type-Options"],
     ["referrer-policy", "Referrer-Policy"],
     ["cross-origin-opener-policy", "Cross-Origin-Opener-Policy"],
@@ -92,6 +93,10 @@ async function checkSecurityHeaders() {
   const nosniff = headerGet(h, "X-Content-Type-Options");
   if (nosniff && nosniff.toLowerCase() !== "nosniff") {
     fail("X-Content-Type-Options", `valor inesperado: ${nosniff}`);
+  }
+  const frameOptions = headerGet(h, "X-Frame-Options");
+  if (frameOptions && frameOptions.toUpperCase() !== "DENY") {
+    fail("X-Frame-Options", `valor inesperado: ${frameOptions}`);
   }
 
   const devStyleInline =

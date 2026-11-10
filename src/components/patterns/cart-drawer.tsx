@@ -3,6 +3,7 @@
 import { Button } from "@/components/atoms/button";
 import { CartDrawerLineItem } from "@/components/patterns/cart-drawer-line-item";
 import { useCartDrawer } from "@/components/patterns/cart-drawer-context";
+import { trackBeginCheckout } from "@/lib/analytics/ecommerce";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Link from "next/link";
@@ -95,7 +96,24 @@ export function CartDrawer() {
           ) : null}
           {checkoutUrl ? (
             <Button asChild variant="primary" className="w-full">
-              <a href={checkoutUrl} rel="noopener noreferrer">
+              <a
+                href={checkoutUrl}
+                rel="noopener noreferrer"
+                onClick={() => {
+                  if (!cart?.subtotal) return;
+                  trackBeginCheckout({
+                    currency: cart.subtotal.currencyCode,
+                    value: Number(cart.subtotal.amount) || 0,
+                    items: cart.lines.map((line) => ({
+                      item_id: line.productHandle,
+                      item_name: line.productTitle,
+                      price: Number(line.unitPrice.amount) || 0,
+                      quantity: line.quantity,
+                      item_variant: line.variantTitle ?? undefined,
+                    })),
+                  });
+                }}
+              >
                 {copy.checkout}
               </a>
             </Button>

@@ -47,6 +47,8 @@ type PageProps = {
   searchParams: Promise<{ q?: string }>;
 };
 
+// No `loading.tsx` in this segment: it streams a 200 shell before `notFound()`,
+// so a missing page or an unknown locale stops returning a real 404.
 export async function generateStaticParams() {
   const pages = await getStaticParamsPages();
   const localeRoots = APP_LOCALES.map((locale) => ({ slug: locale }));
@@ -86,6 +88,24 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 
   const { page, _site } = result.data;
+  if (page.slug !== pageSlug) {
+    const legalResult = await getLegalPageBySlugResult(pageSlug, isEnabled, cmsLocale);
+    if (legalResult) {
+      const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
+      const path = legalPagePath(legalResult.page.slug, cmsLocale);
+      return buildDatoPageMetadata({
+        path,
+        seoMetaTags: legalResult.page._seoMetaTags,
+        faviconMetaTags: legalResult.faviconMetaTags,
+        seoSettingsSocial: legalResult.page.seoSettingsSocial,
+        fallbackTitle: legalResult.page.title,
+        fallbackOgImage: siteOg,
+        hreflangPaths: buildLocaleAlternatePaths((locale) => legalPagePath(legalResult.page.slug, locale)),
+      });
+    }
+    return buildUnavailableMetadata("Página");
+  }
+
   const siteOg = buildSiteIdentity({ seo: pickSiteSeo(seoResult) }).fallbackOgImage;
   const path = cmsPageCanonicalPath(pageSlug, cmsLocale);
   const meta = buildDatoPageMetadata({
@@ -148,7 +168,7 @@ export default async function DynamicPage({ params, searchParams }: PageProps) {
   }
 
   const page = result.data.page;
-  if (!page) {
+  if (!page || page.slug !== pageSlug) {
     notFound();
   }
 

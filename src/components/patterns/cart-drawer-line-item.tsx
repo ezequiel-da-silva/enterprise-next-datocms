@@ -3,6 +3,7 @@
 import type { CartDrawerLineActions } from "@/components/patterns/cart-drawer-line-actions";
 import type { AppLocale } from "@/constants/i18n";
 import { CART_MAX_QUANTITY, type CartSnapshot, type CartSnapshotLine } from "@/core/entities/cart";
+import { trackRemoveFromCart } from "@/lib/analytics/ecommerce";
 import { cn } from "@/lib/cn";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
@@ -78,7 +79,26 @@ export function CartDrawerLineItem({
             >
               {line.productTitle}
             </Link>
-            <form action={removeAction} className="shrink-0">
+            <form
+              action={removeAction}
+              className="shrink-0"
+              onSubmit={() => {
+                const unit = Number(line.unitPrice.amount) || 0;
+                trackRemoveFromCart({
+                  currency: line.unitPrice.currencyCode,
+                  value: unit * line.quantity,
+                  items: [
+                    {
+                      item_id: line.productHandle,
+                      item_name: line.productTitle,
+                      price: unit,
+                      quantity: line.quantity,
+                      item_variant: line.variantTitle ?? undefined,
+                    },
+                  ],
+                });
+              }}
+            >
               <input type="hidden" name="lineId" value={line.id} />
               <input type="hidden" name="locale" value={locale} />
               <button
