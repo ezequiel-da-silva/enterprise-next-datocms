@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.56.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.55.0...next-dato-v0.56.0) (2026-11-10)
+
+
+### Features
+
+* **faq:** create Shipping & Returns FAQ page setup script ([7c71ffd](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7c71ffd028aec3c4325b2e2e75b1813f3234f53b))
+* **landing:** add script for setting up Best of landing page ([0a87147](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/0a87147da148c83eef98601395cc23ff3600a252))
+* **security:** add X-Frame-Options header and update security checks ([b4335a1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b4335a1f2af360796c3011ab3bd4ca50dd85e8bc))
+
+
+### Refactoring
+
+* **pages:** remove loading components and update page handling logic ([5aa2501](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/5aa25019c164479278222b6a700cb5c9a7f3e129))
+* **wishlist:** simplify WishlistView by integrating copy retrieval directly ([8365275](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/83652758c93162e1ecf00ec177009af8630bc5d9))
+
 ## [0.55.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.54.1...next-dato-v0.55.0) (2026-11-09)
 
 
