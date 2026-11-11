@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.57.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.57.0...next-dato-v0.57.1) (2026-11-11)
+
+
+### Bug Fixes
+
+* **config:** update image device sizes and improve product card responsiveness ([a2272c0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/a2272c052e2119231b27464c34ca8ffcfd88e828))
+* **styles:** enhance link visibility in structured text ([4afb9f1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/4afb9f1630e33d7a42f408327be6db4ab7817cc7))
+
 ## [0.57.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.56.0...next-dato-v0.57.0) (2026-11-11)
 
 
