@@ -4062,11 +4062,19 @@ input ProductPageModelFilter {
   _status: StatusFilter
   _unpublishingScheduledAt: PublishedAtFilter
   _updatedAt: UpdatedAtFilter
+  badge: StringFilter
+  baseImage: FileFilter
+  coreMaterial: StringFilter
   description: TextFilter
+  flex: IntegerFilter
   id: ItemIdFilter
+  profile: StringFilter
+  riderLevel: StringFilter
   seo: SeoFilter
   shopifyHandle: SlugFilter
   shopifyProductId: StringFilter
+  sizeChart: JsonFilter
+  terrain: StringFilter
   title: StringFilter
 }
 
@@ -4087,16 +4095,34 @@ enum ProductPageModelOrderBy {
   _unpublishingScheduledAt_DESC
   _updatedAt_ASC
   _updatedAt_DESC
+  badge_ASC
+  badge_DESC
+  coreMaterial_ASC
+  coreMaterial_DESC
+  flex_ASC
+  flex_DESC
   id_ASC
   id_DESC
+  profile_ASC
+  profile_DESC
+  riderLevel_ASC
+  riderLevel_DESC
   shopifyProductId_ASC
   shopifyProductId_DESC
+  terrain_ASC
+  terrain_DESC
   title_ASC
   title_DESC
 }
 
 """Record of type 🛍️ Product page (product_page)"""
 type ProductPageRecord implements RecordInterface {
+  _allCoreMaterialLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allDescriptionLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -4134,6 +4160,16 @@ type ProductPageRecord implements RecordInterface {
   _status: ItemStatus!
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
+  badge: String
+  baseImage: FileField
+  coreMaterial(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   description(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -4144,7 +4180,10 @@ type ProductPageRecord implements RecordInterface {
     """Process content as markdown"""
     markdown: Boolean
   ): String
+  flex: IntType
   id: ItemId!
+  profile: String
+  riderLevel: String
   seo(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -4155,6 +4194,8 @@ type ProductPageRecord implements RecordInterface {
   ): SeoField
   shopifyHandle: String
   shopifyProductId: String
+  sizeChart: JsonField
+  terrain: String
   title(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5440,6 +5481,12 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allCaptionsDefaultLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allCartAddToCartLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5570,6 +5617,12 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allCollectionEmptyLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allCookiesAcceptAllLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5608,7 +5661,137 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allOrderConfirmationTrackingNoticeLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """Process content as markdown"""
+    markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allPaginationPageOfLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpCheckoutTrustLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpInStockLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allPdpLowStockLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSizeGuideSummaryLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSizeLengthLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSizeWaistLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSizeWeightLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSoldOutLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSpecCoreLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSpecFlexLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSpecProfileLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSpecRiderLevelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpSpecTerrainLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpUnavailableSuffixLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpViewImageLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allProductsEmptyLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allVideoDefaultLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allWishlistEmptyCtaLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allWishlistEmptyDescriptionLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """Process content as markdown"""
+    markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allWishlistEmptyTitleLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -5774,6 +5957,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   accountViewOrderHint(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  captionsDefaultLabel(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -5951,6 +6142,14 @@ type UiStringRecord implements RecordInterface {
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
   ): String
+  collectionEmpty(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   cookiesAcceptAll(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -6002,7 +6201,179 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   id: ItemId!
+  orderConfirmationTrackingNotice(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  paginationPageOf(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpCheckoutTrust(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpInStock(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   pdpLowStock(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSizeGuideSummary(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSizeLength(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSizeWaist(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSizeWeight(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSoldOut(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSpecCore(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSpecFlex(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSpecProfile(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSpecRiderLevel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpSpecTerrain(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpUnavailableSuffix(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpViewImage(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  productsEmpty(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  videoDefaultLabel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  wishlistEmptyCta(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  wishlistEmptyDescription(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  wishlistEmptyTitle(
     """
     If you want to fallback to a default translation when a translation has not been found
     """

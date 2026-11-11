@@ -43,6 +43,8 @@ import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { clampLayoutDimensions } from "@/lib/datocms-image-loader";
 import { resolveVideoSources } from "@/lib/datocms/resolve-video-sources";
+import type { ProductsSectionCmsCopy } from "@/lib/i18n/products-section-copy";
+import { videoUiCopy, type VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import { buildVideoObjectJsonLd } from "@/lib/seo/build-video-object-jsonld";
 import { getNonce } from "@/lib/nonce";
 import Image from "next/image";
@@ -58,6 +60,10 @@ type StructuredTextBlockViewProps = {
   ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
   productsCatalog?: ProductsListingCatalog | Promise<ProductsListingCatalog>;
+  /** CMS overlays for products listing empty + pagination (resolved in `app/`). */
+  productsCmsCopy?: ProductsSectionCmsCopy;
+  /** CMS overlays for video/captions labels (resolved in `app/`). */
+  videoCopy?: VideoUiCopy;
   searchQuery?: string;
   searchFormAction?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
@@ -71,7 +77,10 @@ function unknownBlockFallback(record: PageStructuredTextBlock): null {
   return null;
 }
 
-function readVideoCaptions(record: VideoBlockWithCaptions): { url: string; label: string } | null {
+function readVideoCaptions(
+  record: VideoBlockWithCaptions,
+  captionsFallback: string,
+): { url: string; label: string } | null {
   const ext = record as Record<string, unknown>;
   const file =
     readCdaObject<{ url?: string | null; title?: string | null }>(ext, "captions", "captions") ??
@@ -79,21 +88,24 @@ function readVideoCaptions(record: VideoBlockWithCaptions): { url: string; label
     readCdaObject<{ url?: string | null; title?: string | null }>(ext, "subtitleFile", "subtitle_file");
   const url = file?.url?.trim();
   if (!url) return null;
-  return { url, label: file?.title?.trim() || "Legendas" };
+  return { url, label: file?.title?.trim() || captionsFallback };
 }
 
 async function VideoBlockView({
   record,
   locale,
+  videoCopy: videoCopyProp,
 }: {
   record: Extract<PageStructuredTextBlock, { __typename: "VideoBlockRecord" }>;
   locale: AppLocale;
+  videoCopy?: VideoUiCopy;
 }) {
   const v = record.asset;
   const resolved = resolveVideoSources(v);
   if (!resolved) return null;
-  const label = v?.title?.trim() || "Vídeo";
-  const captions = readVideoCaptions(record);
+  const copy = videoCopyProp ?? videoUiCopy(locale);
+  const label = v?.title?.trim() || copy.videoDefaultLabel;
+  const captions = readVideoCaptions(record, copy.captionsDefaultLabel);
   const aspectStyle = {
     aspectRatio:
       resolved.width && resolved.height
@@ -161,6 +173,8 @@ export function StructuredTextBlockView({
   submitContact,
   latestPostsCatalog,
   productsCatalog,
+  productsCmsCopy,
+  videoCopy,
   searchQuery,
   searchFormAction,
   searchResults,
@@ -221,7 +235,7 @@ export function StructuredTextBlockView({
       );
     }
     case "VideoBlockRecord":
-      return <VideoBlockView record={record} locale={locale} />;
+      return <VideoBlockView record={record} locale={locale} videoCopy={videoCopy} />;
     case "FeatureGridRecord":
       return <FeatureGridBlock record={record as FeatureGridRecord} locale={locale} />;
     case "FaqGroupRecord":
@@ -286,6 +300,7 @@ export function StructuredTextBlockView({
             locale={locale}
             blogCatalog={latestPostsCatalog}
             productsCatalog={productsCatalog}
+            productsCmsCopy={productsCmsCopy}
           />
         </Suspense>
       );

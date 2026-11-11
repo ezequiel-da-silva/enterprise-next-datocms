@@ -177,6 +177,7 @@ describe("resolve-feature-grid-card", () => {
             availableForSale: true,
             featuredImage: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
             hoverImage: null,
+            badge: null,
             priceRange: { minVariantPrice: { amount: "19.00", currencyCode: "BRL" } },
           },
         },

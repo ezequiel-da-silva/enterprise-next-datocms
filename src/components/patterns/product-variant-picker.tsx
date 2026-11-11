@@ -59,6 +59,8 @@ type ProductVariantPickerProps = {
   /** Product snapshot for localStorage wishlist (handle-level, not per variant). */
   wishlist?: ProductPickerWishlist;
   lowStockTemplate: string;
+  /** Already resolved on the server (`ui_string` or the built-in PDP copy). */
+  checkoutTrust: string;
 };
 
 const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
@@ -90,6 +92,7 @@ export function ProductVariantPicker({
   cart,
   wishlist,
   lowStockTemplate,
+  checkoutTrust,
 }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
@@ -272,6 +275,7 @@ export function ProductVariantPicker({
             }}
           />
         ) : null}
+        {checkoutTrust ? <p className="text-sm text-muted-foreground">{checkoutTrust}</p> : null}
       </div>
     </div>
   );

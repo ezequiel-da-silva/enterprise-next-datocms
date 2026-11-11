@@ -7,10 +7,13 @@ import {
   collectionsIndexPath,
   getCollectionsIndexPage,
 } from "@/infra/datocms/get-collections-index-page";
+import { getProductPageCards } from "@/infra/datocms/get-product-pages";
+import { getCollectionCopy } from "@/infra/datocms/get-ui-strings";
 import { getStaticParamsCollectionPages } from "@/infra/datocms/static-params";
 import { getStorefrontCollectionByHandle } from "@/infra/shopify/storefront";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { collectionPagePath } from "@/lib/datocms/collection-page-path";
+import { enrichCatalogProducts } from "@/lib/datocms/resolve-products-section";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
@@ -63,10 +66,12 @@ export default async function CollectionPlpPage({ params }: CollectionPlpProps) 
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const [result, catalog, storefront] = await Promise.all([
+  const [result, catalog, storefront, pages, collectionCopy] = await Promise.all([
     getCollectionPageByHandle(locale, handle, isEnabled),
     getCollectionsIndexPage(locale, isEnabled),
     getStorefrontCollectionByHandle(handle, locale),
+    getProductPageCards(locale, isEnabled),
+    getCollectionCopy(locale),
   ]);
 
   if ("errors" in result || !result.data.collectionPage) {
@@ -74,6 +79,9 @@ export default async function CollectionPlpPage({ params }: CollectionPlpProps) 
   }
 
   const page = result.data.collectionPage;
+  const enrichedStorefront = storefront
+    ? { ...storefront, products: enrichCatalogProducts(storefront.products, pages) }
+    : null;
   return (
     <CollectionPageArticle
       locale={locale}
@@ -82,7 +90,8 @@ export default async function CollectionPlpPage({ params }: CollectionPlpProps) 
       description={page.description?.trim() || null}
       catalogPath={collectionsIndexPath(locale, catalog)}
       catalogLabel={collectionsIndexLabel(catalog)}
-      storefront={storefront}
+      storefront={enrichedStorefront}
+      emptyLabel={collectionCopy.empty}
     />
   );
 }

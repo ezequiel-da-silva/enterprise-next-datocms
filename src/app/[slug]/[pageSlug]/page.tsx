@@ -25,6 +25,7 @@ import { getLegalPageBySlug, getLegalPageBySlugResult, legalPagePath } from "@/i
 import { LegalPageArticle } from "@/components/patterns/legal-page-article";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
+import { getProductsSectionCmsCopy, getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
 import { buildDatoPageMetadata, cmsContentOgImage, withSearchQueryNoIndex } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
@@ -181,6 +182,10 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
   const productsCatalog = contentNeedsProductsCatalog(page.contentPage)
     ? loadProductsListingCatalog(page.contentPage, locale, isEnabled)
     : undefined;
+  const [productsCmsCopy, videoCopy] = await Promise.all([
+    getProductsSectionCmsCopy(locale),
+    getVideoUiCopy(locale),
+  ]);
 
   const configuredContactPage = await getContactPage(locale, isEnabled);
   const query = contentNeedsSearchResults(page.contentPage)
@@ -198,6 +203,8 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
       submitContact={submitContact}
       latestPostsCatalog={latestPostsCatalog}
       productsCatalog={productsCatalog}
+      productsCmsCopy={productsCmsCopy}
+      videoCopy={videoCopy}
       jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
       searchQuery={query || undefined}
       searchResults={searchResults}

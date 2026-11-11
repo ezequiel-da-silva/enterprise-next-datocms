@@ -3,7 +3,7 @@ import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { isAppLocale, type AppLocale } from "@/constants/i18n";
 import { getProductsIndexPage, productsIndexPath } from "@/infra/datocms/get-products-index-page";
-import { orderConfirmationCopy } from "@/lib/i18n/order-confirmation-copy";
+import { getOrderConfirmationCopy } from "@/infra/datocms/get-ui-strings";
 import { buildMetadata } from "@/lib/seo";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
@@ -26,7 +26,7 @@ function confirmationPath(locale: AppLocale): string {
 export async function generateMetadata({ params }: OrderConfirmationPageProps): Promise<Metadata> {
   const { slug } = await params;
   if (!isCartEnabled() || !isAppLocale(slug)) return buildUnavailableMetadata("Order");
-  const copy = orderConfirmationCopy(slug);
+  const copy = await getOrderConfirmationCopy(slug);
   return buildMetadata({
     title: copy.title,
     description: copy.lead,
@@ -44,8 +44,10 @@ export default async function OrderConfirmationPage({ params, searchParams }: Or
   const query = await searchParams;
   const rawOrder = Array.isArray(query.order) ? query.order[0] : query.order;
   const orderName = sanitizeOrderDisplayName(rawOrder);
-  const copy = orderConfirmationCopy(slug);
-  const catalog = await getProductsIndexPage(slug, isEnabled);
+  const [copy, catalog] = await Promise.all([
+    getOrderConfirmationCopy(slug),
+    getProductsIndexPage(slug, isEnabled),
+  ]);
   const shopPath = productsIndexPath(slug, catalog);
 
   return (
@@ -60,6 +62,7 @@ export default async function OrderConfirmationPage({ params, searchParams }: Or
         />
         <h1 className="type-display">{copy.title}</h1>
         <p className="type-lead">{copy.lead}</p>
+        <p className="text-sm text-muted-foreground">{copy.trackingNotice}</p>
         {orderName ? <p className="text-sm font-medium text-foreground">{copy.orderLabel(orderName)}</p> : null}
       </header>
 

@@ -270,6 +270,13 @@ export type ListCollectionHandlesQueryVariables = Exact<{ [key: string]: never; 
 
 export type ListCollectionHandlesQuery = { allCollectionPages: Array<{ shopifyHandle: string | null, _updatedAt: string }> };
 
+export type ListCollectionPagesQueryVariables = Exact<{
+  locale: Types.SiteLocale;
+}>;
+
+
+export type ListCollectionPagesQuery = { allCollectionPages: Array<{ title: string | null, shopifyHandle: string | null }> };
+
 export type ListLegalPageSlugsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -285,7 +292,7 @@ export type ListProductPagesQueryVariables = Exact<{
 }>;
 
 
-export type ListProductPagesQuery = { allProductPages: Array<{ title: string | null, shopifyHandle: string | null }> };
+export type ListProductPagesQuery = { allProductPages: Array<{ title: string | null, shopifyHandle: string | null, badge: string | null, baseImage: { url: string, alt: string | null, width: number | null, height: number | null } | null }> };
 
 export type PageBySlugQueryVariables = Exact<{
   slug: string;
@@ -321,10 +328,11 @@ export type PageBySlugQuery = { page: { id: string, title: string | null, slug: 
 export type ProductPageByHandleQueryVariables = Exact<{
   handle: string;
   locale: Types.SiteLocale;
+  withEditingUrl: boolean;
 }>;
 
 
-export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, description: string | null, shopifyHandle: string | null, shopifyProductId: string | null, seo: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
+export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, description: string | null, profile: string | null, flex: number | null, terrain: string | null, riderLevel: string | null, coreMaterial: string | null, badge: string | null, sizeChart: unknown, shopifyHandle: string | null, shopifyProductId: string | null, _editingUrl?: string | null, baseImage: { url: string, alt: string | null, width: number | null, height: number | null } | null, seo: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
 
 export type SearchCatalogQueryVariables = Exact<{
   q: string;

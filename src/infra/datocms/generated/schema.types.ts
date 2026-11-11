@@ -4119,11 +4119,19 @@ export type ProductPageModelFilter = {
   _status?: InputMaybe<StatusFilter>;
   _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
   _updatedAt?: InputMaybe<UpdatedAtFilter>;
+  badge?: InputMaybe<StringFilter>;
+  baseImage?: InputMaybe<FileFilter>;
+  coreMaterial?: InputMaybe<StringFilter>;
   description?: InputMaybe<TextFilter>;
+  flex?: InputMaybe<IntegerFilter>;
   id?: InputMaybe<ItemIdFilter>;
+  profile?: InputMaybe<StringFilter>;
+  riderLevel?: InputMaybe<StringFilter>;
   seo?: InputMaybe<SeoFilter>;
   shopifyHandle?: InputMaybe<SlugFilter>;
   shopifyProductId?: InputMaybe<StringFilter>;
+  sizeChart?: InputMaybe<JsonFilter>;
+  terrain?: InputMaybe<StringFilter>;
   title?: InputMaybe<StringFilter>;
 };
 
@@ -4144,16 +4152,29 @@ export type ProductPageModelOrderBy =
   | '_unpublishingScheduledAt_DESC'
   | '_updatedAt_ASC'
   | '_updatedAt_DESC'
+  | 'badge_ASC'
+  | 'badge_DESC'
+  | 'coreMaterial_ASC'
+  | 'coreMaterial_DESC'
+  | 'flex_ASC'
+  | 'flex_DESC'
   | 'id_ASC'
   | 'id_DESC'
+  | 'profile_ASC'
+  | 'profile_DESC'
+  | 'riderLevel_ASC'
+  | 'riderLevel_DESC'
   | 'shopifyProductId_ASC'
   | 'shopifyProductId_DESC'
+  | 'terrain_ASC'
+  | 'terrain_DESC'
   | 'title_ASC'
   | 'title_DESC';
 
 /** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord = RecordInterface & {
   __typename?: 'ProductPageRecord';
+  _allCoreMaterialLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allSeoLocales?: Maybe<Array<SeoFieldMultiLocaleField>>;
   _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -4171,12 +4192,26 @@ export type ProductPageRecord = RecordInterface & {
   _status: ItemStatus;
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
+  badge?: Maybe<Scalars['String']['output']>;
+  baseImage?: Maybe<FileField>;
+  coreMaterial?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  flex?: Maybe<Scalars['IntType']['output']>;
   id: Scalars['ItemId']['output'];
+  profile?: Maybe<Scalars['String']['output']>;
+  riderLevel?: Maybe<Scalars['String']['output']>;
   seo?: Maybe<SeoField>;
   shopifyHandle?: Maybe<Scalars['String']['output']>;
   shopifyProductId?: Maybe<Scalars['String']['output']>;
+  sizeChart?: Maybe<Scalars['JsonField']['output']>;
+  terrain?: Maybe<Scalars['String']['output']>;
   title?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecord_AllCoreMaterialLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
 
@@ -4201,6 +4236,13 @@ export type ProductPageRecord_AllTitleLocalesArgs = {
 
 /** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🛍️ Product page (product_page) */
+export type ProductPageRecordCoreMaterialArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
 
@@ -5454,6 +5496,7 @@ export type UiStringRecord = RecordInterface & {
   _allAccountTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allAccountViewOrderHintLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allAccountViewOrderLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCaptionsDefaultLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartAddToCartLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartAddedLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartAddingLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -5474,13 +5517,35 @@ export type UiStringRecord = RecordInterface & {
   _allCartTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartUpdateLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartViewCartLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCollectionEmptyLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesAcceptAllLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesManageLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesPrivacyPolicyLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesRejectNonEssentialLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCookiesTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allOrderConfirmationTrackingNoticeLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPaginationPageOfLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpCheckoutTrustLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpInStockLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPdpLowStockLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSizeGuideSummaryLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSizeLengthLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSizeWaistLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSizeWeightLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSoldOutLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSpecCoreLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSpecFlexLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSpecProfileLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSpecRiderLevelLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpSpecTerrainLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpUnavailableSuffixLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpViewImageLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allProductsEmptyLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allVideoDefaultLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allWishlistEmptyCtaLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allWishlistEmptyDescriptionLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allWishlistEmptyTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _createdAt: Scalars['DateTime']['output'];
   /** Editing URL */
   _editingUrl?: Maybe<Scalars['String']['output']>;
@@ -5512,6 +5577,7 @@ export type UiStringRecord = RecordInterface & {
   accountTitle?: Maybe<Scalars['String']['output']>;
   accountViewOrder?: Maybe<Scalars['String']['output']>;
   accountViewOrderHint?: Maybe<Scalars['String']['output']>;
+  captionsDefaultLabel?: Maybe<Scalars['String']['output']>;
   cartAddToCart?: Maybe<Scalars['String']['output']>;
   cartAdded?: Maybe<Scalars['String']['output']>;
   cartAdding?: Maybe<Scalars['String']['output']>;
@@ -5532,6 +5598,7 @@ export type UiStringRecord = RecordInterface & {
   cartTitle?: Maybe<Scalars['String']['output']>;
   cartUpdate?: Maybe<Scalars['String']['output']>;
   cartViewCart?: Maybe<Scalars['String']['output']>;
+  collectionEmpty?: Maybe<Scalars['String']['output']>;
   cookiesAcceptAll?: Maybe<Scalars['String']['output']>;
   cookiesDescription?: Maybe<Scalars['String']['output']>;
   cookiesManage?: Maybe<Scalars['String']['output']>;
@@ -5539,7 +5606,28 @@ export type UiStringRecord = RecordInterface & {
   cookiesRejectNonEssential?: Maybe<Scalars['String']['output']>;
   cookiesTitle?: Maybe<Scalars['String']['output']>;
   id: Scalars['ItemId']['output'];
+  orderConfirmationTrackingNotice?: Maybe<Scalars['String']['output']>;
+  paginationPageOf?: Maybe<Scalars['String']['output']>;
+  pdpCheckoutTrust?: Maybe<Scalars['String']['output']>;
+  pdpInStock?: Maybe<Scalars['String']['output']>;
   pdpLowStock?: Maybe<Scalars['String']['output']>;
+  pdpSizeGuideSummary?: Maybe<Scalars['String']['output']>;
+  pdpSizeLength?: Maybe<Scalars['String']['output']>;
+  pdpSizeWaist?: Maybe<Scalars['String']['output']>;
+  pdpSizeWeight?: Maybe<Scalars['String']['output']>;
+  pdpSoldOut?: Maybe<Scalars['String']['output']>;
+  pdpSpecCore?: Maybe<Scalars['String']['output']>;
+  pdpSpecFlex?: Maybe<Scalars['String']['output']>;
+  pdpSpecProfile?: Maybe<Scalars['String']['output']>;
+  pdpSpecRiderLevel?: Maybe<Scalars['String']['output']>;
+  pdpSpecTerrain?: Maybe<Scalars['String']['output']>;
+  pdpUnavailableSuffix?: Maybe<Scalars['String']['output']>;
+  pdpViewImage?: Maybe<Scalars['String']['output']>;
+  productsEmpty?: Maybe<Scalars['String']['output']>;
+  videoDefaultLabel?: Maybe<Scalars['String']['output']>;
+  wishlistEmptyCta?: Maybe<Scalars['String']['output']>;
+  wishlistEmptyDescription?: Maybe<Scalars['String']['output']>;
+  wishlistEmptyTitle?: Maybe<Scalars['String']['output']>;
 };
 
 
@@ -5648,6 +5736,12 @@ export type UiStringRecord_AllAccountViewOrderHintLocalesArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllAccountViewOrderLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCaptionsDefaultLabelLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -5778,6 +5872,12 @@ export type UiStringRecord_AllCartViewCartLocalesArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCollectionEmptyLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllCookiesAcceptAllLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
@@ -5815,7 +5915,135 @@ export type UiStringRecord_AllCookiesTitleLocalesArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllOrderConfirmationTrackingNoticeLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPaginationPageOfLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpCheckoutTrustLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpInStockLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllPdpLowStockLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSizeGuideSummaryLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSizeLengthLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSizeWaistLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSizeWeightLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSoldOutLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSpecCoreLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSpecFlexLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSpecProfileLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSpecRiderLevelLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpSpecTerrainLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpUnavailableSuffixLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpViewImageLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllProductsEmptyLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllVideoDefaultLabelLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllWishlistEmptyCtaLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllWishlistEmptyDescriptionLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllWishlistEmptyTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -5947,6 +6175,13 @@ export type UiStringRecordAccountViewOrderArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordAccountViewOrderHintArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCaptionsDefaultLabelArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
@@ -6098,6 +6333,13 @@ export type UiStringRecordCartViewCartArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCollectionEmptyArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordCookiesAcceptAllArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -6141,7 +6383,156 @@ export type UiStringRecordCookiesTitleArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordOrderConfirmationTrackingNoticeArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPaginationPageOfArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpCheckoutTrustArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpInStockArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordPdpLowStockArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSizeGuideSummaryArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSizeLengthArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSizeWaistArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSizeWeightArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSoldOutArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSpecCoreArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSpecFlexArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSpecProfileArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSpecRiderLevelArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpSpecTerrainArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpUnavailableSuffixArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpViewImageArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordProductsEmptyArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordVideoDefaultLabelArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordWishlistEmptyCtaArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordWishlistEmptyDescriptionArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordWishlistEmptyTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };

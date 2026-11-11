@@ -23,6 +23,11 @@ type ProductPdpProps = {
   params: Promise<{ slug: string; handle: string }>;
 };
 
+function readEditingUrl(page: { _editingUrl?: string | null }): string | null {
+  const url = page._editingUrl?.trim();
+  return url || null;
+}
+
 export async function generateStaticParams() {
   return getStaticParamsProductPages();
 }
@@ -88,8 +93,19 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       storefront={storefront}
       addToCartAction={addToCart}
       cartCopy={cartCopy}
-      lowStockTemplate={pdpCopy.lowStockTemplate}
+      pdpCopy={pdpCopy}
       marketPolicy={marketPolicy}
+      contentLinkGroup={isEnabled}
+      recordId={page.id}
+      editingUrl={readEditingUrl(page)}
+      specs={{
+        profile: page.profile,
+        flex: page.flex,
+        terrain: page.terrain,
+        riderLevel: page.riderLevel,
+        coreMaterial: page.coreMaterial,
+      }}
+      sizeChart={page.sizeChart}
     />
   );
 }

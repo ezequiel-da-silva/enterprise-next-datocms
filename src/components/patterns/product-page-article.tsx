@@ -1,10 +1,11 @@
 import { Container } from "@/components/atoms/container";
 import type { AddToCartAction } from "@/components/patterns/add-to-cart-button";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { ProductSizeGuide } from "@/components/patterns/product-size-guide";
+import { ProductSpecsTable, type ProductSpecValues } from "@/components/patterns/product-specs-table";
 import {
   ProductVariantPicker,
   type ProductPickerCart,
-  type ProductPickerCopy,
   type ProductPickerImage,
   type ProductPickerVariant,
   type ProductPickerWishlist,
@@ -14,8 +15,11 @@ import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconne
 import type { AppLocale } from "@/constants/i18n";
 import { isShopifyVariantId } from "@/core/entities/cart";
 import type { StorefrontProduct, StorefrontProductImage } from "@/infra/shopify/storefront";
+import { cmsRecordAttrs } from "@/lib/datocms/cms-block-attrs";
+import { parseSizeChart } from "@/lib/datocms/parse-size-chart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
+import type { PdpCopy } from "@/lib/i18n/pdp-copy";
 import type { MarketPolicy } from "@/lib/seo/merchant-policy";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { getOrganizationName } from "@/lib/seo/site-config";
@@ -35,22 +39,19 @@ type ProductPageArticleProps = {
   addToCartAction?: AddToCartAction;
   /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
   cartCopy: CartCopy;
-  /** Template with `{count}`; resolved in the client picker when inventory is low. */
-  lowStockTemplate: string;
+  /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
+  pdpCopy: PdpCopy;
   /** Shipping/returns of the locale's market (Dato `market_policy`); `null` omits both JSON-LD blocks. */
   marketPolicy: MarketPolicy | null;
+  contentLinkGroup: boolean;
+  recordId: string;
+  editingUrl: string | null;
+  specs: ProductSpecValues;
+  sizeChart: unknown;
 };
 
-function availabilityLabel(locale: AppLocale, available: boolean): string {
-  if (locale === "pt") return available ? "Em stock" : "Esgotado";
-  if (locale === "es") return available ? "En stock" : "Agotado";
-  return available ? "In stock" : "Sold out";
-}
-
-function pickerCopy(locale: AppLocale): ProductPickerCopy {
-  if (locale === "pt") return { thumbnailLabel: "Ver imagem", unavailableSuffix: "(esgotado)" };
-  if (locale === "es") return { thumbnailLabel: "Ver imagen", unavailableSuffix: "(agotado)" };
-  return { thumbnailLabel: "View image", unavailableSuffix: "(sold out)" };
+function availabilityLabel(copy: PdpCopy, available: boolean): string {
+  return available ? copy.inStock : copy.soldOut;
 }
 
 function toPickerImage(image: StorefrontProductImage | null, fallbackAlt: string): ProductPickerImage | null {
@@ -76,7 +77,7 @@ function variantLabel(options: { name: string; value: string }[], fallbackTitle?
   return trimmed && trimmed !== "Default Title" ? trimmed : undefined;
 }
 
-function pickerVariants(locale: AppLocale, title: string, storefront: StorefrontProduct): ProductPickerVariant[] {
+function pickerVariants(locale: AppLocale, title: string, storefront: StorefrontProduct, copy: PdpCopy): ProductPickerVariant[] {
   const itemId = storefront.handle || storefront.id;
   if (storefront.variants.length === 0) {
     const price = storefront.priceRange.minVariantPrice;
@@ -85,7 +86,7 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
         id: storefront.id,
         available: storefront.availableForSale,
         priceLabel: formatStorefrontMoney(locale, price.amount, price.currencyCode),
-        availabilityLabel: availabilityLabel(locale, storefront.availableForSale),
+        availabilityLabel: availabilityLabel(copy, storefront.availableForSale),
         options: [],
         image: null,
         quantityAvailable: null,
@@ -100,7 +101,7 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
     id: variant.id,
     available: variant.availableForSale,
     priceLabel: formatStorefrontMoney(locale, variant.price.amount, variant.price.currencyCode),
-    availabilityLabel: availabilityLabel(locale, variant.availableForSale),
+    availabilityLabel: availabilityLabel(copy, variant.availableForSale),
     options: variant.selectedOptions,
     image: toPickerImage(variant.image, `${title} — ${variant.title}`),
     quantityAvailable: variant.quantityAvailable,
@@ -162,8 +163,13 @@ export function ProductPageArticle({
   storefront,
   addToCartAction,
   cartCopy,
-  lowStockTemplate,
+  pdpCopy,
   marketPolicy,
+  contentLinkGroup,
+  recordId,
+  editingUrl,
+  specs,
+  sizeChart,
 }: ProductPageArticleProps) {
   const path = productPagePath(locale, handle);
   const jsonLd = buildProductPageJsonLd({
@@ -176,10 +182,43 @@ export function ProductPageArticle({
     brandName: getOrganizationName(),
     policy: marketPolicy,
   });
-  const variants = storefront ? pickerVariants(locale, title, storefront) : null;
+  const variants = storefront ? pickerVariants(locale, title, storefront, pdpCopy) : null;
+  const sizeRows = parseSizeChart(sizeChart);
+  const editorial = (
+    <>
+      <h1 className="type-display">{title}</h1>
+      {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
+      <ProductSpecsTable
+        locale={locale}
+        labels={{
+          profile: pdpCopy.specProfile,
+          flex: pdpCopy.specFlex,
+          terrain: pdpCopy.specTerrain,
+          riderLevel: pdpCopy.specRiderLevel,
+          core: pdpCopy.specCore,
+        }}
+        values={specs}
+      />
+      <ProductSizeGuide
+        summary={pdpCopy.sizeGuideSummary}
+        lengthLabel={pdpCopy.sizeLength}
+        weightLabel={pdpCopy.sizeWeight}
+        waistLabel={pdpCopy.sizeWaist}
+        rows={sizeRows}
+      />
+    </>
+  );
 
   return (
-    <Container as="article" size="lg" name="ProductPage" className="py-12">
+    <Container
+      as="article"
+      size="lg"
+      name="ProductPage"
+      className="py-12"
+      data-datocms-content-link-boundary=""
+      {...cmsRecordAttrs({ __typename: "ProductPageRecord", id: recordId })}
+      {...(editingUrl ? { "data-datocms-content-link-url": editingUrl } : {})}
+    >
       <ShopifyCdnPreconnect />
       <JsonLdScript graph={jsonLd} />
       <header className="space-y-4">
@@ -191,18 +230,18 @@ export function ProductPageArticle({
             { name: title, path },
           ])}
         />
-        <h1 className="type-display">{title}</h1>
-        {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
+        {contentLinkGroup ? <div data-datocms-content-link-group="">{editorial}</div> : editorial}
       </header>
 
       {storefront && variants ? (
         <ProductVariantPicker
           variants={variants}
           images={pickerImages(title, storefront)}
-          copy={pickerCopy(locale)}
+          copy={{ thumbnailLabel: pdpCopy.viewImage, unavailableSuffix: pdpCopy.unavailableSuffix }}
           cart={pickerCart(locale, cartCopy, variants, addToCartAction)}
           wishlist={pickerWishlist(locale, handle, title, storefront)}
-          lowStockTemplate={lowStockTemplate}
+          lowStockTemplate={pdpCopy.lowStockTemplate}
+          checkoutTrust={pdpCopy.checkoutTrust}
         />
       ) : null}
     </Container>

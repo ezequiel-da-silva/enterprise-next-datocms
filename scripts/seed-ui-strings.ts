@@ -11,14 +11,27 @@
 import type { Client } from "datocms/lib/cma-client-node";
 import { ACCOUNT_COPY } from "../src/lib/i18n/account-copy";
 import { CART_COPY } from "../src/lib/i18n/cart-copy";
+import { COLLECTION_COPY } from "../src/lib/i18n/collection-copy";
 import { CONSENT_COPY } from "../src/lib/i18n/consent-copy";
+import { ORDER_CONFIRMATION_COPY } from "../src/lib/i18n/order-confirmation-copy";
+import { PDP_COPY } from "../src/lib/i18n/pdp-copy";
+import { PRODUCTS_SECTION_COPY } from "../src/lib/i18n/products-section-copy";
+import { VIDEO_UI_COPY } from "../src/lib/i18n/video-ui-copy";
+import { WISHLIST_COPY } from "../src/lib/i18n/wishlist-copy";
 import {
   ACCOUNT_ERROR_FIELDS,
   ACCOUNT_FIELDS,
   ACCOUNT_TEMPLATE_FIELDS,
   CART_FIELDS,
   CART_LINK_FIELDS,
+  COLLECTION_FIELDS,
   CONSENT_FIELDS,
+  ORDER_CONFIRMATION_TEXT_FIELDS,
+  PDP_LOW_STOCK_FIELD,
+  PDP_TEXT_FIELDS,
+  PRODUCTS_SECTION_CMS_FIELDS,
+  VIDEO_UI_FIELDS,
+  WISHLIST_TEXT_FIELDS,
 } from "../src/lib/i18n/ui-strings-fields";
 import { asLocalized, field, publishIfDraftModel, type Localized } from "./lib/dato-script-helpers";
 
@@ -31,11 +44,17 @@ function camelToSnake(name: string): string {
   return name.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 }
 
-/** CDA field name → built-in text for one locale (templates use `{count}` / `{name}`). */
+/** CDA field name → built-in text for one locale (templates use `{count}` / `{name}` / `{current}` / `{total}`). */
 function defaultsFor(locale: AppLocale): Record<string, string> {
   const consent = CONSENT_COPY[locale];
   const cart = CART_COPY[locale];
   const account = ACCOUNT_COPY[locale];
+  const pdp = PDP_COPY[locale];
+  const wishlist = WISHLIST_COPY[locale];
+  const collection = COLLECTION_COPY[locale];
+  const products = PRODUCTS_SECTION_COPY[locale];
+  const video = VIDEO_UI_COPY[locale];
+  const order = ORDER_CONFIRMATION_COPY[locale];
   const out: Record<string, string> = {};
 
   for (const [key, name] of Object.entries(CONSENT_FIELDS)) {
@@ -57,6 +76,27 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
   out[ACCOUNT_TEMPLATE_FIELDS.greetingAnonymous] = account.greeting(null);
   out[ACCOUNT_TEMPLATE_FIELDS.linkSignedIn] = account.linkLabel(true);
   out[ACCOUNT_TEMPLATE_FIELDS.linkSignedOut] = account.linkLabel(false);
+
+  out[PDP_LOW_STOCK_FIELD] = pdp.lowStockTemplate;
+  for (const [key, name] of Object.entries(PDP_TEXT_FIELDS)) {
+    out[name] = pdp[key as keyof typeof PDP_TEXT_FIELDS];
+  }
+
+  for (const [key, name] of Object.entries(WISHLIST_TEXT_FIELDS)) {
+    out[name] = wishlist[key as keyof typeof WISHLIST_TEXT_FIELDS];
+  }
+  for (const [key, name] of Object.entries(COLLECTION_FIELDS)) {
+    out[name] = collection[key as keyof typeof COLLECTION_FIELDS];
+  }
+  out[PRODUCTS_SECTION_CMS_FIELDS.empty] = products.empty;
+  out[PRODUCTS_SECTION_CMS_FIELDS.pageOfTemplate] = products.pageOfTemplate;
+  for (const [key, name] of Object.entries(VIDEO_UI_FIELDS)) {
+    out[name] = video[key as keyof typeof VIDEO_UI_FIELDS];
+  }
+  for (const [key, name] of Object.entries(ORDER_CONFIRMATION_TEXT_FIELDS)) {
+    out[name] = order[key as keyof typeof ORDER_CONFIRMATION_TEXT_FIELDS];
+  }
+
   return out;
 }
 

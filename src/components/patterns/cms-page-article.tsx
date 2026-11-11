@@ -13,6 +13,8 @@ import type { ProductsListingCatalog } from "@/lib/datocms/resolve-products-sect
 import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1, resolveVisiblePageTitle } from "@/lib/datocms/hero-first-block";
+import type { ProductsSectionCmsCopy } from "@/lib/i18n/products-section-copy";
+import type { VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { getNonce } from "@/lib/nonce";
 
@@ -29,6 +31,8 @@ type CmsPageArticleProps = {
   ) => Promise<ContactActionState>;
   latestPostsCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
   productsCatalog?: ProductsListingCatalog | Promise<ProductsListingCatalog>;
+  productsCmsCopy?: ProductsSectionCmsCopy;
+  videoCopy?: VideoUiCopy;
   jsonLdPageType?: PageJsonLdType;
   searchQuery?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
@@ -43,6 +47,8 @@ export async function CmsPageArticle({
   submitContact,
   latestPostsCatalog,
   productsCatalog,
+  productsCmsCopy,
+  videoCopy,
   jsonLdPageType = "WebPage",
   searchQuery,
   searchResults,
@@ -123,6 +129,8 @@ export async function CmsPageArticle({
             submitContact={submitContact}
             latestPostsCatalog={latestPostsCatalog}
             productsCatalog={productsCatalog}
+            productsCmsCopy={productsCmsCopy}
+            videoCopy={videoCopy}
             searchQuery={searchQuery}
             searchFormAction={canonicalPath}
             searchResults={searchResults}

@@ -17,7 +17,12 @@ describe("ui_string field map", () => {
   });
 
   it("matches the api keys created by the Dato migrations", () => {
-    const migrationFiles = ["1790700000_uiStringsSingleton.ts", "1790900000_pdpLowStockUiString.ts"];
+    const migrationFiles = [
+      "1790700000_uiStringsSingleton.ts",
+      "1790900000_pdpLowStockUiString.ts",
+      "1791000000_pdpSnowboardUiStrings.ts",
+      "1791100000_emptyStateUiStrings.ts",
+    ];
     const apiKeys = migrationFiles
       .flatMap((file) =>
         [
