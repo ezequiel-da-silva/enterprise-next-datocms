@@ -106,7 +106,7 @@ export function CartDrawerLineItem({
                 disabled={pending}
                 aria-label={`${copy.remove} ${line.productTitle}`}
                 title={copy.remove}
-                className="touch-target -mr-1.5 -mt-1 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-destructive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40"
+                className="touch-target -mr-1.5 -mt-1 rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-destructive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-40"
               >
                 <svg
                   aria-hidden
@@ -147,10 +147,10 @@ export function CartDrawerLineItem({
               value={line.quantity - 1}
               disabled={pending || line.quantity <= 1}
               aria-label={`${decreaseLabel}: ${line.productTitle}`}
-              className="flex h-7 w-7 items-center justify-center rounded-l-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+              className="touch-target rounded-l-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-30"
             >
               <svg
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -174,10 +174,10 @@ export function CartDrawerLineItem({
               value={line.quantity + 1}
               disabled={pending || line.quantity >= CART_MAX_QUANTITY}
               aria-label={`${increaseLabel}: ${line.productTitle}`}
-              className="flex h-7 w-7 items-center justify-center rounded-r-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:cursor-not-allowed disabled:opacity-30"
+              className="touch-target rounded-r-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-30"
             >
               <svg
-                className="h-3 w-3"
+                className="h-3.5 w-3.5"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

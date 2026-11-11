@@ -251,8 +251,13 @@ export type StorefrontCollectionProduct = {
   title: string;
   availableForSale: boolean;
   featuredImage: StorefrontProductImage | null;
-  /** Second gallery image for card hover; null when only one image exists. */
+  /**
+   * Alternate image for card hover / base toggle.
+   * Prefer Dato `product_page.baseImage` when enriched; otherwise the second gallery image.
+   */
   hoverImage: StorefrontProductImage | null;
+  /** Dato `product_page.badge` api key (`new` | `limited` | `pro_model`); null when unset. */
+  badge: string | null;
   priceRange: { minVariantPrice: StorefrontMoney };
 };
 
@@ -360,6 +365,7 @@ function mapCollectionProduct(value: unknown): StorefrontCollectionProduct | nul
     availableForSale: record.availableForSale === true,
     featuredImage,
     hoverImage: second,
+    badge: null,
     priceRange: { minVariantPrice: minPrice },
   };
 }
@@ -536,6 +542,7 @@ export async function getStorefrontProductsByHandles(
           featuredImage: product.featuredImage,
           hoverImage:
             product.images.find((img) => img?.url && img.url !== product.featuredImage?.url) ?? null,
+          badge: null,
           priceRange: product.priceRange,
         } satisfies StorefrontCollectionProduct,
       ]),

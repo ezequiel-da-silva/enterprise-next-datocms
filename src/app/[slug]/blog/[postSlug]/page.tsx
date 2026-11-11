@@ -14,6 +14,7 @@ import {
 import { getPostBySlug } from "@/infra/datocms/get-blog";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsBlogPosts } from "@/infra/datocms/static-params";
+import { getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
 import { buildBlogPostJsonLdGraph } from "@/lib/seo/build-blog-post-jsonld";
 import { buildDatoPageMetadata, cmsContentOgImage } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
@@ -76,9 +77,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const [result, blogPage] = await Promise.all([
+  const [result, blogPage, videoCopy] = await Promise.all([
     getPostBySlug(toDatoSiteLocale(locale), postSlug, isEnabled),
     getBlogIndexPage(locale, isEnabled),
+    getVideoUiCopy(locale),
   ]);
 
   if ("errors" in result) {
@@ -169,7 +171,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       ) : null}
 
       <div className="mt-10">
-        <StructuredTextRenderer data={structured} contentLinkGroup={isEnabled} locale={locale} />
+        <StructuredTextRenderer
+          data={structured}
+          contentLinkGroup={isEnabled}
+          locale={locale}
+          videoCopy={videoCopy}
+        />
       </div>
 
       {post.postAuthor ? <AuthorSection author={post.postAuthor} locale={locale} contentLinkGroup={isEnabled} /> : null}

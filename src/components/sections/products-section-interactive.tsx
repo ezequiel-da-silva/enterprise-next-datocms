@@ -8,7 +8,11 @@ import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import type { CarouselSetting } from "@/lib/datocms/resolve-carousel-setting";
 import type { ProductsDisplayType } from "@/lib/datocms/resolve-products-section";
-import { productsSectionCopy } from "@/lib/i18n/products-section-copy";
+import {
+  productsSectionCopy,
+  resolveProductsPageOf,
+  type ProductsSectionCmsCopy,
+} from "@/lib/i18n/products-section-copy";
 import { useId, useState } from "react";
 
 const CARD_SIZES = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px";
@@ -21,6 +25,8 @@ type ProductsSectionInteractiveProps = {
   loadMoreStep: number;
   loadMoreLabel: string;
   carousel: CarouselSetting;
+  /** CMS overlays for empty + pagination labels (resolved on the server). */
+  cmsCopy: ProductsSectionCmsCopy;
 };
 
 export function ProductsSectionInteractive({
@@ -31,8 +37,15 @@ export function ProductsSectionInteractive({
   loadMoreStep,
   loadMoreLabel,
   carousel,
+  cmsCopy,
 }: ProductsSectionInteractiveProps) {
-  const copy = productsSectionCopy(locale);
+  const base = productsSectionCopy(locale);
+  const copy = {
+    ...base,
+    empty: cmsCopy.empty,
+    pageOfTemplate: cmsCopy.pageOfTemplate,
+    page: (page: number, total: number) => resolveProductsPageOf(cmsCopy.pageOfTemplate, page, total),
+  };
   const reactId = useId().replace(/:/g, "");
   const listId = `products-section-list-${reactId}`;
   const [page, setPage] = useState(1);

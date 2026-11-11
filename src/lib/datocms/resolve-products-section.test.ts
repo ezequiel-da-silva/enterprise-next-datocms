@@ -3,6 +3,7 @@ import {
   PRODUCTS_SECTION_DEFAULTS,
   applyProductLimit,
   autoSourceCollectionHandle,
+  enrichCatalogProducts,
   overlayDatoTitles,
   publishedStorefrontProducts,
   readProductPageCards,
@@ -135,8 +136,8 @@ describe("readProductPageCards", () => {
         "selected_products",
       ),
     ).toEqual([
-      { handle: "hat", title: "Hat" },
-      { handle: "wax", title: "Wax" },
+      { handle: "hat", title: "Hat", badge: null, baseImage: null },
+      { handle: "wax", title: "Wax", badge: null, baseImage: null },
     ]);
   });
 });
@@ -165,9 +166,9 @@ describe("autoSourceCollectionHandle", () => {
 
 describe("applyProductLimit", () => {
   const products = [
-    { handle: "a", title: "A", availableForSale: true, featuredImage: null, hoverImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
-    { handle: "b", title: "B", availableForSale: true, featuredImage: null, hoverImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
-    { handle: "c", title: "C", availableForSale: true, featuredImage: null, hoverImage: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "a", title: "A", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "b", title: "B", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "c", title: "C", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
   ];
 
   it("does not slice pagination or load_more", () => {
@@ -191,12 +192,74 @@ describe("overlayDatoTitles", () => {
           availableForSale: true,
           featuredImage: null,
           hoverImage: null,
+          badge: null,
           priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "hat", title: "Chapéu" }],
+      [{ handle: "hat", title: "Chapéu", badge: null, baseImage: null }],
     );
     expect(first?.title).toBe("Chapéu");
+  });
+});
+
+describe("enrichCatalogProducts", () => {
+  it("applies badge and prefers Dato baseImage for hover", () => {
+    const galleryHover = {
+      url: "https://cdn.shopify.com/gallery.jpg",
+      altText: "Gallery",
+      width: 600,
+      height: 600,
+    };
+    const baseImage = {
+      url: "https://www.datocms-assets.com/base.jpg",
+      altText: "Base",
+      width: 800,
+      height: 800,
+    };
+    const [first] = enrichCatalogProducts(
+      [
+        {
+          handle: "hydrogen",
+          title: "Hydrogen",
+          availableForSale: true,
+          featuredImage: null,
+          hoverImage: galleryHover,
+          badge: null,
+          priceRange: { minVariantPrice: { amount: "600", currencyCode: "USD" } },
+        },
+      ],
+      [{ handle: "hydrogen", title: "Hydrogen CMS", badge: "new", baseImage }],
+    );
+    expect(first).toMatchObject({
+      title: "Hydrogen CMS",
+      badge: "new",
+      hoverImage: baseImage,
+    });
+  });
+
+  it("keeps the Shopify hover image when baseImage is empty", () => {
+    const galleryHover = {
+      url: "https://cdn.shopify.com/gallery.jpg",
+      altText: null,
+      width: 600,
+      height: 600,
+    };
+    const [first] = enrichCatalogProducts(
+      [
+        {
+          handle: "oxygen",
+          title: "Oxygen",
+          availableForSale: true,
+          featuredImage: null,
+          hoverImage: galleryHover,
+          badge: null,
+          priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+        },
+      ],
+      [{ handle: "oxygen", title: "Oxygen", badge: null, baseImage: null }],
+    );
+    expect(first?.hoverImage).toEqual(galleryHover);
+    expect(first?.badge).toBeNull();
   });
 });
 
@@ -208,6 +271,7 @@ describe("publishedStorefrontProducts", () => {
       availableForSale: true,
       featuredImage: null,
       hoverImage: null,
+      badge: null,
       priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
     },
     {
@@ -216,14 +280,17 @@ describe("publishedStorefrontProducts", () => {
       availableForSale: true,
       featuredImage: null,
       hoverImage: null,
+      badge: null,
       priceRange: { minVariantPrice: { amount: "5", currencyCode: "USD" } },
     },
   ];
 
   it("keeps only handles with a product_page and overlays the Dato title", () => {
-    expect(publishedStorefrontProducts(storefront, [{ handle: "hat", title: "Chapéu" }])).toEqual([
-      { ...storefront[0], title: "Chapéu" },
-    ]);
+    expect(
+      publishedStorefrontProducts(storefront, [
+        { handle: "hat", title: "Chapéu", badge: null, baseImage: null },
+      ]),
+    ).toEqual([{ ...storefront[0], title: "Chapéu" }]);
   });
 
   it("returns empty when there are no product_page records", () => {

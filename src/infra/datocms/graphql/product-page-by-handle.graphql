@@ -1,4 +1,4 @@
-query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
+query ProductPageByHandle($handle: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
   productPage(
     locale: $locale
     fallbackLocales: [en, pt_BR, es]
@@ -7,6 +7,19 @@ query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
     id
     title
     description
+    profile
+    flex
+    terrain
+    riderLevel
+    coreMaterial
+    badge
+    baseImage {
+      url
+      alt
+      width
+      height
+    }
+    sizeChart
     seo {
       title
       description
@@ -21,6 +34,7 @@ query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
     }
     shopifyHandle
     shopifyProductId
+    _editingUrl @include(if: $withEditingUrl)
     _seoMetaTags {
       attributes
       content

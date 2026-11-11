@@ -1,6 +1,7 @@
 import { removeCartLine, updateCartLine } from "@/app/actions/cart";
 import { CartView } from "@/components/sections/cart-view";
 import { isAppLocale } from "@/constants/i18n";
+import { getEmptyStateCollections } from "@/infra/datocms/get-empty-state-collections";
 import { getProductsIndexPage, productsIndexPath } from "@/infra/datocms/get-products-index-page";
 import { getCartCopy } from "@/infra/datocms/get-ui-strings";
 import { getCartFromCookie } from "@/infra/shopify/cart";
@@ -35,10 +36,11 @@ export default async function CartPage({ params }: CartPageProps) {
   const { isEnabled } = await draftMode();
   const cookieStore = await cookies();
   const session = readCustomerSession(cookieStore.get(CUSTOMER_COOKIE)?.value);
-  const [cart, catalog, copy] = await Promise.all([
+  const [cart, catalog, copy, suggestedCollections] = await Promise.all([
     getCartFromCookie(cookieStore.get(CART_COOKIE)?.value, slug, activeAccessToken(session)),
     getProductsIndexPage(slug, isEnabled),
     getCartCopy(slug),
+    getEmptyStateCollections(slug, isEnabled),
   ]);
   return (
     <CartView
@@ -46,6 +48,7 @@ export default async function CartPage({ params }: CartPageProps) {
       copy={copy}
       cart={cart}
       shopPath={productsIndexPath(slug, catalog)}
+      suggestedCollections={suggestedCollections}
       actions={{ updateLine: updateCartLine, removeLine: removeCartLine }}
     />
   );

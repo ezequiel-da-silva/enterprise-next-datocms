@@ -4,6 +4,7 @@ import { structuredTextDatoNodeRules } from "@/components/patterns/structured-te
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { PageStructuredTextBlock } from "@/infra/datocms/types-page";
 import { resolveStructuredTextRecordLink } from "@/lib/datocms/st-record-link";
+import type { VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { StructuredText } from "react-datocms/structured-text";
 
@@ -12,6 +13,7 @@ type StructuredTextViewProps = {
   contentLinkGroup: boolean;
   locale: AppLocale;
   submitUserReview?: UserReviewSubmitAction;
+  videoCopy?: VideoUiCopy;
 };
 
 /**
@@ -23,6 +25,7 @@ export function StructuredTextView({
   contentLinkGroup,
   locale,
   submitUserReview,
+  videoCopy,
 }: StructuredTextViewProps) {
   if (!data) {
     return null;
@@ -76,6 +79,7 @@ export function StructuredTextView({
             record={record as PageStructuredTextBlock}
             locale={locale}
             submitUserReview={submitUserReview}
+            videoCopy={videoCopy}
           />
         )}
         renderInlineBlock={({ record }) => (
@@ -84,6 +88,7 @@ export function StructuredTextView({
               record={record as PageStructuredTextBlock}
               locale={locale}
               submitUserReview={submitUserReview}
+              videoCopy={videoCopy}
             />
           </span>
         )}

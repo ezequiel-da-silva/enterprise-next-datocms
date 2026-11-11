@@ -20,7 +20,7 @@
  * Shopify selected: coleção Shopify ∩ product_page; sem coleção → lista vazia.
  * Manual: ordem dos links `selected_products`.
  */
-import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
+import type { StorefrontCollectionProduct, StorefrontProductImage } from "@/infra/shopify/storefront";
 import { readCdaArray, readCdaString, readCdaStringForLogic } from "@/lib/datocms/cda-field";
 import {
   CONTENT_LISTING_DEFAULTS,
@@ -83,6 +83,8 @@ export function resolveProductsSectionOptions(
 export type ProductPageCard = {
   handle: string;
   title: string;
+  badge: string | null;
+  baseImage: StorefrontProductImage | null;
 };
 
 export type ProductsListingCatalog = Record<string, StorefrontCollectionProduct[]>;
@@ -96,7 +98,7 @@ export function readProductPageCards(record: Record<string, unknown>, camel: str
       readCdaStringForLogic(item, "handle", "handle");
     if (!handle) continue;
     const title = readCdaString(item, "title", "title") || handle;
-    out.push({ handle, title });
+    out.push({ handle, title, badge: null, baseImage: null });
   }
   return out;
 }
@@ -132,6 +134,32 @@ export function applyProductLimit(
   return products.slice(0, Math.max(1, Math.min(100, limit)));
 }
 
+/**
+ * Overlay Dato `product_page` fields onto Storefront catalog cards.
+ * `baseImage` wins over the Shopify second gallery image when present.
+ */
+export function enrichCatalogProducts(
+  products: StorefrontCollectionProduct[],
+  pages: ProductPageCard[],
+): StorefrontCollectionProduct[] {
+  if (pages.length === 0) {
+    return products.map((product) => ({ ...product, badge: product.badge ?? null }));
+  }
+  const byHandle = new Map(pages.map((page) => [page.handle, page]));
+  return products.map((product) => {
+    const page = byHandle.get(product.handle);
+    if (!page) return { ...product, badge: product.badge ?? null };
+    const title = page.title.trim();
+    return {
+      ...product,
+      title: title || product.title,
+      badge: page.badge,
+      hoverImage: page.baseImage ?? product.hoverImage,
+    };
+  });
+}
+
+/** Title-only overlay (manual listing links). Prefer {@link enrichCatalogProducts} for badge/base. */
 export function overlayDatoTitles(
   products: StorefrontCollectionProduct[],
   pages: ProductPageCard[],
@@ -151,7 +179,7 @@ export function publishedStorefrontProducts(
 ): StorefrontCollectionProduct[] {
   if (pages.length === 0) return [];
   const allowed = new Set(pages.map((page) => page.handle));
-  return overlayDatoTitles(
+  return enrichCatalogProducts(
     products.filter((product) => allowed.has(product.handle)),
     pages,
   );

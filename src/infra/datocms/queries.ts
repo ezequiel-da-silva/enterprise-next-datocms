@@ -1347,7 +1347,7 @@ export const SEARCH_CATALOG = /* GraphQL */ `
 `;
 
 export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
-  query ProductPageByHandle($handle: String!, $locale: SiteLocale!) {
+  query ProductPageByHandle($handle: String!, $locale: SiteLocale!, $withEditingUrl: Boolean!) {
     productPage(
       locale: $locale
       fallbackLocales: [en, pt_BR, es]
@@ -1356,11 +1356,25 @@ export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
       id
       title
       description
+      profile
+      flex
+      terrain
+      riderLevel
+      coreMaterial
+      badge
+      baseImage {
+        url
+        alt
+        width
+        height
+      }
+      sizeChart
       seo {
         ${SEO_SETTINGS_SOCIAL}
       }
       shopifyHandle
       shopifyProductId
+      _editingUrl @include(if: $withEditingUrl)
       _seoMetaTags {
         ${SEO_META_TAGS}
       }
@@ -1387,6 +1401,13 @@ export const LIST_PRODUCT_PAGES = /* GraphQL */ `
     allProductPages(locale: $locale, fallbackLocales: [en, pt_BR, es], first: 200, orderBy: _updatedAt_DESC) {
       title
       shopifyHandle
+      badge
+      baseImage {
+        url
+        alt
+        width
+        height
+      }
     }
   }
 `;
@@ -1423,6 +1444,15 @@ export const LIST_COLLECTION_HANDLES = /* GraphQL */ `
     allCollectionPages(first: 200, orderBy: _updatedAt_DESC) {
       shopifyHandle
       _updatedAt
+    }
+  }
+`;
+
+export const LIST_COLLECTION_PAGES = /* GraphQL */ `
+  query ListCollectionPages($locale: SiteLocale!) {
+    allCollectionPages(locale: $locale, fallbackLocales: [en, pt_BR, es], first: 12, orderBy: _updatedAt_DESC) {
+      title
+      shopifyHandle
     }
   }
 `;

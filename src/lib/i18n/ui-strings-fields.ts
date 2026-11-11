@@ -1,6 +1,12 @@
 import type { AccountCopy, AccountErrorCode } from "@/lib/i18n/account-copy";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
+import type { CollectionCopy } from "@/lib/i18n/collection-copy";
 import type { ConsentCopy } from "@/lib/i18n/consent-copy";
+import type { OrderConfirmationCopy } from "@/lib/i18n/order-confirmation-copy";
+import type { PdpCopy } from "@/lib/i18n/pdp-copy";
+import type { ProductsSectionCmsCopy } from "@/lib/i18n/products-section-copy";
+import type { VideoUiCopy } from "@/lib/i18n/video-ui-copy";
+import type { WishlistCopy } from "@/lib/i18n/wishlist-copy";
 
 /**
  * Maps each built-in copy key to its CDA field on the `ui_string` singleton.
@@ -77,6 +83,54 @@ export const ACCOUNT_TEMPLATE_FIELDS = {
 
 export const PDP_LOW_STOCK_FIELD = "pdpLowStock";
 
+/** String keys of `PdpCopy`, excluding the `{count}` template and the derived function. */
+export const PDP_TEXT_FIELDS = {
+  inStock: "pdpInStock",
+  soldOut: "pdpSoldOut",
+  viewImage: "pdpViewImage",
+  unavailableSuffix: "pdpUnavailableSuffix",
+  checkoutTrust: "pdpCheckoutTrust",
+  specProfile: "pdpSpecProfile",
+  specFlex: "pdpSpecFlex",
+  specTerrain: "pdpSpecTerrain",
+  specRiderLevel: "pdpSpecRiderLevel",
+  specCore: "pdpSpecCore",
+  sizeGuideSummary: "pdpSizeGuideSummary",
+  sizeLength: "pdpSizeLength",
+  sizeWeight: "pdpSizeWeight",
+  sizeWaist: "pdpSizeWaist",
+} as const satisfies Record<Exclude<keyof PdpCopy, "lowStock" | "lowStockTemplate">, string>;
+
+export const COLLECTION_FIELDS = {
+  empty: "collectionEmpty",
+} as const satisfies Record<keyof CollectionCopy, string>;
+
+export const WISHLIST_TEXT_FIELDS = {
+  emptyTitle: "wishlistEmptyTitle",
+  emptyDescription: "wishlistEmptyDescription",
+  emptyCta: "wishlistEmptyCta",
+} as const satisfies Record<
+  Exclude<keyof WishlistCopy, "title" | "lead" | "add" | "remove" | "linkLabel">,
+  string
+>;
+
+export const PRODUCTS_SECTION_CMS_FIELDS = {
+  empty: "productsEmpty",
+  pageOfTemplate: "paginationPageOf",
+} as const satisfies Record<keyof ProductsSectionCmsCopy, string>;
+
+export const VIDEO_UI_FIELDS = {
+  videoDefaultLabel: "videoDefaultLabel",
+  captionsDefaultLabel: "captionsDefaultLabel",
+} as const satisfies Record<keyof VideoUiCopy, string>;
+
+export const ORDER_CONFIRMATION_TEXT_FIELDS = {
+  trackingNotice: "orderConfirmationTrackingNotice",
+} as const satisfies Record<
+  Exclude<keyof OrderConfirmationCopy, "orderLabel" | "title" | "lead" | "continueShopping" | "orderLabelTemplate">,
+  string
+>;
+
 export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(CONSENT_FIELDS),
   ...Object.values(CART_FIELDS),
@@ -85,6 +139,12 @@ export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(ACCOUNT_ERROR_FIELDS),
   ...Object.values(ACCOUNT_TEMPLATE_FIELDS),
   PDP_LOW_STOCK_FIELD,
+  ...Object.values(PDP_TEXT_FIELDS),
+  ...Object.values(COLLECTION_FIELDS),
+  ...Object.values(WISHLIST_TEXT_FIELDS),
+  ...Object.values(PRODUCTS_SECTION_CMS_FIELDS),
+  ...Object.values(VIDEO_UI_FIELDS),
+  ...Object.values(ORDER_CONFIRMATION_TEXT_FIELDS),
 ] as const;
 
 export type UiStringsFieldName = (typeof UI_STRINGS_FIELD_NAMES)[number];

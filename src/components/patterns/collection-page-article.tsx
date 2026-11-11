@@ -18,6 +18,8 @@ type CollectionPageArticleProps = {
   catalogPath: string;
   catalogLabel: string;
   storefront: StorefrontCollection | null;
+  /** Resolved `ui_string` / code fallback for an empty product grid. */
+  emptyLabel: string;
 };
 
 export async function CollectionPageArticle({
@@ -28,6 +30,7 @@ export async function CollectionPageArticle({
   catalogPath,
   catalogLabel,
   storefront,
+  emptyLabel,
 }: CollectionPageArticleProps) {
   const path = collectionPagePath(locale, handle);
   const jsonLd = buildCollectionPageJsonLd({
@@ -67,13 +70,7 @@ export async function CollectionPageArticle({
           ))}
         </ul>
       ) : (
-        <p className="type-body mt-10">
-          {locale === "pt"
-            ? "Nenhum produto nesta coleção."
-            : locale === "es"
-              ? "Ningún producto en esta colección."
-              : "No products in this collection."}
-        </p>
+        <p className="type-body mt-10">{emptyLabel}</p>
       )}
     </Container>
   );

@@ -1,0 +1,6 @@
+query ListCollectionPages($locale: SiteLocale!) {
+  allCollectionPages(locale: $locale, fallbackLocales: [en, pt_BR, es], first: 12, orderBy: _updatedAt_DESC) {
+    title
+    shopifyHandle
+  }
+}

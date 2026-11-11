@@ -7,11 +7,34 @@ import { logWarnThrottled } from "@/infra/observability/log-error";
 import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
 import { ACCOUNT_COPY, type AccountCopy } from "@/lib/i18n/account-copy";
 import { CART_COPY, type CartCopy } from "@/lib/i18n/cart-copy";
+import { COLLECTION_COPY, type CollectionCopy } from "@/lib/i18n/collection-copy";
 import { CONSENT_COPY, type ConsentCopy } from "@/lib/i18n/consent-copy";
+import {
+  ORDER_CONFIRMATION_COPY,
+  resolveOrderLabel,
+  type OrderConfirmationCopy,
+} from "@/lib/i18n/order-confirmation-copy";
 import { PDP_COPY, type PdpCopy, resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
-import { cleanOverride } from "@/lib/i18n/merge-copy";
+import {
+  PRODUCTS_SECTION_COPY,
+  resolveProductsPageOf,
+  type ProductsSectionCmsCopy,
+  type ProductsSectionCopy,
+} from "@/lib/i18n/products-section-copy";
+import { VIDEO_UI_COPY, type VideoUiCopy } from "@/lib/i18n/video-ui-copy";
+import { WISHLIST_COPY, type WishlistCopy } from "@/lib/i18n/wishlist-copy";
+import { cleanOverride, pickOverrides } from "@/lib/i18n/merge-copy";
 import { resolveAccountCopy, resolveCartCopy, resolveConsentCopy } from "@/lib/i18n/resolve-ui-copy";
-import { PDP_LOW_STOCK_FIELD, type UiStringsRecord } from "@/lib/i18n/ui-strings-fields";
+import {
+  COLLECTION_FIELDS,
+  ORDER_CONFIRMATION_TEXT_FIELDS,
+  PDP_LOW_STOCK_FIELD,
+  PDP_TEXT_FIELDS,
+  PRODUCTS_SECTION_CMS_FIELDS,
+  VIDEO_UI_FIELDS,
+  WISHLIST_TEXT_FIELDS,
+  type UiStringsRecord,
+} from "@/lib/i18n/ui-strings-fields";
 import { cache } from "react";
 
 /**
@@ -57,10 +80,65 @@ export async function getAccountCopy(locale: AppLocale): Promise<AccountCopy> {
 export async function getPdpCopy(locale: AppLocale): Promise<PdpCopy> {
   const base = PDP_COPY[locale];
   const record = await loadUiStrings(locale);
-  const template =
-    cleanOverride(record?.[PDP_LOW_STOCK_FIELD as keyof NonNullable<typeof record>]) ?? base.lowStockTemplate;
+  const template = cleanOverride(record?.[PDP_LOW_STOCK_FIELD]) ?? base.lowStockTemplate;
   return {
+    ...base,
+    ...pickOverrides(PDP_TEXT_FIELDS, record),
     lowStockTemplate: template,
     lowStock: (count) => resolveLowStockMessage(template, count),
+  };
+}
+
+export async function getWishlistCopy(locale: AppLocale): Promise<WishlistCopy> {
+  const base = WISHLIST_COPY[locale];
+  return {
+    ...base,
+    ...pickOverrides(WISHLIST_TEXT_FIELDS, await loadUiStrings(locale)),
+  };
+}
+
+export async function getCollectionCopy(locale: AppLocale): Promise<CollectionCopy> {
+  return {
+    ...COLLECTION_COPY[locale],
+    ...pickOverrides(COLLECTION_FIELDS, await loadUiStrings(locale)),
+  };
+}
+
+export async function getVideoUiCopy(locale: AppLocale): Promise<VideoUiCopy> {
+  return {
+    ...VIDEO_UI_COPY[locale],
+    ...pickOverrides(VIDEO_UI_FIELDS, await loadUiStrings(locale)),
+  };
+}
+
+export async function getOrderConfirmationCopy(locale: AppLocale): Promise<OrderConfirmationCopy> {
+  const base = ORDER_CONFIRMATION_COPY[locale];
+  const overrides = pickOverrides(ORDER_CONFIRMATION_TEXT_FIELDS, await loadUiStrings(locale));
+  const template = base.orderLabelTemplate;
+  return {
+    ...base,
+    ...overrides,
+    orderLabelTemplate: template,
+    orderLabel: (order) => resolveOrderLabel(template, order),
+  };
+}
+
+export async function getProductsSectionCmsCopy(locale: AppLocale): Promise<ProductsSectionCmsCopy> {
+  const base = PRODUCTS_SECTION_COPY[locale];
+  return {
+    empty: base.empty,
+    pageOfTemplate: base.pageOfTemplate,
+    ...pickOverrides(PRODUCTS_SECTION_CMS_FIELDS, await loadUiStrings(locale)),
+  };
+}
+
+export async function getProductsSectionCopy(locale: AppLocale): Promise<ProductsSectionCopy> {
+  const base = PRODUCTS_SECTION_COPY[locale];
+  const cms = await getProductsSectionCmsCopy(locale);
+  return {
+    ...base,
+    empty: cms.empty,
+    pageOfTemplate: cms.pageOfTemplate,
+    page: (page, total) => resolveProductsPageOf(cms.pageOfTemplate, page, total),
   };
 }

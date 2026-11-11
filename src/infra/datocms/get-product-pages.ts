@@ -7,9 +7,11 @@ import {
   getStorefrontCollectionByHandle,
   getStorefrontProducts,
   getStorefrontProductsByHandles,
+  type StorefrontProductImage,
 } from "@/infra/shopify/storefront";
 import {
   autoSourceCollectionHandle,
+  enrichCatalogProducts,
   overlayDatoTitles,
   publishedStorefrontProducts,
   readProductPageCards,
@@ -23,7 +25,24 @@ import {
 } from "@/lib/datocms/resolve-content-listing-section";
 import { cache } from "react";
 
-type ProductPageRow = { title: string | null; shopifyHandle: string | null };
+type ProductPageRow = {
+  title: string | null;
+  shopifyHandle: string | null;
+  badge: string | null;
+  baseImage: { url: string; alt: string | null; width: number | null; height: number | null } | null;
+};
+
+function mapBaseImage(image: ProductPageRow["baseImage"]): StorefrontProductImage | null {
+  if (!image) return null;
+  const url = image.url?.trim();
+  if (!url) return null;
+  return {
+    url,
+    altText: image.alt?.trim() || null,
+    width: image.width,
+    height: image.height,
+  };
+}
 
 const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean): Promise<ProductPageCard[]> => {
   const result = await datocmsFetch<{ allProductPages: ProductPageRow[] }>({
@@ -40,9 +59,22 @@ const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean)
   return result.data.allProductPages.flatMap((row) => {
     const handle = row.shopifyHandle?.trim();
     if (!handle) return [];
-    return [{ handle, title: row.title?.trim() || handle }];
+    const badge = row.badge?.trim() || null;
+    return [
+      {
+        handle,
+        title: row.title?.trim() || handle,
+        badge,
+        baseImage: mapBaseImage(row.baseImage),
+      },
+    ];
   });
 });
+
+/** Cached `product_page` cards (title, badge, baseImage) for catalog enrichment. */
+export function getProductPageCards(locale: AppLocale, includeDrafts: boolean): Promise<ProductPageCard[]> {
+  return loadProductPages(locale, includeDrafts);
+}
 
 export async function loadProductsListingCatalog(
   blocks: ({ id: string; __typename?: string } & Record<string, unknown>)[],
@@ -67,7 +99,8 @@ export async function loadProductsListingCatalog(
           selected.map((page) => page.handle),
           locale,
         );
-        return [block.id, overlayDatoTitles(products, selected)] as const;
+        // Badge/base from LIST_PRODUCT_PAGES; titles prefer the manual link labels.
+        return [block.id, overlayDatoTitles(enrichCatalogProducts(products, pages), selected)] as const;
       }
 
       if (options.filterDisplay === "selected") {

@@ -21,6 +21,7 @@ describe("buildCollectionPageJsonLd", () => {
             availableForSale: true,
             featuredImage: null,
             hoverImage: null,
+            badge: null,
             priceRange: { minVariantPrice: { amount: "10.00", currencyCode: "BRL" } },
           },
         ],

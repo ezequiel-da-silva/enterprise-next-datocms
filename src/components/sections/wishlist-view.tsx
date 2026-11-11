@@ -1,21 +1,24 @@
 "use client";
 
 import { Button } from "@/components/atoms/button";
+import { EmptyStateCollectionGrid } from "@/components/patterns/empty-state-collection-grid";
 import { useWishlist } from "@/components/patterns/wishlist-provider";
 import type { AppLocale } from "@/constants/i18n";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import { wishlistCopy } from "@/lib/i18n/wishlist-copy";
+import type { WishlistViewCopy } from "@/lib/i18n/wishlist-copy";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
+import type { EmptyStateCollection } from "@/lib/storefront/empty-state-collection";
 import Image from "next/image";
 import Link from "next/link";
 
 type WishlistViewProps = {
   locale: AppLocale;
   shopPath: string;
+  copy: WishlistViewCopy;
+  suggestedCollections: EmptyStateCollection[];
 };
 
-export function WishlistView({ locale, shopPath }: WishlistViewProps) {
-  const copy = wishlistCopy(locale);
+export function WishlistView({ locale, shopPath, copy, suggestedCollections }: WishlistViewProps) {
   const { items, remove, ready } = useWishlist();
 
   if (!ready) {
@@ -24,11 +27,15 @@ export function WishlistView({ locale, shopPath }: WishlistViewProps) {
 
   if (items.length === 0) {
     return (
-      <div className="space-y-6">
-        <p className="type-lead">{copy.empty}</p>
-        <Button asChild variant="primary">
-          <Link href={shopPath}>{copy.continueShopping}</Link>
-        </Button>
+      <div className="space-y-8">
+        <div className="space-y-3">
+          <h2 className="type-heading">{copy.emptyTitle}</h2>
+          <p className="type-lead">{copy.emptyDescription}</p>
+          <Button asChild variant="primary">
+            <Link href={shopPath}>{copy.emptyCta}</Link>
+          </Button>
+        </div>
+        <EmptyStateCollectionGrid collections={suggestedCollections} />
       </div>
     );
   }

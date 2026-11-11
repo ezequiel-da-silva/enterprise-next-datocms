@@ -16,13 +16,18 @@ import {
 } from "@/lib/datocms/resolve-products-section";
 import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
-import { productsSectionCopy } from "@/lib/i18n/products-section-copy";
+import {
+  productsSectionCopy,
+  type ProductsSectionCmsCopy,
+} from "@/lib/i18n/products-section-copy";
 
 type ContentListingSectionBlockProps = {
   record: ContentListingSectionBlockRecord;
   locale: AppLocale;
   blogCatalog?: LatestPostsCatalog | Promise<LatestPostsCatalog>;
   productsCatalog?: ProductsListingCatalog | Promise<ProductsListingCatalog>;
+  /** CMS overlays for empty + pagination (resolved in `app/`). */
+  productsCmsCopy?: ProductsSectionCmsCopy;
 };
 
 export function ContentListingSectionFallback({
@@ -72,6 +77,7 @@ export async function ContentListingSectionBlock({
   locale,
   blogCatalog,
   productsCatalog,
+  productsCmsCopy,
 }: ContentListingSectionBlockProps) {
   const raw = record as Record<string, unknown>;
   if (readContentListingSource(raw) === "blog") {
@@ -79,6 +85,10 @@ export async function ContentListingSectionBlock({
   }
 
   const copy = productsSectionCopy(locale);
+  const cmsCopy: ProductsSectionCmsCopy = productsCmsCopy ?? {
+    empty: copy.empty,
+    pageOfTemplate: copy.pageOfTemplate,
+  };
   const options = resolveProductsSectionOptions(raw, copy.loadMore);
   const header = textHeaderFromRecord(raw);
   const resolvedCatalog = productsCatalog ? await Promise.resolve(productsCatalog) : {};
@@ -110,6 +120,7 @@ export async function ContentListingSectionBlock({
           loadMoreStep={options.loadMoreStep}
           loadMoreLabel={options.loadMoreLabel}
           carousel={options.carousel}
+          cmsCopy={cmsCopy}
         />
       </Container>
     </section>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { EmptyStateCollectionGrid } from "@/components/patterns/empty-state-collection-grid";
 import type { AppLocale } from "@/constants/i18n";
 import { CART_MAX_QUANTITY } from "@/core/entities/cart";
 import type { StorefrontCart, StorefrontCartLine } from "@/infra/shopify/cart";
@@ -9,6 +10,7 @@ import type { CartCopy } from "@/lib/i18n/cart-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { cartPath } from "@/lib/shopify/cart-cookie";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
+import type { EmptyStateCollection } from "@/lib/storefront/empty-state-collection";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,6 +27,7 @@ type CartViewProps = {
   copy: CartCopy;
   cart: StorefrontCart | null;
   shopPath: string;
+  suggestedCollections: EmptyStateCollection[];
   actions: CartViewActions;
 };
 
@@ -165,7 +168,7 @@ function CartLineItem({ line, locale, copy, actions }: CartLineItemProps) {
   );
 }
 
-export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProps) {
+export function CartView({ locale, copy, cart, shopPath, suggestedCollections, actions }: CartViewProps) {
   const lines = cart?.lines ?? [];
   const subtotal = cart?.subtotal;
 
@@ -183,11 +186,14 @@ export function CartView({ locale, copy, cart, shopPath, actions }: CartViewProp
       </header>
 
       {lines.length === 0 ? (
-        <div className="mt-8 space-y-4">
-          <p className="type-lead">{copy.empty}</p>
-          <Button asChild className="touch-target h-12 rounded-lg">
-            <Link href={shopPath}>{copy.continueShopping}</Link>
-          </Button>
+        <div className="mt-8 space-y-8">
+          <div className="space-y-4">
+            <p className="type-lead">{copy.empty}</p>
+            <Button asChild className="touch-target h-12 rounded-lg">
+              <Link href={shopPath}>{copy.continueShopping}</Link>
+            </Button>
+          </div>
+          <EmptyStateCollectionGrid collections={suggestedCollections} />
         </div>
       ) : (
         <>
