@@ -173,8 +173,9 @@
    * `[&_p]` / `[&_a]` / `[&_h2]` no wrapper, estas regras venciam as classes do próprio
    * bloco e pintavam o CTA com cor de texto muted, links primary e título a `text-2xl`.
    */
+  /* Underline required: axe `link-in-text-block` (color alone is not enough inside muted copy). */
   .structured-text :where(a):not(:where([data-cms-block] *)) {
-    @apply text-primary underline-offset-4;
+    @apply text-primary underline underline-offset-4;
   }
 
   .structured-text :where(h1):not(:where([data-cms-block] *)) {

@@ -188,6 +188,10 @@ export function ProductPageArticle({
     <>
       <h1 className="type-display">{title}</h1>
       {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
+    </>
+  );
+  const techDetails = (
+    <>
       <ProductSpecsTable
         locale={locale}
         labels={{
@@ -244,6 +248,8 @@ export function ProductPageArticle({
           checkoutTrust={pdpCopy.checkoutTrust}
         />
       ) : null}
+
+      {techDetails}
     </Container>
   );
 }

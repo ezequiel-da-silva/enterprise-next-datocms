@@ -3,12 +3,12 @@ import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-butt
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import { cn } from "@/lib/cn";
 import { PDP_COPY, snowboardBadgeLabel } from "@/lib/i18n/pdp-copy";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Link from "next/link";
 
-const DEFAULT_SIZES = "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw";
+/** Align with products-section / carousel CARD_SIZES. */
+const DEFAULT_SIZES = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px";
 
 type CatalogProductCardProps = {
   locale: AppLocale;
@@ -26,12 +26,7 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
   const marketingBadge = snowboardBadgeLabel(locale, product.badge);
 
   return (
-    <article
-      className={cn(
-        "group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20",
-        soldOut && "opacity-90",
-      )}
-    >
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
       <WishlistToggleButton
         locale={locale}
         className="absolute right-3 top-3 z-20"
@@ -62,7 +57,7 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
             soldOut={soldOut}
           />
           {soldOut ? (
-            <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-md bg-background/95 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground ring-1 ring-border">
+            <p className="pointer-events-none absolute bottom-3 left-3 z-10 rounded-md bg-background/95 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-foreground ring-1 ring-border">
               {soldOutLabel}
             </p>
           ) : null}
