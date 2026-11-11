@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.57.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.56.0...next-dato-v0.57.0) (2026-11-11)
+
+
+### Features
+
+* **ui-strings:** add UI strings for snowboard and empty states ([9f9a0e3](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/9f9a0e3f24092ea65aef85661692b0e50f644118))
+
 ## [0.56.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.55.0...next-dato-v0.56.0) (2026-11-10)
 
 
