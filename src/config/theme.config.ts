@@ -15,8 +15,8 @@ export const themeConfig = {
       card: { h: 0, s: 0, l: 100 } satisfies HslChannels,
       cardForeground: { h: 222, s: 47, l: 11 } satisfies HslChannels,
       muted: { h: 210, s: 40, l: 96 } satisfies HslChannels,
-      /* l:47 dava 4.29:1 sobre `muted` (avatar, figcaption de código) — abaixo de AA. */
-      mutedForeground: { h: 215, s: 16, l: 44 } satisfies HslChannels,
+      /* l:47 dava 4.29:1 sobre `muted`; l:44 ainda falhava em preços com opacity no card — AA sitewide. */
+      mutedForeground: { h: 215, s: 16, l: 40 } satisfies HslChannels,
       border: { h: 214, s: 32, l: 91 } satisfies HslChannels,
       ring: { h: 222, s: 84, l: 5 } satisfies HslChannels,
       primary: { h: 222, s: 47, l: 11 } satisfies HslChannels,
@@ -33,7 +33,7 @@ export const themeConfig = {
       card: { h: 222, s: 42, l: 12 } satisfies HslChannels,
       cardForeground: { h: 210, s: 40, l: 98 } satisfies HslChannels,
       muted: { h: 215, s: 28, l: 17 } satisfies HslChannels,
-      mutedForeground: { h: 217, s: 10, l: 64 } satisfies HslChannels,
+      mutedForeground: { h: 217, s: 10, l: 70 } satisfies HslChannels,
       border: { h: 215, s: 28, l: 17 } satisfies HslChannels,
       ring: { h: 212, s: 100, l: 48 } satisfies HslChannels,
       primary: { h: 210, s: 40, l: 98 } satisfies HslChannels,

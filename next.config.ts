@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
   images: {
     loader: "custom",
     loaderFile: "./src/lib/datocms-image-loader.ts",
-    deviceSizes: [384, 480, 640, 750, 828, 960, 1080],
+    deviceSizes: [384, 480, 640, 672, 750, 828, 960, 1080],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 320, 384],
     minimumCacheTTL: 86400,
     remotePatterns: [

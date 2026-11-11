@@ -1,3 +1,4 @@
+import "@/core/zod-jitless";
 import { z } from "zod";
 import {
   EMPTY_WISHLIST,
