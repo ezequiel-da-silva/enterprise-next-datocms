@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import type { NavigationData } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import type { ThemeMode } from "@/constants/theme";
+import { isSearchPageHref } from "@/lib/i18n/nav-href";
 import { homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,9 +56,12 @@ export function GlobalHeader({
   accountLinkLabel = "",
 }: GlobalHeaderProps) {
   const logo = data?.logo;
-  const menuLinks = data?.menuLinks?.filter(Boolean) ?? [];
   const showTheme = data?.showThemeToggle === true;
   const showSearch = data?.showHeaderSearch === true;
+  /** Com lupa no chrome, omite o item de menu que aponta à página de busca. */
+  const menuLinks = (data?.menuLinks?.filter(Boolean) ?? []).filter(
+    (item) => !(showSearch && isSearchPageHref(item.navItemLink, searchPath, locale)),
+  );
   const themeToggle = showTheme ? (
     <ThemeToggle key="header-theme-toggle" locale={locale} initialMode={initialThemeMode} />
   ) : null;
