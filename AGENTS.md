@@ -48,17 +48,28 @@ CLI / schema / Agent Skills: `npx datocms login` then `whoami`. Project is linke
 
 ## Cursor rules (`.cursor/rules/`)
 
-Always on: `architecture`, `git-conventions`. Attached by globs: `web-excellence` (UI/SEO), `ui-visual` (tokens, surfaces, type scale), `security` (proxy, API, actions, infra), `datocms-blocks`, `datocms-next`, `react-rsc`, `testing` — read the `.mdc` when touching those areas outside the globs. Visual close-out: [docs/UI-CHECKLIST.md](docs/UI-CHECKLIST.md).
+Always on: `architecture`, `git-conventions`. Attached by globs: `web-excellence` (UI/SEO), `ui-visual` (tokens, surfaces, type scale), `ux-principles` (32 leis de UX / psicologia cognitiva), `security` (proxy, API, actions, infra), `datocms-blocks`, `datocms-next`, `react-rsc`, `testing` — read the `.mdc` when touching those areas outside the globs. Visual close-out: [docs/UI-CHECKLIST.md](docs/UI-CHECKLIST.md). UX audit workflow: skill `ux-audit`.
 
 ## Project skills (`.cursor/skills/`)
 
 - `add-datocms-block` — new Structured Text block workflow
 - `pre-merge-quality` — run quality gates before PR
 - `seo-aeo-feature` — metadata + JSON-LD
+- `ux-audit` — UI/flow review against UX laws (Jakob, Fitts, Peak-End, …)
 
 Official DatoCMS skills: [`.agents/skills/`](.agents/skills/) (`datocms-cli`, `datocms-cma`, …).
 
 Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) · GitHub: [docs/GITHUB.md](docs/GITHUB.md) · Security: [docs/SECURITY.md](docs/SECURITY.md) · Shopify: [docs/SHOPIFY.md](docs/SHOPIFY.md)
+
+## Commercial pages (prefer CMS)
+
+Before adding an App Router route: use a Dato `content_page` (or legal page) with modular blocks (`hero_section`, `faq_group`, `feature_grid`, content listing, …) and an idempotent CMA script under `scripts/setup-*.ts` when seeding. Custom routes only when Shopify/checkout/account semantics require them (Occam — `ux-principles`).
+
+## RSC / `ui_string` boundaries
+
+- Resolve `get*Copy` / `get-*` Dato fetchers in `src/app/` (or layout); pass **serializable** props into components.
+- Never call `@/infra/datocms/get-*` from `src/components/` (eslint `no-restricted-imports`).
+- Never pass server functions into Client Components (wishlist/cart copy, actions via props that are Server Actions only).
 
 ## Learned anti-patterns (do not repeat)
 
