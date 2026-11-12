@@ -18,6 +18,7 @@ import type { WishlistCopy } from "@/lib/i18n/wishlist-copy";
 export const CONSENT_FIELDS = {
   title: "cookiesTitle",
   description: "cookiesDescription",
+  essentialNote: "cookiesEssentialNote",
   acceptAll: "cookiesAcceptAll",
   rejectNonEssential: "cookiesRejectNonEssential",
   privacyPolicy: "cookiesPrivacyPolicy",

@@ -11,9 +11,11 @@ import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { readContentListingSource } from "@/lib/datocms/resolve-content-listing-section";
 import {
   applyProductLimit,
+  hideSoldOutProducts,
   resolveProductsSectionOptions,
   type ProductsListingCatalog,
 } from "@/lib/datocms/resolve-products-section";
+
 import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 import {
@@ -93,7 +95,8 @@ export async function ContentListingSectionBlock({
   const header = textHeaderFromRecord(raw);
   const resolvedCatalog = productsCatalog ? await Promise.resolve(productsCatalog) : {};
   const products = resolvedCatalog[record.id] ?? [];
-  const dataset = applyProductLimit(products, options.hasLimit, options.limit, options.displayType);
+  const ranked = options.hasLimit ? hideSoldOutProducts(products) : products;
+  const dataset = applyProductLimit(ranked, options.hasLimit, options.limit, options.displayType);
 
   const headingId = `content-listing-${record.id}`;
   return (

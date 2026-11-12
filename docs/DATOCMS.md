@@ -355,7 +355,8 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 
 | Script | Notas / env |
 |--------|-------------|
-| `setup-home-landing.ts` | Home CMS + blocos |
+| `setup-home-landing.ts` | Home CMS + blocos (novos listings já em manual + whitelist) |
+| `curate-home-featured.ts` | Home Featured boards → `fetch_mode: manual` + pranchas publicadas (limit 4); idempotente |
 | `setup-shopify-store-page.ts` | Índice shop / products |
 | `setup-shopify-collections-page.ts` | Índice collections; `COLLECTIONS_PAGE_FORCE=1` sobrescreve pointer em `global_setting` |
 | `setup-shipping-returns-faq-page.ts` | FAQ frete/devolução a partir de `market_policy`; `SHIPPING_FAQ_FORCE=1` |

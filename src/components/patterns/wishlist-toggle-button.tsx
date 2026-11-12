@@ -12,6 +12,11 @@ type WishlistToggleButtonProps = {
   locale: AppLocale;
   item: Omit<WishlistItem, "savedAt">;
   className?: string;
+  /**
+   * Catalog cards: visible on touch; on `md+` hide until card `:hover` / `:focus-within`,
+   * unless the item is already wishlisted (recognition).
+   */
+  revealOnCardHover?: boolean;
 };
 
 function HeartIcon({ filled }: { filled: boolean }) {
@@ -31,7 +36,12 @@ function HeartIcon({ filled }: { filled: boolean }) {
   );
 }
 
-export function WishlistToggleButton({ locale, item, className }: WishlistToggleButtonProps) {
+export function WishlistToggleButton({
+  locale,
+  item,
+  className,
+  revealOnCardHover = false,
+}: WishlistToggleButtonProps) {
   const copy = wishlistCopy(locale);
   const { has, toggle, ready } = useWishlist();
   const pressed = ready && has(item.handle);
@@ -48,6 +58,9 @@ export function WishlistToggleButton({ locale, item, className }: WishlistToggle
       className={cn(
         "rounded-lg border border-border bg-background/95 text-foreground shadow-none",
         pressed ? "text-primary" : "text-muted-foreground hover:text-foreground",
+        revealOnCardHover &&
+          "opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100",
+        revealOnCardHover && pressed && "md:opacity-100",
         className,
       )}
       aria-label={pressed ? copy.remove : copy.add}

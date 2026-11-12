@@ -17,14 +17,15 @@ type CookieConsentBannerProps = {
 };
 
 /**
- * Non-modal region pinned to the bottom: the page stays usable, so there is no focus trap. Both
- * choices have the same visual weight. Keeps `scroll-padding-bottom` in sync so focused elements
- * are not hidden underneath it.
+ * Non-modal region pinned to the bottom: the page stays usable, so there is no focus trap.
+ * Accept is visually primary (Von Restorff); Reject stays outline (Hick: asymmetric hierarchy).
+ * Keeps `scroll-padding-bottom` in sync so focused elements are not hidden underneath it.
  */
 export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: CookieConsentBannerProps) {
   const consent = useConsent();
   const titleId = useId();
   const descriptionId = useId();
+  const essentialNoteId = useId();
   const regionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const visible = consent === null;
@@ -60,7 +61,7 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
     <section
       ref={regionRef}
       aria-labelledby={titleId}
-      aria-describedby={descriptionId}
+      aria-describedby={`${descriptionId} ${essentialNoteId}`}
       data-ui-section="CookieConsentBanner"
       data-cookie-consent=""
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/85"
@@ -84,12 +85,15 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
               </>
             ) : null}
           </p>
+          <p id={essentialNoteId} className="text-xs text-muted-foreground">
+            {copy.essentialNote}
+          </p>
         </div>
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
           <Button variant="outline" className="min-h-11" onClick={() => choose("denied")}>
             {copy.rejectNonEssential}
           </Button>
-          <Button variant="outline" className="min-h-11" onClick={() => choose("granted")}>
+          <Button variant="primary" className="min-h-11" onClick={() => choose("granted")}>
             {copy.acceptAll}
           </Button>
         </div>

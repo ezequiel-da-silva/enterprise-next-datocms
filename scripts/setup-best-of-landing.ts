@@ -26,6 +26,7 @@ import {
   textHeaderBlock,
   textIn,
 } from "./lib/dato-script-helpers";
+import { SNOWBOARD_HERO_UPLOAD } from "./lib/home-hero-uploads";
 
 /** Preferred snowboard handles (skip if not published). */
 const BOARD_HANDLES = [
@@ -38,11 +39,8 @@ const BOARD_HANDLES = [
 const GIFT_CARD_HANDLE = "gift-card";
 const EXPLORE_COLLECTION_HANDLE = "hydrogen";
 
-/** Home hero assets (shared uploads) — avoids a new upload for this seed. */
-const HERO_UPLOAD = {
-  mobile: "epD2HoobR62vkASqq0aRTw",
-  desktop: "Cu05KbdFSTaFb34NyM5dPQ",
-} as const;
+/** Shared snowboard hero uploads — avoids a new upload for this seed. */
+const HERO_UPLOAD = SNOWBOARD_HERO_UPLOAD;
 
 type LocaleCopy = {
   title: string;

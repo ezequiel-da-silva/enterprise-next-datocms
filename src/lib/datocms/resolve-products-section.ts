@@ -7,7 +7,7 @@
  * | listing_config.collection_filter | collection_filter | auto: all (catálogo) ou selected |
  * | listing_config.source_collection | source_collection | só com collection_filter=selected |
  * | listing_config.selected_products | selected_products | só no modo manual       |
- * | has_limit          | has_limit           | false — `limit` só se true      |
+ * | has_limit          | has_limit           | false — `limit` só se true; com true a UI aplica `hideSoldOutProducts` antes do slice |
  * | limit              | limit               | 6 (clamp 1–100)                 |
  * | display_type       | display_type        | grid                            |
  * | initial_count      | initial_count       | 6 — paginação / load more       |
@@ -132,6 +132,26 @@ export function applyProductLimit(
   if (displayType === "pagination" || displayType === "load_more") return products;
   if (!hasLimit) return products;
   return products.slice(0, Math.max(1, Math.min(100, limit)));
+}
+
+/** Drop sold-out cards so limited featured grids never waste first-fold slots. */
+export function hideSoldOutProducts(
+  products: StorefrontCollectionProduct[],
+): StorefrontCollectionProduct[] {
+  return products.filter((product) => product.availableForSale);
+}
+
+/** Stable sort: available first, then sold-out (relative order preserved within each group). */
+export function prioritizeAvailableProducts(
+  products: StorefrontCollectionProduct[],
+): StorefrontCollectionProduct[] {
+  const available: StorefrontCollectionProduct[] = [];
+  const soldOut: StorefrontCollectionProduct[] = [];
+  for (const product of products) {
+    if (product.availableForSale) available.push(product);
+    else soldOut.push(product);
+  }
+  return available.length === products.length ? products : [...available, ...soldOut];
 }
 
 /**

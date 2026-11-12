@@ -4,7 +4,9 @@ import {
   applyProductLimit,
   autoSourceCollectionHandle,
   enrichCatalogProducts,
+  hideSoldOutProducts,
   overlayDatoTitles,
+  prioritizeAvailableProducts,
   publishedStorefrontProducts,
   readProductPageCards,
   readSourceCollectionHandle,
@@ -179,6 +181,99 @@ describe("applyProductLimit", () => {
   it("slices grid when has_limit is on", () => {
     expect(applyProductLimit(products, true, 2, "grid").map((p) => p.handle)).toEqual(["a", "b"]);
     expect(applyProductLimit(products, false, 1, "grid")).toHaveLength(3);
+  });
+});
+
+describe("hideSoldOutProducts", () => {
+  const mixed = [
+    {
+      handle: "in-stock",
+      title: "In stock",
+      availableForSale: true,
+      featuredImage: null,
+      hoverImage: null,
+      badge: null,
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+    },
+    {
+      handle: "sold-out",
+      title: "Sold out",
+      availableForSale: false,
+      featuredImage: null,
+      hoverImage: null,
+      badge: null,
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+    },
+    {
+      handle: "also-in-stock",
+      title: "Also in stock",
+      availableForSale: true,
+      featuredImage: null,
+      hoverImage: null,
+      badge: null,
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+    },
+  ];
+
+  it("filters sold-out and keeps available order", () => {
+    expect(hideSoldOutProducts(mixed).map((p) => p.handle)).toEqual(["in-stock", "also-in-stock"]);
+  });
+
+  it("feeds applyProductLimit without sold-out in the first fold", () => {
+    const ranked = hideSoldOutProducts(mixed);
+    expect(applyProductLimit(ranked, true, 4, "grid").map((p) => p.handle)).toEqual([
+      "in-stock",
+      "also-in-stock",
+    ]);
+  });
+});
+
+describe("prioritizeAvailableProducts", () => {
+  it("moves sold-out to the end while preserving relative order", () => {
+    const mixed = [
+      {
+        handle: "sold-a",
+        title: "A",
+        availableForSale: false,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+      {
+        handle: "ok-b",
+        title: "B",
+        availableForSale: true,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+      {
+        handle: "sold-c",
+        title: "C",
+        availableForSale: false,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+      {
+        handle: "ok-d",
+        title: "D",
+        availableForSale: true,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+    ];
+    expect(prioritizeAvailableProducts(mixed).map((p) => p.handle)).toEqual([
+      "ok-b",
+      "ok-d",
+      "sold-a",
+      "sold-c",
+    ]);
   });
 });
 
