@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.58.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.57.1...next-dato-v0.58.0) (2026-11-13)
+
+
+### Features
+
+* **catalog-filters:** implement catalog filters UI components and localization support ([4b09bf4](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/4b09bf4d72f2f175acbf8f2970ba9bede327e60f))
+* **datocms:** add new UI strings and clean footer search functionality ([df03b89](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/df03b897a102ca66db5f3ec386cf684f94b99664))
+* **datocms:** enhance home landing and featured boards setup ([cf7889d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/cf7889dff8fde7d2f01566566f1aa22a75570d77))
+* **header:** enhance global header and search form functionality ([7496f3c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7496f3c2d2835b2acee7eb592c5a8a35bcf2b112))
+* **ux,datocms:** UX principles and audit skills for improved UI design and UI strings and clean footer search functionality ([da48dc2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/da48dc2225dff8e0e4e3c36e042b6b9f25789f4f))
+* **ux:** introduce UX principles and audit skills for improved UI design ([4683b0b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/4683b0b6975ca71c14d6b731d9b4af4d92c18315))
+
 ## [0.57.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.57.0...next-dato-v0.57.1) (2026-11-11)
 
 
