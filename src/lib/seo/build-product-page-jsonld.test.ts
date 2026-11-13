@@ -129,6 +129,34 @@ describe("buildProductPageJsonLd", () => {
     expect(without.hasMerchantReturnPolicy).toBeUndefined();
   });
 
+  it("omits AggregateRating when there are no rated reviews", () => {
+    const product = productNode(buildProductPageJsonLd({ ...BASE, storefront: storefront(), reviews: [] }));
+    expect(product.aggregateRating).toBeUndefined();
+    expect(product.review).toBeUndefined();
+  });
+
+  it("attaches Product AggregateRating when rated reviews exist", () => {
+    const product = productNode(
+      buildProductPageJsonLd({
+        ...BASE,
+        storefront: storefront(),
+        reviews: [
+          { id: "1", authorName: "Ana", rating: 5, comment: "Great board." },
+          { id: "2", authorName: "Marco", rating: 4, comment: "Solid in powder." },
+        ],
+      }),
+    );
+    expect(product.aggregateRating).toEqual({
+      "@type": "AggregateRating",
+      ratingValue: 4.5,
+      reviewCount: 2,
+      bestRating: 5,
+      worstRating: 1,
+    });
+    expect(Array.isArray(product.review)).toBe(true);
+    expect((product.review as unknown[]).length).toBe(2);
+  });
+
   it("omits the blocks when the policy values are invalid", () => {
     const offers = productNode(
       buildProductPageJsonLd({

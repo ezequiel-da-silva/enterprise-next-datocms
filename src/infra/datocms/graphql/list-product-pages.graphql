@@ -3,6 +3,9 @@ query ListProductPages($locale: SiteLocale!) {
     title
     shopifyHandle
     badge
+    profile
+    terrain
+    flex
     baseImage {
       url
       alt

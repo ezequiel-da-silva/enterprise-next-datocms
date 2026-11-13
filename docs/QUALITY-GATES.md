@@ -44,8 +44,11 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - One `<h1>` per page
 - Focus visible; mobile menu has focus trap + Escape
 - Theme toggle: `role="switch"` + `aria-checked`
-- Touch targets: `touch-target` / `touch-target-text` on header controls
+- Touch targets: `touch-target` / `touch-target-text` (≥44–48px) on chrome **and** purchase controls (ATC, cart steppers, drawer)
+- Skeletons / deferred sections: `aria-busy="true"` where content is loading
 - Forms: `Field` + `aria-describedby`; errors use `role="alert"`
+- Links inside muted body copy are distinguishable without color alone (e.g. underline on `.structured-text a`)
+- Contrast AA for `text-muted-foreground` on `background` / `card` (light + dark); avoid `opacity-*` on whole cards that dims price text
 
 **Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, contact, cart (empty) and account.
 
@@ -53,7 +56,7 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 
 **Anti-patterns:** Redundant `aria-label` matching visible text; submenu without keyboard support.
 
-**Rule:** [`.cursor/rules/web-excellence.mdc`](../.cursor/rules/web-excellence.mdc) (A11y section)
+**Rules:** [`.cursor/rules/web-excellence.mdc`](../.cursor/rules/web-excellence.mdc) (A11y) · [`.cursor/rules/ux-principles.mdc`](../.cursor/rules/ux-principles.mdc)
 
 ---
 
@@ -66,6 +69,7 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - Dato images via `datocms-image-loader` (q=75, auto format)
 - Server Components by default; minimal client boundaries
 - No `dynamic()` on Server Components in Structured Text blocks
+- Hydrated badges (wishlist/cart from `localStorage`): reserve space / stable layout to avoid CLS
 
 **Measure:** `npm run build && npm run start` — not `next dev` for Lighthouse.
 
@@ -94,7 +98,7 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 
 ---
 
-## 5. AEO (Answer Engine Optimization)
+## 5. AEO / GEO (Answer & generative engines)
 
 **Pass when:**
 
@@ -103,10 +107,11 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 - CMS pages: WebPage + BreadcrumbList where applicable
 - FAQ blocks: conditional FAQPage schema
 - Visible breadcrumbs align with BreadcrumbList
+- Product specs / size guide exposed as semantic HTML (`<dl>`, `<table>` / `<details>`), not image-only facts — crawlers and AEO can read them
 
-**Anti-patterns:** Async `JsonLdScript` inside sync ST block parent; JSON-LD without nonce.
+**Anti-patterns:** Async `JsonLdScript` inside sync ST block parent; JSON-LD without nonce; specs only as a JPG.
 
-**Skill:** [`.cursor/skills/seo-aeo-feature/SKILL.md`](../.cursor/skills/seo-aeo-feature/SKILL.md)
+**Skill:** [`.cursor/skills/seo-aeo-feature/SKILL.md`](../.cursor/skills/seo-aeo-feature/SKILL.md) · UX: [`.cursor/rules/ux-principles.mdc`](../.cursor/rules/ux-principles.mdc)
 
 ---
 
@@ -151,10 +156,11 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 - [ ] codegen run (if GraphQL touched; `codegen:from-dato` if Dato model changed)
 - [ ] security:check (if proxy/API/auth touched)
 - [ ] Security: no secrets, safe links, CSP nonce respected
-- [ ] A11y: landmarks, focus, one h1, touch targets
-- [ ] Perf: lazy/priority images, minimal client JS
-- [ ] SEO/AEO: metadata + JSON-LD if page/block SEO impact
-- [ ] Maintainability: layer boundaries, readCda* / resolve* patterns
+- [ ] A11y: landmarks, focus, one h1, touch targets ≥48px, contrast, skeletons `aria-busy`
+- [ ] Perf: lazy/priority images, minimal client JS, no CLS on wishlist/cart badges
+- [ ] SEO/AEO/GEO: metadata + JSON-LD; semantic specs/size guide when present
+- [ ] UX: primary CTA hierarchy; no demo SKUs in featured; `ux-principles` / UI-CHECKLIST
+- [ ] Maintainability: layer boundaries, readCda* / resolve* patterns; ui_string via app props
 - [ ] Tests added/updated for new pure logic
 ```
 
@@ -166,3 +172,4 @@ When shipping nav, dialogs, or forms:
 - `aria-expanded` / `aria-checked` reflect state
 - Dialog traps focus; Escape closes; focus returns to trigger
 - Landmarks present in accessibility tree
+- UX close-out: [UI-CHECKLIST.md](./UI-CHECKLIST.md) + [`.cursor/rules/ux-principles.mdc`](../.cursor/rules/ux-principles.mdc)

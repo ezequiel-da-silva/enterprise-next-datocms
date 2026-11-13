@@ -2,12 +2,13 @@
  * Enriches the Page slug `home` into a CRO landing (Opção 1 — content only):
  *
  * - Keep `hero_page` and existing `faq_group` block(s)
- * - Ensure one `content_listing_section` (Shopify auto/all, `has_limit` + limit 4)
+ * - Ensure one `content_listing_section` (Shopify manual curated boards, `has_limit` + limit 4)
  * - Ensure one `feature_grid` with 4 editorial benefit cards (Font Awesome icons)
  * - No `cta_banner` — home uses HeroPrimaryRepeat when the last block is not a CTA
  *
  * Idempotent: re-running keeps the first listing/grid per locale and drops duplicates;
  * missing blocks are created. FAQ and other blocks are preserved (FAQs stay before others).
+ * Existing listings are not rewritten — use `curate-home-featured.ts` to switch auto → manual.
  *
  *   npx datocms cma:script scripts/setup-home-landing.ts --profile=default
  */
@@ -33,6 +34,10 @@ import {
   ref,
   textHeaderBlock,
 } from "./lib/dato-script-helpers";
+import {
+  HOME_FEATURED_BOARD_HANDLES,
+  HOME_FEATURED_LISTING_LIMIT,
+} from "./lib/home-featured-boards";
 
 type LocaleCopy = {
   listingTitle: string;
@@ -129,8 +134,6 @@ const COPY: Record<string, LocaleCopy> = {
   },
 };
 
-const LISTING_LIMIT = 4;
-
 function copyFor(locale: string): LocaleCopy {
   return COPY[locale] ?? COPY.en;
 }
@@ -142,6 +145,19 @@ function faIconField(icon: IconDefinition): string {
     iconName: icon.iconName,
     icon: icon.icon,
   });
+}
+
+async function loadFeaturedProductIds(client: Client): Promise<string[]> {
+  const byHandle = new Map<string, string>();
+  for await (const record of client.items.listPagedIterator({
+    filter: { type: "product_page" },
+    version: "published",
+  })) {
+    const handle = field(record, "shopify_handle");
+    if (typeof handle !== "string" || !handle.trim()) continue;
+    byHandle.set(handle.trim().toLowerCase(), record.id);
+  }
+  return HOME_FEATURED_BOARD_HANDLES.map((h) => byHandle.get(h)).filter((id): id is string => Boolean(id));
 }
 
 export default async function setupHomeLanding(client: Client): Promise<void> {
@@ -167,6 +183,11 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
   }
   console.log(`  home page: ${page.id}`);
 
+  const selectedProducts = await loadFeaturedProductIds(client);
+  console.log(
+    `  featured boards para novos listings: ${selectedProducts.length}/${HOME_FEATURED_BOARD_HANDLES.length}`,
+  );
+
   const listingBlock = (locale: string) => {
     const c = copyFor(locale);
     return buildBlockRecord({
@@ -174,17 +195,22 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
       text_header_section: [textHeaderBlock(textHeader.id, c.listingTitle, c.listingDescription)],
       listing_config: buildBlockRecord({
         item_type: ref(shopifyConfig.id),
-        fetch_mode: "auto",
+        fetch_mode: "manual",
         collection_filter: "all",
         source_collection: null,
-        selected_products: [],
+        selected_products: selectedProducts,
       }),
       display_type: "grid",
       has_limit: true,
-      limit: LISTING_LIMIT,
+      limit: HOME_FEATURED_LISTING_LIMIT,
       initial_count: null,
       load_more_step: null,
-      load_more_label: null,
+      load_more_label:
+        locale === "pt-BR"
+          ? "Carregar mais produtos"
+          : locale === "es"
+            ? "Cargar más productos"
+            : "Load more products",
       carousel_options: carouselOptions(carouselSetting.id),
     });
   };
@@ -279,7 +305,11 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
 
   if (changed) {
     await client.items.update(page.id, { content_page: nextContent });
-    if (listingsCreated > 0) console.log(`  listing criado (${LISTING_LIMIT} produtos, ${listingsCreated} locale(s))`);
+    if (listingsCreated > 0) {
+      console.log(
+        `  listing criado (manual, limit ${HOME_FEATURED_LISTING_LIMIT}, ${listingsCreated} locale(s))`,
+      );
+    }
     if (gridsCreated > 0) console.log(`  feature_grid de benefícios criado (${gridsCreated} locale(s))`);
     if (listingsDeduped > 0) console.log(`  listings duplicados removidos: ${listingsDeduped}`);
     if (gridsDeduped > 0) console.log(`  feature_grids duplicados removidos: ${gridsDeduped}`);

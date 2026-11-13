@@ -20,6 +20,16 @@ query ProductPageByHandle($handle: String!, $locale: SiteLocale!, $withEditingUr
       height
     }
     sizeChart
+    reviews {
+      id
+      authorName
+      rating
+      title
+      comment
+      verifiedRider
+      date
+      _editingUrl @include(if: $withEditingUrl)
+    }
     seo {
       title
       description

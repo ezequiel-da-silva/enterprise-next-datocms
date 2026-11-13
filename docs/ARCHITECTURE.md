@@ -105,6 +105,29 @@ Register new **page** blocks in [`structured-text-block-view.tsx`](../src/compon
 
 See [QUALITY-GATES.md](./QUALITY-GATES.md) (SEO/AEO pillars) and [AI-PLAYBOOK.md](./AI-PLAYBOOK.md).
 
+## Analytics (GA4)
+
+Ecommerce funnel (consent-gated on the client; Measurement Protocol for purchase):
+
+```mermaid
+flowchart LR
+  list[view_item_list] --> pdp[view_item]
+  pdp --> atc[add_to_cart]
+  atc --> rem[remove_from_cart]
+  atc --> begin[begin_checkout]
+  begin --> mp["purchase via MP orders/paid"]
+```
+
+| Event | Where |
+|-------|--------|
+| `view_item_list` | Listing / featured (`ViewItemListTracker`) |
+| `view_item` | PDP |
+| `add_to_cart` / `remove_from_cart` | Cart actions / drawer |
+| `begin_checkout` | Checkout handoff |
+| `purchase` | Server only: Shopify webhook `orders/paid` → Measurement Protocol |
+
+Helpers: [`src/lib/analytics/ecommerce.ts`](../src/lib/analytics/ecommerce.ts) (`gtagSafe` no-ops without browser gtag / pre-consent). **Do not** fire `purchase` from `/{locale}/order/confirmation` via `?order=` (fraud / double-count). Ops detail: [SHOPIFY.md](./SHOPIFY.md) (GA4 purchase / consent).
+
 ## Security boundary
 
 - CSP and nonce: [`src/proxy.ts`](../src/proxy.ts)
@@ -118,3 +141,4 @@ See [QUALITY-GATES.md](./QUALITY-GATES.md) (SEO/AEO pillars) and [AI-PLAYBOOK.md
 - `infra/` must not import React components.
 - Prefer `lib/datocms/*` for CMS field parsing shared between server components.
 - Client components (`"use client"`) only where interactivity is required.
+- Dato `get-*` / `ui_string` getters: call from `app/` (or layout), pass serializable props — not from `components/`.

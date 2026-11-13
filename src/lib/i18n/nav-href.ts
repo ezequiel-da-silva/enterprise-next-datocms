@@ -37,3 +37,15 @@ export function isExternalHref(href: string): boolean {
   const t = href.trim();
   return /^https?:\/\//i.test(t) || t.startsWith("//");
 }
+
+function normalizePath(path: string): string {
+  const trimmed = path.trim().replace(/\/+$/, "");
+  return trimmed || "/";
+}
+
+/** True when a nav link targets the same path as the header search page (Parkinson). */
+export function isSearchPageHref(navItemLink: string, searchPath: string, locale: AppLocale): boolean {
+  const raw = navItemLink.trim();
+  if (!raw || isExternalHref(raw)) return false;
+  return normalizePath(localizeInternalHref(raw, locale)) === normalizePath(searchPath);
+}

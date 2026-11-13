@@ -22,6 +22,12 @@ describe("ui_string field map", () => {
       "1790900000_pdpLowStockUiString.ts",
       "1791000000_pdpSnowboardUiStrings.ts",
       "1791100000_emptyStateUiStrings.ts",
+      "1791200000_cookiesEssentialNoteUiString.ts",
+      "1791300000_pdpPaymentHintUiString.ts",
+      "1791400000_catalogFiltersUiStrings.ts",
+      "1791500000_pdpBuyNowReviewsUiStrings.ts",
+      "1791600000_catalogFiltersPolishUiStrings.ts",
+      "1791700000_catalogFiltersAffordanceUiStrings.ts",
     ];
     const apiKeys = migrationFiles
       .flatMap((file) =>

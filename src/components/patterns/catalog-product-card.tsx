@@ -29,6 +29,7 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
     <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card transition-colors hover:border-foreground/20">
       <WishlistToggleButton
         locale={locale}
+        revealOnCardHover
         className="absolute right-3 top-3 z-20"
         item={{
           handle: product.handle,

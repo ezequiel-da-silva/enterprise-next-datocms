@@ -7,7 +7,7 @@
  * | listing_config.collection_filter | collection_filter | auto: all (catálogo) ou selected |
  * | listing_config.source_collection | source_collection | só com collection_filter=selected |
  * | listing_config.selected_products | selected_products | só no modo manual       |
- * | has_limit          | has_limit           | false — `limit` só se true      |
+ * | has_limit          | has_limit           | false — `limit` só se true; com true a UI aplica `hideSoldOutProducts` antes do slice |
  * | limit              | limit               | 6 (clamp 1–100)                 |
  * | display_type       | display_type        | grid                            |
  * | initial_count      | initial_count       | 6 — paginação / load more       |
@@ -84,6 +84,9 @@ export type ProductPageCard = {
   handle: string;
   title: string;
   badge: string | null;
+  profile: string | null;
+  terrain: string | null;
+  flex: number | null;
   baseImage: StorefrontProductImage | null;
 };
 
@@ -98,7 +101,7 @@ export function readProductPageCards(record: Record<string, unknown>, camel: str
       readCdaStringForLogic(item, "handle", "handle");
     if (!handle) continue;
     const title = readCdaString(item, "title", "title") || handle;
-    out.push({ handle, title, badge: null, baseImage: null });
+    out.push({ handle, title, badge: null, profile: null, terrain: null, flex: null, baseImage: null });
   }
   return out;
 }
@@ -134,6 +137,26 @@ export function applyProductLimit(
   return products.slice(0, Math.max(1, Math.min(100, limit)));
 }
 
+/** Drop sold-out cards so limited featured grids never waste first-fold slots. */
+export function hideSoldOutProducts(
+  products: StorefrontCollectionProduct[],
+): StorefrontCollectionProduct[] {
+  return products.filter((product) => product.availableForSale);
+}
+
+/** Stable sort: available first, then sold-out (relative order preserved within each group). */
+export function prioritizeAvailableProducts(
+  products: StorefrontCollectionProduct[],
+): StorefrontCollectionProduct[] {
+  const available: StorefrontCollectionProduct[] = [];
+  const soldOut: StorefrontCollectionProduct[] = [];
+  for (const product of products) {
+    if (product.availableForSale) available.push(product);
+    else soldOut.push(product);
+  }
+  return available.length === products.length ? products : [...available, ...soldOut];
+}
+
 /**
  * Overlay Dato `product_page` fields onto Storefront catalog cards.
  * `baseImage` wins over the Shopify second gallery image when present.
@@ -143,17 +166,34 @@ export function enrichCatalogProducts(
   pages: ProductPageCard[],
 ): StorefrontCollectionProduct[] {
   if (pages.length === 0) {
-    return products.map((product) => ({ ...product, badge: product.badge ?? null }));
+    return products.map((product) => ({
+      ...product,
+      badge: product.badge ?? null,
+      profile: product.profile ?? null,
+      terrain: product.terrain ?? null,
+      flex: product.flex ?? null,
+    }));
   }
   const byHandle = new Map(pages.map((page) => [page.handle, page]));
   return products.map((product) => {
     const page = byHandle.get(product.handle);
-    if (!page) return { ...product, badge: product.badge ?? null };
+    if (!page) {
+      return {
+        ...product,
+        badge: product.badge ?? null,
+        profile: product.profile ?? null,
+        terrain: product.terrain ?? null,
+        flex: product.flex ?? null,
+      };
+    }
     const title = page.title.trim();
     return {
       ...product,
       title: title || product.title,
       badge: page.badge,
+      profile: page.profile,
+      terrain: page.terrain,
+      flex: page.flex,
       hoverImage: page.baseImage ?? product.hoverImage,
     };
   });

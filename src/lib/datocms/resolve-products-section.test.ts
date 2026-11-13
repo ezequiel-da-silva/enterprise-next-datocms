@@ -4,7 +4,9 @@ import {
   applyProductLimit,
   autoSourceCollectionHandle,
   enrichCatalogProducts,
+  hideSoldOutProducts,
   overlayDatoTitles,
+  prioritizeAvailableProducts,
   publishedStorefrontProducts,
   readProductPageCards,
   readSourceCollectionHandle,
@@ -136,8 +138,8 @@ describe("readProductPageCards", () => {
         "selected_products",
       ),
     ).toEqual([
-      { handle: "hat", title: "Hat", badge: null, baseImage: null },
-      { handle: "wax", title: "Wax", badge: null, baseImage: null },
+      { handle: "hat", title: "Hat", badge: null, profile: null, terrain: null, flex: null, baseImage: null },
+      { handle: "wax", title: "Wax", badge: null, profile: null, terrain: null, flex: null, baseImage: null },
     ]);
   });
 });
@@ -182,6 +184,99 @@ describe("applyProductLimit", () => {
   });
 });
 
+describe("hideSoldOutProducts", () => {
+  const mixed = [
+    {
+      handle: "in-stock",
+      title: "In stock",
+      availableForSale: true,
+      featuredImage: null,
+      hoverImage: null,
+      badge: null,
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+    },
+    {
+      handle: "sold-out",
+      title: "Sold out",
+      availableForSale: false,
+      featuredImage: null,
+      hoverImage: null,
+      badge: null,
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+    },
+    {
+      handle: "also-in-stock",
+      title: "Also in stock",
+      availableForSale: true,
+      featuredImage: null,
+      hoverImage: null,
+      badge: null,
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+    },
+  ];
+
+  it("filters sold-out and keeps available order", () => {
+    expect(hideSoldOutProducts(mixed).map((p) => p.handle)).toEqual(["in-stock", "also-in-stock"]);
+  });
+
+  it("feeds applyProductLimit without sold-out in the first fold", () => {
+    const ranked = hideSoldOutProducts(mixed);
+    expect(applyProductLimit(ranked, true, 4, "grid").map((p) => p.handle)).toEqual([
+      "in-stock",
+      "also-in-stock",
+    ]);
+  });
+});
+
+describe("prioritizeAvailableProducts", () => {
+  it("moves sold-out to the end while preserving relative order", () => {
+    const mixed = [
+      {
+        handle: "sold-a",
+        title: "A",
+        availableForSale: false,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+      {
+        handle: "ok-b",
+        title: "B",
+        availableForSale: true,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+      {
+        handle: "sold-c",
+        title: "C",
+        availableForSale: false,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+      {
+        handle: "ok-d",
+        title: "D",
+        availableForSale: true,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      },
+    ];
+    expect(prioritizeAvailableProducts(mixed).map((p) => p.handle)).toEqual([
+      "ok-b",
+      "ok-d",
+      "sold-a",
+      "sold-c",
+    ]);
+  });
+});
+
 describe("overlayDatoTitles", () => {
   it("replaces Storefront titles when a product_page exists", () => {
     const [first] = overlayDatoTitles(
@@ -196,7 +291,7 @@ describe("overlayDatoTitles", () => {
           priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "hat", title: "Chapéu", badge: null, baseImage: null }],
+      [{ handle: "hat", title: "Chapéu", badge: null, profile: null, terrain: null, flex: null, baseImage: null }],
     );
     expect(first?.title).toBe("Chapéu");
   });
@@ -228,11 +323,24 @@ describe("enrichCatalogProducts", () => {
           priceRange: { minVariantPrice: { amount: "600", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "hydrogen", title: "Hydrogen CMS", badge: "new", baseImage }],
+      [
+        {
+          handle: "hydrogen",
+          title: "Hydrogen CMS",
+          badge: "new",
+          profile: "camber",
+          terrain: "all_mountain",
+          flex: 6,
+          baseImage,
+        },
+      ],
     );
     expect(first).toMatchObject({
       title: "Hydrogen CMS",
       badge: "new",
+      profile: "camber",
+      terrain: "all_mountain",
+      flex: 6,
       hoverImage: baseImage,
     });
   });
@@ -256,10 +364,23 @@ describe("enrichCatalogProducts", () => {
           priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "oxygen", title: "Oxygen", badge: null, baseImage: null }],
+      [
+        {
+          handle: "oxygen",
+          title: "Oxygen",
+          badge: null,
+          profile: null,
+          terrain: null,
+          flex: null,
+          baseImage: null,
+        },
+      ],
     );
     expect(first?.hoverImage).toEqual(galleryHover);
     expect(first?.badge).toBeNull();
+    expect(first?.profile).toBeNull();
+    expect(first?.terrain).toBeNull();
+    expect(first?.flex).toBeNull();
   });
 });
 
@@ -288,9 +409,26 @@ describe("publishedStorefrontProducts", () => {
   it("keeps only handles with a product_page and overlays the Dato title", () => {
     expect(
       publishedStorefrontProducts(storefront, [
-        { handle: "hat", title: "Chapéu", badge: null, baseImage: null },
+        {
+          handle: "hat",
+          title: "Chapéu",
+          badge: null,
+          profile: null,
+          terrain: null,
+          flex: null,
+          baseImage: null,
+        },
       ]),
-    ).toEqual([{ ...storefront[0], title: "Chapéu" }]);
+    ).toEqual([
+      {
+        ...storefront[0],
+        title: "Chapéu",
+        badge: null,
+        profile: null,
+        terrain: null,
+        flex: null,
+      },
+    ]);
   });
 
   it("returns empty when there are no product_page records", () => {

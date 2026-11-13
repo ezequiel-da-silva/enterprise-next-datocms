@@ -8,7 +8,7 @@ description: Reviews a branch, pull request or uncommitted change for the interf
 
 This skill reviews a change rather than a screen. It resolves the scope, expands the changed files to the surfaces they affect, reads both sides of the diff and classifies every finding. Use it when explicitly asked to review a UI change, branch or pull request.
 
-It owns the scope, classification, coverage and final report. Use this project's `AGENTS.md`, `.cursor/rules/web-excellence.mdc` and `docs/QUALITY-GATES.md` as the interface standards, plus `better-writing` for copy. Do not claim coverage for a domain without applicable project guidance or evidence.
+It owns the scope, classification, coverage and final report. Use this project's `AGENTS.md`, `.cursor/rules/web-excellence.mdc`, `.cursor/rules/ux-principles.mdc`, `docs/UI-CHECKLIST.md` and `docs/QUALITY-GATES.md` as the interface standards, plus `better-writing` for copy. For cognitive/UX law citations when auditing flows, prefer `ux-principles.mdc` (or the project skill `ux-audit`). Do not claim coverage for a domain without applicable project guidance or evidence.
 
 Correctness, tests, security and performance belong to the project's general code review. Name such a concern once, point at that review and drop it.
 

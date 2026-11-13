@@ -25,12 +25,16 @@ type HeaderSearchFormProps = {
   query?: string;
   placeholder?: string | null;
   submitLabel?: string | null;
-  /** `block` empilha input e botão: cabe na largura do drawer móvel. */
+  /** `block` empilha em largura total: cabe na largura do drawer móvel. */
   variant?: "inline" | "block";
   /** Único por instância — no drawer coexiste com a versão do header. */
   inputId?: string;
 };
 
+/**
+ * Busca do chrome: input + lupa como submit (Parkinson — sem botão “Search” duplicado
+ * face ao ícone do header). Enter/`enterKeyHint=search` também submetem.
+ */
 export function HeaderSearchForm({
   action,
   locale,
@@ -41,32 +45,37 @@ export function HeaderSearchForm({
   inputId = "header-search-query",
 }: HeaderSearchFormProps) {
   const block = variant === "block";
+  const submit = submitLabel?.trim() || FALLBACK_SUBMIT[locale];
+
   return (
     <form
       action={action}
       method="get"
       role="search"
-      aria-label={FALLBACK_SUBMIT[locale]}
-      className={cn(
-        "flex w-full gap-2",
-        block ? "flex-col items-stretch" : "items-center sm:gap-3",
-      )}
+      aria-label={submit}
+      className={cn("flex w-full", block ? "flex-col items-stretch" : "items-center")}
     >
       <label className="sr-only" htmlFor={inputId}>
         {FALLBACK_LABEL[locale]}
       </label>
-      <div className="relative min-w-0 flex-1">
-        <svg
-          aria-hidden
-          viewBox="0 0 24 24"
-          className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
+      <div className="relative min-w-0 w-full flex-1">
+        <button
+          type="submit"
+          className="touch-target absolute left-1 top-1/2 z-10 -translate-y-1/2 cursor-pointer rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          aria-label={submit}
         >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
+          <svg
+            aria-hidden
+            viewBox="0 0 24 24"
+            className="size-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5" />
+          </svg>
+        </button>
         <input
           id={inputId}
           name="q"
@@ -78,15 +87,6 @@ export function HeaderSearchForm({
           className="min-h-12 w-full rounded-full border border-border bg-background py-2 pl-12 pr-4 text-sm text-foreground shadow-sm transition placeholder:text-muted-foreground hover:border-foreground/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         />
       </div>
-      <button
-        type="submit"
-        className={cn(
-          "touch-target-text min-h-12 shrink-0 rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-          block ? "w-full px-4" : "px-5 sm:px-7",
-        )}
-      >
-        {submitLabel?.trim() || FALLBACK_SUBMIT[locale]}
-      </button>
     </form>
   );
 }

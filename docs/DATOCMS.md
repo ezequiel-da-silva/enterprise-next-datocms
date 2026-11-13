@@ -305,16 +305,23 @@ Não promover este schema de `develop` para `main` até o front estar pronto no 
 
 ## Textos de interface (`ui_string`)
 
-Singleton **🔤 UI strings** com campos **localizados** agrupados por área: **🍪 Cookies** (banner de consentimento e link do rodapé), **🛒 Cart** e **👤 Account**. Todos são opcionais: **campo vazio = texto padrão do código** (`src/lib/i18n/{consent,cart,account}-copy.ts`). Os textos legais do banner de cookies são editáveis sem developer.
+Singleton **🔤 UI strings** com campos **localizados** agrupados por fieldset. Todos são opcionais: **campo vazio = texto padrão do código** em `src/lib/i18n/*-copy.ts`.
 
-- Campos tipados, não chave/valor: o mapa [`ui-strings-fields.ts`](../src/lib/i18n/ui-strings-fields.ts) liga cada chave do copy ao campo CDA, e `ui-strings-fields.test.ts` falha se a migration `uiStringsSingleton` divergir.
-- Placeholders: `{count}` nos rótulos do ícone do carrinho (`cart_link_label_one` + `cart_link_label_other`, só valem juntos) e `{name}` na saudação da conta (`account_greeting`).
-- A query ([`ui-strings-query.ts`](../src/infra/datocms/ui-strings-query.ts)) **não usa `fallbackLocales`**: um campo vazio em `pt_BR` cai no texto português do código, não no inglês.
-- O layout resolve as copies uma vez (`get-ui-strings.ts`, React `cache()`) e passa-as por props, inclusive ao banner (client component). Erro da CDA, modelo ainda inexistente ou campo vazio nunca quebram a UI: vale o texto do código.
-- Fica de fora: `error.tsx` / `global-error.tsx` (têm de funcionar com o CMS fora), `financialStatus` da conta, reviews, tema, listagens e flags lidas pelo CSP.
-- O texto aparece sem metadados de Content Link (`stripStega`), porque vai para `aria-label` e mensagens de action.
+| Fieldset (típico) | Exemplos de uso |
+|-------------------|-----------------|
+| Cookies | Banner de consentimento + link no rodapé |
+| Cart / Account | Drawer, página de conta, rótulos do ícone |
+| PDP | Stock, specs labels, size guide, low-stock template |
+| Empty states | Wishlist/cart empty, collection empty, products empty, video/captions, order tracking notice |
 
-Seed (uma vez por ambiente, depois da migration): preenche **só campos vazios** com os textos atuais, para o editor ver o copy real.
+- Campos tipados, não chave/valor: o mapa [`ui-strings-fields.ts`](../src/lib/i18n/ui-strings-fields.ts) liga cada chave ao campo CDA; o teste falha se migrations de `ui_string` divergirem.
+- Placeholders: `{count}` (carrinho / low stock), `{name}` (saudação), `{current}`/`{total}` (paginação), `{order}` (confirmação).
+- A query ([`ui-strings-query.ts`](../src/infra/datocms/ui-strings-query.ts)) **não usa `fallbackLocales`**: campo vazio em `pt_BR` cai no texto PT do código, não no EN.
+- Resolve em `app/` / layout (`get-ui-strings.ts`, React `cache()`) e passa props serializáveis — **não** chamar `get-*` desde `components/`.
+- Fica de fora: `error.tsx` / `global-error.tsx`, flags lidas pelo CSP, etc.
+- Texto sem Content Link stega quando vai para `aria-label` / actions (`stripStega` / `readCdaStringForLogic`).
+
+Seed (só campos vazios):
 
 ```bash
 npx datocms cma:script scripts/seed-ui-strings.ts --profile=staging
@@ -335,10 +342,32 @@ Coleção **🚚 Market policy**: um registo por país (**US**, **BR**, **ES**, 
 | `return_days` | 1–365 |
 | `return_fees` | `free` (loja paga) ou `customer` (cliente paga) |
 
-- **Os valores têm de bater com o checkout e as políticas da Shopify**: o Google compara o JSON-LD com a página.
+**Alinhamento obrigatório com copy humana:** páginas `shipping-returns` / `refund-policy` (e FAQs geradas por setup) devem espelhar os mesmos números que `market_policy` — tipicamente US **$9.90**, BR **frete grátis**, ES **5 €**, **30 dias** de devolução, frete reverso **grátis** quando `return_fees=free`. O Google e o cliente comparam JSON-LD PDP com o texto publicado; divergência = risco Merchant + confiança (Peak-End).
+
+- **Os valores têm de bater com o checkout e as políticas da Shopify**.
 - Campo vazio ou inválido omite só o bloco afetado (envio exige taxa + os dois prazos; devolução exige prazo + quem paga). Sem registo para o país, nenhum dos dois blocos é publicado.
-- Só conteúdo **publicado** é lido (o modelo tem draft mode: publique para a mudança valer). Sem deploy: o webhook invalida `datocms:market-policy`; sem webhook, ISR de 300s.
-- **Antes de apagar `SEO_*` da Vercel**: aplicar a migration em produção e publicar os 3 registos, senão o JSON-LD perde envio e devolução até lá.
+- Só conteúdo **publicado** é lido (draft mode: publique para valer). Webhook invalida `datocms:market-policy`; senão ISR 300s.
+- **Antes de apagar `SEO_*` da Vercel**: migration em produção + 3 registos publicados.
+
+## Scripts CMA replayáveis (`scripts/`)
+
+Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempotentes; flags de força só reescrevem quando pedidas.
+
+| Script | Notas / env |
+|--------|-------------|
+| `setup-home-landing.ts` | Home CMS + blocos (novos listings já em manual + whitelist) |
+| `curate-home-featured.ts` | Home Featured boards → `fetch_mode: manual` + pranchas publicadas (limit 4); idempotente |
+| `clean-footer-search.ts` | Remove Search/Busca/Búsqueda de `navigation.footer_menu` (lupa no header); idempotente |
+| `setup-shopify-store-page.ts` | Índice shop / products |
+| `setup-shopify-collections-page.ts` | Índice collections; `COLLECTIONS_PAGE_FORCE=1` sobrescreve pointer em `global_setting` |
+| `setup-shipping-returns-faq-page.ts` | FAQ frete/devolução a partir de `market_policy`; `SHIPPING_FAQ_FORCE=1` |
+| `setup-best-of-landing.ts` | Landing “Best of”; `BEST_OF_FORCE=1` rebuild hero/grids |
+| `update-refund-policy-page.ts` | Alinha legal refund; `REFUND_POLICY_FORCE=1` |
+| `setup-snowboard-specs-model.ts` | Garante campos técnicos no `product_page`; `SNOWBOARD_SPECS_SEED=1` preenche boards demo |
+| `seed-ui-strings.ts` | Preenche só campos vazios de `ui_string` |
+| `bootstrap-staging-schema.ts` | Bootstrap sandbox (staging) |
+
+Migrations de schema continuam em `migrations/` + `npm run dato:migrate:staging` / `dato:migrate:prod` — ver secções CLI acima.
 
 ## Revalidação on-demand
 
@@ -407,7 +436,24 @@ Passo a passo: [SHOPIFY.md](./SHOPIFY.md).
 
 Índices: Global settings `products_page` e `collections_page`. PDP `/{locale}/products/{handle}`; PLP `/{locale}/collections/{handle}` (produtos da Storefront).
 
-Nas fichas `product_page` / `collection_page` o editor só mexe em **copy** (`title`, `description`) e **SEO**. Preço, stock, imagens, membership da coleção e checkout ficam na Shopify; `shopify_handle` e IDs não se editam.
+Nas fichas `product_page` / `collection_page` o editor mexe em **copy** (`title`, `description`), **SEO**, e — só em `product_page` — na **ficha técnica snowboard** abaixo. Preço, stock, imagens de catálogo Shopify, membership da coleção e checkout ficam na Shopify; `shopify_handle` e IDs não se editam.
+
+### Campos técnicos `product_page` (snowboard)
+
+Schema via migrations + [`scripts/setup-snowboard-specs-model.ts`](../scripts/setup-snowboard-specs-model.ts). Queries: `PRODUCT_PAGE_BY_HANDLE` (PDP) e `LIST_PRODUCT_PAGES` (`badge` / `base_image` para cards).
+
+| api_key | Uso no front |
+|---------|----------------|
+| `profile` | Camber / perfil — `ProductSpecsTable` |
+| `flex` | Inteiro 1–10 (+ `<meter>`) |
+| `terrain` | Terreno |
+| `rider_level` | Nível do rider |
+| `core_material` | Material do núcleo |
+| `badge` | Selo comercial no `CatalogProductCard` |
+| `base_image` | Hover / toggle sola (`hoverImage` após `enrichCatalogProducts`) |
+| `size_chart` | JSON → `parseSizeChart` → `ProductSizeGuide` |
+
+Labels da ficha/guia e empty states vêm de `ui_string` (fallbacks em `pdp-copy` / outros). Seed opcional: `SNOWBOARD_SPECS_SEED=1` no script de setup.
 
 Listagens em páginas CMS usam um único bloco **Content listing section** (`content_listing_section`):
 

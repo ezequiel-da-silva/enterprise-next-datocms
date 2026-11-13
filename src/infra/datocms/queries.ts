@@ -1369,6 +1369,16 @@ export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
         height
       }
       sizeChart
+      reviews {
+        id
+        authorName
+        rating
+        title
+        comment
+        verifiedRider
+        date
+        _editingUrl @include(if: $withEditingUrl)
+      }
       seo {
         ${SEO_SETTINGS_SOCIAL}
       }
@@ -1402,6 +1412,9 @@ export const LIST_PRODUCT_PAGES = /* GraphQL */ `
       title
       shopifyHandle
       badge
+      profile
+      terrain
+      flex
       baseImage {
         url
         alt

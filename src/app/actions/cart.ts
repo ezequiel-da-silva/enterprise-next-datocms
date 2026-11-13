@@ -6,6 +6,7 @@ import {
   cartIdSchema,
   removeCartLineSchema,
   updateCartLineSchema,
+  type BuyNowActionState,
   type CartActionState,
   type CartSnapshot,
 } from "@/core/entities/cart";
@@ -89,6 +90,52 @@ export async function addToCart(_prev: CartActionState, formData: FormData): Pro
     message: copy.added,
     totalQuantity: result.cart.totalQuantity,
     cart: toCartSnapshot(result.cart),
+  };
+}
+
+/**
+ * One-shot checkout cart for the selected variant.
+ * Does **not** write `nd-cart` — the browsing drawer cart stays intact.
+ */
+export async function buyNow(_prev: BuyNowActionState, formData: FormData): Promise<BuyNowActionState> {
+  const locale = readLocale(formData);
+  const copy = await getCartCopy(locale);
+  const gate = await guard();
+  if (gate === "limited") return { status: "error", message: copy.errorRateLimit };
+  if (gate === "disabled") return { status: "error", message: copy.errorGeneric };
+
+  const input = addToCartSchema.safeParse({
+    variantId: formData.get("variantId"),
+    quantity: formData.get("quantity") ?? 1,
+  });
+  if (!input.success) return { status: "error", message: copy.errorGeneric };
+
+  const session = readCustomerSession((await cookies()).get(CUSTOMER_COOKIE)?.value);
+  const result = await createCart(
+    [{ merchandiseId: input.data.variantId, quantity: input.data.quantity }],
+    locale,
+    activeAccessToken(session),
+  );
+  if (!result.ok || !result.cart.checkoutUrl) {
+    logError("action.cart", "Buy now cart create failed", { context: { action: "buyNow" } });
+    return { status: "error", message: copy.errorGeneric };
+  }
+
+  const snapshot = toCartSnapshot(result.cart);
+  const currency = snapshot.subtotal?.currencyCode ?? "USD";
+  const value = Number(snapshot.subtotal?.amount) || 0;
+  return {
+    status: "success",
+    checkoutUrl: result.cart.checkoutUrl,
+    currency,
+    value,
+    items: snapshot.lines.map((line) => ({
+      item_id: line.productHandle,
+      item_name: line.productTitle,
+      price: Number(line.unitPrice.amount) || 0,
+      quantity: line.quantity,
+      item_variant: line.variantTitle ?? undefined,
+    })),
   };
 }
 

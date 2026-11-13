@@ -94,6 +94,11 @@ export async function FeatureGridBlock({ record, locale }: FeatureGridBlockProps
     ),
   );
 
+  /** Short card grids stay stacked/visible (Miller / Continuity); Embla only when >4. */
+  const useStaticCardsGrid =
+    options.variant === "cards" && resolved.length > 1 && resolved.length <= 4;
+  const useCarousel = resolved.length > 1 && !useStaticCardsGrid;
+
   return (
     <section
       {...cmsBlockAttrs(record)}
@@ -110,7 +115,15 @@ export async function FeatureGridBlock({ record, locale }: FeatureGridBlockProps
         descriptionClassName="type-lead mt-4"
       />
 
-      {resolved.length > 1 ? (
+      {useStaticCardsGrid ? (
+        <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4">
+          {items.map((item) => (
+            <li key={item.key} className="min-w-0">
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : useCarousel ? (
         <FeatureGridCarousel
           locale={locale}
           options={options}

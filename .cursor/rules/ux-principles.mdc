@@ -1,0 +1,73 @@
+---
+description: 32 Leis de UX / psicologia cognitiva para UI e fluxos e-commerce (next-dato)
+globs: "src/components/**/*.{tsx,jsx},src/app/**/*.{tsx,jsx}"
+alwaysApply: false
+---
+
+# UX principles (next-dato)
+
+Complementa `ui-visual.mdc` (tokens/superfícies), `web-excellence.mdc` (a11y/perf) e `architecture.mdc` (`Container`, camadas). Checklist visual: [`docs/UI-CHECKLIST.md`](../../docs/UI-CHECKLIST.md). Auditoria guiada: skill `ux-audit`.
+
+Aplica **só** as leis relevantes ao ecrã/fluxo em mudança. Exemplos abaixo são deste stack (Next App Router + DatoCMS + Shopify snowboards).
+
+## Essenciais (1–20)
+
+1. **Jakob** — Chrome familiar: logo esquerda; menu; busca; wishlist + carrinho à direita.
+2. **Fitts** — Ações principais com `.touch-target` / `.touch-target-text` (≥44–48px): ATC, checkout, steppers do cart/drawer.
+3. **Hick** — Poucas opções com o mesmo peso visual (cookie banner, hero CTAs). Um primário filled; secundários outline.
+4. **Miller** — Chunking: specs PDP (`ProductSpecsTable`), featured ≤5–9, FAQs em accordion.
+5. **Estético-usabilidade** — Tipografia/tokens do design system; hero e media alinhados à categoria snowboard/montanha.
+6. **Doherty** — Feedback &lt;400ms: skeletons com `aria-busy="true"`, estados pending em Server Actions.
+7. **Gradiente de meta** — Transparência de etapas (frete/`market_policy`, trust junto ao ATC, confirmação pós-pedido).
+8. **Parkinson** — Sem passos ou controlos duplicados (ex.: busca ícone + link textual redundante).
+9. **Von Restorff** — Uma ação primária por viewport (`Shop snowboards`, `Add to cart`, checkout).
+10. **Zeigarnik** — Badges de wishlist/cart sem interromper a navegação; empty states com próximo passo.
+11. **Proximidade** — Size guide junto às variantes; `checkoutTrust` junto ao ATC; preço sob o título no card.
+12. **Semelhança** — Mesma função = mesmo componente/estilo (`Button`, badges, chips Sold out).
+13. **Região comum** — Agrupar em card/drawer/`<dl>`/details (cart drawer, specs, size guide).
+14. **Tesler** — Sistema absorve complexidade (mercados, moedas, filtros perfil/terreno, parse `size_chart`).
+15. **Paradoxo da escolha** — Featured/listings sem SKUs irrelevantes (Gift Card, inventário de demo) no meio de pranchas.
+16. **Foco no utilizador** — Comprimento/peso, camber, flex, prazos e devolução &gt; adornos.
+17. **Acessibilidade** — Contraste AA light/dark; landmarks; foco em drawer/modal; `aria-*`; teclado; links distinguíveis sem só cor (underline em ST).
+18. **Consistência** — Microcopy via `ui_string` + fallbacks em `src/lib/i18n/*-copy.ts`; locales `en`/`pt`/`es`.
+19. **Menos é mais** — Remover gatilhos e decoração sem função de tarefa.
+20. **Reconhecimento &gt; recordação** — Sold out / badge CMS; toggle deck/base no touch; empty states com coleções sugeridas.
+
+## Gestalt e ergonomia (21–24)
+
+21. **Prägnanz** — Cards e tabelas semânticas simples de ler.
+22. **Continuidade** — Grelhas alinhadas; evitar carrossel no mobile quando ≤4 itens (preferir stack/grid).
+23. **Fechamento** — Ícones mínimos coerentes (cart, heart, menu).
+24. **Weber-Fechner** — Hover/seleção de variante/ATC com mudança perceptível (borda, filled, live region).
+
+## Memória e decisão (25–28)
+
+25. **Posição serial** — Marca esquerda / cart direita; CTA no hero e no fecho (`HeroPrimaryRepeat` / CTA banner).
+26. **Viés de confirmação** — FAQ e políticas alinhadas a `market_policy` e copy Shopify (sem promessas inventadas).
+27. **Banner blindness** — Preferir blocos editoriais integrados a pop-ups/banners genéricos.
+28. **Chamariz** — Curadorias (ex. Complete vs Hydrogen vs Pro) com contraste claro de benefício.
+
+## Engenharia e comportamento (29–32)
+
+29. **Postel** — Busca/formulários tolerantes; erros claros, não agressivos (`Field` + `role="alert"`).
+30. **Peak-End** — Checkout Shopify e `/{locale}/order/confirmation` claros e seguros; `purchase` só via Measurement Protocol (não query string).
+31. **Occam** — Nova página comercial: `content_page` + blocos + `scripts/setup-*.ts` antes de rota App Router custom.
+32. **IKEA** — Wishlist e escolha de specs aumentam valor percebido sem obrigar configuração complexa.
+
+## Anti-padrões (repo)
+
+- Cookie Accept/Reject com o **mesmo** peso visual sem hierarquia (Hick / Von Restorff).
+- Featured boards com Gift Card / sold-out / títulos técnicos Shopify no primeiro fold (Paradoxo / Foco no utilizador).
+- `opacity-*` no `<article>` do card a degradar contraste do preço (Acessibilidade).
+- Carrossel “Why us” com ≤4 itens só no mobile (Continuidade / Miller).
+- Funções do servidor passadas a Client Components; `get-*` / fetch Dato dentro de `components/` (ver `react-rsc` + eslint).
+
+## Checklist rápido (antes de mergear UI)
+
+- [ ] Chrome Jakob (logo / cart / wishlist)
+- [ ] Um CTA primário; secundários outline
+- [ ] Touch targets ≥48px onde há ação de compra/chrome
+- [ ] Contraste AA; links em texto com underline se estiverem em corpo muted
+- [ ] Empty / sold-out / loading com próximo passo ou skeleton `aria-busy`
+- [ ] Specs / size guide em HTML semântico se existirem dados CMS
+- [ ] Copy de frete/devolução alinhada a `market_policy` se a superfície citar prazos

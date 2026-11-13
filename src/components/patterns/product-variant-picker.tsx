@@ -1,6 +1,7 @@
 "use client";
 
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
+import { BuyNowButton, type BuyNowAction, type BuyNowCopy } from "@/components/patterns/buy-now-button";
 import { LowStockBadge } from "@/components/patterns/low-stock-badge";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
@@ -43,6 +44,8 @@ export type ProductPickerCart = {
   locale: string;
   cartHref: string;
   copy: AddToCartCopy;
+  buyNowAction?: BuyNowAction;
+  buyNowCopy?: BuyNowCopy;
 };
 
 export type ProductPickerWishlist = {
@@ -59,8 +62,16 @@ type ProductVariantPickerProps = {
   /** Product snapshot for localStorage wishlist (handle-level, not per variant). */
   wishlist?: ProductPickerWishlist;
   lowStockTemplate: string;
+  /** CMS `product_page.badge` label (localized); omit when absent. */
+  badgeLabel?: string | null;
+  /** `market_policy` shipping line; omit when incomplete. */
+  shippingTrust?: string | null;
+  /** Free-returns line when `returnFees=free`. */
+  returnsTrust?: string | null;
   /** Already resolved on the server (`ui_string` or the built-in PDP copy). */
   checkoutTrust: string;
+  /** PT-only payment microcopy (PIX/parcelas); empty for other locales. */
+  paymentHint?: string | null;
 };
 
 const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
@@ -92,7 +103,11 @@ export function ProductVariantPicker({
   cart,
   wishlist,
   lowStockTemplate,
+  badgeLabel = null,
+  shippingTrust = null,
+  returnsTrust = null,
   checkoutTrust,
+  paymentHint = null,
 }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
@@ -210,6 +225,11 @@ export function ProductVariantPicker({
         {selected ? (
           <div className="flex items-start justify-between gap-3">
             <div aria-live="polite" className="min-w-0 flex-1 space-y-1">
+              {badgeLabel ? (
+                <p className="inline-flex rounded-md bg-foreground px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-background">
+                  {badgeLabel}
+                </p>
+              ) : null}
               <p className="type-heading">{selected.priceLabel}</p>
               <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
               <LowStockBadge
@@ -258,24 +278,40 @@ export function ProductVariantPicker({
           : null}
 
         {cart && selected ? (
-          <AddToCartButton
-            action={cart.action}
-            variantId={selected.id}
-            available={selected.available}
-            locale={cart.locale}
-            cartHref={cart.cartHref}
-            copy={cart.copy}
-            currency={selected.currency}
-            item={{
-              item_id: selected.itemId,
-              item_name: selected.itemName,
-              price: selected.price,
-              quantity: 1,
-              item_variant: selected.itemVariant,
-            }}
-          />
+          <div className="flex flex-col gap-3">
+            <AddToCartButton
+              action={cart.action}
+              variantId={selected.id}
+              available={selected.available}
+              locale={cart.locale}
+              cartHref={cart.cartHref}
+              copy={cart.copy}
+              currency={selected.currency}
+              item={{
+                item_id: selected.itemId,
+                item_name: selected.itemName,
+                price: selected.price,
+                quantity: 1,
+                item_variant: selected.itemVariant,
+              }}
+            />
+            {cart.buyNowAction && cart.buyNowCopy ? (
+              <BuyNowButton
+                action={cart.buyNowAction}
+                variantId={selected.id}
+                available={selected.available}
+                locale={cart.locale}
+                copy={cart.buyNowCopy}
+              />
+            ) : null}
+          </div>
         ) : null}
-        {checkoutTrust ? <p className="text-sm text-muted-foreground">{checkoutTrust}</p> : null}
+        <div className="space-y-1.5 text-sm text-muted-foreground">
+          {shippingTrust ? <p>{shippingTrust}</p> : null}
+          {returnsTrust ? <p>{returnsTrust}</p> : null}
+          {checkoutTrust ? <p>{checkoutTrust}</p> : null}
+          {paymentHint?.trim() ? <p>{paymentHint.trim()}</p> : null}
+        </div>
       </div>
     </div>
   );

@@ -215,6 +215,9 @@ function tagsForApiKey(
         ...(handle ? [`product:${handle}`] : []),
       ]);
     }
+    /** Linked child of `product_page.reviews` — purge all product PDPs (handles unknown from payload). */
+    case "product_review":
+      return [DATOCMS_CACHE_TAGS.product];
     case "collection_page": {
       const handle = readLocalizedSlugs(attrs, ["shopify_handle", "shopifyHandle"])[0]?.slug;
       return uniqueTags([

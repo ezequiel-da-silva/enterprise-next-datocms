@@ -1,6 +1,6 @@
 # UI visual checklist
 
-Use before closing a UI / CMS-block change. Rule: [`.cursor/rules/ui-visual.mdc`](../.cursor/rules/ui-visual.mdc). Tokens: [`src/config/theme.config.ts`](../src/config/theme.config.ts).
+Use before closing a UI / CMS-block change. Rules: [`.cursor/rules/ui-visual.mdc`](../.cursor/rules/ui-visual.mdc) (tokens/surfaces) and [`.cursor/rules/ux-principles.mdc`](../.cursor/rules/ux-principles.mdc) (cognitive UX). Skill: [`.cursor/skills/ux-audit/SKILL.md`](../.cursor/skills/ux-audit/SKILL.md). Tokens: [`src/config/theme.config.ts`](../src/config/theme.config.ts).
 
 ## Agent + Playwright MCP
 
@@ -22,3 +22,7 @@ When finishing a new or redesigned surface, run Playwright against `http://local
 | `bg-purple-*` / violet–indigo gradients | Semantic tokens only |
 | Card around every text block | Gap / space-y grouping |
 | Invented `max-w-6xl px-4 sm:px-6` | `<Container size="lg">` |
+
+## UX close-out
+
+Also run the short checklist at the bottom of [`ux-principles.mdc`](../.cursor/rules/ux-principles.mdc) (Jakob chrome, one primary CTA, touch targets, contrast/links, empty/loading, semantic specs, policy copy vs `market_policy`).

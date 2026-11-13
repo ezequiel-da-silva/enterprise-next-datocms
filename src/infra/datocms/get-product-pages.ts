@@ -29,6 +29,9 @@ type ProductPageRow = {
   title: string | null;
   shopifyHandle: string | null;
   badge: string | null;
+  profile: string | null;
+  terrain: string | null;
+  flex: number | null;
   baseImage: { url: string; alt: string | null; width: number | null; height: number | null } | null;
 };
 
@@ -60,18 +63,24 @@ const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean)
     const handle = row.shopifyHandle?.trim();
     if (!handle) return [];
     const badge = row.badge?.trim() || null;
+    const profile = row.profile?.trim() || null;
+    const terrain = row.terrain?.trim() || null;
+    const flex = typeof row.flex === "number" && Number.isFinite(row.flex) ? row.flex : null;
     return [
       {
         handle,
         title: row.title?.trim() || handle,
         badge,
+        profile,
+        terrain,
+        flex,
         baseImage: mapBaseImage(row.baseImage),
       },
     ];
   });
 });
 
-/** Cached `product_page` cards (title, badge, baseImage) for catalog enrichment. */
+/** Cached `product_page` cards (title, badge, specs, baseImage) for catalog enrichment. */
 export function getProductPageCards(locale: AppLocale, includeDrafts: boolean): Promise<ProductPageCard[]> {
   return loadProductPages(locale, includeDrafts);
 }

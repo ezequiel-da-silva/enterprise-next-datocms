@@ -258,6 +258,10 @@ export type StorefrontCollectionProduct = {
   hoverImage: StorefrontProductImage | null;
   /** Dato `product_page.badge` api key (`new` | `limited` | `pro_model`); null when unset. */
   badge: string | null;
+  /** Dato snowboard specs (catalog facets); null until enriched. */
+  profile?: string | null;
+  terrain?: string | null;
+  flex?: number | null;
   priceRange: { minVariantPrice: StorefrontMoney };
 };
 

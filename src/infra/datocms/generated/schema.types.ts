@@ -11,6 +11,7 @@ export type Scalars = {
   BooleanType: { input: boolean; output: boolean; }
   CustomData: { input: Record<string, unknown>; output: Record<string, unknown>; }
   /** A ISO 8601 compliant datetime value */
+  Date: { input: unknown; output: unknown; }
   DateTime: { input: string; output: string; }
   /** Represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point). */
   FloatType: { input: number; output: number; }
@@ -4199,6 +4200,7 @@ export type ProductPageRecord = RecordInterface & {
   flex?: Maybe<Scalars['IntType']['output']>;
   id: Scalars['ItemId']['output'];
   profile?: Maybe<Scalars['String']['output']>;
+  reviews: Array<ProductReviewRecord>;
   riderLevel?: Maybe<Scalars['String']['output']>;
   seo?: Maybe<SeoField>;
   shopifyHandle?: Maybe<Scalars['String']['output']>;
@@ -4264,6 +4266,68 @@ export type ProductPageRecordSeoArgs = {
 
 /** Record of type 🛍️ Product page (product_page) */
 export type ProductPageRecordTitleArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+/** Record of type Product review (product_review) */
+export type ProductReviewRecord = RecordInterface & {
+  __typename?: 'ProductReviewRecord';
+  _allCommentLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _createdAt: Scalars['DateTime']['output'];
+  /** Editing URL */
+  _editingUrl?: Maybe<Scalars['String']['output']>;
+  _firstPublishedAt: Scalars['DateTime']['output'];
+  _isValid: Scalars['BooleanType']['output'];
+  _locales: Array<SiteLocale>;
+  _modelApiKey: Scalars['String']['output'];
+  _publicationScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _publishedAt: Scalars['DateTime']['output'];
+  /** Generates SEO and Social card meta tags to be used in your frontend */
+  _seoMetaTags: Array<Tag>;
+  _status: ItemStatus;
+  _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
+  _updatedAt: Scalars['DateTime']['output'];
+  authorName?: Maybe<Scalars['String']['output']>;
+  comment?: Maybe<Scalars['String']['output']>;
+  date?: Maybe<Scalars['Date']['output']>;
+  id: Scalars['ItemId']['output'];
+  rating?: Maybe<Scalars['IntType']['output']>;
+  title?: Maybe<Scalars['String']['output']>;
+  verifiedRider?: Maybe<Scalars['BooleanType']['output']>;
+};
+
+
+/** Record of type Product review (product_review) */
+export type ProductReviewRecord_AllCommentLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type Product review (product_review) */
+export type ProductReviewRecord_AllTitleLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type Product review (product_review) */
+export type ProductReviewRecord_SeoMetaTagsArgs = {
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type Product review (product_review) */
+export type ProductReviewRecordCommentArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+  markdown?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/** Record of type Product review (product_review) */
+export type ProductReviewRecordTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
