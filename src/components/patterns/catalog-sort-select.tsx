@@ -28,23 +28,37 @@ export function CatalogSortSelect({ pathname, filters, copy }: CatalogSortSelect
       <label htmlFor="catalog-sort" className="text-sm font-medium text-foreground">
         {copy.sortLabel}
       </label>
-      <select
-        id="catalog-sort"
-        className="touch-target rounded-lg border border-border bg-background px-3 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
-        value={filters.sort}
-        aria-label={copy.sortLabel}
-        onChange={(event) => {
-          const sort = event.target.value as CatalogSort;
-          if (!CATALOG_SORT_VALUES.includes(sort)) return;
-          router.push(catalogHref(pathname, filters, { sort }), { scroll: false });
-        }}
-      >
-        {CATALOG_SORT_VALUES.map((sort) => (
-          <option key={sort} value={sort}>
-            {labels[sort]}
-          </option>
-        ))}
-      </select>
+      <div className="relative min-w-0">
+        <select
+          id="catalog-sort"
+          className="filter-select touch-target cursor-pointer appearance-none rounded-lg border border-border bg-background py-2 pl-3 pr-9 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          value={filters.sort}
+          aria-label={copy.sortLabel}
+          onChange={(event) => {
+            const sort = event.target.value as CatalogSort;
+            if (!CATALOG_SORT_VALUES.includes(sort)) return;
+            router.push(catalogHref(pathname, filters, { sort }), { scroll: false });
+          }}
+        >
+          {CATALOG_SORT_VALUES.map((sort) => (
+            <option key={sort} value={sort}>
+              {labels[sort]}
+            </option>
+          ))}
+        </select>
+        <svg
+          aria-hidden
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.75"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+        >
+          <path d="m6 8 4 4 4-4" />
+        </svg>
+      </div>
     </div>
   );
 }

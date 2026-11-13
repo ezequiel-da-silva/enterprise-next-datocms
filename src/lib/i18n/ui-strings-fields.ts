@@ -151,6 +151,9 @@ export const CATALOG_FILTERS_FIELDS = {
   terrainLabel: "catalogTerrainLabel",
   profileLabel: "catalogProfileLabel",
   activeFiltersLabel: "catalogActiveFilters",
+  filtersLabel: "catalogFiltersLabel",
+  openFiltersLabel: "catalogOpenFilters",
+  closeFiltersLabel: "catalogCloseFilters",
 } as const satisfies Record<keyof CatalogFiltersCopy, string>;
 
 export const UI_STRINGS_FIELD_NAMES = [

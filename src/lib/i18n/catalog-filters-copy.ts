@@ -15,6 +15,12 @@ export type CatalogFiltersCopy = {
   profileLabel: string;
   /** Accessible name for the active-filters chip bar. */
   activeFiltersLabel: string;
+  /** Aside / drawer title. */
+  filtersLabel: string;
+  /** Mobile toolbar button that opens the filter drawer. */
+  openFiltersLabel: string;
+  /** Close control for the mobile filter drawer. */
+  closeFiltersLabel: string;
 };
 
 const EN: CatalogFiltersCopy = {
@@ -29,6 +35,9 @@ const EN: CatalogFiltersCopy = {
   terrainLabel: "Terrain",
   profileLabel: "Profile",
   activeFiltersLabel: "Active filters",
+  filtersLabel: "Filters",
+  openFiltersLabel: "Filter",
+  closeFiltersLabel: "Close filters",
 };
 
 const PT: CatalogFiltersCopy = {
@@ -43,6 +52,9 @@ const PT: CatalogFiltersCopy = {
   terrainLabel: "Terreno",
   profileLabel: "Perfil",
   activeFiltersLabel: "Filtros activos",
+  filtersLabel: "Filtros",
+  openFiltersLabel: "Filtrar",
+  closeFiltersLabel: "Fechar filtros",
 };
 
 const ES: CatalogFiltersCopy = {
@@ -57,6 +69,9 @@ const ES: CatalogFiltersCopy = {
   terrainLabel: "Terreno",
   profileLabel: "Perfil",
   activeFiltersLabel: "Filtros activos",
+  filtersLabel: "Filtros",
+  openFiltersLabel: "Filtrar",
+  closeFiltersLabel: "Cerrar filtros",
 };
 
 export const CATALOG_FILTERS_COPY: Record<AppLocale, CatalogFiltersCopy> = {
