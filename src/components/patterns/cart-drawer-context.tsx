@@ -21,6 +21,8 @@ type CartDrawerContextValue = {
   cart: CartSnapshot | null;
   locale: AppLocale;
   copy: CartDrawerCopy;
+  /** Formatted `market_policy` summary from the server; falls back to `copy.checkoutNote`. */
+  trustNote: string | null;
   cartHref: string;
   lineActions: CartDrawerLineActions;
   returnFocusRef: RefObject<HTMLElement | null>;
@@ -48,6 +50,7 @@ type LoadCartSnapshot = (locale: AppLocale) => Promise<CartSnapshot | null>;
 type CartDrawerProviderProps = {
   locale: AppLocale;
   copy: CartDrawerCopy;
+  trustNote?: string | null;
   loadCartSnapshot: LoadCartSnapshot;
   lineActions: CartDrawerLineActions;
   children: ReactNode;
@@ -56,6 +59,7 @@ type CartDrawerProviderProps = {
 export function CartDrawerProvider({
   locale,
   copy,
+  trustNote = null,
   loadCartSnapshot,
   lineActions,
   children,
@@ -99,6 +103,7 @@ export function CartDrawerProvider({
       cart,
       locale,
       copy,
+      trustNote,
       cartHref: cartPath(locale),
       lineActions,
       returnFocusRef,
@@ -108,7 +113,19 @@ export function CartDrawerProvider({
       syncCart,
       applyCartSnapshot,
     }),
-    [open, cart, locale, copy, lineActions, openWithCart, openFromServer, close, syncCart, applyCartSnapshot],
+    [
+      open,
+      cart,
+      locale,
+      copy,
+      trustNote,
+      lineActions,
+      openWithCart,
+      openFromServer,
+      close,
+      syncCart,
+      applyCartSnapshot,
+    ],
   );
 
   return <CartDrawerContext.Provider value={value}>{children}</CartDrawerContext.Provider>;

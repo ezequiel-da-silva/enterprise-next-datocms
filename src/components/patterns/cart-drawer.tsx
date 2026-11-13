@@ -11,8 +11,18 @@ import { useId, useRef } from "react";
 import { createPortal } from "react-dom";
 
 export function CartDrawer() {
-  const { open, cart, locale, copy, cartHref, lineActions, close, returnFocusRef, applyCartSnapshot } =
-    useCartDrawer();
+  const {
+    open,
+    cart,
+    locale,
+    copy,
+    trustNote,
+    cartHref,
+    lineActions,
+    close,
+    returnFocusRef,
+    applyCartSnapshot,
+  } = useCartDrawer();
   const panelRef = useRef<HTMLDivElement>(null);
   const titleId = useId();
 
@@ -94,6 +104,7 @@ export function CartDrawer() {
               <span>{formatStorefrontMoney(locale, subtotal.amount, subtotal.currencyCode)}</span>
             </p>
           ) : null}
+          <p className="text-xs text-muted-foreground">{trustNote?.trim() || copy.checkoutNote}</p>
           {checkoutUrl ? (
             <Button asChild variant="primary" className="w-full">
               <a
@@ -129,7 +140,6 @@ export function CartDrawer() {
           >
             {copy.viewCart}
           </Link>
-          <p className="text-center text-xs text-muted-foreground">{copy.checkoutNote}</p>
         </footer>
       </div>
     </div>,

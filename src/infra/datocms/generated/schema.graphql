@@ -717,6 +717,7 @@ type CtaBannerRecord implements RecordInterface {
 scalar CustomData
 
 """A ISO 8601 compliant datetime value"""
+scalar Date
 scalar DateTime
 
 """Block of type ⁉️ FAQ group (faq_group)"""
@@ -4184,6 +4185,7 @@ type ProductPageRecord implements RecordInterface {
   id: ItemId!
   profile: String
   riderLevel: String
+  reviews: [ProductReviewRecord!]!
   seo(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -6877,6 +6879,64 @@ enum UserReviewModelOrderBy {
   id_DESC
   rating_ASC
   rating_DESC
+}
+
+"""Record of type Product review (product_review)"""
+type ProductReviewRecord implements RecordInterface {
+  _allCommentLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """Process content as markdown"""
+    markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allTitleLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  """Editing URL"""
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  """Generates SEO and Social card meta tags to be used in your frontend"""
+  _seoMetaTags(
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  authorName: String
+  comment(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  date: Date
+  id: ItemId!
+  rating: IntType
+  title(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  verifiedRider: BooleanType
 }
 
 """Record of type 💬 User Review (user_review)"""

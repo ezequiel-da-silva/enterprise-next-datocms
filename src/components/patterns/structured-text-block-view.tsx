@@ -1,5 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
+import type { CatalogFilters } from "@/lib/catalog/catalog-filters";
 import type { ProductsListingCatalog } from "@/lib/datocms/resolve-products-section";
 import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
@@ -43,6 +44,7 @@ import { readCdaObject } from "@/lib/datocms/cda-field";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { clampLayoutDimensions } from "@/lib/datocms-image-loader";
 import { resolveVideoSources } from "@/lib/datocms/resolve-video-sources";
+import type { CatalogFiltersCopy } from "@/lib/i18n/catalog-filters-copy";
 import type { ProductsSectionCmsCopy } from "@/lib/i18n/products-section-copy";
 import { videoUiCopy, type VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import { buildVideoObjectJsonLd } from "@/lib/seo/build-video-object-jsonld";
@@ -67,6 +69,9 @@ type StructuredTextBlockViewProps = {
   searchQuery?: string;
   searchFormAction?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
+  catalogFilters?: CatalogFilters;
+  catalogFiltersCopy?: CatalogFiltersCopy;
+  catalogFiltersPath?: string;
 };
 
 function unknownBlockFallback(record: PageStructuredTextBlock): null {
@@ -178,6 +183,9 @@ export function StructuredTextBlockView({
   searchQuery,
   searchFormAction,
   searchResults,
+  catalogFilters,
+  catalogFiltersCopy,
+  catalogFiltersPath,
 }: StructuredTextBlockViewProps) {
   switch (record.__typename) {
     case "ImageBlockRecord": {
@@ -301,6 +309,9 @@ export function StructuredTextBlockView({
             blogCatalog={latestPostsCatalog}
             productsCatalog={productsCatalog}
             productsCmsCopy={productsCmsCopy}
+            catalogFilters={catalogFilters}
+            catalogFiltersCopy={catalogFiltersCopy}
+            catalogFiltersPath={catalogFiltersPath}
           />
         </Suspense>
       );

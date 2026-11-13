@@ -8,10 +8,14 @@ import {
   getCollectionsIndexPage,
 } from "@/infra/datocms/get-collections-index-page";
 import { getProductPageCards } from "@/infra/datocms/get-product-pages";
-import { getCollectionCopy } from "@/infra/datocms/get-ui-strings";
+import { getCatalogFiltersCopy, getCollectionCopy } from "@/infra/datocms/get-ui-strings";
 import { getStaticParamsCollectionPages } from "@/infra/datocms/static-params";
 import { getStorefrontCollectionByHandle } from "@/infra/shopify/storefront";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
+import {
+  filterAndSortCatalogProducts,
+  parseCatalogSearchParams,
+} from "@/lib/catalog/catalog-filters";
 import { collectionPagePath } from "@/lib/datocms/collection-page-path";
 import { enrichCatalogProducts } from "@/lib/datocms/resolve-products-section";
 import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
@@ -24,6 +28,7 @@ import { notFound } from "next/navigation";
 
 type CollectionPlpProps = {
   params: Promise<{ slug: string; handle: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export async function generateStaticParams() {
@@ -59,19 +64,21 @@ export async function generateMetadata({ params }: CollectionPlpProps): Promise<
   });
 }
 
-export default async function CollectionPlpPage({ params }: CollectionPlpProps) {
+export default async function CollectionPlpPage({ params, searchParams }: CollectionPlpProps) {
   const { slug, handle } = await params;
   if (!isAppLocale(slug) || !handle.trim()) {
     notFound();
   }
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
-  const [result, catalog, storefront, pages, collectionCopy] = await Promise.all([
+  const filters = parseCatalogSearchParams(await searchParams);
+  const [result, catalog, storefront, pages, collectionCopy, filtersCopy] = await Promise.all([
     getCollectionPageByHandle(locale, handle, isEnabled),
     getCollectionsIndexPage(locale, isEnabled),
     getStorefrontCollectionByHandle(handle, locale),
     getProductPageCards(locale, isEnabled),
     getCollectionCopy(locale),
+    getCatalogFiltersCopy(locale),
   ]);
 
   if ("errors" in result || !result.data.collectionPage) {
@@ -79,8 +86,14 @@ export default async function CollectionPlpPage({ params }: CollectionPlpProps) 
   }
 
   const page = result.data.collectionPage;
+  const enrichedProducts = storefront
+    ? enrichCatalogProducts(storefront.products, pages)
+    : [];
   const enrichedStorefront = storefront
-    ? { ...storefront, products: enrichCatalogProducts(storefront.products, pages) }
+    ? {
+        ...storefront,
+        products: filterAndSortCatalogProducts(enrichedProducts, filters),
+      }
     : null;
   return (
     <CollectionPageArticle
@@ -91,7 +104,10 @@ export default async function CollectionPlpPage({ params }: CollectionPlpProps) 
       catalogPath={collectionsIndexPath(locale, catalog)}
       catalogLabel={collectionsIndexLabel(catalog)}
       storefront={enrichedStorefront}
+      catalogProducts={enrichedProducts}
       emptyLabel={collectionCopy.empty}
+      filters={filters}
+      filtersCopy={filtersCopy}
     />
   );
 }

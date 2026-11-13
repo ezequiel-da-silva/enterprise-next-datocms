@@ -2,6 +2,10 @@ import type { AppLocale } from "@/constants/i18n";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
 import type { StorefrontMoney, StorefrontProduct } from "@/infra/shopify/storefront";
 import { returnPolicyFor, shippingDetailsFor, type MarketPolicy } from "@/lib/seo/merchant-policy";
+import {
+  computeRatingAggregate,
+  type ReviewJsonLdItem,
+} from "@/lib/seo/build-reviews-jsonld";
 import { getOrganizationId, getSiteBaseUrl } from "@/lib/seo/site-config";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 
@@ -24,6 +28,8 @@ export function buildProductPageJsonLd(input: {
   now?: Date;
   /** Shipping/returns of the locale's market (Dato `market_policy`); `null` omits both blocks. */
   policy?: MarketPolicy | null;
+  /** Curated product reviews; AggregateRating only when at least one rated review exists. */
+  reviews?: ReviewJsonLdItem[];
 }): Record<string, unknown>[] {
   const description = input.description?.trim() || undefined;
   const pageGraph = buildPageWebPageJsonLd({
@@ -79,6 +85,11 @@ export function buildProductPageJsonLd(input: {
   const brandName = storefront?.vendor || input.brandName.trim();
   const productSku = offerSources.length === 1 ? offerSources[0]?.sku : null;
 
+  const ratedReviews = (input.reviews ?? []).filter(
+    (r) => Number.isFinite(r.rating) && r.rating >= 1 && r.rating <= 5 && r.comment.trim() && r.authorName.trim(),
+  );
+  const aggregate = computeRatingAggregate(ratedReviews);
+
   const product: Record<string, unknown> = {
     "@type": "Product",
     name: storefront?.title ?? input.title,
@@ -90,6 +101,28 @@ export function buildProductPageJsonLd(input: {
     ...(imageUrls.length > 1 ? { image: imageUrls } : {}),
     ...(offers.length === 1 ? { offers: offers[0] } : {}),
     ...(offers.length > 1 ? { offers } : {}),
+    ...(aggregate
+      ? {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: aggregate.average,
+            reviewCount: aggregate.count,
+            bestRating: 5,
+            worstRating: 1,
+          },
+          review: ratedReviews.map((r) => ({
+            "@type": "Review",
+            author: { "@type": "Person", name: r.authorName },
+            reviewRating: {
+              "@type": "Rating",
+              ratingValue: r.rating,
+              bestRating: 5,
+              worstRating: 1,
+            },
+            reviewBody: r.comment,
+          })),
+        }
+      : {}),
   };
 
   return [product, ...pageGraph];

@@ -84,6 +84,9 @@ export type ProductPageCard = {
   handle: string;
   title: string;
   badge: string | null;
+  profile: string | null;
+  terrain: string | null;
+  flex: number | null;
   baseImage: StorefrontProductImage | null;
 };
 
@@ -98,7 +101,7 @@ export function readProductPageCards(record: Record<string, unknown>, camel: str
       readCdaStringForLogic(item, "handle", "handle");
     if (!handle) continue;
     const title = readCdaString(item, "title", "title") || handle;
-    out.push({ handle, title, badge: null, baseImage: null });
+    out.push({ handle, title, badge: null, profile: null, terrain: null, flex: null, baseImage: null });
   }
   return out;
 }
@@ -163,17 +166,34 @@ export function enrichCatalogProducts(
   pages: ProductPageCard[],
 ): StorefrontCollectionProduct[] {
   if (pages.length === 0) {
-    return products.map((product) => ({ ...product, badge: product.badge ?? null }));
+    return products.map((product) => ({
+      ...product,
+      badge: product.badge ?? null,
+      profile: product.profile ?? null,
+      terrain: product.terrain ?? null,
+      flex: product.flex ?? null,
+    }));
   }
   const byHandle = new Map(pages.map((page) => [page.handle, page]));
   return products.map((product) => {
     const page = byHandle.get(product.handle);
-    if (!page) return { ...product, badge: product.badge ?? null };
+    if (!page) {
+      return {
+        ...product,
+        badge: product.badge ?? null,
+        profile: product.profile ?? null,
+        terrain: product.terrain ?? null,
+        flex: product.flex ?? null,
+      };
+    }
     const title = page.title.trim();
     return {
       ...product,
       title: title || product.title,
       badge: page.badge,
+      profile: page.profile,
+      terrain: page.terrain,
+      flex: page.flex,
       hoverImage: page.baseImage ?? product.hoverImage,
     };
   });

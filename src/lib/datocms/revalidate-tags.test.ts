@@ -120,6 +120,16 @@ describe("tagsToRevalidateFromWebhook", () => {
     expect(tags).toContain(DATOCMS_CACHE_TAGS.sitemap);
   });
 
+  it("maps product_review to the product family", () => {
+    const tags = tagsToRevalidateFromWebhook({
+      entity: {
+        relationships: { item_type: { data: { id: "t" } } },
+      },
+      related_entities: [{ id: "t", type: "item_type", attributes: { api_key: "product_review" } }],
+    });
+    expect(tags).toEqual([DATOCMS_CACHE_TAGS.product]);
+  });
+
   it("maps collection_page to collection family + handle tag", () => {
     const tags = tagsToRevalidateFromWebhook({
       entity: {

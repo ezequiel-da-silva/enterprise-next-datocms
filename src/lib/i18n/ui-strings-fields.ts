@@ -1,5 +1,6 @@
 import type { AccountCopy, AccountErrorCode } from "@/lib/i18n/account-copy";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
+import type { CatalogFiltersCopy } from "@/lib/i18n/catalog-filters-copy";
 import type { CollectionCopy } from "@/lib/i18n/collection-copy";
 import type { ConsentCopy } from "@/lib/i18n/consent-copy";
 import type { OrderConfirmationCopy } from "@/lib/i18n/order-confirmation-copy";
@@ -91,6 +92,12 @@ export const PDP_TEXT_FIELDS = {
   viewImage: "pdpViewImage",
   unavailableSuffix: "pdpUnavailableSuffix",
   checkoutTrust: "pdpCheckoutTrust",
+  paymentHint: "pdpPaymentHint",
+  buyNow: "pdpBuyNow",
+  buying: "pdpBuying",
+  reviewsTitle: "pdpReviewsTitle",
+  verifiedRider: "pdpVerifiedRider",
+  reviewsAggregateTemplate: "pdpReviewsAggregateTemplate",
   specProfile: "pdpSpecProfile",
   specFlex: "pdpSpecFlex",
   specTerrain: "pdpSpecTerrain",
@@ -132,6 +139,20 @@ export const ORDER_CONFIRMATION_TEXT_FIELDS = {
   string
 >;
 
+export const CATALOG_FILTERS_FIELDS = {
+  clearFilters: "catalogClearFilters",
+  inStockOnly: "catalogInStockOnly",
+  sortLabel: "catalogSortLabel",
+  sortRelevance: "catalogSortRelevance",
+  sortPriceAsc: "catalogSortPriceAsc",
+  sortPriceDesc: "catalogSortPriceDesc",
+  resultsTemplate: "catalogResultsTemplate",
+  filtersEmpty: "catalogFiltersEmpty",
+  terrainLabel: "catalogTerrainLabel",
+  profileLabel: "catalogProfileLabel",
+  activeFiltersLabel: "catalogActiveFilters",
+} as const satisfies Record<keyof CatalogFiltersCopy, string>;
+
 export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(CONSENT_FIELDS),
   ...Object.values(CART_FIELDS),
@@ -146,6 +167,7 @@ export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(PRODUCTS_SECTION_CMS_FIELDS),
   ...Object.values(VIDEO_UI_FIELDS),
   ...Object.values(ORDER_CONFIRMATION_TEXT_FIELDS),
+  ...Object.values(CATALOG_FILTERS_FIELDS),
 ] as const;
 
 export type UiStringsFieldName = (typeof UI_STRINGS_FIELD_NAMES)[number];

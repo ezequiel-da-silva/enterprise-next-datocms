@@ -9,10 +9,12 @@ import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import { buildPageWebPageJsonLd, type PageJsonLdType } from "@/lib/seo/build-page-webpage-jsonld";
 import { buildSearchPageJsonLd } from "@/lib/seo/build-search-jsonld";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
+import type { CatalogFilters } from "@/lib/catalog/catalog-filters";
 import type { ProductsListingCatalog } from "@/lib/datocms/resolve-products-section";
 import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
 import type { PageRecord } from "@/infra/datocms/types-page";
 import { heroFirstBlockSuppliesH1, resolveVisiblePageTitle } from "@/lib/datocms/hero-first-block";
+import type { CatalogFiltersCopy } from "@/lib/i18n/catalog-filters-copy";
 import type { ProductsSectionCmsCopy } from "@/lib/i18n/products-section-copy";
 import type { VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
@@ -36,6 +38,10 @@ type CmsPageArticleProps = {
   jsonLdPageType?: PageJsonLdType;
   searchQuery?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
+  /** SSR catalog facets for Shopify `content_listing_section` blocks. */
+  catalogFilters?: CatalogFilters;
+  catalogFiltersCopy?: CatalogFiltersCopy;
+  catalogFiltersPath?: string;
 };
 
 export async function CmsPageArticle({
@@ -52,6 +58,9 @@ export async function CmsPageArticle({
   jsonLdPageType = "WebPage",
   searchQuery,
   searchResults,
+  catalogFilters,
+  catalogFiltersCopy,
+  catalogFiltersPath,
 }: CmsPageArticleProps) {
   const description = page.seoSettingsSocial?.description ?? null;
   const query = searchQuery?.trim();
@@ -134,6 +143,9 @@ export async function CmsPageArticle({
             searchQuery={searchQuery}
             searchFormAction={canonicalPath}
             searchResults={searchResults}
+            catalogFilters={catalogFilters}
+            catalogFiltersCopy={catalogFiltersCopy}
+            catalogFiltersPath={catalogFiltersPath}
           />
           {isHome && page.heroPage && !homeClosesWithCta ? (
             <HeroPrimaryRepeat record={page.heroPage} locale={locale} />

@@ -1,5 +1,6 @@
-import { addToCart } from "@/app/actions/cart";
+import { addToCart, buyNow } from "@/app/actions/cart";
 import { ProductPageArticle } from "@/components/patterns/product-page-article";
+import type { ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale } from "@/constants/i18n";
 import { getMarketPolicy } from "@/infra/datocms/get-market-policy";
@@ -82,16 +83,32 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
   }
 
   const page = result.data.productPage;
+  const reviews: ProductReviewItem[] = (page.reviews ?? [])
+    .filter((row): row is NonNullable<typeof row> => Boolean(row?.id))
+    .map((row) => ({
+      id: row.id,
+      authorName: row.authorName?.trim() || "Anonymous",
+      rating: typeof row.rating === "number" ? row.rating : 0,
+      title: row.title?.trim() || null,
+      comment: row.comment?.trim() || "",
+      verifiedRider: row.verifiedRider === true,
+      date: typeof row.date === "string" ? row.date : row.date != null ? String(row.date) : null,
+      editingUrl: row._editingUrl?.trim() || null,
+    }))
+    .filter((row) => row.authorName || row.comment);
+
   return (
     <ProductPageArticle
       locale={locale}
       handle={page.shopifyHandle?.trim() || handle}
       title={page.title?.trim() || handle}
       description={page.description?.trim() || null}
+      badge={page.badge}
       catalogPath={productsIndexPath(locale, catalog)}
       catalogLabel={productsIndexLabel(catalog)}
       storefront={storefront}
       addToCartAction={addToCart}
+      buyNowAction={buyNow}
       cartCopy={cartCopy}
       pdpCopy={pdpCopy}
       marketPolicy={marketPolicy}
@@ -106,6 +123,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
         coreMaterial: page.coreMaterial,
       }}
       sizeChart={page.sizeChart}
+      reviews={reviews}
     />
   );
 }

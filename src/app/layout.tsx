@@ -17,10 +17,16 @@ import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, REQ
 import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
 import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
+import { getMarketPolicy } from "@/infra/datocms/get-market-policy";
 import { getAccountCopy, getCartCopy, getConsentCopy } from "@/infra/datocms/get-ui-strings";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { ConsentRoot } from "@/components/patterns/consent/consent-root";
 import { getShopPrivacyPolicyUrl } from "@/infra/shopify/storefront";
+import {
+  currencyForShopifyCountry,
+  formatMarketPolicyTrustNote,
+} from "@/lib/seo/format-market-policy-trust";
+import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 import { readGaMeasurementId } from "@/lib/analytics/ga-config";
 import { isSpeedInsightsEnabled } from "@/lib/analytics/speed-insights-config";
 import { CONSENT_COOKIE, parseConsent } from "@/lib/consent/consent-cookie";
@@ -141,12 +147,19 @@ export default async function RootLayout({
     ? readCartCountCookie(cookieStore.get(CART_COUNT_COOKIE)?.value)
     : null;
   const initialConsent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value);
-  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy] = await Promise.all([
+  const marketCountry = shopifyCountryFromLocale(appLocale);
+  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy, marketPolicy] = await Promise.all([
     getShopPrivacyPolicyUrl(),
     getConsentCopy(appLocale),
     getCartCopy(appLocale),
     getAccountCopy(appLocale),
+    getMarketPolicy(marketCountry),
   ]);
+  const cartTrustNote = formatMarketPolicyTrustNote(
+    appLocale,
+    marketPolicy,
+    currencyForShopifyCountry(marketCountry),
+  );
   const themeCss = buildThemeCssVariables();
 
   const siteJsonLd = buildSiteJsonLdGraph(identity, searchPath);
@@ -202,6 +215,7 @@ export default async function RootLayout({
             <CartChrome
               locale={appLocale}
               copy={toCartDrawerCopy(cartCopy)}
+              trustNote={cartTrustNote}
               loadCartSnapshot={getCartSnapshot}
               lineActions={{ updateLine: updateCartLineForDrawer, removeLine: removeCartLineForDrawer }}
             >

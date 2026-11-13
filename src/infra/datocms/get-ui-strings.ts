@@ -7,6 +7,10 @@ import { logWarnThrottled } from "@/infra/observability/log-error";
 import { DATOCMS_CACHE_TAGS } from "@/lib/datocms/revalidate-tags";
 import { ACCOUNT_COPY, type AccountCopy } from "@/lib/i18n/account-copy";
 import { CART_COPY, type CartCopy } from "@/lib/i18n/cart-copy";
+import {
+  CATALOG_FILTERS_COPY,
+  type CatalogFiltersCopy,
+} from "@/lib/i18n/catalog-filters-copy";
 import { COLLECTION_COPY, type CollectionCopy } from "@/lib/i18n/collection-copy";
 import { CONSENT_COPY, type ConsentCopy } from "@/lib/i18n/consent-copy";
 import {
@@ -26,6 +30,7 @@ import { WISHLIST_COPY, type WishlistCopy } from "@/lib/i18n/wishlist-copy";
 import { cleanOverride, pickOverrides } from "@/lib/i18n/merge-copy";
 import { resolveAccountCopy, resolveCartCopy, resolveConsentCopy } from "@/lib/i18n/resolve-ui-copy";
 import {
+  CATALOG_FILTERS_FIELDS,
   COLLECTION_FIELDS,
   ORDER_CONFIRMATION_TEXT_FIELDS,
   PDP_LOW_STOCK_FIELD,
@@ -129,6 +134,13 @@ export async function getProductsSectionCmsCopy(locale: AppLocale): Promise<Prod
     empty: base.empty,
     pageOfTemplate: base.pageOfTemplate,
     ...pickOverrides(PRODUCTS_SECTION_CMS_FIELDS, await loadUiStrings(locale)),
+  };
+}
+
+export async function getCatalogFiltersCopy(locale: AppLocale): Promise<CatalogFiltersCopy> {
+  return {
+    ...CATALOG_FILTERS_COPY[locale],
+    ...pickOverrides(CATALOG_FILTERS_FIELDS, await loadUiStrings(locale)),
   };
 }
 

@@ -1,6 +1,8 @@
 import { Container } from "@/components/atoms/container";
 import type { AddToCartAction } from "@/components/patterns/add-to-cart-button";
+import type { BuyNowAction } from "@/components/patterns/buy-now-button";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { ProductReviewsSection, type ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import { ProductSizeGuide } from "@/components/patterns/product-size-guide";
 import { ProductSpecsTable, type ProductSpecValues } from "@/components/patterns/product-specs-table";
 import {
@@ -19,12 +21,17 @@ import { cmsRecordAttrs } from "@/lib/datocms/cms-block-attrs";
 import { parseSizeChart } from "@/lib/datocms/parse-size-chart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
-import type { PdpCopy } from "@/lib/i18n/pdp-copy";
+import { snowboardBadgeLabel, type PdpCopy } from "@/lib/i18n/pdp-copy";
+import {
+  currencyForShopifyCountry,
+  formatMarketPolicyTrust,
+} from "@/lib/seo/format-market-policy-trust";
 import type { MarketPolicy } from "@/lib/seo/merchant-policy";
 import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { getOrganizationName } from "@/lib/seo/site-config";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 
 type ProductPageArticleProps = {
@@ -32,11 +39,15 @@ type ProductPageArticleProps = {
   handle: string;
   title: string;
   description: string | null;
+  /** Raw `product_page.badge` api key from CDA. */
+  badge?: string | null;
   catalogPath: string;
   catalogLabel: string;
   storefront: StorefrontProduct | null;
   /** Server Action do carrinho; sem ela (ou com a flag desligada) o botão não aparece. */
   addToCartAction?: AddToCartAction;
+  /** Ephemeral checkout; omit when cart is disabled. */
+  buyNowAction?: BuyNowAction;
   /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
   cartCopy: CartCopy;
   /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
@@ -48,6 +59,7 @@ type ProductPageArticleProps = {
   editingUrl: string | null;
   specs: ProductSpecValues;
   sizeChart: unknown;
+  reviews?: ProductReviewItem[];
 };
 
 function availabilityLabel(copy: PdpCopy, available: boolean): string {
@@ -115,15 +127,26 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
 
 function pickerCart(
   locale: AppLocale,
-  copy: CartCopy,
+  cartCopy: CartCopy,
+  pdpCopy: PdpCopy,
   variants: ProductPickerVariant[],
-  action: AddToCartAction | undefined,
+  addToCartAction: AddToCartAction | undefined,
+  buyNowAction: BuyNowAction | undefined,
 ): ProductPickerCart | undefined {
-  if (!action || !isCartEnabled() || !variants.every((variant) => isShopifyVariantId(variant.id))) {
+  if (!addToCartAction || !isCartEnabled() || !variants.every((variant) => isShopifyVariantId(variant.id))) {
     return undefined;
   }
-  const { addToCart, adding, soldOut, viewCart } = copy;
-  return { action, locale, cartHref: cartPath(locale), copy: { addToCart, adding, soldOut, viewCart } };
+  const { addToCart, adding, soldOut, viewCart } = cartCopy;
+  return {
+    action: addToCartAction,
+    locale,
+    cartHref: cartPath(locale),
+    copy: { addToCart, adding, soldOut, viewCart },
+    buyNowAction,
+    buyNowCopy: buyNowAction
+      ? { buyNow: pdpCopy.buyNow, buying: pdpCopy.buying, soldOut: pdpCopy.soldOut }
+      : undefined,
+  };
 }
 
 function pickerWishlist(
@@ -158,10 +181,12 @@ export function ProductPageArticle({
   handle,
   title,
   description,
+  badge = null,
   catalogPath,
   catalogLabel,
   storefront,
   addToCartAction,
+  buyNowAction,
   cartCopy,
   pdpCopy,
   marketPolicy,
@@ -170,6 +195,7 @@ export function ProductPageArticle({
   editingUrl,
   specs,
   sizeChart,
+  reviews = [],
 }: ProductPageArticleProps) {
   const path = productPagePath(locale, handle);
   const jsonLd = buildProductPageJsonLd({
@@ -181,9 +207,17 @@ export function ProductPageArticle({
     storefront,
     brandName: getOrganizationName(),
     policy: marketPolicy,
+    reviews,
   });
   const variants = storefront ? pickerVariants(locale, title, storefront, pdpCopy) : null;
   const sizeRows = parseSizeChart(sizeChart);
+  const trust = formatMarketPolicyTrust(
+    locale,
+    marketPolicy,
+    currencyForShopifyCountry(shopifyCountryFromLocale(locale)),
+  );
+  const badgeLabel = snowboardBadgeLabel(locale, badge);
+  const paymentHint = locale === "pt" ? pdpCopy.paymentHint.trim() || null : null;
   const editorial = (
     <>
       <h1 className="type-display">{title}</h1>
@@ -242,14 +276,20 @@ export function ProductPageArticle({
           variants={variants}
           images={pickerImages(title, storefront)}
           copy={{ thumbnailLabel: pdpCopy.viewImage, unavailableSuffix: pdpCopy.unavailableSuffix }}
-          cart={pickerCart(locale, cartCopy, variants, addToCartAction)}
+          cart={pickerCart(locale, cartCopy, pdpCopy, variants, addToCartAction, buyNowAction)}
           wishlist={pickerWishlist(locale, handle, title, storefront)}
           lowStockTemplate={pdpCopy.lowStockTemplate}
+          badgeLabel={badgeLabel}
+          shippingTrust={trust.shipping}
+          returnsTrust={trust.returns}
           checkoutTrust={pdpCopy.checkoutTrust}
+          paymentHint={paymentHint}
         />
       ) : null}
 
       {techDetails}
+
+      <ProductReviewsSection locale={locale} reviews={reviews} copy={pdpCopy} />
     </Container>
   );
 }

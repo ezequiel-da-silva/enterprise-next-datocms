@@ -52,3 +52,23 @@ export type CartActionState =
   | { status: "idle" }
   | { status: "success"; message: string; totalQuantity: number; cart: CartSnapshot }
   | { status: "error"; message: string };
+
+/** GA4 item shape returned by the ephemeral Buy now action (client-safe). */
+export type BuyNowGaItem = {
+  item_id: string;
+  item_name: string;
+  price?: number;
+  quantity?: number;
+  item_variant?: string;
+};
+
+export type BuyNowActionState =
+  | { status: "idle" }
+  | {
+      status: "success";
+      checkoutUrl: string;
+      currency: string;
+      value: number;
+      items: BuyNowGaItem[];
+    }
+  | { status: "error"; message: string };

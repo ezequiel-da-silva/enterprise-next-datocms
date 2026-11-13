@@ -10,6 +10,17 @@ export type PdpCopy = {
   viewImage: string;
   unavailableSuffix: string;
   checkoutTrust: string;
+  /**
+   * PT-only buy-box hint (PIX / installments at Shopify checkout). Empty in en/es by default;
+   * editors override via `ui_string.pdp_payment_hint` without inventing rates.
+   */
+  paymentHint: string;
+  buyNow: string;
+  buying: string;
+  reviewsTitle: string;
+  verifiedRider: string;
+  /** Template with `{average}` and `{count}` for the PDP reviews aggregate line. */
+  reviewsAggregateTemplate: string;
   specProfile: string;
   specFlex: string;
   specTerrain: string;
@@ -29,6 +40,12 @@ const EN: PdpCopy = {
   viewImage: "View image",
   unavailableSuffix: "(sold out)",
   checkoutTrust: "Checkout is processed securely by Shopify.",
+  paymentHint: "",
+  buyNow: "Buy now",
+  buying: "Redirecting…",
+  reviewsTitle: "Rider reviews",
+  verifiedRider: "Verified rider",
+  reviewsAggregateTemplate: "{average} out of 5 · {count} reviews",
   specProfile: "Camber profile",
   specFlex: "Flex",
   specTerrain: "Recommended terrain",
@@ -48,6 +65,13 @@ const PT: PdpCopy = {
   viewImage: "Ver imagem",
   unavailableSuffix: "(esgotado)",
   checkoutTrust: "Checkout processado com segurança pela Shopify.",
+  paymentHint:
+    "PIX e parcelamento aparecem no checkout Shopify quando estiverem activos na loja — sem taxas inventadas neste site.",
+  buyNow: "Comprar agora",
+  buying: "A redirecionar…",
+  reviewsTitle: "Avaliações de riders",
+  verifiedRider: "Rider verificado",
+  reviewsAggregateTemplate: "{average} de 5 · {count} avaliações",
   specProfile: "Perfil de curvatura",
   specFlex: "Flex",
   specTerrain: "Terreno recomendado",
@@ -67,6 +91,12 @@ const ES: PdpCopy = {
   viewImage: "Ver imagen",
   unavailableSuffix: "(agotado)",
   checkoutTrust: "El checkout se procesa de forma segura con Shopify.",
+  paymentHint: "",
+  buyNow: "Comprar ahora",
+  buying: "Redirigiendo…",
+  reviewsTitle: "Reseñas de riders",
+  verifiedRider: "Rider verificado",
+  reviewsAggregateTemplate: "{average} de 5 · {count} reseñas",
   specProfile: "Perfil de curvatura",
   specFlex: "Flex",
   specTerrain: "Terreno recomendado",
@@ -110,6 +140,14 @@ export function pdpCopy(locale: AppLocale): PdpCopy {
 
 export function resolveLowStockMessage(template: string, count: number): string {
   return interpolate(template, { count: String(count) });
+}
+
+export function resolvePdpReviewsAggregate(
+  template: string,
+  average: string,
+  count: number,
+): string {
+  return interpolate(template, { average, count: String(count) });
 }
 
 /** Closed snowboard vocabulary. Unknown values become words (`all_mountain` → `all mountain`). */

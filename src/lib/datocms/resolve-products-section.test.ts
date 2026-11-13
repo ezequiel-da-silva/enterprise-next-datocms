@@ -138,8 +138,8 @@ describe("readProductPageCards", () => {
         "selected_products",
       ),
     ).toEqual([
-      { handle: "hat", title: "Hat", badge: null, baseImage: null },
-      { handle: "wax", title: "Wax", badge: null, baseImage: null },
+      { handle: "hat", title: "Hat", badge: null, profile: null, terrain: null, flex: null, baseImage: null },
+      { handle: "wax", title: "Wax", badge: null, profile: null, terrain: null, flex: null, baseImage: null },
     ]);
   });
 });
@@ -291,7 +291,7 @@ describe("overlayDatoTitles", () => {
           priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "hat", title: "Chapéu", badge: null, baseImage: null }],
+      [{ handle: "hat", title: "Chapéu", badge: null, profile: null, terrain: null, flex: null, baseImage: null }],
     );
     expect(first?.title).toBe("Chapéu");
   });
@@ -323,11 +323,24 @@ describe("enrichCatalogProducts", () => {
           priceRange: { minVariantPrice: { amount: "600", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "hydrogen", title: "Hydrogen CMS", badge: "new", baseImage }],
+      [
+        {
+          handle: "hydrogen",
+          title: "Hydrogen CMS",
+          badge: "new",
+          profile: "camber",
+          terrain: "all_mountain",
+          flex: 6,
+          baseImage,
+        },
+      ],
     );
     expect(first).toMatchObject({
       title: "Hydrogen CMS",
       badge: "new",
+      profile: "camber",
+      terrain: "all_mountain",
+      flex: 6,
       hoverImage: baseImage,
     });
   });
@@ -351,10 +364,23 @@ describe("enrichCatalogProducts", () => {
           priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
         },
       ],
-      [{ handle: "oxygen", title: "Oxygen", badge: null, baseImage: null }],
+      [
+        {
+          handle: "oxygen",
+          title: "Oxygen",
+          badge: null,
+          profile: null,
+          terrain: null,
+          flex: null,
+          baseImage: null,
+        },
+      ],
     );
     expect(first?.hoverImage).toEqual(galleryHover);
     expect(first?.badge).toBeNull();
+    expect(first?.profile).toBeNull();
+    expect(first?.terrain).toBeNull();
+    expect(first?.flex).toBeNull();
   });
 });
 
@@ -383,9 +409,26 @@ describe("publishedStorefrontProducts", () => {
   it("keeps only handles with a product_page and overlays the Dato title", () => {
     expect(
       publishedStorefrontProducts(storefront, [
-        { handle: "hat", title: "Chapéu", badge: null, baseImage: null },
+        {
+          handle: "hat",
+          title: "Chapéu",
+          badge: null,
+          profile: null,
+          terrain: null,
+          flex: null,
+          baseImage: null,
+        },
       ]),
-    ).toEqual([{ ...storefront[0], title: "Chapéu" }]);
+    ).toEqual([
+      {
+        ...storefront[0],
+        title: "Chapéu",
+        badge: null,
+        profile: null,
+        terrain: null,
+        flex: null,
+      },
+    ]);
   });
 
   it("returns empty when there are no product_page records", () => {

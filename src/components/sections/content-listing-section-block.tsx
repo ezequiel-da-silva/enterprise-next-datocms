@@ -1,5 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import { Skeleton } from "@/components/atoms/skeleton";
+import { CatalogFilters } from "@/components/patterns/catalog-filters";
 import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
 import { BlogPostsSectionBlock } from "@/components/sections/blog-posts-section-block";
@@ -7,6 +8,11 @@ import { ProductsSectionInteractive } from "@/components/sections/products-secti
 import type { AppLocale } from "@/constants/i18n";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { ContentListingSectionBlockRecord } from "@/infra/datocms/types-page";
+import {
+  catalogFacetsActive,
+  filterAndSortCatalogProducts,
+  type CatalogFilters as CatalogFiltersState,
+} from "@/lib/catalog/catalog-filters";
 import { cmsBlockAttrs } from "@/lib/datocms/cms-block-attrs";
 import { readContentListingSource } from "@/lib/datocms/resolve-content-listing-section";
 import {
@@ -17,6 +23,7 @@ import {
 } from "@/lib/datocms/resolve-products-section";
 
 import { sectionLandmarkProps, textHeaderFromRecord } from "@/lib/datocms/resolve-text-header";
+import type { CatalogFiltersCopy } from "@/lib/i18n/catalog-filters-copy";
 import { latestPostsCopy } from "@/lib/i18n/latest-posts-copy";
 import {
   productsSectionCopy,
@@ -30,6 +37,9 @@ type ContentListingSectionBlockProps = {
   productsCatalog?: ProductsListingCatalog | Promise<ProductsListingCatalog>;
   /** CMS overlays for empty + pagination (resolved in `app/`). */
   productsCmsCopy?: ProductsSectionCmsCopy;
+  catalogFilters?: CatalogFiltersState;
+  catalogFiltersCopy?: CatalogFiltersCopy;
+  catalogFiltersPath?: string;
 };
 
 export function ContentListingSectionFallback({
@@ -80,6 +90,9 @@ export async function ContentListingSectionBlock({
   blogCatalog,
   productsCatalog,
   productsCmsCopy,
+  catalogFilters,
+  catalogFiltersCopy,
+  catalogFiltersPath,
 }: ContentListingSectionBlockProps) {
   const raw = record as Record<string, unknown>;
   if (readContentListingSource(raw) === "blog") {
@@ -95,10 +108,36 @@ export async function ContentListingSectionBlock({
   const header = textHeaderFromRecord(raw);
   const resolvedCatalog = productsCatalog ? await Promise.resolve(productsCatalog) : {};
   const products = resolvedCatalog[record.id] ?? [];
-  const ranked = options.hasLimit ? hideSoldOutProducts(products) : products;
+  const filters = catalogFilters;
+  const filtered =
+    filters != null ? filterAndSortCatalogProducts(products, filters) : products;
+  const ranked = options.hasLimit ? hideSoldOutProducts(filtered) : filtered;
   const dataset = applyProductLimit(ranked, options.hasLimit, options.limit, options.displayType);
+  const showFilters =
+    filters != null &&
+    catalogFiltersCopy != null &&
+    catalogFiltersPath != null &&
+    !options.hasLimit;
+  const emptyCopy: ProductsSectionCmsCopy =
+    showFilters && catalogFacetsActive(filters) && dataset.length === 0
+      ? { ...cmsCopy, empty: catalogFiltersCopy.filtersEmpty }
+      : cmsCopy;
 
   const headingId = `content-listing-${record.id}`;
+  const productsInteractive = (
+    <ProductsSectionInteractive
+      locale={locale}
+      products={dataset}
+      displayType={options.displayType}
+      initialCount={options.initialCount}
+      loadMoreStep={options.loadMoreStep}
+      loadMoreLabel={options.loadMoreLabel}
+      carousel={options.carousel}
+      cmsCopy={emptyCopy}
+      featuredLayout={options.hasLimit}
+    />
+  );
+
   return (
     <section
       {...cmsBlockAttrs(record)}
@@ -115,16 +154,20 @@ export async function ContentListingSectionBlock({
           headingClassName="type-heading"
           descriptionClassName="type-lead"
         />
-        <ProductsSectionInteractive
-          locale={locale}
-          products={dataset}
-          displayType={options.displayType}
-          initialCount={options.initialCount}
-          loadMoreStep={options.loadMoreStep}
-          loadMoreLabel={options.loadMoreLabel}
-          carousel={options.carousel}
-          cmsCopy={cmsCopy}
-        />
+        {showFilters ? (
+          <CatalogFilters
+            locale={locale}
+            pathname={catalogFiltersPath}
+            filters={filters}
+            catalog={products}
+            resultCount={dataset.length}
+            copy={catalogFiltersCopy}
+          >
+            {productsInteractive}
+          </CatalogFilters>
+        ) : (
+          productsInteractive
+        )}
       </Container>
     </section>
   );

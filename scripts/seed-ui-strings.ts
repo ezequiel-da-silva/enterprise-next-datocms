@@ -11,6 +11,7 @@
 import type { Client } from "datocms/lib/cma-client-node";
 import { ACCOUNT_COPY } from "../src/lib/i18n/account-copy";
 import { CART_COPY } from "../src/lib/i18n/cart-copy";
+import { CATALOG_FILTERS_COPY } from "../src/lib/i18n/catalog-filters-copy";
 import { COLLECTION_COPY } from "../src/lib/i18n/collection-copy";
 import { CONSENT_COPY } from "../src/lib/i18n/consent-copy";
 import { ORDER_CONFIRMATION_COPY } from "../src/lib/i18n/order-confirmation-copy";
@@ -24,6 +25,7 @@ import {
   ACCOUNT_TEMPLATE_FIELDS,
   CART_FIELDS,
   CART_LINK_FIELDS,
+  CATALOG_FILTERS_FIELDS,
   COLLECTION_FIELDS,
   CONSENT_FIELDS,
   ORDER_CONFIRMATION_TEXT_FIELDS,
@@ -55,6 +57,7 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
   const products = PRODUCTS_SECTION_COPY[locale];
   const video = VIDEO_UI_COPY[locale];
   const order = ORDER_CONFIRMATION_COPY[locale];
+  const catalogFilters = CATALOG_FILTERS_COPY[locale];
   const out: Record<string, string> = {};
 
   for (const [key, name] of Object.entries(CONSENT_FIELDS)) {
@@ -95,6 +98,9 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
   }
   for (const [key, name] of Object.entries(ORDER_CONFIRMATION_TEXT_FIELDS)) {
     out[name] = order[key as keyof typeof ORDER_CONFIRMATION_TEXT_FIELDS];
+  }
+  for (const [key, name] of Object.entries(CATALOG_FILTERS_FIELDS)) {
+    out[name] = catalogFilters[key as keyof typeof CATALOG_FILTERS_FIELDS];
   }
 
   return out;

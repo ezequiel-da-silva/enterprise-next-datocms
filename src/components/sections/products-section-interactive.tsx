@@ -27,6 +27,8 @@ type ProductsSectionInteractiveProps = {
   carousel: CarouselSetting;
   /** CMS overlays for empty + pagination labels (resolved on the server). */
   cmsCopy: ProductsSectionCmsCopy;
+  /** Featured / hasLimit listings: denser 4-column grid on large screens. */
+  featuredLayout?: boolean;
 };
 
 export function ProductsSectionInteractive({
@@ -38,6 +40,7 @@ export function ProductsSectionInteractive({
   loadMoreLabel,
   carousel,
   cmsCopy,
+  featuredLayout = false,
 }: ProductsSectionInteractiveProps) {
   const base = productsSectionCopy(locale);
   const copy = {
@@ -83,7 +86,13 @@ export function ProductsSectionInteractive({
         <ProductsSectionCarousel products={visibleProducts} locale={locale} setting={carousel} />
       ) : (
         <>
-          <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3">
+          <ul
+            className={
+              featuredLayout
+                ? "m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4"
+                : "m-0 grid list-none grid-cols-1 gap-6 p-0 md:grid-cols-2 lg:grid-cols-3"
+            }
+          >
             {visibleProducts.map((product) => (
               <li key={product.handle} className="min-w-0">
                 <CatalogProductCard locale={locale} product={product} sizes={CARD_SIZES} />

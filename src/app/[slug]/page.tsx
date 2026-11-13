@@ -32,7 +32,8 @@ import { getLegalPageBySlug, getLegalPageBySlugResult, legalPagePath } from "@/i
 import { LegalPageArticle } from "@/components/patterns/legal-page-article";
 import { getPageBySlug } from "@/infra/datocms/get-page";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
-import { getProductsSectionCmsCopy, getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
+import { getCatalogFiltersCopy, getProductsSectionCmsCopy, getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
+import { parseCatalogSearchParams } from "@/lib/catalog/catalog-filters";
 import { buildDatoPageMetadata, cmsContentOgImage, withSearchQueryNoIndex } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
@@ -45,7 +46,7 @@ import { notFound, permanentRedirect } from "next/navigation";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 // No `loading.tsx` in this segment: it streams a 200 shell before `notFound()`,
@@ -186,24 +187,28 @@ export default async function DynamicPage({ params, searchParams }: PageProps) {
   const latestPostsCatalog = contentNeedsLatestPostsCatalog(page.contentPage)
     ? loadLatestPostsCatalog(toDatoSiteLocale(cmsLocale), isEnabled)
     : undefined;
-  const productsCatalog = contentNeedsProductsCatalog(page.contentPage)
+  const needsProducts = contentNeedsProductsCatalog(page.contentPage);
+  const productsCatalog = needsProducts
     ? loadProductsListingCatalog(page.contentPage, cmsLocale, isEnabled)
     : undefined;
-  const [productsCmsCopy, videoCopy] = await Promise.all([
+  const queryParams = await searchParams;
+  const [productsCmsCopy, videoCopy, catalogFiltersCopy] = await Promise.all([
     getProductsSectionCmsCopy(cmsLocale),
     getVideoUiCopy(cmsLocale),
+    needsProducts ? getCatalogFiltersCopy(cmsLocale) : Promise.resolve(undefined),
   ]);
 
   const query = contentNeedsSearchResults(page.contentPage)
-    ? readSearchQuery((await searchParams).q)
+    ? readSearchQuery(queryParams.q)
     : "";
   const searchResults = query ? searchSite(query, cmsLocale) : undefined;
+  const canonicalPath = cmsPageCanonicalPath(pageSlug, cmsLocale);
 
   return (
     <CmsPageArticle
       page={page}
       locale={cmsLocale}
-      canonicalPath={cmsPageCanonicalPath(pageSlug, cmsLocale)}
+      canonicalPath={canonicalPath}
       contentLinkGroup={isEnabled}
       submitUserReview={submitUserReview}
       submitContact={submitContact}
@@ -214,6 +219,9 @@ export default async function DynamicPage({ params, searchParams }: PageProps) {
       jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
       searchQuery={query || undefined}
       searchResults={searchResults}
+      catalogFilters={needsProducts ? parseCatalogSearchParams(queryParams) : undefined}
+      catalogFiltersCopy={catalogFiltersCopy}
+      catalogFiltersPath={needsProducts ? canonicalPath : undefined}
     />
   );
 }
