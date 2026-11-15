@@ -355,11 +355,24 @@ const CTA_BANNER_BLOCK = `
 `;
 
 /**
- * Links do Structured Text em **Post.postContent** / Text section / search / contact intro.
- * Allowlist CMA: `page` + `product_page` (ver `scripts/allow-product-in-blog-st.ts`).
- * Sem `PostRecord` / `CategoryRecord` / `AuthorRecord` nestes campos.
+ * Links do Structured Text em Text section / search / contact intro (modular content da Page).
+ * No schema CDA destes campos, `links` é só `PageRecord` — não espalhar `ProductPageRecord`
+ * aqui (quebra `PAGE_BY_SLUG` inteiro → 404 em todas as páginas CMS).
  */
 const ST_RECORD_LINKS_PAGE_ST = `
+  __typename
+  ... on PageRecord {
+    id
+    title
+    slug
+  }
+`;
+
+/**
+ * Links do Structured Text em **Post.postContent**.
+ * Allowlist CMA: `page` + `product_page` (`scripts/allow-product-in-blog-st.ts`).
+ */
+const ST_RECORD_LINKS_POST_ST = `
   __typename
   ... on PageRecord {
     id
@@ -920,7 +933,7 @@ export const GET_POST_BY_SLUG = /* GraphQL */ `
       postContent {
         value
         links {
-          ${ST_RECORD_LINKS_PAGE_ST}
+          ${ST_RECORD_LINKS_POST_ST}
         }
         blocks {
           ${STRUCTURED_TEXT_BLOCKS}
