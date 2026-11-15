@@ -355,8 +355,9 @@ const CTA_BANNER_BLOCK = `
 `;
 
 /**
- * Links do Structured Text em **Post.postContent** (CDA deste projeto):
- * o schema expõe `links: Array<PageRecord>` — não há `PostRecord` / `CategoryRecord` / `AuthorRecord` aqui.
+ * Links do Structured Text em **Post.postContent** / Text section / search / contact intro.
+ * Allowlist CMA: `page` + `product_page` (ver `scripts/allow-product-in-blog-st.ts`).
+ * Sem `PostRecord` / `CategoryRecord` / `AuthorRecord` nestes campos.
  */
 const ST_RECORD_LINKS_PAGE_ST = `
   __typename
@@ -364,6 +365,15 @@ const ST_RECORD_LINKS_PAGE_ST = `
     id
     title
     slug
+  }
+  ... on ProductPageRecord {
+    id
+    title
+    shopifyHandle
+    profile
+    flex
+    badge
+    _editingUrl @include(if: $withEditingUrl)
   }
 `;
 
@@ -1377,6 +1387,12 @@ export const PRODUCT_PAGE_BY_HANDLE = /* GraphQL */ `
         comment
         verifiedRider
         date
+        _editingUrl @include(if: $withEditingUrl)
+      }
+      questions {
+        id
+        question
+        answer
         _editingUrl @include(if: $withEditingUrl)
       }
       seo {

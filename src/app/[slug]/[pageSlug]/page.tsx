@@ -23,7 +23,14 @@ import { searchSite } from "@/infra/datocms/search";
 import { readSearchQuery, searchResultsPath } from "@/lib/datocms/search-query";
 import { getLegalPageBySlug, getLegalPageBySlugResult, legalPagePath } from "@/infra/datocms/get-legal-page";
 import { LegalPageArticle } from "@/components/patterns/legal-page-article";
+import { getMarketPolicy } from "@/infra/datocms/get-market-policy";
 import { getPageBySlug } from "@/infra/datocms/get-page";
+import {
+  buildMarketPolicyTableRows,
+  isShippingReturnsPageSlug,
+  MARKET_POLICY_TABLE_COUNTRIES,
+} from "@/lib/seo/market-policy-table";
+import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getCatalogFiltersCopy, getProductsSectionCmsCopy, getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
 import { parseCatalogSearchParams } from "@/lib/catalog/catalog-filters";
@@ -197,6 +204,17 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
     : "";
   const searchResults = query ? searchSite(query, locale) : undefined;
   const canonicalPath = cmsPageCanonicalPath(pageSlug, locale);
+  const marketPolicyRows = isShippingReturnsPageSlug(locale, page.slug)
+    ? buildMarketPolicyTableRows(
+        locale,
+        await Promise.all(
+          MARKET_POLICY_TABLE_COUNTRIES.map(async (country) => ({
+            country,
+            policy: await getMarketPolicy(country),
+          })),
+        ),
+      )
+    : undefined;
 
   return (
     <CmsPageArticle
@@ -216,6 +234,8 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
       catalogFilters={needsProducts ? parseCatalogSearchParams(queryParams) : undefined}
       catalogFiltersCopy={catalogFiltersCopy}
       catalogFiltersPath={needsProducts ? canonicalPath : undefined}
+      marketPolicyRows={marketPolicyRows}
+      marketPolicyCurrentCountry={shopifyCountryFromLocale(locale)}
     />
   );
 }

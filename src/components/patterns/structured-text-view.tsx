@@ -1,11 +1,14 @@
 import type { AppLocale } from "@/constants/i18n";
+import { ProductInlineCard } from "@/components/patterns/product-inline-card";
 import { StructuredTextBlockView } from "@/components/patterns/structured-text-block-view";
 import { structuredTextDatoNodeRules } from "@/components/patterns/structured-text-dato-rules";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
 import type { PageStructuredTextBlock } from "@/infra/datocms/types-page";
+import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import { resolveStructuredTextRecordLink } from "@/lib/datocms/st-record-link";
 import type { VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
+import { stripStega } from "react-datocms/stega";
 import { StructuredText } from "react-datocms/structured-text";
 
 type StructuredTextViewProps = {
@@ -14,7 +17,21 @@ type StructuredTextViewProps = {
   locale: AppLocale;
   submitUserReview?: UserReviewSubmitAction;
   videoCopy?: VideoUiCopy;
+  /**
+   * Compact cards for inline `ProductPageRecord`s, keyed by Shopify handle (resolved in `app/`
+   * with Storefront prices). Inline products missing here keep the plain pill link.
+   */
+  productCardsByHandle?: Readonly<Record<string, StorefrontCollectionProduct>>;
 };
+
+function productCardForRecord(
+  record: Record<string, unknown>,
+  cards: StructuredTextViewProps["productCardsByHandle"],
+): StorefrontCollectionProduct | null {
+  if (!cards || record.__typename !== "ProductPageRecord") return null;
+  const handle = typeof record.shopifyHandle === "string" ? stripStega(record.shopifyHandle).trim() : "";
+  return (handle && cards[handle]) || null;
+}
 
 /**
  * Renderer unificado de Structured Text (Page, Post, Author, Category, etc.).
@@ -26,6 +43,7 @@ export function StructuredTextView({
   locale,
   submitUserReview,
   videoCopy,
+  productCardsByHandle,
 }: StructuredTextViewProps) {
   if (!data) {
     return null;
@@ -53,6 +71,14 @@ export function StructuredTextView({
           return <span {...transformedMeta}>{children}</span>;
         }}
         renderInlineRecord={({ record }) => {
+          const productCard = productCardForRecord(record as Record<string, unknown>, productCardsByHandle);
+          if (productCard) {
+            return (
+              <span data-datocms-content-link-boundary="">
+                <ProductInlineCard locale={locale} product={productCard} />
+              </span>
+            );
+          }
           const resolved = resolveStructuredTextRecordLink(record as Record<string, unknown>, locale);
           if (resolved) {
             return (

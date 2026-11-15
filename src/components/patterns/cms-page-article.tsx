@@ -1,6 +1,7 @@
 import { Container } from "@/components/atoms/container";
 import { HeroPrimaryRepeat, HeroSectionBlock } from "@/components/patterns/hero-section-block";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { MarketPolicyTable } from "@/components/patterns/market-policy-table";
 import { PageContentBlocks } from "@/components/patterns/page-content-blocks";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import type { AppLocale } from "@/constants/i18n";
@@ -19,6 +20,7 @@ import type { ProductsSectionCmsCopy } from "@/lib/i18n/products-section-copy";
 import type { VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { getNonce } from "@/lib/nonce";
+import type { MarketPolicyTableRow } from "@/lib/seo/market-policy-table";
 
 type CmsPageArticleProps = {
   page: PageRecord;
@@ -42,6 +44,9 @@ type CmsPageArticleProps = {
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
+  /** Shipping & returns table rows from `market_policy` (page composition, no CMS block). */
+  marketPolicyRows?: readonly MarketPolicyTableRow[];
+  marketPolicyCurrentCountry?: string;
 };
 
 export async function CmsPageArticle({
@@ -61,6 +66,8 @@ export async function CmsPageArticle({
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
+  marketPolicyRows,
+  marketPolicyCurrentCountry,
 }: CmsPageArticleProps) {
   const description = page.seoSettingsSocial?.description ?? null;
   const query = searchQuery?.trim();
@@ -147,6 +154,13 @@ export async function CmsPageArticle({
             catalogFiltersCopy={catalogFiltersCopy}
             catalogFiltersPath={catalogFiltersPath}
           />
+          {marketPolicyRows?.length ? (
+            <MarketPolicyTable
+              locale={locale}
+              rows={marketPolicyRows}
+              currentCountry={marketPolicyCurrentCountry}
+            />
+          ) : null}
           {isHome && page.heroPage && !homeClosesWithCta ? (
             <HeroPrimaryRepeat record={page.heroPage} locale={locale} />
           ) : null}
