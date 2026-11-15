@@ -168,9 +168,9 @@ describe("autoSourceCollectionHandle", () => {
 
 describe("applyProductLimit", () => {
   const products = [
-    { handle: "a", title: "A", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
-    { handle: "b", title: "B", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
-    { handle: "c", title: "C", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } } },
+    { handle: "a", title: "A", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [] },
+    { handle: "b", title: "B", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [] },
+    { handle: "c", title: "C", availableForSale: true, featuredImage: null, hoverImage: null, badge: null, priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [] },
   ];
 
   it("does not slice pagination or load_more", () => {
@@ -193,7 +193,7 @@ describe("hideSoldOutProducts", () => {
       featuredImage: null,
       hoverImage: null,
       badge: null,
-      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
     },
     {
       handle: "sold-out",
@@ -202,7 +202,7 @@ describe("hideSoldOutProducts", () => {
       featuredImage: null,
       hoverImage: null,
       badge: null,
-      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
     },
     {
       handle: "also-in-stock",
@@ -211,7 +211,7 @@ describe("hideSoldOutProducts", () => {
       featuredImage: null,
       hoverImage: null,
       badge: null,
-      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+      priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
     },
   ];
 
@@ -238,7 +238,7 @@ describe("prioritizeAvailableProducts", () => {
         featuredImage: null,
         hoverImage: null,
         badge: null,
-        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
       },
       {
         handle: "ok-b",
@@ -247,7 +247,7 @@ describe("prioritizeAvailableProducts", () => {
         featuredImage: null,
         hoverImage: null,
         badge: null,
-        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
       },
       {
         handle: "sold-c",
@@ -256,7 +256,7 @@ describe("prioritizeAvailableProducts", () => {
         featuredImage: null,
         hoverImage: null,
         badge: null,
-        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
       },
       {
         handle: "ok-d",
@@ -265,7 +265,7 @@ describe("prioritizeAvailableProducts", () => {
         featuredImage: null,
         hoverImage: null,
         badge: null,
-        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+        priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
       },
     ];
     expect(prioritizeAvailableProducts(mixed).map((p) => p.handle)).toEqual([
@@ -288,7 +288,7 @@ describe("overlayDatoTitles", () => {
           featuredImage: null,
           hoverImage: null,
           badge: null,
-          priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
+          priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
         },
       ],
       [{ handle: "hat", title: "Chapéu", badge: null, profile: null, terrain: null, flex: null, baseImage: null }],
@@ -321,6 +321,8 @@ describe("enrichCatalogProducts", () => {
           hoverImage: galleryHover,
           badge: null,
           priceRange: { minVariantPrice: { amount: "600", currencyCode: "USD" } },
+          compareAtPrice: { amount: "750", currencyCode: "USD" },
+          sizes: ["152", "156"],
         },
       ],
       [
@@ -342,6 +344,8 @@ describe("enrichCatalogProducts", () => {
       terrain: "all_mountain",
       flex: 6,
       hoverImage: baseImage,
+      compareAtPrice: { amount: "750", currencyCode: "USD" },
+      sizes: ["152", "156"],
     });
   });
 
@@ -361,7 +365,7 @@ describe("enrichCatalogProducts", () => {
           featuredImage: null,
           hoverImage: galleryHover,
           badge: null,
-          priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } },
+          priceRange: { minVariantPrice: { amount: "1", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
         },
       ],
       [
@@ -393,7 +397,7 @@ describe("publishedStorefrontProducts", () => {
       featuredImage: null,
       hoverImage: null,
       badge: null,
-      priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } },
+      priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
     },
     {
       handle: "ghost",
@@ -402,7 +406,7 @@ describe("publishedStorefrontProducts", () => {
       featuredImage: null,
       hoverImage: null,
       badge: null,
-      priceRange: { minVariantPrice: { amount: "5", currencyCode: "USD" } },
+      priceRange: { minVariantPrice: { amount: "5", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
     },
   ];
 

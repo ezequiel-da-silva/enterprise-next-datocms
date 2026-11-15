@@ -6,6 +6,7 @@ import {
   SHOPIFY_PRODUCTS_TAG,
   shopifyProductTag,
 } from "@/lib/shopify/cache-tags";
+import { extractCatalogSizesFromOptions } from "@/lib/shopify/catalog-size-options";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 
 function catalogCache(tags: string[]): { revalidate: number; tags: string[] } {
@@ -35,6 +36,7 @@ export type StorefrontVariant = {
   availableForSale: boolean;
   quantityAvailable: number | null;
   price: StorefrontMoney;
+  compareAtPrice: StorefrontMoney | null;
   selectedOptions: StorefrontSelectedOption[];
   image: StorefrontProductImage | null;
   sku: string | null;
@@ -49,6 +51,7 @@ export type StorefrontProduct = {
   featuredImage: StorefrontProductImage | null;
   images: StorefrontProductImage[];
   priceRange: { minVariantPrice: StorefrontMoney };
+  compareAtPriceRange: { minVariantPrice: StorefrontMoney } | null;
   variants: StorefrontVariant[];
 };
 
@@ -80,6 +83,12 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
           currencyCode
         }
       }
+      compareAtPriceRange {
+        minVariantPrice {
+          amount
+          currencyCode
+        }
+      }
       variants(first: 50) {
         nodes {
           id
@@ -88,6 +97,10 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
           quantityAvailable
           sku
           price {
+            amount
+            currencyCode
+          }
+          compareAtPrice {
             amount
             currencyCode
           }
@@ -207,6 +220,7 @@ function readVariant(value: unknown): StorefrontVariant | null {
     availableForSale: record.availableForSale === true,
     quantityAvailable: typeof record.quantityAvailable === "number" ? record.quantityAvailable : null,
     price,
+    compareAtPrice: readMoney(record.compareAtPrice),
     selectedOptions: readSelectedOptions(record.selectedOptions),
     image: readImage(record.image),
     sku: readOptionalText(record.sku),
@@ -225,6 +239,7 @@ function mapProduct(value: unknown): StorefrontProduct | null {
   }
   const minPrice = readMoney(asRecord(record.priceRange)?.minVariantPrice);
   if (!minPrice) return null;
+  const compareAtMin = readMoney(asRecord(record.compareAtPriceRange)?.minVariantPrice);
   const variantNodes = asRecord(record.variants)?.nodes;
   const variants = Array.isArray(variantNodes)
     ? variantNodes.map(readVariant).filter((v): v is StorefrontVariant => v !== null)
@@ -238,6 +253,7 @@ function mapProduct(value: unknown): StorefrontProduct | null {
     featuredImage: readImage(record.featuredImage),
     images: readImageNodes(record.images),
     priceRange: { minVariantPrice: minPrice },
+    compareAtPriceRange: compareAtMin ? { minVariantPrice: compareAtMin } : null,
     variants,
   };
 }
@@ -263,6 +279,10 @@ export type StorefrontCollectionProduct = {
   terrain?: string | null;
   flex?: number | null;
   priceRange: { minVariantPrice: StorefrontMoney };
+  /** Lowest compare-at across variants when Shopify exposes a range / variants. */
+  compareAtPrice: StorefrontMoney | null;
+  /** Normalized board lengths from variant options (catalog size facet). */
+  sizes: string[];
 };
 
 export type StorefrontCollection = {
@@ -318,6 +338,29 @@ const COLLECTION_PRODUCT_FIELDS = `
       currencyCode
     }
   }
+  compareAtPriceRange {
+    minVariantPrice {
+      amount
+      currencyCode
+    }
+  }
+  variants(first: 50) {
+    nodes {
+      availableForSale
+      price {
+        amount
+        currencyCode
+      }
+      compareAtPrice {
+        amount
+        currencyCode
+      }
+      selectedOptions {
+        name
+        value
+      }
+    }
+  }
 `;
 
 const COLLECTION_BY_HANDLE_QUERY = /* GraphQL */ `
@@ -363,6 +406,21 @@ function mapCollectionProduct(value: unknown): StorefrontCollectionProduct | nul
     ? imageNodes.map(readImage).filter((img): img is NonNullable<ReturnType<typeof readImage>> => img !== null)
     : [];
   const second = gallery.find((img) => img.url !== featuredImage?.url) ?? null;
+  const variantNodes = asRecord(record.variants)?.nodes;
+  const optionLists: StorefrontSelectedOption[][] = [];
+  const compareAts: StorefrontMoney[] = [];
+  if (Array.isArray(variantNodes)) {
+    for (const node of variantNodes) {
+      const row = asRecord(node);
+      if (!row) continue;
+      optionLists.push(readSelectedOptions(row.selectedOptions));
+      const compareAt = readMoney(row.compareAtPrice);
+      if (compareAt) compareAts.push(compareAt);
+    }
+  }
+  const compareAtFromRange = readMoney(asRecord(record.compareAtPriceRange)?.minVariantPrice);
+  const compareAtFromVariants =
+    compareAts.sort((a, b) => Number.parseFloat(a.amount) - Number.parseFloat(b.amount))[0] ?? null;
   return {
     handle: record.handle,
     title: record.title,
@@ -371,6 +429,8 @@ function mapCollectionProduct(value: unknown): StorefrontCollectionProduct | nul
     hoverImage: second,
     badge: null,
     priceRange: { minVariantPrice: minPrice },
+    compareAtPrice: compareAtFromRange ?? compareAtFromVariants,
+    sizes: extractCatalogSizesFromOptions(optionLists),
   };
 }
 
@@ -548,6 +608,8 @@ export async function getStorefrontProductsByHandles(
             product.images.find((img) => img?.url && img.url !== product.featuredImage?.url) ?? null,
           badge: null,
           priceRange: product.priceRange,
+          compareAtPrice: product.compareAtPriceRange?.minVariantPrice ?? null,
+          sizes: extractCatalogSizesFromOptions(product.variants.map((variant) => variant.selectedOptions)),
         } satisfies StorefrontCollectionProduct,
       ]),
   );
