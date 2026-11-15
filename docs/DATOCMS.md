@@ -1,4 +1,4 @@
-# DatoCMS — next-dato
+﻿# DatoCMS — next-dato
 
 Web Previews / Content Link: [SECURITY.md](./SECURITY.md). Cache tags nos fetches: [`.cursor/rules/datocms-next.mdc`](../.cursor/rules/datocms-next.mdc).
 
@@ -344,6 +344,8 @@ Coleção **🚚 Market policy**: um registo por país (**US**, **BR**, **ES**, 
 
 **Alinhamento obrigatório com copy humana:** páginas `shipping-returns` / `refund-policy` (e FAQs geradas por setup) devem espelhar os mesmos números que `market_policy` — tipicamente US **$9.90**, BR **frete grátis**, ES **5 €**, **30 dias** de devolução, frete reverso **grátis** quando `return_fees=free`. O Google e o cliente comparam JSON-LD PDP com o texto publicado; divergência = risco Merchant + confiança (Peak-End).
 
+As páginas CMS `shipping-returns` / `envios-e-devolucoes` / `envios-y-devoluciones` renderizam ainda uma **tabela HTML por mercado** (frete, preparação, entrega, devolução) gerada por `buildMarketPolicyTableRows` a partir de `market_policy` (src/lib/seo/market-policy-table.ts). Campos vazios/ inválidos aparecem como `—`; nenhum valor é inventado.
+
 - **Os valores têm de bater com o checkout e as políticas da Shopify**.
 - Campo vazio ou inválido omite só o bloco afetado (envio exige taxa + os dois prazos; devolução exige prazo + quem paga). Sem registo para o país, nenhum dos dois blocos é publicado.
 - Só conteúdo **publicado** é lido (draft mode: publique para valer). Webhook invalida `datocms:market-policy`; senão ISR 300s.
@@ -363,7 +365,7 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 | `setup-shipping-returns-faq-page.ts` | FAQ frete/devolução a partir de `market_policy`; `SHIPPING_FAQ_FORCE=1` |
 | `setup-best-of-landing.ts` | Landing “Best of”; `BEST_OF_FORCE=1` rebuild hero/grids |
 | `update-refund-policy-page.ts` | Alinha legal refund; `REFUND_POLICY_FORCE=1` |
-| `setup-snowboard-specs-model.ts` | Garante campos técnicos no `product_page`; `SNOWBOARD_SPECS_SEED=1` preenche boards demo |
+| `setup-snowboard-specs-model.ts` | Garante campos técnicos no `product_page`; `SNOWBOARD_SPECS_SEED=1` preenche boards demo (hydrogen, liquid, complete, multi-managed, videographer) |
 | `seed-ui-strings.ts` | Preenche só campos vazios de `ui_string` |
 | `bootstrap-staging-schema.ts` | Bootstrap sandbox (staging) |
 
@@ -423,8 +425,11 @@ Local: `http://localhost:3000/api/revalidate` + túnel (ngrok) se quiseres testa
 | `market_policy` | `datocms:market-policy` |
 | `redirect` | `datocms:redirects` |
 | `product_page` | `datocms:product`, `product:{handle}`, sitemap |
+| `product_review` / `product_question` | `datocms:product` (mesmo purge de família PDP; handles não vêm no payload filho) |
 | `collection_page` | `datocms:collection`, `collection:{handle}`, sitemap |
 | CDA `tags[]` ou modelo desconhecido | [famílias coarse](../src/lib/datocms/revalidate-tags.ts) |
+
+Se o webhook de revalidate no admin estiver **filtrado por modelo**, inclui `product_review` e `product_question` (além de `product_page`). Com triggers **Record** em todos os itens, já cobre. Confirma no admin Dato (Settings → Webhooks) — não inventes o Bearer; usa `DATOCMS_REVALIDATE_SECRET`.
 
 O ISR de 300s permanece como rede de segurança se o webhook falhar.
 

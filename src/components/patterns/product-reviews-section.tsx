@@ -6,7 +6,7 @@ import {
   type PdpCopy,
 } from "@/lib/i18n/pdp-copy";
 import { formatRatingAverage } from "@/lib/i18n/reviews-copy";
-import { computeRatingAggregate } from "@/lib/seo/build-reviews-jsonld";
+import { buildRatingHistogram, computeRatingAggregate } from "@/lib/seo/build-reviews-jsonld";
 
 export type ProductReviewItem = {
   id: string;
@@ -73,6 +73,7 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
       comment: r.comment,
     }));
   const aggregate = computeRatingAggregate(rated);
+  const histogram = buildRatingHistogram(rated);
   const averageLabel = aggregate ? formatRatingAverage(aggregate.average, locale) : null;
   const aggregateLabel =
     aggregate && averageLabel
@@ -95,6 +96,26 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
             <StarRating rating={aggregate.average} />
             <span>{aggregateLabel}</span>
           </p>
+        ) : null}
+        {histogram ? (
+          <ul
+            className="m-0 grid max-w-sm list-none gap-1.5 p-0 pt-2"
+            data-testid="rating-histogram"
+          >
+            {histogram.rows.map((row) => (
+              <li key={row.stars} className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center gap-3 text-sm">
+                <span className="text-foreground">{row.stars} ★</span>
+                <meter
+                  min={0}
+                  max={histogram.total}
+                  value={row.count}
+                  aria-label={`${row.stars} ★: ${row.count}`}
+                  className="h-2 w-full"
+                />
+                <span className="text-right tabular-nums text-muted-foreground">{row.count}</span>
+              </li>
+            ))}
+          </ul>
         ) : null}
       </div>
 

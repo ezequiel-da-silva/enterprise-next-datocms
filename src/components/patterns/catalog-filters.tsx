@@ -1,6 +1,6 @@
 import {
   FacetPanel,
-  type CatalogFacetOption,
+  type CatalogFacetGroup,
   type CatalogStockOption,
 } from "@/components/patterns/catalog-facet-panel";
 import { CatalogFiltersDrawer } from "@/components/patterns/catalog-filters-drawer";
@@ -8,6 +8,7 @@ import { CatalogSortSelect } from "@/components/patterns/catalog-sort-select";
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import {
+  CATALOG_PRICE_BAND_VALUES,
   CATALOG_PROFILE_VALUES,
   CATALOG_TERRAIN_VALUES,
   catalogFacetsActive,
@@ -15,6 +16,7 @@ import {
   countCatalogFacetOptions,
   type CatalogFilters as CatalogFiltersState,
 } from "@/lib/catalog/catalog-filters";
+import { formatCatalogPriceBandLabel } from "@/lib/catalog/catalog-price-band-label";
 import {
   resolveCatalogResultsLabel,
   type CatalogFiltersCopy,
@@ -45,12 +47,12 @@ function buildFacetOptions(
   catalog: readonly StorefrontCollectionProduct[],
   copy: CatalogFiltersCopy,
 ): {
-  terrainOptions: CatalogFacetOption[];
-  profileOptions: CatalogFacetOption[];
+  groups: CatalogFacetGroup[];
   stock: CatalogStockOption;
   activeFacetCount: number;
 } {
   const counts = countCatalogFacetOptions(catalog, filters);
+  const currency = catalog[0]?.priceRange.minVariantPrice.currencyCode ?? "USD";
 
   const terrainOptions = CATALOG_TERRAIN_VALUES.filter(
     (value) => counts.terrain[value] > 0 || filters.terrain === value,
@@ -74,6 +76,32 @@ function buildFacetOptions(
     active: filters.profile === value,
   }));
 
+  const sizeOptions = Object.keys(counts.size)
+    .filter((key) => counts.size[key] > 0 || filters.size === key)
+    .sort((a, b) => Number.parseFloat(a) - Number.parseFloat(b))
+    .map((key) => ({
+      href: catalogHref(pathname, filters, { size: filters.size === key ? null : key }),
+      label: `${key} cm`,
+      count: counts.size[key],
+      active: filters.size === key,
+    }));
+
+  const priceOptions = CATALOG_PRICE_BAND_VALUES.filter(
+    (band) => counts.price[band] > 0 || filters.price === band,
+  ).map((band) => ({
+    href: catalogHref(pathname, filters, { price: filters.price === band ? null : band }),
+    label: formatCatalogPriceBandLabel(locale, band, currency),
+    count: counts.price[band],
+    active: filters.price === band,
+  }));
+
+  const groups: CatalogFacetGroup[] = [
+    { key: "terrain", label: copy.terrainLabel, options: terrainOptions },
+    { key: "profile", label: copy.profileLabel, options: profileOptions },
+    { key: "size", label: copy.sizeLabel, options: sizeOptions },
+    { key: "price", label: copy.priceLabel, options: priceOptions },
+  ];
+
   const stock: CatalogStockOption = {
     href: catalogHref(pathname, filters, { inStock: !filters.inStock }),
     label: copy.inStockOnly,
@@ -83,9 +111,11 @@ function buildFacetOptions(
   let activeFacetCount = 0;
   if (filters.terrain) activeFacetCount += 1;
   if (filters.profile) activeFacetCount += 1;
+  if (filters.size) activeFacetCount += 1;
+  if (filters.price) activeFacetCount += 1;
   if (filters.inStock) activeFacetCount += 1;
 
-  return { terrainOptions, profileOptions, stock, activeFacetCount };
+  return { groups, stock, activeFacetCount };
 }
 
 export function CatalogFilters({
@@ -99,7 +129,7 @@ export function CatalogFilters({
 }: CatalogFiltersProps) {
   const facetsOn = catalogFacetsActive(filters);
   const resultsLabel = resolveCatalogResultsLabel(copy.resultsTemplate, resultCount);
-  const { terrainOptions, profileOptions, stock, activeFacetCount } = buildFacetOptions(
+  const { groups, stock, activeFacetCount } = buildFacetOptions(
     locale,
     pathname,
     filters,
@@ -109,6 +139,8 @@ export function CatalogFilters({
   const clearFacetsHref = catalogHref(pathname, filters, {
     terrain: null,
     profile: null,
+    size: null,
+    price: null,
     inStock: false,
   });
 
@@ -127,6 +159,24 @@ export function CatalogFilters({
       href: catalogHref(pathname, filters, { profile: null }),
     });
   }
+  if (filters.size) {
+    activeChips.push({
+      key: "size",
+      label: `${filters.size} cm`,
+      href: catalogHref(pathname, filters, { size: null }),
+    });
+  }
+  if (filters.price) {
+    activeChips.push({
+      key: "price",
+      label: formatCatalogPriceBandLabel(
+        locale,
+        filters.price,
+        catalog[0]?.priceRange.minVariantPrice.currencyCode ?? "USD",
+      ),
+      href: catalogHref(pathname, filters, { price: null }),
+    });
+  }
   if (filters.inStock) {
     activeChips.push({
       key: "inStock",
@@ -136,13 +186,7 @@ export function CatalogFilters({
   }
 
   const panel = (
-    <FacetPanel
-      terrainLabel={copy.terrainLabel}
-      profileLabel={copy.profileLabel}
-      terrainOptions={terrainOptions}
-      profileOptions={profileOptions}
-      stock={stock}
-    />
+    <FacetPanel groups={groups} stock={stock} />
   );
 
   return (
@@ -163,10 +207,7 @@ export function CatalogFilters({
               filtersLabel={copy.filtersLabel}
               openFiltersLabel={copy.openFiltersLabel}
               closeFiltersLabel={copy.closeFiltersLabel}
-              terrainLabel={copy.terrainLabel}
-              profileLabel={copy.profileLabel}
-              terrainOptions={terrainOptions}
-              profileOptions={profileOptions}
+              groups={groups}
               stock={stock}
               activeFacetCount={activeFacetCount}
             />

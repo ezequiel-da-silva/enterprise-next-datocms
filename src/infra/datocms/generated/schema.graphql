@@ -716,8 +716,36 @@ type CtaBannerRecord implements RecordInterface {
 
 scalar CustomData
 
-"""A ISO 8601 compliant datetime value"""
+"""A ISO 8601 compliant date value"""
 scalar Date
+
+"""Specifies how to filter Date fields"""
+input DateFilter {
+  """Search for records with an exact match"""
+  eq: Date
+  """
+  Filter records with the specified field defined (i.e. with any value) or not
+  """
+  exists: BooleanType
+  """
+  Filter records with a value that's strictly greater than the one specified
+  """
+  gt: Date
+  """
+  Filter records with a value that's greater than or equal to the one specified
+  """
+  gte: Date
+  """Filter records with a value that's less than the one specified"""
+  lt: Date
+  """
+  Filter records with a value that's less or equal than the one specified
+  """
+  lte: Date
+  """Exclude records with an exact match"""
+  neq: Date
+}
+
+"""A ISO 8601 compliant datetime value"""
 scalar DateTime
 
 """Block of type ⁉️ FAQ group (faq_group)"""
@@ -4070,6 +4098,8 @@ input ProductPageModelFilter {
   flex: IntegerFilter
   id: ItemIdFilter
   profile: StringFilter
+  questions: LinksFilter
+  reviews: LinksFilter
   riderLevel: StringFilter
   seo: SeoFilter
   shopifyHandle: SlugFilter
@@ -4184,8 +4214,9 @@ type ProductPageRecord implements RecordInterface {
   flex: IntType
   id: ItemId!
   profile: String
-  riderLevel: String
+  questions: [ProductQuestionRecord!]!
   reviews: [ProductReviewRecord!]!
+  riderLevel: String
   seo(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -4206,6 +4237,210 @@ type ProductPageRecord implements RecordInterface {
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
   ): String
+}
+
+input ProductQuestionModelFilter {
+  AND: [ProductQuestionModelFilter]
+  OR: [ProductQuestionModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  answer: TextFilter
+  id: ItemIdFilter
+  question: StringFilter
+}
+
+enum ProductQuestionModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  id_ASC
+  id_DESC
+  question_ASC
+  question_DESC
+}
+
+"""Record of type Product question (product_question)"""
+type ProductQuestionRecord implements RecordInterface {
+  _allAnswerLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """Process content as markdown"""
+    markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allQuestionLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  """Editing URL"""
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  """Generates SEO and Social card meta tags to be used in your frontend"""
+  _seoMetaTags(
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  answer(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  id: ItemId!
+  question(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+}
+
+input ProductReviewModelFilter {
+  AND: [ProductReviewModelFilter]
+  OR: [ProductReviewModelFilter]
+  _createdAt: CreatedAtFilter
+  _firstPublishedAt: PublishedAtFilter
+  _isValid: BooleanFilter
+  _locales: LocalesFilter
+  _publicationScheduledAt: PublishedAtFilter
+  _publishedAt: PublishedAtFilter
+  _status: StatusFilter
+  _unpublishingScheduledAt: PublishedAtFilter
+  _updatedAt: UpdatedAtFilter
+  authorName: StringFilter
+  comment: TextFilter
+  date: DateFilter
+  id: ItemIdFilter
+  rating: IntegerFilter
+  title: StringFilter
+  verifiedRider: BooleanFilter
+}
+
+enum ProductReviewModelOrderBy {
+  _createdAt_ASC
+  _createdAt_DESC
+  _firstPublishedAt_ASC
+  _firstPublishedAt_DESC
+  _isValid_ASC
+  _isValid_DESC
+  _publicationScheduledAt_ASC
+  _publicationScheduledAt_DESC
+  _publishedAt_ASC
+  _publishedAt_DESC
+  _status_ASC
+  _status_DESC
+  _unpublishingScheduledAt_ASC
+  _unpublishingScheduledAt_DESC
+  _updatedAt_ASC
+  _updatedAt_DESC
+  authorName_ASC
+  authorName_DESC
+  date_ASC
+  date_DESC
+  id_ASC
+  id_DESC
+  rating_ASC
+  rating_DESC
+  title_ASC
+  title_DESC
+  verifiedRider_ASC
+  verifiedRider_DESC
+}
+
+"""Record of type Product review (product_review)"""
+type ProductReviewRecord implements RecordInterface {
+  _allCommentLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """Process content as markdown"""
+    markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allTitleLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _createdAt: DateTime!
+  """Editing URL"""
+  _editingUrl: String
+  _firstPublishedAt: DateTime!
+  _isValid: BooleanType!
+  _locales: [SiteLocale!]!
+  _modelApiKey: String!
+  _publicationScheduledAt: DateTime
+  _publishedAt: DateTime!
+  """Generates SEO and Social card meta tags to be used in your frontend"""
+  _seoMetaTags(
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): [Tag!]!
+  _status: ItemStatus!
+  _unpublishingScheduledAt: DateTime
+  _updatedAt: DateTime!
+  authorName: String
+  comment(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  date: Date
+  id: ItemId!
+  rating: IntType
+  title(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  verifiedRider: BooleanType!
 }
 
 """Specifies how to filter by publication datetime"""
@@ -4287,6 +4522,18 @@ type Query {
   """Returns meta information regarding a record collection"""
   _allProductPagesMeta(
     filter: ProductPageModelFilter
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): CollectionMetadata!
+  """Returns meta information regarding a record collection"""
+  _allProductQuestionsMeta(
+    filter: ProductQuestionModelFilter
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): CollectionMetadata!
+  """Returns meta information regarding a record collection"""
+  _allProductReviewsMeta(
+    filter: ProductReviewModelFilter
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
   ): CollectionMetadata!
@@ -4443,6 +4690,36 @@ type Query {
     """Skip the first results"""
     skip: IntType
   ): [ProductPageRecord!]!
+  """Returns a collection of records"""
+  allProductQuestions(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    filter: ProductQuestionModelFilter
+    """Limit the number of results"""
+    first: IntType = 20
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    orderBy: [ProductQuestionModelOrderBy] = [_updatedAt_DESC]
+    """Skip the first results"""
+    skip: IntType
+  ): [ProductQuestionRecord!]!
+  """Returns a collection of records"""
+  allProductReviews(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    filter: ProductReviewModelFilter
+    """Limit the number of results"""
+    first: IntType = 20
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    orderBy: [ProductReviewModelOrderBy] = [_updatedAt_DESC]
+    """Skip the first results"""
+    skip: IntType
+  ): [ProductReviewRecord!]!
   """Returns a collection of records"""
   allRedirects(
     """
@@ -4609,6 +4886,28 @@ type Query {
     locale: SiteLocale
     orderBy: [ProductPageModelOrderBy] = [_updatedAt_DESC]
   ): ProductPageRecord
+  """Returns a specific record"""
+  productQuestion(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    filter: ProductQuestionModelFilter
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    orderBy: [ProductQuestionModelOrderBy] = [_updatedAt_DESC]
+  ): ProductQuestionRecord
+  """Returns a specific record"""
+  productReview(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    filter: ProductReviewModelFilter
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    orderBy: [ProductReviewModelOrderBy] = [_updatedAt_DESC]
+  ): ProductReviewRecord
   """Returns a specific record"""
   redirect(
     """
@@ -5619,6 +5918,92 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allCatalogActiveFiltersLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogClearFiltersLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogCloseFiltersLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogFiltersEmptyLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """Process content as markdown"""
+    markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allCatalogFiltersLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogInStockOnlyLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogOpenFiltersLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogProfileLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogResultsTemplateLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogSortLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogSortPriceAscLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogSortPriceDescLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogSortRelevanceLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogTerrainLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allCollectionEmptyLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5638,6 +6023,12 @@ type UiStringRecord implements RecordInterface {
     fallbackLocales: [SiteLocale!]
     """Process content as markdown"""
     markdown: Boolean
+  ): [StringMultiLocaleField!]
+  _allCookiesEssentialNoteLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
   _allCookiesManageLocales(
     """
@@ -5677,6 +6068,18 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allPdpBuyNowLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpBuyingLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allPdpCheckoutTrustLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5690,6 +6093,24 @@ type UiStringRecord implements RecordInterface {
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
   _allPdpLowStockLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpPaymentHintLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpReviewsAggregateTemplateLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpReviewsTitleLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -5756,6 +6177,12 @@ type UiStringRecord implements RecordInterface {
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
   _allPdpUnavailableSuffixLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpVerifiedRiderLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6144,6 +6571,120 @@ type UiStringRecord implements RecordInterface {
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
   ): String
+  catalogActiveFilters(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogClearFilters(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogCloseFilters(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogFiltersEmpty(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+    """Process content as markdown"""
+    markdown: Boolean
+  ): String
+  catalogFiltersLabel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogInStockOnly(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogOpenFilters(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogProfileLabel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogResultsTemplate(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogSortLabel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogSortPriceAsc(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogSortPriceDesc(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogSortRelevance(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogTerrainLabel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   collectionEmpty(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -6169,6 +6710,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
     """Process content as markdown"""
     markdown: Boolean
+  ): String
+  cookiesEssentialNote(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
   ): String
   cookiesManage(
     """
@@ -6221,6 +6770,22 @@ type UiStringRecord implements RecordInterface {
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
   ): String
+  pdpBuyNow(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpBuying(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   pdpCheckoutTrust(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -6238,6 +6803,30 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   pdpLowStock(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpPaymentHint(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpReviewsAggregateTemplate(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpReviewsTitle(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6326,6 +6915,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   pdpUnavailableSuffix(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpVerifiedRider(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6879,64 +7476,6 @@ enum UserReviewModelOrderBy {
   id_DESC
   rating_ASC
   rating_DESC
-}
-
-"""Record of type Product review (product_review)"""
-type ProductReviewRecord implements RecordInterface {
-  _allCommentLocales(
-    """
-    If you want to fallback to a default translation when a translation has not been found
-    """
-    fallbackLocales: [SiteLocale!]
-    """Process content as markdown"""
-    markdown: Boolean
-  ): [StringMultiLocaleField!]
-  _allTitleLocales(
-    """
-    If you want to fallback to a default translation when a translation has not been found
-    """
-    fallbackLocales: [SiteLocale!]
-  ): [StringMultiLocaleField!]
-  _createdAt: DateTime!
-  """Editing URL"""
-  _editingUrl: String
-  _firstPublishedAt: DateTime!
-  _isValid: BooleanType!
-  _locales: [SiteLocale!]!
-  _modelApiKey: String!
-  _publicationScheduledAt: DateTime
-  _publishedAt: DateTime!
-  """Generates SEO and Social card meta tags to be used in your frontend"""
-  _seoMetaTags(
-    """The locale to use to fetch the field's content"""
-    locale: SiteLocale
-  ): [Tag!]!
-  _status: ItemStatus!
-  _unpublishingScheduledAt: DateTime
-  _updatedAt: DateTime!
-  authorName: String
-  comment(
-    """
-    If you want to fallback to a default translation when a translation has not been found
-    """
-    fallbackLocales: [SiteLocale!]
-    """The locale to use to fetch the field's content"""
-    locale: SiteLocale
-    """Process content as markdown"""
-    markdown: Boolean
-  ): String
-  date: Date
-  id: ItemId!
-  rating: IntType
-  title(
-    """
-    If you want to fallback to a default translation when a translation has not been found
-    """
-    fallbackLocales: [SiteLocale!]
-    """The locale to use to fetch the field's content"""
-    locale: SiteLocale
-  ): String
-  verifiedRider: BooleanType
 }
 
 """Record of type 💬 User Review (user_review)"""

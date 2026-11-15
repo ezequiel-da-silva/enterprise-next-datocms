@@ -7,6 +7,7 @@ import {
   getStorefrontCollectionByHandle,
   getStorefrontProducts,
   getStorefrontProductsByHandles,
+  type StorefrontCollectionProduct,
   type StorefrontProductImage,
 } from "@/infra/shopify/storefront";
 import {
@@ -83,6 +84,26 @@ const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean)
 /** Cached `product_page` cards (title, badge, specs, baseImage) for catalog enrichment. */
 export function getProductPageCards(locale: AppLocale, includeDrafts: boolean): Promise<ProductPageCard[]> {
   return loadProductPages(locale, includeDrafts);
+}
+
+/**
+ * Compact-card data for inline `ProductPageRecord`s (blog / Structured Text): Storefront price +
+ * compare-at by handle, overlaid with `product_page` title/badge. Handles without a published
+ * `product_page` or Storefront product are omitted (the renderer falls back to the plain link).
+ */
+export async function loadProductCardsByHandle(
+  handles: string[],
+  locale: AppLocale,
+  includeDrafts: boolean,
+): Promise<Record<string, StorefrontCollectionProduct>> {
+  if (handles.length === 0) return {};
+  const [products, pages] = await Promise.all([
+    getStorefrontProductsByHandles(handles, locale),
+    loadProductPages(locale, includeDrafts),
+  ]);
+  return Object.fromEntries(
+    publishedStorefrontProducts(products, pages).map((product) => [product.handle, product]),
+  );
 }
 
 export async function loadProductsListingCatalog(

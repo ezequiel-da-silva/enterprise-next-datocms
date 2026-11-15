@@ -21,6 +21,8 @@ export type PdpCopy = {
   verifiedRider: string;
   /** Template with `{average}` and `{count}` for the PDP reviews aggregate line. */
   reviewsAggregateTemplate: string;
+  /** Heading of the curated PDP Q&A section (`product_page.questions`). */
+  questionsTitle: string;
   specProfile: string;
   specFlex: string;
   specTerrain: string;
@@ -46,6 +48,7 @@ const EN: PdpCopy = {
   reviewsTitle: "Rider reviews",
   verifiedRider: "Verified rider",
   reviewsAggregateTemplate: "{average} out of 5 · {count} reviews",
+  questionsTitle: "Questions & answers",
   specProfile: "Camber profile",
   specFlex: "Flex",
   specTerrain: "Recommended terrain",
@@ -72,6 +75,7 @@ const PT: PdpCopy = {
   reviewsTitle: "Avaliações de riders",
   verifiedRider: "Rider verificado",
   reviewsAggregateTemplate: "{average} de 5 · {count} avaliações",
+  questionsTitle: "Perguntas e respostas",
   specProfile: "Perfil de curvatura",
   specFlex: "Flex",
   specTerrain: "Terreno recomendado",
@@ -97,6 +101,7 @@ const ES: PdpCopy = {
   reviewsTitle: "Reseñas de riders",
   verifiedRider: "Rider verificado",
   reviewsAggregateTemplate: "{average} de 5 · {count} reseñas",
+  questionsTitle: "Preguntas y respuestas",
   specProfile: "Perfil de curvatura",
   specFlex: "Flex",
   specTerrain: "Terreno recomendado",

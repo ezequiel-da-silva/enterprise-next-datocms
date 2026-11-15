@@ -30,6 +30,12 @@ query ProductPageByHandle($handle: String!, $locale: SiteLocale!, $withEditingUr
       date
       _editingUrl @include(if: $withEditingUrl)
     }
+    questions {
+      id
+      question
+      answer
+      _editingUrl @include(if: $withEditingUrl)
+    }
     seo {
       title
       description

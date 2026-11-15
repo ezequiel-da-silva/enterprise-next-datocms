@@ -4,6 +4,7 @@ import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import { PDP_COPY, snowboardBadgeLabel } from "@/lib/i18n/pdp-copy";
+import { formatDiscountPill, resolveCompareAtDeal } from "@/lib/shopify/compare-at-price";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Link from "next/link";
 
@@ -21,6 +22,7 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
   const image = product.featuredImage;
   const hoverImage = product.hoverImage;
   const price = product.priceRange.minVariantPrice;
+  const deal = resolveCompareAtDeal(locale, price, product.compareAtPrice);
   const soldOut = !product.availableForSale;
   const soldOutLabel = PDP_COPY[locale].soldOut;
   const marketingBadge = snowboardBadgeLabel(locale, product.badge);
@@ -67,8 +69,19 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
           <h3 className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
             {product.title}
           </h3>
-          <p className="mt-auto pt-1 text-sm text-muted-foreground">
-            {formatStorefrontMoney(locale, price.amount, price.currencyCode)}
+          <p className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-sm text-muted-foreground">
+            <span>{formatStorefrontMoney(locale, price.amount, price.currencyCode)}</span>
+            {deal ? (
+              <>
+                <s>{deal.compareAtPriceLabel}</s>
+                <span
+                  data-discount-pill=""
+                  className="rounded-md bg-foreground px-1.5 py-0.5 text-xs font-semibold text-background"
+                >
+                  {formatDiscountPill(deal.discountPercent)}
+                </span>
+              </>
+            ) : null}
           </p>
         </div>
       </Link>

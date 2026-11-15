@@ -12,6 +12,7 @@ import {
   getBlogIndexPage,
 } from "@/infra/datocms/get-blog-index-page";
 import { getPostBySlug } from "@/infra/datocms/get-blog";
+import { loadProductCardsByHandle } from "@/infra/datocms/get-product-pages";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { getStaticParamsBlogPosts } from "@/infra/datocms/static-params";
 import { getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
@@ -27,6 +28,7 @@ import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { formatPublishedAt } from "@/lib/blog/format-published-at";
 import { excerptPlainText, readPostExcerpt } from "@/lib/blog/excerpt";
 import { resolveSpecializedImage } from "@/lib/datocms/resolve-specialized-image";
+import { collectStructuredTextProductHandles } from "@/lib/datocms/st-product-handles";
 import type { CdaStructuredTextValue } from "datocms-structured-text-utils";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
@@ -100,6 +102,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         inlineBlocks: post.postContent.inlineBlocks ?? [],
       } satisfies CdaStructuredTextValue)
     : null;
+
+  const productCardsByHandle = await loadProductCardsByHandle(
+    collectStructuredTextProductHandles(structured),
+    locale,
+    isEnabled,
+  );
 
   const cover = resolveSpecializedImage(post.coverImage);
   const coverMobile = cover.mobile;
@@ -176,6 +184,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           contentLinkGroup={isEnabled}
           locale={locale}
           videoCopy={videoCopy}
+          productCardsByHandle={productCardsByHandle}
         />
       </div>
 

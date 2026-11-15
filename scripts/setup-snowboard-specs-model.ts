@@ -26,7 +26,7 @@ type Seed = {
   flex: number;
   terrain: string;
   riderLevel: string;
-  badge: string;
+  badge?: string;
   core: Record<string, string>;
   sizeChart: { length: number; riderWeightKg: string; waistWidthMm: number }[];
 };
@@ -67,6 +67,61 @@ const SEEDS: Seed[] = [
     sizeChart: [
       { length: 148, riderWeightKg: "50-65", waistWidthMm: 246 },
       { length: 154, riderWeightKg: "60-80", waistWidthMm: 252 },
+    ],
+  },
+  {
+    match: "complete",
+    profile: "camber",
+    flex: 5,
+    terrain: "all_mountain",
+    riderLevel: "intermediate",
+    core: {
+      en: "Poplar core with carbon stringers",
+      "pt-BR": "Núcleo de choupo com longarinas de carbono",
+      pt_BR: "Núcleo de choupo com longarinas de carbono",
+      es: "Núcleo de álamo con largueros de carbono",
+    },
+    sizeChart: [
+      { length: 154, riderWeightKg: "60-78", waistWidthMm: 250 },
+      { length: 158, riderWeightKg: "70-88", waistWidthMm: 254 },
+      { length: 162, riderWeightKg: "80-100", waistWidthMm: 258 },
+    ],
+  },
+  {
+    match: "multi-managed",
+    profile: "hybrid",
+    flex: 7,
+    terrain: "freeride",
+    riderLevel: "advanced",
+    badge: "pro_model",
+    core: {
+      en: "Bamboo and poplar core with dampening layer",
+      "pt-BR": "Núcleo de bambu e choupo com camada amortecedora",
+      pt_BR: "Núcleo de bambu e choupo com camada amortecedora",
+      es: "Núcleo de bambú y álamo con capa amortiguadora",
+    },
+    sizeChart: [
+      { length: 156, riderWeightKg: "65-82", waistWidthMm: 253 },
+      { length: 160, riderWeightKg: "75-95", waistWidthMm: 257 },
+      { length: 164, riderWeightKg: "85-105", waistWidthMm: 261 },
+    ],
+  },
+  {
+    match: "videographer",
+    profile: "flat",
+    flex: 3,
+    terrain: "freestyle",
+    riderLevel: "beginner",
+    core: {
+      en: "Soft poplar core for park and filming sessions",
+      "pt-BR": "Núcleo macio de choupo para park e sessões de filmagem",
+      pt_BR: "Núcleo macio de choupo para park e sessões de filmagem",
+      es: "Núcleo suave de álamo para park y sesiones de grabación",
+    },
+    sizeChart: [
+      { length: 148, riderWeightKg: "45-62", waistWidthMm: 244 },
+      { length: 152, riderWeightKg: "55-72", waistWidthMm: 248 },
+      { length: 156, riderWeightKg: "65-82", waistWidthMm: 252 },
     ],
   },
 ];
@@ -150,7 +205,7 @@ async function seedBoards(client: Client, locales: string[]): Promise<void> {
       flex: seed.flex,
       terrain: seed.terrain,
       rider_level: seed.riderLevel,
-      badge: seed.badge,
+      badge: seed.badge ?? null,
       core_material: localizedCore(locales, seed.core),
       size_chart: JSON.stringify(seed.sizeChart),
     });
@@ -272,10 +327,10 @@ export default async function setupSnowboardSpecsModel(client: Client): Promise<
   });
 
   if (process.env.SNOWBOARD_SPECS_SEED === "1") {
-    console.log("SNOWBOARD_SPECS_SEED=1 — a preencher pranchas hydrogen/liquid");
+    console.log("SNOWBOARD_SPECS_SEED=1 — a preencher pranchas hydrogen/liquid/complete/multi-managed/videographer");
     await seedBoards(client, site.locales);
   } else {
-    console.log("Seed desligado (SNOWBOARD_SPECS_SEED=1 para preencher hydrogen/liquid)");
+    console.log("Seed desligado (SNOWBOARD_SPECS_SEED=1 para preencher as pranchas de demonstração)");
   }
 
   console.log("Concluído. Campos técnicos de snowboard em product_page.");

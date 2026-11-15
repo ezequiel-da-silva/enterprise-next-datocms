@@ -7,6 +7,7 @@ import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-butt
 import type { AppLocale } from "@/constants/i18n";
 import { trackViewItem } from "@/lib/analytics/ecommerce";
 import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
+import { formatDiscountPill } from "@/lib/shopify/compare-at-price";
 import type { WishlistItem } from "@/lib/wishlist/types";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
@@ -22,6 +23,10 @@ export type ProductPickerVariant = {
   id: string;
   available: boolean;
   priceLabel: string;
+  /** Formatted Storefront compare-at when strictly above `price`; otherwise null. */
+  compareAtPriceLabel: string | null;
+  /** Integer percent off (1–99) matching `compareAtPriceLabel`. */
+  discountPercent: number | null;
   availabilityLabel: string;
   options: { name: string; value: string }[];
   image: ProductPickerImage | null;
@@ -230,7 +235,23 @@ export function ProductVariantPicker({
                   {badgeLabel}
                 </p>
               ) : null}
-              <p className="type-heading">{selected.priceLabel}</p>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <p className="type-heading">{selected.priceLabel}</p>
+                {selected.compareAtPriceLabel && selected.discountPercent != null ? (
+                  <>
+                    <s className="text-base text-muted-foreground">{selected.compareAtPriceLabel}</s>
+                    <span
+                      data-discount-pill=""
+                      className="rounded-md bg-foreground px-2 py-0.5 text-xs font-semibold text-background"
+                    >
+                      {formatDiscountPill(selected.discountPercent)}
+                    </span>
+                  </>
+                ) : null}
+              </div>
+              {paymentHint?.trim() ? (
+                <p className="text-sm text-muted-foreground">{paymentHint.trim()}</p>
+              ) : null}
               <p className="text-sm text-muted-foreground">{selected.availabilityLabel}</p>
               <LowStockBadge
                 quantityAvailable={selected.quantityAvailable}
@@ -310,7 +331,6 @@ export function ProductVariantPicker({
           {shippingTrust ? <p>{shippingTrust}</p> : null}
           {returnsTrust ? <p>{returnsTrust}</p> : null}
           {checkoutTrust ? <p>{checkoutTrust}</p> : null}
-          {paymentHint?.trim() ? <p>{paymentHint.trim()}</p> : null}
         </div>
       </div>
     </div>

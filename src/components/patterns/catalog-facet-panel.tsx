@@ -14,6 +14,13 @@ export type CatalogStockOption = {
   active: boolean;
 };
 
+/** One collapsible facet section (terrain / profile / size / price). */
+export type CatalogFacetGroup = {
+  key: string;
+  label: string;
+  options: readonly CatalogFacetOption[];
+};
+
 type FacetCheckRowProps = {
   href: string;
   label: string;
@@ -57,92 +64,57 @@ function FacetCheckRow({ href, label, active, count, onNavigate }: FacetCheckRow
 }
 
 type FacetPanelProps = {
-  terrainLabel: string;
-  profileLabel: string;
-  terrainOptions: readonly CatalogFacetOption[];
-  profileOptions: readonly CatalogFacetOption[];
+  groups: readonly CatalogFacetGroup[];
   stock: CatalogStockOption;
   /** Called when a facet Link is activated (e.g. close mobile drawer — Peak-End). */
   onNavigate?: () => void;
 };
 
-export function FacetPanel({
-  terrainLabel,
-  profileLabel,
-  terrainOptions,
-  profileOptions,
-  stock,
-  onNavigate,
-}: FacetPanelProps) {
+export function FacetPanel({ groups, stock, onNavigate }: FacetPanelProps) {
   return (
     <div className="flex flex-col">
-      <details open className="group border-b border-border py-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
-          <span>{terrainLabel}</span>
-          <span
-            className="inline-flex size-5 shrink-0 items-center justify-center text-muted-foreground transition-transform duration-200 group-open:rotate-180"
-            aria-hidden="true"
+      {groups
+        .filter((group) => group.options.length > 0)
+        .map((group) => (
+          <details
+            key={group.key}
+            open
+            className="group border-b border-border py-4"
+            data-facet-group={group.key}
           >
-            <svg
-              className="size-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </span>
-        </summary>
-        <div className="mt-3 flex flex-col gap-1">
-          {terrainOptions.map((option) => (
-            <FacetCheckRow
-              key={option.href + option.label}
-              href={option.href}
-              label={option.label}
-              count={option.count}
-              active={option.active}
-              onNavigate={onNavigate}
-            />
-          ))}
-        </div>
-      </details>
-
-      <details open className="group border-b border-border py-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
-          <span>{profileLabel}</span>
-          <span
-            className="inline-flex size-5 shrink-0 items-center justify-center text-muted-foreground transition-transform duration-200 group-open:rotate-180"
-            aria-hidden="true"
-          >
-            <svg
-              className="size-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m6 9 6 6 6-6" />
-            </svg>
-          </span>
-        </summary>
-        <div className="mt-3 flex flex-col gap-1">
-          {profileOptions.map((option) => (
-            <FacetCheckRow
-              key={option.href + option.label}
-              href={option.href}
-              label={option.label}
-              count={option.count}
-              active={option.active}
-              onNavigate={onNavigate}
-            />
-          ))}
-        </div>
-      </details>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+              <span>{group.label}</span>
+              <span
+                className="inline-flex size-5 shrink-0 items-center justify-center text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+                aria-hidden="true"
+              >
+                <svg
+                  className="size-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </span>
+            </summary>
+            <div className="mt-3 flex flex-col gap-1">
+              {group.options.map((option) => (
+                <FacetCheckRow
+                  key={option.href + option.label}
+                  href={option.href}
+                  label={option.label}
+                  count={option.count}
+                  active={option.active}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </div>
+          </details>
+        ))}
 
       <div className="py-4">
         <FacetCheckRow

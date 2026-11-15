@@ -124,6 +124,8 @@ type TextSectionMediaBlocks_PricingSectionRecord_Fragment = { __typename: 'Prici
 
 type TextSectionMediaBlocks_ProductPageRecord_Fragment = { __typename: 'ProductPageRecord', id: string };
 
+type TextSectionMediaBlocks_ProductQuestionRecord_Fragment = { __typename: 'ProductQuestionRecord', id: string };
+
 type TextSectionMediaBlocks_ProductReviewRecord_Fragment = { __typename: 'ProductReviewRecord', id: string };
 
 type TextSectionMediaBlocks_RedirectRecord_Fragment = { __typename: 'RedirectRecord', id: string };
@@ -195,6 +197,7 @@ export type TextSectionMediaBlocksFragment =
   | TextSectionMediaBlocks_PricingCardRecord_Fragment
   | TextSectionMediaBlocks_PricingSectionRecord_Fragment
   | TextSectionMediaBlocks_ProductPageRecord_Fragment
+  | TextSectionMediaBlocks_ProductQuestionRecord_Fragment
   | TextSectionMediaBlocks_ProductReviewRecord_Fragment
   | TextSectionMediaBlocks_RedirectRecord_Fragment
   | TextSectionMediaBlocks_ReviewsSectionRecord_Fragment
@@ -335,7 +338,7 @@ export type ProductPageByHandleQueryVariables = Exact<{
 }>;
 
 
-export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, description: string | null, profile: string | null, flex: number | null, terrain: string | null, riderLevel: string | null, coreMaterial: string | null, badge: string | null, sizeChart: unknown, shopifyHandle: string | null, shopifyProductId: string | null, _editingUrl?: string | null, baseImage: { url: string, alt: string | null, width: number | null, height: number | null } | null, reviews: Array<{ id: string, authorName: string | null, rating: number | null, title: string | null, comment: string | null, verifiedRider: boolean | null, date: unknown, _editingUrl?: string | null }>, seo: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
+export type ProductPageByHandleQuery = { productPage: { id: string, title: string | null, description: string | null, profile: string | null, flex: number | null, terrain: string | null, riderLevel: string | null, coreMaterial: string | null, badge: string | null, sizeChart: unknown, shopifyHandle: string | null, shopifyProductId: string | null, _editingUrl?: string | null, baseImage: { url: string, alt: string | null, width: number | null, height: number | null } | null, reviews: Array<{ id: string, authorName: string | null, rating: number | null, title: string | null, comment: string | null, verifiedRider: boolean, date: unknown, _editingUrl?: string | null }>, questions: Array<{ id: string, question: string | null, answer: string | null, _editingUrl?: string | null }>, seo: { title: string | null, description: string | null, twitterCard: string | null, noIndex: boolean | null, image: { url: string, alt: string | null, width: number | null, height: number | null } | null } | null, _seoMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } | null, _site: { faviconMetaTags: Array<{ attributes: Record<string, string> | null, content: string | null, tag: string }> } };
 
 export type SearchCatalogQueryVariables = Exact<{
   q: string;

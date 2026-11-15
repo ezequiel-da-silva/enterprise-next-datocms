@@ -13,6 +13,7 @@ function variant(overrides: Partial<StorefrontVariant>): StorefrontVariant {
     availableForSale: true,
     quantityAvailable: 2,
     price: money("19.00"),
+    compareAtPrice: null,
     selectedOptions: [{ name: "Size", value: "M" }],
     image: null,
     sku: null,
@@ -33,6 +34,7 @@ function storefront(overrides: Partial<StorefrontProduct> = {}): StorefrontProdu
       { url: "https://cdn.shopify.com/b.jpg", altText: null, width: 800, height: 800 },
     ],
     priceRange: { minVariantPrice: money("19.00") },
+    compareAtPriceRange: null,
     variants: [variant({})],
     ...overrides,
   };
@@ -155,6 +157,24 @@ describe("buildProductPageJsonLd", () => {
     });
     expect(Array.isArray(product.review)).toBe(true);
     expect((product.review as unknown[]).length).toBe(2);
+  });
+
+  it("emits a FAQPage node only for complete Q&A pairs", () => {
+    const none = buildProductPageJsonLd({ ...BASE, storefront: storefront(), questions: [] });
+    expect(none.some((node) => node["@type"] === "FAQPage")).toBe(false);
+
+    const graph = buildProductPageJsonLd({
+      ...BASE,
+      storefront: storefront(),
+      questions: [
+        { id: "1", question: "Fits wide boots?", answer: "Yes, up to US 12." },
+        { id: "2", question: "Missing answer?", answer: "  " },
+      ],
+    });
+    const faq = graph.find((node) => node["@type"] === "FAQPage");
+    expect(faq?.mainEntity).toEqual([
+      { "@type": "Question", name: "Fits wide boots?", acceptedAnswer: { "@type": "Answer", text: "Yes, up to US 12." } },
+    ]);
   });
 
   it("omits the blocks when the policy values are invalid", () => {
