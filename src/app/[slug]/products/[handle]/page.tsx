@@ -1,5 +1,6 @@
 import { addToCart, buyNow } from "@/app/actions/cart";
 import { ProductPageArticle } from "@/components/patterns/product-page-article";
+import type { ProductQuestionItem } from "@/components/patterns/product-qa-section";
 import type { ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale } from "@/constants/i18n";
@@ -96,6 +97,15 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       editingUrl: row._editingUrl?.trim() || null,
     }))
     .filter((row) => row.authorName || row.comment);
+  const questions: ProductQuestionItem[] = (page.questions ?? [])
+    .filter((row): row is NonNullable<typeof row> => Boolean(row?.id))
+    .map((row) => ({
+      id: row.id,
+      question: row.question?.trim() || "",
+      answer: row.answer?.trim() || "",
+      editingUrl: row._editingUrl?.trim() || null,
+    }))
+    .filter((row) => row.question && row.answer);
 
   return (
     <ProductPageArticle
@@ -124,6 +134,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       }}
       sizeChart={page.sizeChart}
       reviews={reviews}
+      questions={questions}
     />
   );
 }

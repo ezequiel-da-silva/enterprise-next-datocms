@@ -2,6 +2,7 @@ import { Container } from "@/components/atoms/container";
 import type { AddToCartAction } from "@/components/patterns/add-to-cart-button";
 import type { BuyNowAction } from "@/components/patterns/buy-now-button";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { ProductQaSection, type ProductQuestionItem } from "@/components/patterns/product-qa-section";
 import { ProductReviewsSection, type ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import { ProductSizeGuide } from "@/components/patterns/product-size-guide";
 import { ProductSpecsTable, type ProductSpecValues } from "@/components/patterns/product-specs-table";
@@ -31,6 +32,7 @@ import { buildProductPageJsonLd } from "@/lib/seo/build-product-page-jsonld";
 import { getOrganizationName } from "@/lib/seo/site-config";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { cartPath, isCartEnabled } from "@/lib/shopify/cart-cookie";
+import { resolveCompareAtDeal } from "@/lib/shopify/compare-at-price";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 
@@ -60,6 +62,7 @@ type ProductPageArticleProps = {
   specs: ProductSpecValues;
   sizeChart: unknown;
   reviews?: ProductReviewItem[];
+  questions?: ProductQuestionItem[];
 };
 
 function availabilityLabel(copy: PdpCopy, available: boolean): string {
@@ -93,11 +96,14 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
   const itemId = storefront.handle || storefront.id;
   if (storefront.variants.length === 0) {
     const price = storefront.priceRange.minVariantPrice;
+    const deal = resolveCompareAtDeal(locale, price, storefront.compareAtPriceRange?.minVariantPrice);
     return [
       {
         id: storefront.id,
         available: storefront.availableForSale,
         priceLabel: formatStorefrontMoney(locale, price.amount, price.currencyCode),
+        compareAtPriceLabel: deal?.compareAtPriceLabel ?? null,
+        discountPercent: deal?.discountPercent ?? null,
         availabilityLabel: availabilityLabel(copy, storefront.availableForSale),
         options: [],
         image: null,
@@ -109,20 +115,25 @@ function pickerVariants(locale: AppLocale, title: string, storefront: Storefront
       },
     ];
   }
-  return storefront.variants.map((variant) => ({
-    id: variant.id,
-    available: variant.availableForSale,
-    priceLabel: formatStorefrontMoney(locale, variant.price.amount, variant.price.currencyCode),
-    availabilityLabel: availabilityLabel(copy, variant.availableForSale),
-    options: variant.selectedOptions,
-    image: toPickerImage(variant.image, `${title} — ${variant.title}`),
-    quantityAvailable: variant.quantityAvailable,
-    itemId,
-    itemName: title,
-    price: parsePrice(variant.price.amount),
-    currency: variant.price.currencyCode || "USD",
-    itemVariant: variantLabel(variant.selectedOptions, variant.title),
-  }));
+  return storefront.variants.map((variant) => {
+    const deal = resolveCompareAtDeal(locale, variant.price, variant.compareAtPrice);
+    return {
+      id: variant.id,
+      available: variant.availableForSale,
+      priceLabel: formatStorefrontMoney(locale, variant.price.amount, variant.price.currencyCode),
+      compareAtPriceLabel: deal?.compareAtPriceLabel ?? null,
+      discountPercent: deal?.discountPercent ?? null,
+      availabilityLabel: availabilityLabel(copy, variant.availableForSale),
+      options: variant.selectedOptions,
+      image: toPickerImage(variant.image, `${title} — ${variant.title}`),
+      quantityAvailable: variant.quantityAvailable,
+      itemId,
+      itemName: title,
+      price: parsePrice(variant.price.amount),
+      currency: variant.price.currencyCode || "USD",
+      itemVariant: variantLabel(variant.selectedOptions, variant.title),
+    };
+  });
 }
 
 function pickerCart(
@@ -196,6 +207,7 @@ export function ProductPageArticle({
   specs,
   sizeChart,
   reviews = [],
+  questions = [],
 }: ProductPageArticleProps) {
   const path = productPagePath(locale, handle);
   const jsonLd = buildProductPageJsonLd({
@@ -208,6 +220,7 @@ export function ProductPageArticle({
     brandName: getOrganizationName(),
     policy: marketPolicy,
     reviews,
+    questions,
   });
   const variants = storefront ? pickerVariants(locale, title, storefront, pdpCopy) : null;
   const sizeRows = parseSizeChart(sizeChart);
@@ -290,6 +303,7 @@ export function ProductPageArticle({
       {techDetails}
 
       <ProductReviewsSection locale={locale} reviews={reviews} copy={pdpCopy} />
+      <ProductQaSection questions={questions} copy={pdpCopy} />
     </Container>
   );
 }

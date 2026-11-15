@@ -25,6 +25,43 @@ export function computeRatingAggregate(reviews: ReviewJsonLdItem[]): RatingAggre
   return { average: Math.round((sum / rated.length) * 10) / 10, count: rated.length };
 }
 
+export type RatingHistogramRow = {
+  /** 5 → 1 (ordem de apresentação: mais estrelas primeiro). */
+  stars: 1 | 2 | 3 | 4 | 5;
+  count: number;
+  /** Percentagem inteira 0–100 do total avaliado (arredondada). */
+  percent: number;
+};
+
+export type RatingHistogram = {
+  total: number;
+  rows: RatingHistogramRow[];
+};
+
+/**
+ * Distribuição 5★→1★ das reviews válidas (rating inteiro 1–5, mesmo critério que
+ * {@link computeRatingAggregate}); ratings fracionários arredondam ao inteiro mais próximo.
+ */
+export function buildRatingHistogram(reviews: Pick<ReviewJsonLdItem, "rating">[]): RatingHistogram | null {
+  const counts: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  let total = 0;
+  for (const review of reviews) {
+    if (!Number.isFinite(review.rating) || review.rating < 1 || review.rating > 5) continue;
+    counts[Math.round(review.rating) as 1 | 2 | 3 | 4 | 5] += 1;
+    total += 1;
+  }
+  if (total === 0) return null;
+  const order = [5, 4, 3, 2, 1] as const;
+  return {
+    total,
+    rows: order.map((stars) => ({
+      stars,
+      count: counts[stars],
+      percent: Math.round((counts[stars] / total) * 100),
+    })),
+  };
+}
+
 /**
  * AggregateRating (+ Review[]) sobre a Organization do site.
  * Reutiliza `${base}/#organization` do JSON-LD global (layout) para um só nó.

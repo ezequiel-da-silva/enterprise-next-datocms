@@ -1,4 +1,6 @@
 import type { AppLocale } from "@/constants/i18n";
+import { stripStega } from "react-datocms/stega";
+import { buildFaqPageJsonLd } from "@/lib/seo/build-faq-jsonld";
 import { buildPageWebPageJsonLd } from "@/lib/seo/build-page-webpage-jsonld";
 import type { StorefrontMoney, StorefrontProduct } from "@/infra/shopify/storefront";
 import { returnPolicyFor, shippingDetailsFor, type MarketPolicy } from "@/lib/seo/merchant-policy";
@@ -30,6 +32,8 @@ export function buildProductPageJsonLd(input: {
   policy?: MarketPolicy | null;
   /** Curated product reviews; AggregateRating only when at least one rated review exists. */
   reviews?: ReviewJsonLdItem[];
+  /** Curated PDP Q&A (`product_page.questions`); emits one FAQPage node when at least one complete pair exists. */
+  questions?: { id: string; question: string; answer: string }[];
 }): Record<string, unknown>[] {
   const description = input.description?.trim() || undefined;
   const pageGraph = buildPageWebPageJsonLd({
@@ -125,5 +129,15 @@ export function buildProductPageJsonLd(input: {
       : {}),
   };
 
-  return [product, ...pageGraph];
+  const faq = buildFaqPageJsonLd(
+    (input.questions ?? [])
+      .map((item) => ({
+        id: item.id,
+        question: stripStega(item.question).trim(),
+        answer: stripStega(item.answer).trim(),
+      }))
+      .filter((item) => item.question && item.answer),
+  );
+
+  return [product, ...pageGraph, ...(faq ? [faq] : [])];
 }
