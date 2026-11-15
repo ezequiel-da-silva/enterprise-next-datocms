@@ -2,7 +2,7 @@
 
 import {
   FacetPanel,
-  type CatalogFacetOption,
+  type CatalogFacetGroup,
   type CatalogStockOption,
 } from "@/components/patterns/catalog-facet-panel";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
@@ -13,12 +13,9 @@ type CatalogFiltersDrawerProps = {
   filtersLabel: string;
   openFiltersLabel: string;
   closeFiltersLabel: string;
-  terrainLabel: string;
-  profileLabel: string;
-  terrainOptions: readonly CatalogFacetOption[];
-  profileOptions: readonly CatalogFacetOption[];
+  groups: readonly CatalogFacetGroup[];
   stock: CatalogStockOption;
-  /** Number of active facets (0–3) for the toolbar badge. */
+  /** Number of active facets (0–5) for the toolbar badge. */
   activeFacetCount: number;
 };
 
@@ -26,10 +23,7 @@ export function CatalogFiltersDrawer({
   filtersLabel,
   openFiltersLabel,
   closeFiltersLabel,
-  terrainLabel,
-  profileLabel,
-  terrainOptions,
-  profileOptions,
+  groups,
   stock,
   activeFacetCount,
 }: CatalogFiltersDrawerProps) {
@@ -104,14 +98,7 @@ export function CatalogFiltersDrawer({
                   </button>
                 </header>
                 <div className="flex-1 overflow-y-auto px-4">
-                  <FacetPanel
-                    terrainLabel={terrainLabel}
-                    profileLabel={profileLabel}
-                    terrainOptions={terrainOptions}
-                    profileOptions={profileOptions}
-                    stock={stock}
-                    onNavigate={() => setOpen(false)}
-                  />
+                  <FacetPanel groups={groups} stock={stock} onNavigate={() => setOpen(false)} />
                 </div>
               </div>
             </div>,

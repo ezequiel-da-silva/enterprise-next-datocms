@@ -13,6 +13,10 @@ export type CatalogFiltersCopy = {
   filtersEmpty: string;
   terrainLabel: string;
   profileLabel: string;
+  /** Facet heading for board length. */
+  sizeLabel: string;
+  /** Facet heading for price bands. */
+  priceLabel: string;
   /** Accessible name for the active-filters chip bar. */
   activeFiltersLabel: string;
   /** Aside / drawer title. */
@@ -34,6 +38,8 @@ const EN: CatalogFiltersCopy = {
   filtersEmpty: "No boards match these filters. Try clearing one or more.",
   terrainLabel: "Terrain",
   profileLabel: "Profile",
+  sizeLabel: "Size",
+  priceLabel: "Price",
   activeFiltersLabel: "Active filters",
   filtersLabel: "Filters",
   openFiltersLabel: "Filter",
@@ -51,6 +57,8 @@ const PT: CatalogFiltersCopy = {
   filtersEmpty: "Nenhuma prancha corresponde a estes filtros. Experimente limpar um ou mais.",
   terrainLabel: "Terreno",
   profileLabel: "Perfil",
+  sizeLabel: "Tamanho",
+  priceLabel: "Preço",
   activeFiltersLabel: "Filtros activos",
   filtersLabel: "Filtros",
   openFiltersLabel: "Filtrar",
@@ -68,6 +76,8 @@ const ES: CatalogFiltersCopy = {
   filtersEmpty: "Ninguna tabla coincide con estos filtros. Prueba a borrar uno o más.",
   terrainLabel: "Terreno",
   profileLabel: "Perfil",
+  sizeLabel: "Talla",
+  priceLabel: "Precio",
   activeFiltersLabel: "Filtros activos",
   filtersLabel: "Filtros",
   openFiltersLabel: "Filtrar",
