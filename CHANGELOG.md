@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.59.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.58.0...next-dato-v0.59.0) (2026-11-15)
+
+
+### Features
+
+* **catalog:** add size and currency-scaled price URL facets ([f19802a](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/f19802a6f6d0141056527327f2fa26078749d538))
+* **cms:** add purchasable blog product card, market policy table and CMA scripts ([74fbfd9](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/74fbfd9bd7777735ea3676d4a6d3a047526081a8))
+* **datocms:** update structured text links for Post and Page records ([bfdd197](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/bfdd19782309cdf338a9c24cf6c472e9b399abad))
+* **pdp:** add review rating histogram and product Q&A section ([890fd58](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/890fd5857859c0d65f027f96a2003fc56f124ea4))
+* **shopify:** add compareAtPrice, discount helpers and variant size extraction ([074f164](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/074f1642e797335a78656fca73aa6916ad7588b4))
+
 ## [0.58.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.57.1...next-dato-v0.58.0) (2026-11-13)
 
 
