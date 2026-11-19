@@ -200,7 +200,7 @@ export function CatalogFilters({
       </aside>
 
       <div className="min-w-0 space-y-4">
-        <div className="sticky top-18 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur-sm lg:static lg:mx-0 lg:border-b-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
+        <div className="sticky top-16 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur-sm lg:static lg:mx-0 lg:border-b-0 lg:bg-transparent lg:px-0 lg:py-0 lg:backdrop-blur-none">
           <p className="type-body m-0 text-muted-foreground">{resultsLabel}</p>
           <div className="flex flex-wrap items-center gap-3">
             <CatalogFiltersDrawer

@@ -37,6 +37,8 @@ type LocaleSwitcherMenuProps = {
   /** Apenas os outros idiomas — o ativo vive no botão. */
   options: LocaleOption[];
   variant: "compact" | "block";
+  /** `up` evita overflow/scroll no rodapé do drawer móvel. */
+  menuPlacement?: "up" | "down";
   triggerAriaLabel: string;
 };
 
@@ -44,6 +46,7 @@ export function LocaleSwitcherMenu({
   current,
   options,
   variant,
+  menuPlacement = "down",
   triggerAriaLabel,
 }: LocaleSwitcherMenuProps) {
   const listId = useId();
@@ -114,7 +117,11 @@ export function LocaleSwitcherMenu({
           <span className="w-6 text-left tabular-nums">{current.shortCode}</span>
         </span>
         <svg
-          className={cn("h-4 w-4 shrink-0 transition-transform motion-reduce:transition-none", open && "rotate-180")}
+          className={cn(
+            "h-4 w-4 shrink-0 transition-transform motion-reduce:transition-none",
+            /* Closed: point toward open direction; open: flip. */
+            menuPlacement === "up" ? (open ? "rotate-0" : "rotate-180") : open && "rotate-180",
+          )}
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -138,8 +145,11 @@ export function LocaleSwitcherMenu({
         id={listId}
         hidden={!open}
         className={cn(
-          "absolute right-0 z-50 min-w-[12rem] overflow-hidden rounded-lg border border-border bg-background py-1 shadow-lg",
-          block ? "bottom-full left-0 mb-1 w-full" : "mt-1",
+          "absolute z-50 min-w-[12rem] overflow-hidden rounded-lg border border-border bg-background py-1 shadow-lg",
+          block || menuPlacement === "up" ? "bottom-full mb-1" : "mt-1",
+          /* Drawer footer: align left edge with the EN trigger (not `right-0`, which starts mid-button). */
+          block || menuPlacement === "up" ? "left-0" : "right-0",
+          block && "w-full",
         )}
       >
         {options.map((option) => (

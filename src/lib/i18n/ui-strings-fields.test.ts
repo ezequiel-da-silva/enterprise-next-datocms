@@ -30,6 +30,8 @@ describe("ui_string field map", () => {
       "1791700000_catalogFiltersAffordanceUiStrings.ts",
       "1791800000_pdpQuestionsUiString.ts",
       "1791900000_catalogSizePriceFacetUiStrings.ts",
+      "1792000000_cartFreeShippingUiStrings.ts",
+      "1792100000_chromeFooterUiStrings.ts",
     ];
     const apiKeys = migrationFiles
       .flatMap((file) =>

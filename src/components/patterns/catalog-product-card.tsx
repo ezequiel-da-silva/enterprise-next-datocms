@@ -69,6 +69,14 @@ export function CatalogProductCard({ locale, product, sizes = DEFAULT_SIZES }: C
           <h3 className="text-balance text-lg font-semibold tracking-tight text-foreground group-hover:text-primary">
             {product.title}
           </h3>
+          {product.ratingSummary && product.ratingSummary.count > 0 ? (
+            <p
+              className="text-xs text-muted-foreground"
+              aria-label={`${product.ratingSummary.average.toLocaleString(locale)} (${product.ratingSummary.count})`}
+            >
+              ★ {product.ratingSummary.average.toLocaleString(locale)} ({product.ratingSummary.count})
+            </p>
+          ) : null}
           <p className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-sm text-muted-foreground">
             <span>{formatStorefrontMoney(locale, price.amount, price.currencyCode)}</span>
             {deal ? (

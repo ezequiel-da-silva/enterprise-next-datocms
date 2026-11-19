@@ -51,19 +51,28 @@ export function readWishlist(): WishlistItem[] {
   return parseWishlistRaw();
 }
 
-/** `useSyncExternalStore` client snapshot. */
+/**
+ * `useSyncExternalStore` client snapshot.
+ * Returns `EMPTY_WISHLIST` until `hydrateWishlistFromStorage()` so hydration
+ * matches the server snapshot (avoids heart / aria-label mismatch).
+ */
 export function getWishlistSnapshot(): WishlistItem[] {
-  if (typeof window === "undefined") return EMPTY_WISHLIST;
-  if (!clientHydrated) {
-    clientSnapshot = parseWishlistRaw();
-    clientHydrated = true;
-  }
+  if (typeof window === "undefined" || !clientHydrated) return EMPTY_WISHLIST;
   return clientSnapshot;
 }
 
 /** `useSyncExternalStore` server / hydration snapshot. */
 export function getWishlistServerSnapshot(): WishlistItem[] {
   return EMPTY_WISHLIST;
+}
+
+/** Load `localStorage` into the client cache and notify subscribers (post-mount). */
+export function hydrateWishlistFromStorage(): WishlistItem[] {
+  if (typeof window === "undefined") return EMPTY_WISHLIST;
+  clientSnapshot = parseWishlistRaw();
+  clientHydrated = true;
+  notifyWishlistChange();
+  return clientSnapshot;
 }
 
 /** Subscribe to same-tab writes and cross-tab `storage` events. */

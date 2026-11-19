@@ -3,8 +3,11 @@
 import { Button } from "@/components/atoms/button";
 import { CartDrawerLineItem } from "@/components/patterns/cart-drawer-line-item";
 import { useCartDrawer } from "@/components/patterns/cart-drawer-context";
+import { RecentlyViewedSection } from "@/components/patterns/recently-viewed-section";
 import { trackBeginCheckout } from "@/lib/analytics/ecommerce";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
+import { resolveFreeShippingRemaining } from "@/lib/i18n/cart-copy";
+import { computeFreeShippingProgress } from "@/lib/shopify/free-shipping-progress";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Link from "next/link";
 import { useId, useRef } from "react";
@@ -17,6 +20,9 @@ export function CartDrawer() {
     locale,
     copy,
     trustNote,
+    freeShippingThreshold,
+    marketCurrencyCode,
+    shippingRate,
     cartHref,
     lineActions,
     close,
@@ -37,6 +43,31 @@ export function CartDrawer() {
 
   const subtotal = cart?.subtotal;
   const checkoutUrl = cart?.checkoutUrl;
+  const subtotalAmount = subtotal ? Number(subtotal.amount) : NaN;
+  const currencyOk = Boolean(
+    subtotal &&
+      marketCurrencyCode &&
+      subtotal.currencyCode.trim().toUpperCase() === marketCurrencyCode.trim().toUpperCase(),
+  );
+  const shippingProgress = computeFreeShippingProgress({
+    subtotal: Number.isFinite(subtotalAmount) ? subtotalAmount : 0,
+    threshold: freeShippingThreshold,
+    currencyOk,
+    shippingRate,
+  });
+  const progressLabel =
+    shippingProgress.kind === "progress"
+      ? shippingProgress.unlocked
+        ? copy.freeShippingUnlocked
+        : resolveFreeShippingRemaining(
+            copy.freeShippingRemainingTemplate,
+            formatStorefrontMoney(
+              locale,
+              shippingProgress.remaining.toFixed(2),
+              subtotal?.currencyCode ?? marketCurrencyCode ?? "USD",
+            ),
+          )
+      : null;
 
   return createPortal(
     <div className="fixed inset-0 z-[70]" role="presentation">
@@ -54,7 +85,7 @@ export function CartDrawer() {
         data-ui-section="CartDrawer"
         className="absolute right-0 top-0 flex h-full w-[min(100%,24rem)] flex-col border-l border-border bg-background shadow-xl"
       >
-        <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
+        <header className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-4 py-3">
           <div className="flex items-center gap-2">
             <h2 id={titleId} className="text-base font-semibold text-foreground">
               {copy.title}
@@ -77,9 +108,16 @@ export function CartDrawer() {
           </button>
         </header>
 
-        <div className="flex flex-1 flex-col overflow-y-auto px-4 py-4">
+        <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4">
           {!cart || cart.lines.length === 0 ? (
-            <p className="text-muted-foreground">{copy.empty}</p>
+            <div className="space-y-6">
+              <p className="text-muted-foreground">{copy.empty}</p>
+              <RecentlyViewedSection
+                locale={locale}
+                title={copy.recentlyViewedTitle}
+                layout="drawer"
+              />
+            </div>
           ) : (
             <ul className="space-y-4">
               {cart.lines.map((line) => (
@@ -97,7 +135,25 @@ export function CartDrawer() {
           )}
         </div>
 
-        <footer className="space-y-3 border-t border-border px-4 py-4">
+        <footer className="shrink-0 space-y-3 border-t border-border px-4 py-4">
+          {shippingProgress.kind === "progress" && progressLabel ? (
+            <div className="space-y-2" data-free-shipping-progress="">
+              <p className="text-xs font-medium text-foreground">{progressLabel}</p>
+              <div
+                className="h-1.5 overflow-hidden rounded-full bg-muted"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(shippingProgress.ratio * 100)}
+                aria-label={progressLabel}
+              >
+                <div
+                  className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
+                  style={{ width: `${Math.round(shippingProgress.ratio * 100)}%` }}
+                />
+              </div>
+            </div>
+          ) : null}
           {subtotal ? (
             <p className="flex justify-between text-sm font-medium text-foreground">
               <span>{copy.subtotal}</span>

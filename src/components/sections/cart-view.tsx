@@ -2,6 +2,7 @@ import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { EmptyStateCollectionGrid } from "@/components/patterns/empty-state-collection-grid";
+import { RecentlyViewedSection } from "@/components/patterns/recently-viewed-section";
 import type { AppLocale } from "@/constants/i18n";
 import { CART_MAX_QUANTITY } from "@/core/entities/cart";
 import type { StorefrontCart, StorefrontCartLine } from "@/infra/shopify/cart";
@@ -193,6 +194,7 @@ export function CartView({ locale, copy, cart, shopPath, suggestedCollections, a
               <Link href={shopPath}>{copy.continueShopping}</Link>
             </Button>
           </div>
+          <RecentlyViewedSection locale={locale} title={copy.recentlyViewedTitle} />
           <EmptyStateCollectionGrid collections={suggestedCollections} />
         </div>
       ) : (

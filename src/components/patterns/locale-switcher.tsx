@@ -23,6 +23,8 @@ type LocaleSwitcherProps = {
   hrefs: Record<AppLocale, string>;
   /** `block`: largura total no painel móvel. */
   variant?: "compact" | "block";
+  /** `up`: lista sobe (rodapé do drawer móvel — evita scrollbar). */
+  menuPlacement?: "up" | "down";
   className?: string;
 };
 
@@ -68,7 +70,13 @@ function hrefsMatchLocation(
 
 type LocaleSwitcherViewProps = LocaleSwitcherProps;
 
-function LocaleSwitcherView({ locale, hrefs, variant = "compact", className }: LocaleSwitcherViewProps) {
+function LocaleSwitcherView({
+  locale,
+  hrefs,
+  variant = "compact",
+  menuPlacement = "down",
+  className,
+}: LocaleSwitcherViewProps) {
   const current = describeLocale(locale, hrefs);
   /* Só alternativas: o idioma ativo já está no botão, repeti-lo na lista era uma opção morta. */
   const options: LocaleOption[] = APP_LOCALES.filter((code) => code !== locale).map((code) =>
@@ -86,13 +94,20 @@ function LocaleSwitcherView({ locale, hrefs, variant = "compact", className }: L
         current={current}
         options={options}
         variant={variant}
+        menuPlacement={menuPlacement}
         triggerAriaLabel={localeSwitcherTriggerLabel(locale, current.shortCode)}
       />
     </nav>
   );
 }
 
-function LiveLocaleSwitcher({ locale, hrefs: initialHrefs, variant = "compact", className }: LocaleSwitcherProps) {
+function LiveLocaleSwitcher({
+  locale,
+  hrefs: initialHrefs,
+  variant = "compact",
+  menuPlacement = "down",
+  className,
+}: LocaleSwitcherProps) {
   const pathname = usePathname() ?? `/${locale}`;
   const searchParams = useSearchParams();
   const q = searchParams.get("q");
@@ -130,7 +145,15 @@ function LiveLocaleSwitcher({ locale, hrefs: initialHrefs, variant = "compact", 
   const hrefs =
     initialMatches ? initialHrefs : override?.key === locationKey ? override.hrefs : initialHrefs;
 
-  return <LocaleSwitcherView locale={locale} hrefs={hrefs} variant={variant} className={className} />;
+  return (
+    <LocaleSwitcherView
+      locale={locale}
+      hrefs={hrefs}
+      variant={variant}
+      menuPlacement={menuPlacement}
+      className={className}
+    />
+  );
 }
 
 /** SSR com hrefs do layout; após soft nav o cliente re-resolve via `/api/locale-switcher-hrefs`. */

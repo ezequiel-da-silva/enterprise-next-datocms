@@ -3,6 +3,7 @@
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
 import { BuyNowButton, type BuyNowAction, type BuyNowCopy } from "@/components/patterns/buy-now-button";
 import { LowStockBadge } from "@/components/patterns/low-stock-badge";
+import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
 import { trackViewItem } from "@/lib/analytics/ecommerce";
@@ -10,7 +11,7 @@ import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
 import { formatDiscountPill } from "@/lib/shopify/compare-at-price";
 import type { WishlistItem } from "@/lib/wishlist/types";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type ProductPickerImage = {
   url: string;
@@ -119,6 +120,8 @@ export function ProductVariantPicker({
   const [activeImageUrl, setActiveImageUrl] = useState<string | null>(
     initial?.image?.url ?? images[0]?.url ?? null,
   );
+  const [stickyVisible, setStickyVisible] = useState(false);
+  const primaryAtcRef = useRef<HTMLDivElement>(null);
 
   const groups = useMemo(() => optionGroups(variants), [variants]);
   const showOptions = variants.length > 1 && groups.length > 0;
@@ -147,6 +150,36 @@ export function ProductVariantPicker({
     selected?.itemName,
     selected?.itemVariant,
   ]);
+
+  useEffect(() => {
+    const node = primaryAtcRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const sync = (entry: IntersectionObserverEntry) => {
+      // Only after the primary ATC has scrolled above the viewport (not merely below the fold).
+      setStickyVisible(
+        !mq.matches && !entry.isIntersecting && entry.boundingClientRect.top < 0,
+      );
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry) sync(entry);
+      },
+      { root: null, rootMargin: "0px", threshold: 0 },
+    );
+    observer.observe(node);
+
+    const onMq = () => {
+      if (mq.matches) setStickyVisible(false);
+    };
+    mq.addEventListener("change", onMq);
+    return () => {
+      observer.disconnect();
+      mq.removeEventListener("change", onMq);
+    };
+  }, [cart, selected?.id]);
 
   const gallery = useMemo(() => {
     const out = [...images];
@@ -300,22 +333,24 @@ export function ProductVariantPicker({
 
         {cart && selected ? (
           <div className="flex flex-col gap-3">
-            <AddToCartButton
-              action={cart.action}
-              variantId={selected.id}
-              available={selected.available}
-              locale={cart.locale}
-              cartHref={cart.cartHref}
-              copy={cart.copy}
-              currency={selected.currency}
-              item={{
-                item_id: selected.itemId,
-                item_name: selected.itemName,
-                price: selected.price,
-                quantity: 1,
-                item_variant: selected.itemVariant,
-              }}
-            />
+            <div ref={primaryAtcRef}>
+              <AddToCartButton
+                action={cart.action}
+                variantId={selected.id}
+                available={selected.available}
+                locale={cart.locale}
+                cartHref={cart.cartHref}
+                copy={cart.copy}
+                currency={selected.currency}
+                item={{
+                  item_id: selected.itemId,
+                  item_name: selected.itemName,
+                  price: selected.price,
+                  quantity: 1,
+                  item_variant: selected.itemVariant,
+                }}
+              />
+            </div>
             {cart.buyNowAction && cart.buyNowCopy ? (
               <BuyNowButton
                 action={cart.buyNowAction}
@@ -333,6 +368,31 @@ export function ProductVariantPicker({
           {checkoutTrust ? <p>{checkoutTrust}</p> : null}
         </div>
       </div>
+
+      {cart && selected ? (
+        <ProductStickyBuyBar
+          title={selected.itemName}
+          priceLabel={selected.priceLabel}
+          visible={stickyVisible}
+        >
+          <AddToCartButton
+            action={cart.action}
+            variantId={selected.id}
+            available={selected.available}
+            locale={cart.locale}
+            cartHref={cart.cartHref}
+            copy={cart.copy}
+            currency={selected.currency}
+            item={{
+              item_id: selected.itemId,
+              item_name: selected.itemName,
+              price: selected.price,
+              quantity: 1,
+              item_variant: selected.itemVariant,
+            }}
+          />
+        </ProductStickyBuyBar>
+      ) : null}
     </div>
   );
 }

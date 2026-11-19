@@ -12,5 +12,8 @@ query ListProductPages($locale: SiteLocale!) {
       width
       height
     }
+    reviews {
+      rating
+    }
   }
 }

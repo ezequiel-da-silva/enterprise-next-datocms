@@ -75,13 +75,15 @@ export function GlobalHeader({
       submitLabel={data?.headerSearchSubmitLabel}
     />
   ) : null;
+  const drawerSearchPlaceholder =
+    locale === "pt" ? "Buscar…" : locale === "es" ? "Buscar…" : "Search…";
   const searchBlock: ReactNode = showSearch ? (
     <HeaderSearchForm
       key="header-search-block"
       action={searchPath}
       locale={locale}
       query={searchQuery}
-      placeholder={data?.headerSearchPlaceholder}
+      placeholder={drawerSearchPlaceholder}
       submitLabel={data?.headerSearchSubmitLabel}
       variant="block"
       inputId="header-search-query-menu"
@@ -90,18 +92,23 @@ export function GlobalHeader({
   const localeSwitcher: ReactNode = (
     <LocaleSwitcher key="header-locale-switcher" locale={locale} hrefs={localeHrefs} />
   );
-  const localeSwitcherBlock: ReactNode = (
-    <LocaleSwitcher key="header-locale-switcher-block" locale={locale} hrefs={localeHrefs} variant="block" />
+  const localeSwitcherDrawer: ReactNode = (
+    <LocaleSwitcher
+      key="header-locale-switcher-drawer"
+      locale={locale}
+      hrefs={localeHrefs}
+      menuPlacement="up"
+    />
   );
   const homeHref = homeBreadcrumbPath(locale);
   const homeLabel = homeAriaLabel(locale);
 
   return (
-    <header className="relative overflow-visible border-b border-border bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/85">
+    <header className="relative h-16 overflow-visible border-b border-border/80 bg-background/95 backdrop-blur-sm">
       <Container
         size="lg"
         name="GlobalHeader"
-        className="flex min-h-14 items-center gap-x-3 py-3 pt-[max(0.75rem,env(safe-area-inset-top,0px))] lg:gap-x-4"
+        className="flex h-full items-center gap-x-3 pt-[env(safe-area-inset-top,0px)] lg:gap-x-4"
       >
         <Link
           href={homeHref}
@@ -110,7 +117,7 @@ export function GlobalHeader({
           <span className="sr-only">{homeLabel}</span>
           {logo?.url ? (
             <span
-              className="relative block h-9 max-w-[10rem] shrink-0 overflow-hidden px-1"
+              className="relative block h-8 max-w-[10rem] shrink-0 overflow-hidden px-1"
               style={{
                 aspectRatio: `${logo.width ?? 160} / ${logo.height ?? 40}`,
               }}
@@ -132,7 +139,7 @@ export function GlobalHeader({
           )}
         </Link>
 
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-3">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
           {menuLinks.length > 0 ? (
             <HeaderNav
               menuLinks={menuLinks}
@@ -141,7 +148,7 @@ export function GlobalHeader({
               searchToggle={searchToggle}
               searchBlock={searchBlock}
               localeSwitcher={localeSwitcher}
-              localeSwitcherBlock={localeSwitcherBlock}
+              localeSwitcherDrawer={localeSwitcherDrawer}
               accountBlock={
                 typeof accountSignedIn === "boolean" ? (
                   <AccountLink
@@ -154,7 +161,7 @@ export function GlobalHeader({
               }
             />
           ) : (
-            <div className="hidden shrink-0 items-center gap-3 lg:flex">
+            <div className="hidden shrink-0 items-center gap-2 lg:flex">
               {searchToggle}
               {localeSwitcher}
               {themeToggle}

@@ -23,6 +23,9 @@ type CartDrawerContextValue = {
   copy: CartDrawerCopy;
   /** Formatted `market_policy` summary from the server; falls back to `copy.checkoutNote`. */
   trustNote: string | null;
+  freeShippingThreshold: number | null;
+  marketCurrencyCode: string | null;
+  shippingRate: string | null;
   cartHref: string;
   lineActions: CartDrawerLineActions;
   returnFocusRef: RefObject<HTMLElement | null>;
@@ -51,6 +54,9 @@ type CartDrawerProviderProps = {
   locale: AppLocale;
   copy: CartDrawerCopy;
   trustNote?: string | null;
+  freeShippingThreshold?: number | null;
+  marketCurrencyCode?: string | null;
+  shippingRate?: string | null;
   loadCartSnapshot: LoadCartSnapshot;
   lineActions: CartDrawerLineActions;
   children: ReactNode;
@@ -60,6 +66,9 @@ export function CartDrawerProvider({
   locale,
   copy,
   trustNote = null,
+  freeShippingThreshold = null,
+  marketCurrencyCode = null,
+  shippingRate = null,
   loadCartSnapshot,
   lineActions,
   children,
@@ -104,6 +113,9 @@ export function CartDrawerProvider({
       locale,
       copy,
       trustNote,
+      freeShippingThreshold,
+      marketCurrencyCode,
+      shippingRate,
       cartHref: cartPath(locale),
       lineActions,
       returnFocusRef,
@@ -119,6 +131,9 @@ export function CartDrawerProvider({
       locale,
       copy,
       trustNote,
+      freeShippingThreshold,
+      marketCurrencyCode,
+      shippingRate,
       lineActions,
       openWithCart,
       openFromServer,

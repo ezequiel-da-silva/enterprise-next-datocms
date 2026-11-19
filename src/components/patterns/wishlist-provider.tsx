@@ -3,6 +3,8 @@
 import {
   getWishlistServerSnapshot,
   getWishlistSnapshot,
+  hydrateWishlistFromStorage,
+  readWishlist,
   removeWishlistHandle,
   subscribeWishlist,
   upsertWishlistItem,
@@ -28,12 +30,25 @@ type WishlistContextValue = {
 
 const WishlistContext = createContext<WishlistContextValue | null>(null);
 
+/**
+ * `false` until `subscribeReady` runs (post-commit). Must match
+ * `getReadyServerSnapshot` during the hydration pass.
+ */
+let readyForClient = false;
+
 function subscribeReady(onStoreChange: () => void): () => void {
-  return subscribeWishlist(onStoreChange);
+  hydrateWishlistFromStorage();
+  readyForClient = true;
+  const unsubscribe = subscribeWishlist(onStoreChange);
+  onStoreChange();
+  return () => {
+    readyForClient = false;
+    unsubscribe();
+  };
 }
 
 function getReadySnapshot(): boolean {
-  return true;
+  return readyForClient;
 }
 
 function getReadyServerSnapshot(): boolean {
@@ -47,7 +62,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const has = useCallback((handle: string) => items.some((item) => item.handle === handle), [items]);
 
   const toggle = useCallback((item: Omit<WishlistItem, "savedAt"> & { savedAt?: number }) => {
-    const current = getWishlistSnapshot();
+    const current = readWishlist();
     if (current.some((entry) => entry.handle === item.handle)) {
       removeWishlistHandle(current, item.handle);
       return;
@@ -59,7 +74,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const remove = useCallback((handle: string) => {
-    removeWishlistHandle(getWishlistSnapshot(), handle);
+    removeWishlistHandle(readWishlist(), handle);
   }, []);
 
   const value = useMemo<WishlistContextValue>(

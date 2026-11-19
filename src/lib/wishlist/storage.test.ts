@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  getWishlistSnapshot,
+  getWishlistServerSnapshot,
+  hydrateWishlistFromStorage,
   readWishlist,
   removeWishlistHandle,
   resetWishlistClientCache,
@@ -36,6 +39,35 @@ describe("wishlist storage", () => {
 
   it("returns empty without window", () => {
     expect(readWishlist()).toEqual([]);
+  });
+
+  it("keeps useSyncExternalStore snapshots empty until hydrate", () => {
+    const store = memoryStorage();
+    store.setItem(
+      WISHLIST_STORAGE_KEY,
+      JSON.stringify([
+        {
+          handle: "board",
+          title: "Board",
+          imageUrl: "https://cdn.example.com/a.jpg",
+          priceAmount: "10.00",
+          currencyCode: "USD",
+          savedAt: 1,
+        },
+      ]),
+    );
+    vi.stubGlobal("window", {
+      localStorage: store,
+      dispatchEvent: () => true,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+    });
+    vi.stubGlobal("localStorage", store);
+
+    expect(getWishlistServerSnapshot()).toEqual([]);
+    expect(getWishlistSnapshot()).toEqual([]);
+    expect(hydrateWishlistFromStorage().map((item) => item.handle)).toEqual(["board"]);
+    expect(getWishlistSnapshot().map((item) => item.handle)).toEqual(["board"]);
   });
 
   it("returns empty for invalid JSON", () => {

@@ -13,6 +13,12 @@ type CartChromeProps = {
   copy: CartDrawerCopy;
   /** Server-formatted `market_policy` trust (shipping · returns). */
   trustNote?: string | null;
+  /** Validated `market_policy.free_shipping_threshold`; null skips the meter. */
+  freeShippingThreshold?: number | null;
+  /** Market currency for the locale (must match cart currency for the meter). */
+  marketCurrencyCode?: string | null;
+  /** Normalized flat shipping rate (`"0.00"` = free). */
+  shippingRate?: string | null;
   loadCartSnapshot: (locale: AppLocale) => Promise<CartSnapshot | null>;
   lineActions: CartDrawerLineActions;
   children: ReactNode;
@@ -23,6 +29,9 @@ export function CartChrome({
   locale,
   copy,
   trustNote = null,
+  freeShippingThreshold = null,
+  marketCurrencyCode = null,
+  shippingRate = null,
   loadCartSnapshot,
   lineActions,
   children,
@@ -32,6 +41,9 @@ export function CartChrome({
       locale={locale}
       copy={copy}
       trustNote={trustNote}
+      freeShippingThreshold={freeShippingThreshold}
+      marketCurrencyCode={marketCurrencyCode}
+      shippingRate={shippingRate}
       loadCartSnapshot={loadCartSnapshot}
       lineActions={lineActions}
     >

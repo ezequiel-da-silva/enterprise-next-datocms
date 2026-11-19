@@ -3,6 +3,7 @@
 import { IconButton } from "@/components/atoms/icon-button";
 import { useWishlist } from "@/components/patterns/wishlist-provider";
 import type { AppLocale } from "@/constants/i18n";
+import { useClientMounted } from "@/lib/a11y/use-client-mounted";
 import { wishlistCopy } from "@/lib/i18n/wishlist-copy";
 import { cn } from "@/lib/cn";
 import type { WishlistItem } from "@/lib/wishlist/types";
@@ -43,8 +44,10 @@ export function WishlistToggleButton({
   revealOnCardHover = false,
 }: WishlistToggleButtonProps) {
   const copy = wishlistCopy(locale);
-  const { has, toggle, ready } = useWishlist();
-  const pressed = ready && has(item.handle);
+  const { has, toggle } = useWishlist();
+  /** Per-instance gate — provider may already be ready before Suspense cards hydrate. */
+  const mounted = useClientMounted();
+  const pressed = mounted && has(item.handle);
 
   function onClick(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();

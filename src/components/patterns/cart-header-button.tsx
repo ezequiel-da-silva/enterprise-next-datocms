@@ -20,7 +20,7 @@ export function CartHeaderButton({ count, label }: CartHeaderButtonProps) {
     <IconButton
       ref={buttonRef}
       type="button"
-      className="relative inline-flex items-center justify-center border-border bg-muted hover:bg-muted/80"
+      className="relative inline-flex items-center justify-center border-transparent bg-transparent shadow-none hover:bg-muted"
       aria-label={label}
       onClick={() => void openFromServer(buttonRef.current)}
     >
