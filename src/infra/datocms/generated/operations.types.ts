@@ -298,7 +298,7 @@ export type ListProductPagesQueryVariables = Exact<{
 }>;
 
 
-export type ListProductPagesQuery = { allProductPages: Array<{ title: string | null, shopifyHandle: string | null, badge: string | null, profile: string | null, terrain: string | null, flex: number | null, baseImage: { url: string, alt: string | null, width: number | null, height: number | null } | null }> };
+export type ListProductPagesQuery = { allProductPages: Array<{ title: string | null, shopifyHandle: string | null, badge: string | null, profile: string | null, terrain: string | null, flex: number | null, baseImage: { url: string, alt: string | null, width: number | null, height: number | null } | null, reviews: Array<{ rating: number | null }> }> };
 
 export type PageBySlugQueryVariables = Exact<{
   slug: string;

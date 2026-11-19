@@ -283,6 +283,8 @@ export type StorefrontCollectionProduct = {
   compareAtPrice: StorefrontMoney | null;
   /** Normalized board lengths from variant options (catalog size facet). */
   sizes: string[];
+  /** Dato review aggregate after {@link enrichCatalogProducts}; null when unset. */
+  ratingSummary?: { average: number; count: number } | null;
 };
 
 export type StorefrontCollection = {

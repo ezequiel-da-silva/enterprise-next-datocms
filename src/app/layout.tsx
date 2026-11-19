@@ -9,6 +9,7 @@ import {
 import { toCartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
 import { CartChrome } from "@/components/patterns/cart-chrome";
 import { GlobalHeader } from "@/components/patterns/global-header";
+import { SiteAnnouncementStrip } from "@/components/patterns/site-announcement-strip";
 import { SiteFooter } from "@/components/patterns/site-footer";
 import { WishlistProvider } from "@/components/patterns/wishlist-provider";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
@@ -18,10 +19,19 @@ import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
 import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
 import { getMarketPolicy } from "@/infra/datocms/get-market-policy";
-import { getAccountCopy, getCartCopy, getConsentCopy } from "@/infra/datocms/get-ui-strings";
+import {
+  getAccountCopy,
+  getCartCopy,
+  getChromeCopy,
+  getConsentCopy,
+} from "@/infra/datocms/get-ui-strings";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
 import { ConsentRoot } from "@/components/patterns/consent/consent-root";
 import { getShopPrivacyPolicyUrl } from "@/infra/shopify/storefront";
+import {
+  formatAnnouncementStrip,
+  formatFooterMarketSummary,
+} from "@/lib/seo/format-announcement-strip";
 import {
   currencyForShopifyCountry,
   formatMarketPolicyTrustNote,
@@ -148,17 +158,29 @@ export default async function RootLayout({
     : null;
   const initialConsent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value);
   const marketCountry = shopifyCountryFromLocale(appLocale);
-  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy, marketPolicy] = await Promise.all([
-    getShopPrivacyPolicyUrl(),
-    getConsentCopy(appLocale),
-    getCartCopy(appLocale),
-    getAccountCopy(appLocale),
-    getMarketPolicy(marketCountry),
-  ]);
-  const cartTrustNote = formatMarketPolicyTrustNote(
+  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy, chromeCopy, marketPolicy] =
+    await Promise.all([
+      getShopPrivacyPolicyUrl(),
+      getConsentCopy(appLocale),
+      getCartCopy(appLocale),
+      getAccountCopy(appLocale),
+      getChromeCopy(appLocale),
+      getMarketPolicy(marketCountry),
+    ]);
+  const marketCurrencyCode = currencyForShopifyCountry(marketCountry);
+  const cartTrustNote = formatMarketPolicyTrustNote(appLocale, marketPolicy, marketCurrencyCode);
+  const announcementText = formatAnnouncementStrip(
     appLocale,
     marketPolicy,
-    currencyForShopifyCountry(marketCountry),
+    marketCurrencyCode,
+    chromeCopy,
+  );
+  const footerMarketSummary = formatFooterMarketSummary(
+    appLocale,
+    marketCountry,
+    marketCurrencyCode,
+    marketPolicy,
+    chromeCopy,
   );
   const themeCss = buildThemeCssVariables();
 
@@ -167,6 +189,7 @@ export default async function RootLayout({
 
   const pageChrome = (
     <>
+      <SiteAnnouncementStrip text={announcementText} />
       <div className="site-chrome sticky top-0 z-50 overflow-visible">
         <DraftChrome />
         <GlobalHeader
@@ -185,7 +208,16 @@ export default async function RootLayout({
       <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
-      <SiteFooter data={navigation} locale={appLocale} cookiePreferencesLabel={consentCopy.manage} />
+      <SiteFooter
+        data={navigation}
+        locale={appLocale}
+        cookiePreferencesLabel={consentCopy.manage}
+        brandTagline={chromeCopy.footerBrandTagline}
+        marketSummary={footerMarketSummary}
+        secureCheckoutNote={chromeCopy.footerSecureCheckout}
+        paymentsLabel={chromeCopy.footerPaymentsLabel}
+        showPix={appLocale === "pt"}
+      />
     </>
   );
 
@@ -216,6 +248,9 @@ export default async function RootLayout({
               locale={appLocale}
               copy={toCartDrawerCopy(cartCopy)}
               trustNote={cartTrustNote}
+              freeShippingThreshold={marketPolicy?.freeShippingThreshold ?? null}
+              marketCurrencyCode={marketCurrencyCode}
+              shippingRate={marketPolicy?.shippingRate ?? null}
               loadCartSnapshot={getCartSnapshot}
               lineActions={{ updateLine: updateCartLineForDrawer, removeLine: removeCartLineForDrawer }}
             >

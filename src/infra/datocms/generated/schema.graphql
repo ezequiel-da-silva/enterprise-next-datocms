@@ -3385,6 +3385,7 @@ input MarketPolicyModelFilter {
   _unpublishingScheduledAt: PublishedAtFilter
   _updatedAt: UpdatedAtFilter
   country: StringFilter
+  freeShippingThreshold: FloatFilter
   handlingDaysMax: IntegerFilter
   handlingDaysMin: IntegerFilter
   id: ItemIdFilter
@@ -3414,6 +3415,8 @@ enum MarketPolicyModelOrderBy {
   _updatedAt_DESC
   country_ASC
   country_DESC
+  freeShippingThreshold_ASC
+  freeShippingThreshold_DESC
   handlingDaysMax_ASC
   handlingDaysMax_DESC
   handlingDaysMin_ASC
@@ -3451,6 +3454,7 @@ type MarketPolicyRecord implements RecordInterface {
   _unpublishingScheduledAt: DateTime
   _updatedAt: DateTime!
   country: String
+  freeShippingThreshold: FloatType
   handlingDaysMax: IntType
   handlingDaysMin: IntType
   id: ItemId!
@@ -3899,7 +3903,7 @@ union PostModelPostContentBlocksField = ContentListingSectionRecord | ImageBlock
 type PostModelPostContentField {
   blocks: [PostModelPostContentBlocksField!]!
   inlineBlocks: [String!]!
-  links: [PageRecord!]!
+  links: [PostModelPostContentLinksField!]!
   value: JsonField!
 }
 
@@ -3907,6 +3911,8 @@ type PostModelPostContentFieldMultiLocaleField {
   locale: SiteLocale
   value: PostModelPostContentField
 }
+
+union PostModelPostContentLinksField = PageRecord | ProductPageRecord
 
 """Record of type 📝 Post (post)"""
 type PostRecord implements RecordInterface {
@@ -5864,6 +5870,18 @@ type UiStringRecord implements RecordInterface {
     """Process content as markdown"""
     markdown: Boolean
   ): [StringMultiLocaleField!]
+  _allCartFreeShippingRemainingLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCartFreeShippingUnlockedLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allCartLinkLabelOneLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5877,6 +5895,12 @@ type UiStringRecord implements RecordInterface {
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
   _allCartQuantityLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCartRecentlyViewedTitleLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -5962,6 +5986,12 @@ type UiStringRecord implements RecordInterface {
     """
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
+  _allCatalogPriceLabelLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
   _allCatalogProfileLabelLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -5969,6 +5999,12 @@ type UiStringRecord implements RecordInterface {
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
   _allCatalogResultsTemplateLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allCatalogSizeLabelLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6099,6 +6135,12 @@ type UiStringRecord implements RecordInterface {
     fallbackLocales: [SiteLocale!]
   ): [StringMultiLocaleField!]
   _allPdpPaymentHintLocales(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+  ): [StringMultiLocaleField!]
+  _allPdpQuestionsTitleLocales(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6499,6 +6541,22 @@ type UiStringRecord implements RecordInterface {
     """Process content as markdown"""
     markdown: Boolean
   ): String
+  cartFreeShippingRemaining(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  cartFreeShippingUnlocked(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   cartLinkLabelOne(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -6516,6 +6574,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   cartQuantity(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  cartRecentlyViewedTitle(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6629,6 +6695,14 @@ type UiStringRecord implements RecordInterface {
     """The locale to use to fetch the field's content"""
     locale: SiteLocale
   ): String
+  catalogPriceLabel(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
   catalogProfileLabel(
     """
     If you want to fallback to a default translation when a translation has not been found
@@ -6638,6 +6712,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   catalogResultsTemplate(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  catalogSizeLabel(
     """
     If you want to fallback to a default translation when a translation has not been found
     """
@@ -6811,6 +6893,14 @@ type UiStringRecord implements RecordInterface {
     locale: SiteLocale
   ): String
   pdpPaymentHint(
+    """
+    If you want to fallback to a default translation when a translation has not been found
+    """
+    fallbackLocales: [SiteLocale!]
+    """The locale to use to fetch the field's content"""
+    locale: SiteLocale
+  ): String
+  pdpQuestionsTitle(
     """
     If you want to fallback to a default translation when a translation has not been found
     """

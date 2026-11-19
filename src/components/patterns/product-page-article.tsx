@@ -13,6 +13,8 @@ import {
   type ProductPickerVariant,
   type ProductPickerWishlist,
 } from "@/components/patterns/product-variant-picker";
+import { RecentlyViewedSection } from "@/components/patterns/recently-viewed-section";
+import { RecentlyViewedTracker } from "@/components/patterns/recently-viewed-tracker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
 import type { AppLocale } from "@/constants/i18n";
@@ -304,6 +306,14 @@ export function ProductPageArticle({
 
       <ProductReviewsSection locale={locale} reviews={reviews} copy={pdpCopy} />
       <ProductQaSection questions={questions} copy={pdpCopy} />
+
+      <RecentlyViewedTracker handle={handle} />
+      <RecentlyViewedSection
+        locale={locale}
+        title={cartCopy.recentlyViewedTitle}
+        excludeHandle={handle}
+        className="mt-12 space-y-4"
+      />
     </Container>
   );
 }

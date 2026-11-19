@@ -35,7 +35,7 @@ export function WishlistHeaderButton({ locale }: WishlistHeaderButtonProps) {
   return (
     <IconButton
       asChild
-      className="relative inline-flex items-center justify-center border-border bg-muted hover:bg-muted/80"
+      className="relative inline-flex items-center justify-center border-transparent bg-transparent shadow-none hover:bg-muted"
     >
       <Link href={wishlistPath(locale)} aria-label={copy.linkLabel(badge)}>
         <HeartIcon />

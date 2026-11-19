@@ -53,7 +53,8 @@
    * o padding seguro mantém título e ações visíveis.
    */
   body:has(main [data-page-leading-hero]) {
-    --site-chrome-overlay-space: 6.5rem;
+    /* Sticky header is h-16 (4rem); announcement strip scrolls away outside .site-chrome. */
+    --site-chrome-overlay-space: 4rem;
   }
 
   body:has(main [data-page-leading-hero]) .site-chrome {
@@ -62,7 +63,7 @@
 
   @media (min-width: 640px) {
     body:has(main [data-page-leading-hero]) {
-      --site-chrome-overlay-space: 6rem;
+      --site-chrome-overlay-space: 4rem;
     }
   }
 

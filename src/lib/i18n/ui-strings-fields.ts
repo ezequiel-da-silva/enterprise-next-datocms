@@ -1,6 +1,7 @@
 import type { AccountCopy, AccountErrorCode } from "@/lib/i18n/account-copy";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
 import type { CatalogFiltersCopy } from "@/lib/i18n/catalog-filters-copy";
+import type { ChromeCopy } from "@/lib/i18n/chrome-copy";
 import type { CollectionCopy } from "@/lib/i18n/collection-copy";
 import type { ConsentCopy } from "@/lib/i18n/consent-copy";
 import type { OrderConfirmationCopy } from "@/lib/i18n/order-confirmation-copy";
@@ -45,7 +46,18 @@ export const CART_FIELDS = {
   checkout: "cartCheckout",
   checkoutNote: "cartCheckoutNote",
   checkoutUnavailable: "cartCheckoutUnavailable",
-} as const satisfies Record<Exclude<keyof CartCopy, "linkLabel" | "closeDrawer">, string>;
+  freeShippingUnlocked: "cartFreeShippingUnlocked",
+  recentlyViewedTitle: "cartRecentlyViewedTitle",
+} as const satisfies Record<
+  Exclude<
+    keyof CartCopy,
+    "linkLabel" | "closeDrawer" | "freeShippingRemaining" | "freeShippingRemainingTemplate"
+  >,
+  string
+>;
+
+/** `{amount}` template for the free-shipping progress line. */
+export const CART_FREE_SHIPPING_REMAINING_FIELD = "cartFreeShippingRemaining" as const;
 
 /** `{count}` templates replacing `CartCopy.linkLabel(count)`; both are needed to override. */
 export const CART_LINK_FIELDS = {
@@ -159,10 +171,25 @@ export const CATALOG_FILTERS_FIELDS = {
   closeFiltersLabel: "catalogCloseFilters",
 } as const satisfies Record<keyof CatalogFiltersCopy, string>;
 
+/** `{amount}` template for the header announcement free-shipping line. */
+export const CHROME_ANNOUNCEMENT_FREE_SHIPPING_FIELD = "chromeAnnouncementFreeShipping" as const;
+
+export const CHROME_FIELDS = {
+  announcementFreeShippingFlat: "chromeAnnouncementFreeShippingFlat",
+  announcementReturns: "chromeAnnouncementReturns",
+  footerBrandTagline: "footerBrandTagline",
+  footerSecureCheckout: "footerSecureCheckout",
+  footerPaymentsLabel: "footerPaymentsLabel",
+} as const satisfies Record<
+  Exclude<keyof ChromeCopy, "announcementFreeShippingTemplate">,
+  string
+>;
+
 export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(CONSENT_FIELDS),
   ...Object.values(CART_FIELDS),
   ...Object.values(CART_LINK_FIELDS),
+  CART_FREE_SHIPPING_REMAINING_FIELD,
   ...Object.values(ACCOUNT_FIELDS),
   ...Object.values(ACCOUNT_ERROR_FIELDS),
   ...Object.values(ACCOUNT_TEMPLATE_FIELDS),
@@ -174,6 +201,8 @@ export const UI_STRINGS_FIELD_NAMES = [
   ...Object.values(VIDEO_UI_FIELDS),
   ...Object.values(ORDER_CONFIRMATION_TEXT_FIELDS),
   ...Object.values(CATALOG_FILTERS_FIELDS),
+  CHROME_ANNOUNCEMENT_FREE_SHIPPING_FIELD,
+  ...Object.values(CHROME_FIELDS),
 ] as const;
 
 export type UiStringsFieldName = (typeof UI_STRINGS_FIELD_NAMES)[number];

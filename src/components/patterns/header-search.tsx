@@ -1,9 +1,9 @@
 "use client";
 
 import { Container } from "@/components/atoms/container";
-import { IconButton } from "@/components/atoms/icon-button";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
 import type { AppLocale } from "@/constants/i18n";
+import { cn } from "@/lib/cn";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 const TOGGLE_LABELS: Record<AppLocale, { open: string; close: string }> = {
@@ -21,18 +21,15 @@ type HeaderSearchProps = {
 };
 
 /**
- * Disclosure da busca: a lupa fica no header e o formulário abre numa faixa
- * sobreposta (`absolute`), para não reservar altura nem mover o conteúdo.
- * O painel é posicionado em relação ao `<header>` — daí o `relative` lá.
+ * Compact lupa trigger (ghost, matches other header utilities). Opens an absolute
+ * search strip under `<header>`. Keyboard: ⌘K / Ctrl K (no visible kbd — no hydration mismatch).
  */
 export function HeaderSearch({ action, locale, query, placeholder, submitLabel }: HeaderSearchProps) {
   const panelId = useId();
   const hasQuery = Boolean(query?.trim());
-  // Na página de resultados o termo já está ativo: abre no SSR, sem mismatch de hidratação.
   const [open, setOpen] = useState(hasQuery);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  /** Só foca o input quando a abertura vem de interação, nunca no load com `?q=`. */
   const focusOnOpen = useRef(false);
   const labels = TOGGLE_LABELS[locale];
 
@@ -41,6 +38,11 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
     if (restoreFocus) {
       requestAnimationFrame(() => buttonRef.current?.focus());
     }
+  }, []);
+
+  const openPanel = useCallback(() => {
+    focusOnOpen.current = true;
+    setOpen(true);
   }, []);
 
   useEffect(() => {
@@ -71,9 +73,22 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
     };
   }, [open, close]);
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (!(e.key === "k" || e.key === "K")) return;
+      if (!(e.metaKey || e.ctrlKey)) return;
+      e.preventDefault();
+      if (open) close(false);
+      else openPanel();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, close, openPanel]);
+
   return (
     <>
-      <IconButton
+      <button
+        type="button"
         ref={buttonRef}
         aria-expanded={open}
         aria-controls={panelId}
@@ -82,10 +97,12 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
             close(false);
             return;
           }
-          focusOnOpen.current = true;
-          setOpen(true);
+          openPanel();
         }}
-        className="border-border bg-muted hover:bg-muted/80"
+        className={cn(
+          "touch-target size-10 inline-flex cursor-pointer items-center justify-center rounded-md border-transparent bg-transparent text-muted-foreground shadow-none transition hover:bg-muted",
+          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        )}
       >
         <span className="sr-only">{open ? labels.close : labels.open}</span>
         <svg
@@ -95,8 +112,6 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
         >
           {open ? (
             <path d="M6 18L18 6M6 6l12 12" />
@@ -107,7 +122,7 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
             </>
           )}
         </svg>
-      </IconButton>
+      </button>
 
       {open ? (
         <div

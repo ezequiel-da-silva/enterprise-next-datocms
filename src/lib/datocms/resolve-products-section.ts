@@ -88,6 +88,8 @@ export type ProductPageCard = {
   terrain: string | null;
   flex: number | null;
   baseImage: StorefrontProductImage | null;
+  /** Aggregate from `product_page.reviews`; null when none rated. */
+  ratingSummary: { average: number; count: number } | null;
 };
 
 export type ProductsListingCatalog = Record<string, StorefrontCollectionProduct[]>;
@@ -101,7 +103,16 @@ export function readProductPageCards(record: Record<string, unknown>, camel: str
       readCdaStringForLogic(item, "handle", "handle");
     if (!handle) continue;
     const title = readCdaString(item, "title", "title") || handle;
-    out.push({ handle, title, badge: null, profile: null, terrain: null, flex: null, baseImage: null });
+    out.push({
+      handle,
+      title,
+      badge: null,
+      profile: null,
+      terrain: null,
+      flex: null,
+      baseImage: null,
+      ratingSummary: null,
+    });
   }
   return out;
 }
@@ -172,6 +183,7 @@ export function enrichCatalogProducts(
       profile: product.profile ?? null,
       terrain: product.terrain ?? null,
       flex: product.flex ?? null,
+      ratingSummary: product.ratingSummary ?? null,
     }));
   }
   const byHandle = new Map(pages.map((page) => [page.handle, page]));
@@ -184,6 +196,7 @@ export function enrichCatalogProducts(
         profile: product.profile ?? null,
         terrain: product.terrain ?? null,
         flex: product.flex ?? null,
+        ratingSummary: product.ratingSummary ?? null,
       };
     }
     const title = page.title.trim();
@@ -195,6 +208,7 @@ export function enrichCatalogProducts(
       terrain: page.terrain,
       flex: page.flex,
       hoverImage: page.baseImage ?? product.hoverImage,
+      ratingSummary: page.ratingSummary,
     };
   });
 }

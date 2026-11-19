@@ -5,15 +5,30 @@ import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
 import { isExternalHref, localizeInternalHref } from "@/lib/i18n/nav-href";
+import { prioritizeCommerceNavLinks } from "@/lib/i18n/prioritize-commerce-nav";
 import { homeBreadcrumbLabel, homeBreadcrumbPath } from "@/lib/seo/breadcrumb-labels";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
 import { cn } from "@/lib/cn";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { createPortal } from "react-dom";
-import { useCallback, useId, useRef, useState, type ReactNode } from "react";
+import { useCallback, useId, useMemo, useRef, useState, type ReactNode } from "react";
 
-function resolveHref(raw: string, locale: AppLocale): string | null {
-  const t = raw.trim();
+function normalizePath(path: string | null | undefined): string {
+  const trimmed = (path ?? "").trim().replace(/\/+$/, "");
+  return trimmed || "/";
+}
+
+function isCurrentPath(pathname: string | null | undefined, href: string | null | undefined): boolean {
+  if (!href || isExternalHref(href)) return false;
+  const current = normalizePath(pathname);
+  const target = normalizePath(href);
+  if (target === "/") return current === "/" || Boolean(pathname && /^\/[a-z]{2}$/.test(current));
+  return current === target || current.startsWith(`${target}/`);
+}
+
+function resolveHref(raw: string | null | undefined, locale: AppLocale): string | null {
+  const t = (raw ?? "").trim();
   if (!t) return "/";
   if (isExternalHref(t)) {
     return isSafeExternalHref(t) ? t : null;
@@ -25,10 +40,12 @@ function NavLink({
   item,
   locale,
   className,
+  current = false,
 }: {
   item: NavItemRecord;
   locale: AppLocale;
   className?: string;
+  current?: boolean;
 }) {
   const href = resolveHref(item.navItemLink, locale);
   if (!href) return null;
@@ -40,7 +57,10 @@ function NavLink({
     newTab: item.openInNewTab,
   });
   const common = cn(
-    "touch-target-text rounded-md text-sm font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+    "touch-target-text rounded-md text-sm font-medium transition hover:bg-muted hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+    current
+      ? "text-foreground underline decoration-foreground/40 underline-offset-4"
+      : "text-muted-foreground",
     className,
   );
   if (external) {
@@ -56,7 +76,7 @@ function NavLink({
     );
   }
   return (
-    <Link href={href} className={common} {...aria}>
+    <Link href={href} className={common} {...aria} {...(current ? { "aria-current": "page" as const } : {})}>
       {label}
     </Link>
   );
@@ -104,16 +124,29 @@ function SubmenuChevron({ horizontal, open }: { horizontal: boolean; open: boole
   );
 }
 
-function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; locale: AppLocale; level: number }) {
+function DesktopMenuBranch({
+  item,
+  locale,
+  level,
+  pathname,
+}: {
+  item: NavItemRecord;
+  locale: AppLocale;
+  level: number;
+  pathname: string;
+}) {
   const children = item.submenu?.filter(Boolean) ?? [];
   const menuId = useId();
   const [open, setOpen] = useState(false);
+  const href = resolveHref(item.navItemLink, locale);
+  const current = Boolean(href && isCurrentPath(pathname, href));
 
   if (children.length === 0) {
     return (
       <NavLink
         item={item}
         locale={locale}
+        current={current}
         className={cn(level > 0 && "w-full items-center justify-start text-left")}
       />
     );
@@ -144,6 +177,7 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
         <NavLink
           item={item}
           locale={locale}
+          current={current}
           className={
             level > 0
               ? "min-h-11 min-w-0 flex-1 items-center justify-start bg-transparent px-2 text-left hover:bg-transparent"
@@ -173,7 +207,7 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
           >
             {children.map((child) => (
               <li key={child.id} className="relative py-0.5">
-                <DesktopMenuBranch item={child} locale={locale} level={level + 1} />
+                <DesktopMenuBranch item={child} locale={locale} level={level + 1} pathname={pathname} />
               </li>
             ))}
           </ul>
@@ -183,19 +217,34 @@ function DesktopMenuBranch({ item, locale, level }: { item: NavItemRecord; local
   );
 }
 
-function MobileNavList({ items, locale, depth }: { items: NavItemRecord[]; locale: AppLocale; depth: number }) {
+function MobileNavList({
+  items,
+  locale,
+  depth,
+  pathname,
+}: {
+  items: NavItemRecord[];
+  locale: AppLocale;
+  depth: number;
+  pathname: string;
+}) {
   return (
     <ul className={cn("space-y-0.5", depth > 0 && "mt-0.5 pl-4")}>
       {items.map((item) => {
         const children = item.submenu?.filter(Boolean) ?? [];
+        const href = resolveHref(item.navItemLink, locale);
+        const current = Boolean(href && isCurrentPath(pathname, href));
         return (
           <li key={item.id}>
             <NavLink
               item={item}
               locale={locale}
+              current={current}
               className="w-full items-center justify-start text-left"
             />
-            {children.length > 0 ? <MobileNavList items={children} locale={locale} depth={depth + 1} /> : null}
+            {children.length > 0 ? (
+              <MobileNavList items={children} locale={locale} depth={depth + 1} pathname={pathname} />
+            ) : null}
           </li>
         );
       })}
@@ -211,9 +260,10 @@ type HeaderNavProps = {
   searchToggle: ReactNode;
   /** Formulário já aberto no drawer: no móvel a lupa sairia do ecrã com o painel. */
   searchBlock: ReactNode;
+  /** Compact locale control for the desktop chrome. */
   localeSwitcher: ReactNode;
-  /** Variante de largura total para o painel móvel. */
-  localeSwitcherBlock: ReactNode;
+  /** Compact locale control for the mobile drawer footer (separate instance). */
+  localeSwitcherDrawer: ReactNode;
   /** Link de conta em largura total no drawer móvel. */
   accountBlock?: ReactNode;
 };
@@ -225,7 +275,7 @@ export function HeaderNav({
   searchToggle,
   searchBlock,
   localeSwitcher,
-  localeSwitcherBlock,
+  localeSwitcherDrawer,
   accountBlock,
 }: HeaderNavProps) {
   const panelId = useId();
@@ -233,6 +283,8 @@ export function HeaderNav({
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname() ?? `/${locale}`;
+  const orderedLinks = useMemo(() => prioritizeCommerceNavLinks(menuLinks), [menuLinks]);
   const close = useCallback(() => setOpen(false), []);
   const labels = mobileMenuLabels(locale);
 
@@ -251,24 +303,24 @@ export function HeaderNav({
 
   return (
     <>
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-3 lg:gap-3">
-        <nav aria-label="Principal" className="hidden min-w-0 lg:block">
-          <ul className="flex max-w-full flex-wrap items-center justify-end gap-2">
-            {menuLinks.map((item) => (
+      <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
+        <nav aria-label="Principal" className="hidden min-w-0 flex-1 lg:block">
+          <ul className="flex max-w-full flex-wrap items-center justify-start gap-1 xl:gap-2">
+            {orderedLinks.map((item) => (
               <li key={item.id} className="relative max-w-full shrink-0">
-                <DesktopMenuBranch item={item} locale={locale} level={0} />
+                <DesktopMenuBranch item={item} locale={locale} level={0} pathname={pathname} />
               </li>
             ))}
           </ul>
         </nav>
         {/* Desktop: busca/idioma/tema na barra; mobile: só no drawer. */}
-        {searchToggle ? <div className="hidden lg:contents">{searchToggle}</div> : null}
-        {localeSwitcher ? <div className="hidden lg:contents">{localeSwitcher}</div> : null}
-        {themeToggle ? <div className="hidden lg:contents">{themeToggle}</div> : null}
+        {searchToggle ? <div className="hidden shrink-0 lg:contents">{searchToggle}</div> : null}
+        {localeSwitcher ? <div className="hidden shrink-0 lg:contents">{localeSwitcher}</div> : null}
+        {themeToggle ? <div className="hidden shrink-0 lg:contents">{themeToggle}</div> : null}
         <button
           ref={menuButtonRef}
           type="button"
-          className="touch-target cursor-pointer rounded-md border border-border bg-background text-foreground shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
+          className="touch-target cursor-pointer rounded-md border-transparent bg-transparent text-foreground hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => setOpen((v) => !v)}
@@ -321,12 +373,14 @@ export function HeaderNav({
                   </button>
                 </div>
                 <div
-                  className="flex flex-1 flex-col overflow-y-auto px-4 py-4"
+                  className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4"
                   onClick={(e) => {
                     if (e.target instanceof HTMLAnchorElement) handleClose();
                   }}
                 >
-                  {searchBlock ? <div className="mb-4 border-b border-border pb-4">{searchBlock}</div> : null}
+                  {searchBlock ? (
+                    <div className="mb-4 min-w-0 border-b border-border pb-4">{searchBlock}</div>
+                  ) : null}
                   {/* Landmarks planos: o seletor de idioma é irmão da navegação, não filho. */}
                   <nav aria-label="Principal móvel">
                     <Link
@@ -335,15 +389,16 @@ export function HeaderNav({
                     >
                       {homeBreadcrumbLabel(locale)}
                     </Link>
-                    <MobileNavList items={menuLinks} locale={locale} depth={0} />
+                    <MobileNavList items={orderedLinks} locale={locale} depth={0} pathname={pathname} />
                   </nav>
                   {accountBlock ? (
                     <div className="mt-4 border-t border-border pt-4">{accountBlock}</div>
                   ) : null}
-                  <div className="mt-auto flex flex-col gap-2 border-t border-border pt-4">
-                    {localeSwitcherBlock}
-                    {themeToggle}
-                  </div>
+                </div>
+                {/* Outside scroll: drop-up locale menu must not expand scrollHeight or get clipped. */}
+                <div className="flex shrink-0 items-center gap-2 border-t border-border px-4 py-3">
+                  <div className="relative z-10 min-w-0 flex-1">{localeSwitcherDrawer}</div>
+                  <div className="shrink-0 [&_button]:size-11 [&_button]:w-11">{themeToggle}</div>
                 </div>
               </div>
             </div>,

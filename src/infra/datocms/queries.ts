@@ -1450,6 +1450,9 @@ export const LIST_PRODUCT_PAGES = /* GraphQL */ `
         width
         height
       }
+      reviews {
+        rating
+      }
     }
   }
 `;

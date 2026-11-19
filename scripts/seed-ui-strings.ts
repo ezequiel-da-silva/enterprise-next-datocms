@@ -12,6 +12,7 @@ import type { Client } from "datocms/lib/cma-client-node";
 import { ACCOUNT_COPY } from "../src/lib/i18n/account-copy";
 import { CART_COPY } from "../src/lib/i18n/cart-copy";
 import { CATALOG_FILTERS_COPY } from "../src/lib/i18n/catalog-filters-copy";
+import { CHROME_COPY } from "../src/lib/i18n/chrome-copy";
 import { COLLECTION_COPY } from "../src/lib/i18n/collection-copy";
 import { CONSENT_COPY } from "../src/lib/i18n/consent-copy";
 import { ORDER_CONFIRMATION_COPY } from "../src/lib/i18n/order-confirmation-copy";
@@ -24,8 +25,11 @@ import {
   ACCOUNT_FIELDS,
   ACCOUNT_TEMPLATE_FIELDS,
   CART_FIELDS,
+  CART_FREE_SHIPPING_REMAINING_FIELD,
   CART_LINK_FIELDS,
   CATALOG_FILTERS_FIELDS,
+  CHROME_ANNOUNCEMENT_FREE_SHIPPING_FIELD,
+  CHROME_FIELDS,
   COLLECTION_FIELDS,
   CONSENT_FIELDS,
   ORDER_CONFIRMATION_TEXT_FIELDS,
@@ -58,6 +62,7 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
   const video = VIDEO_UI_COPY[locale];
   const order = ORDER_CONFIRMATION_COPY[locale];
   const catalogFilters = CATALOG_FILTERS_COPY[locale];
+  const chrome = CHROME_COPY[locale];
   const out: Record<string, string> = {};
 
   for (const [key, name] of Object.entries(CONSENT_FIELDS)) {
@@ -68,6 +73,7 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
   }
   out[CART_LINK_FIELDS.one] = cart.linkLabel(1).replace("1", "{count}");
   out[CART_LINK_FIELDS.other] = cart.linkLabel(2).replace("2", "{count}");
+  out[CART_FREE_SHIPPING_REMAINING_FIELD] = cart.freeShippingRemainingTemplate;
 
   for (const [key, name] of Object.entries(ACCOUNT_FIELDS)) {
     out[name] = account[key as keyof typeof ACCOUNT_FIELDS];
@@ -101,6 +107,10 @@ function defaultsFor(locale: AppLocale): Record<string, string> {
   }
   for (const [key, name] of Object.entries(CATALOG_FILTERS_FIELDS)) {
     out[name] = catalogFilters[key as keyof typeof CATALOG_FILTERS_FIELDS];
+  }
+  out[CHROME_ANNOUNCEMENT_FREE_SHIPPING_FIELD] = chrome.announcementFreeShippingTemplate;
+  for (const [key, name] of Object.entries(CHROME_FIELDS)) {
+    out[name] = chrome[key as keyof typeof CHROME_FIELDS];
   }
 
   return out;

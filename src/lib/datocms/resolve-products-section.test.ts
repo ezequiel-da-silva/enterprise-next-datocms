@@ -138,8 +138,26 @@ describe("readProductPageCards", () => {
         "selected_products",
       ),
     ).toEqual([
-      { handle: "hat", title: "Hat", badge: null, profile: null, terrain: null, flex: null, baseImage: null },
-      { handle: "wax", title: "Wax", badge: null, profile: null, terrain: null, flex: null, baseImage: null },
+      {
+        handle: "hat",
+        title: "Hat",
+        badge: null,
+        profile: null,
+        terrain: null,
+        flex: null,
+        baseImage: null,
+        ratingSummary: null,
+      },
+      {
+        handle: "wax",
+        title: "Wax",
+        badge: null,
+        profile: null,
+        terrain: null,
+        flex: null,
+        baseImage: null,
+        ratingSummary: null,
+      },
     ]);
   });
 });
@@ -291,7 +309,18 @@ describe("overlayDatoTitles", () => {
           priceRange: { minVariantPrice: { amount: "10", currencyCode: "USD" } }, compareAtPrice: null, sizes: [],
         },
       ],
-      [{ handle: "hat", title: "Chapéu", badge: null, profile: null, terrain: null, flex: null, baseImage: null }],
+      [
+        {
+          handle: "hat",
+          title: "Chapéu",
+          badge: null,
+          profile: null,
+          terrain: null,
+          flex: null,
+          baseImage: null,
+          ratingSummary: null,
+        },
+      ],
     );
     expect(first?.title).toBe("Chapéu");
   });
@@ -334,6 +363,7 @@ describe("enrichCatalogProducts", () => {
           terrain: "all_mountain",
           flex: 6,
           baseImage,
+          ratingSummary: { average: 4.5, count: 2 },
         },
       ],
     );
@@ -346,6 +376,7 @@ describe("enrichCatalogProducts", () => {
       hoverImage: baseImage,
       compareAtPrice: { amount: "750", currencyCode: "USD" },
       sizes: ["152", "156"],
+      ratingSummary: { average: 4.5, count: 2 },
     });
   });
 
@@ -377,6 +408,7 @@ describe("enrichCatalogProducts", () => {
           terrain: null,
           flex: null,
           baseImage: null,
+          ratingSummary: null,
         },
       ],
     );
@@ -421,6 +453,7 @@ describe("publishedStorefrontProducts", () => {
           terrain: null,
           flex: null,
           baseImage: null,
+          ratingSummary: null,
         },
       ]),
     ).toEqual([
@@ -431,6 +464,7 @@ describe("publishedStorefrontProducts", () => {
         profile: null,
         terrain: null,
         flex: null,
+        ratingSummary: null,
       },
     ]);
   });

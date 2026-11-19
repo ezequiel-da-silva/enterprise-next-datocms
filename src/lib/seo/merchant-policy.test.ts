@@ -28,9 +28,12 @@ function camelToSnake(name: string): string {
 
 describe("market_policy field map", () => {
   it("matches the api keys created by the Dato migration", () => {
-    const migration = readFileSync(join(process.cwd(), "migrations", "1790800000_marketPolicy.ts"), "utf8");
+    const sources = [
+      readFileSync(join(process.cwd(), "migrations", "1790800000_marketPolicy.ts"), "utf8"),
+      readFileSync(join(process.cwd(), "scripts", "setup-market-policy-threshold.ts"), "utf8"),
+    ].join("\n");
     for (const field of MARKET_POLICY_FIELDS) {
-      expect(migration).toContain(`"${camelToSnake(field)}"`);
+      expect(sources).toContain(`"${camelToSnake(field)}"`);
     }
   });
 });
@@ -44,11 +47,17 @@ describe("normalizeMarketPolicy", () => {
   it("normalizes a complete record", () => {
     expect(policy()).toEqual({
       shippingRate: "9.90",
+      freeShippingThreshold: null,
       handling: { min: 1, max: 3 },
       transit: { min: 3, max: 10 },
       returnDays: 30,
       returnFees: "free",
     });
+  });
+
+  it("keeps a positive free-shipping threshold", () => {
+    expect(policy({ freeShippingThreshold: 199.9 })?.freeShippingThreshold).toBe(199.9);
+    expect(policy({ freeShippingThreshold: 0 })?.freeShippingThreshold).toBeNull();
   });
 
   it("treats an empty max as a fixed number of days", () => {

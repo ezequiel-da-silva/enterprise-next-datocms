@@ -22,9 +22,20 @@ export type CartCopy = {
   checkoutUnavailable: string;
   /** Close the quick-cart drawer (dialog dismiss control). */
   closeDrawer: string;
+  /** Template with `{amount}` for free-shipping progress under threshold. */
+  freeShippingRemainingTemplate: string;
+  freeShippingRemaining: (amountLabel: string) => string;
+  /** Shown when cart subtotal meets `free_shipping_threshold`. */
+  freeShippingUnlocked: string;
+  /** Recently viewed products heading (empty cart / PDP). */
+  recentlyViewedTitle: string;
   /** Accessible name for the header cart link, e.g. "Carrinho, 2 itens". */
   linkLabel: (count: number) => string;
 };
+
+function freeShippingRemainingFrom(template: string, amountLabel: string): string {
+  return template.replaceAll("{amount}", amountLabel);
+}
 
 export const CART_COPY: Record<AppLocale, CartCopy> = {
   en: {
@@ -47,6 +58,10 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     checkoutNote: "Shipping and taxes are calculated at checkout.",
     checkoutUnavailable: "Checkout is temporarily unavailable.",
     closeDrawer: "Close cart",
+    freeShippingRemainingTemplate: "Add {amount} more for free shipping",
+    freeShippingRemaining: (amount) => freeShippingRemainingFrom("Add {amount} more for free shipping", amount),
+    freeShippingUnlocked: "You've unlocked free shipping",
+    recentlyViewedTitle: "Recently viewed",
     linkLabel: (count) => `Cart, ${count} ${count === 1 ? "item" : "items"}`,
   },
   pt: {
@@ -69,6 +84,10 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     checkoutNote: "Frete e impostos são calculados no checkout.",
     checkoutUnavailable: "O checkout está temporariamente indisponível.",
     closeDrawer: "Fechar carrinho",
+    freeShippingRemainingTemplate: "Faltam {amount} para frete grátis",
+    freeShippingRemaining: (amount) => freeShippingRemainingFrom("Faltam {amount} para frete grátis", amount),
+    freeShippingUnlocked: "Frete grátis desbloqueado",
+    recentlyViewedTitle: "Vistos recentemente",
     linkLabel: (count) => `Carrinho, ${count} ${count === 1 ? "item" : "itens"}`,
   },
   es: {
@@ -91,10 +110,18 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     checkoutNote: "El envío y los impuestos se calculan en el checkout.",
     checkoutUnavailable: "El checkout no está disponible temporalmente.",
     closeDrawer: "Cerrar carrito",
+    freeShippingRemainingTemplate: "Faltan {amount} para envío gratis",
+    freeShippingRemaining: (amount) => freeShippingRemainingFrom("Faltan {amount} para envío gratis", amount),
+    freeShippingUnlocked: "Envío gratis desbloqueado",
+    recentlyViewedTitle: "Vistos recientemente",
     linkLabel: (count) => `Carrito, ${count} ${count === 1 ? "artículo" : "artículos"}`,
   },
 };
 
 export function cartCopy(locale: AppLocale): CartCopy {
   return CART_COPY[locale];
+}
+
+export function resolveFreeShippingRemaining(template: string, amountLabel: string): string {
+  return freeShippingRemainingFrom(template, amountLabel);
 }

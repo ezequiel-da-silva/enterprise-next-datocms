@@ -11,6 +11,7 @@ import {
   CATALOG_FILTERS_COPY,
   type CatalogFiltersCopy,
 } from "@/lib/i18n/catalog-filters-copy";
+import { CHROME_COPY, type ChromeCopy } from "@/lib/i18n/chrome-copy";
 import { COLLECTION_COPY, type CollectionCopy } from "@/lib/i18n/collection-copy";
 import { CONSENT_COPY, type ConsentCopy } from "@/lib/i18n/consent-copy";
 import {
@@ -28,7 +29,12 @@ import {
 import { VIDEO_UI_COPY, type VideoUiCopy } from "@/lib/i18n/video-ui-copy";
 import { WISHLIST_COPY, type WishlistCopy } from "@/lib/i18n/wishlist-copy";
 import { cleanOverride, pickOverrides } from "@/lib/i18n/merge-copy";
-import { resolveAccountCopy, resolveCartCopy, resolveConsentCopy } from "@/lib/i18n/resolve-ui-copy";
+import {
+  resolveAccountCopy,
+  resolveCartCopy,
+  resolveChromeCopy,
+  resolveConsentCopy,
+} from "@/lib/i18n/resolve-ui-copy";
 import {
   CATALOG_FILTERS_FIELDS,
   COLLECTION_FIELDS,
@@ -142,6 +148,10 @@ export async function getCatalogFiltersCopy(locale: AppLocale): Promise<CatalogF
     ...CATALOG_FILTERS_COPY[locale],
     ...pickOverrides(CATALOG_FILTERS_FIELDS, await loadUiStrings(locale)),
   };
+}
+
+export async function getChromeCopy(locale: AppLocale): Promise<ChromeCopy> {
+  return resolveChromeCopy(CHROME_COPY[locale], await loadUiStrings(locale));
 }
 
 export async function getProductsSectionCopy(locale: AppLocale): Promise<ProductsSectionCopy> {

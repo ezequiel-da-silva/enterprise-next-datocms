@@ -11,6 +11,7 @@
 export const MARKET_POLICY_FIELDS = [
   "country",
   "shippingRate",
+  "freeShippingThreshold",
   "handlingDaysMin",
   "handlingDaysMax",
   "transitDaysMin",
@@ -32,6 +33,11 @@ export type ReturnFees = "free" | "customer";
 export type MarketPolicy = {
   /** Fixed 2-decimal amount in the offer currency, e.g. `"9.90"`; `"0.00"` is free shipping. */
   shippingRate: string | null;
+  /**
+   * Cart subtotal (market currency) that unlocks free shipping for the progress meter.
+   * `null` when unset or invalid — flat free rate without a threshold uses simple copy only.
+   */
+  freeShippingThreshold: number | null;
   handling: DayRange | null;
   transit: DayRange | null;
   returnDays: number | null;
@@ -65,9 +71,12 @@ function dayRange(minRaw: unknown, maxRaw: unknown): DayRange | null {
 export function normalizeMarketPolicy(record: MarketPolicyRecord | null | undefined): MarketPolicy | null {
   if (!record) return null;
   const rate = toNumber(record.shippingRate);
+  const threshold = toNumber(record.freeShippingThreshold);
   const fees = typeof record.returnFees === "string" ? record.returnFees.trim().toLowerCase() : "";
   return {
     shippingRate: rate !== null && rate >= 0 && rate <= 10000 ? rate.toFixed(2) : null,
+    freeShippingThreshold:
+      threshold !== null && threshold > 0 && threshold <= 100000 ? threshold : null,
     handling: dayRange(record.handlingDaysMin, record.handlingDaysMax),
     transit: dayRange(record.transitDaysMin, record.transitDaysMax),
     returnDays: toWholeDays(record.returnDays, 1, 365),

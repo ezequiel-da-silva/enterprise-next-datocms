@@ -120,7 +120,7 @@ export function ThemeToggle({ locale, initialMode }: ThemeToggleProps) {
       aria-checked={isDark}
       aria-label={isDark ? copy.activateLight : copy.activateDark}
       onClick={toggle}
-      className="border-border bg-muted hover:bg-muted/80"
+      className="border-transparent bg-transparent shadow-none hover:bg-muted"
     >
       <span aria-hidden data-theme-icon="light">
         <MoonIcon />

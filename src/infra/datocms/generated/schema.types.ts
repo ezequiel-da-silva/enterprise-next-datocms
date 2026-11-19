@@ -3382,6 +3382,7 @@ export type MarketPolicyModelFilter = {
   _unpublishingScheduledAt?: InputMaybe<PublishedAtFilter>;
   _updatedAt?: InputMaybe<UpdatedAtFilter>;
   country?: InputMaybe<StringFilter>;
+  freeShippingThreshold?: InputMaybe<FloatFilter>;
   handlingDaysMax?: InputMaybe<IntegerFilter>;
   handlingDaysMin?: InputMaybe<IntegerFilter>;
   id?: InputMaybe<ItemIdFilter>;
@@ -3411,6 +3412,8 @@ export type MarketPolicyModelOrderBy =
   | '_updatedAt_DESC'
   | 'country_ASC'
   | 'country_DESC'
+  | 'freeShippingThreshold_ASC'
+  | 'freeShippingThreshold_DESC'
   | 'handlingDaysMax_ASC'
   | 'handlingDaysMax_DESC'
   | 'handlingDaysMin_ASC'
@@ -3445,6 +3448,7 @@ export type MarketPolicyRecord = RecordInterface & {
   _unpublishingScheduledAt?: Maybe<Scalars['DateTime']['output']>;
   _updatedAt: Scalars['DateTime']['output'];
   country?: Maybe<Scalars['String']['output']>;
+  freeShippingThreshold?: Maybe<Scalars['FloatType']['output']>;
   handlingDaysMax?: Maybe<Scalars['IntType']['output']>;
   handlingDaysMin?: Maybe<Scalars['IntType']['output']>;
   id: Scalars['ItemId']['output'];
@@ -3927,7 +3931,7 @@ export type PostModelPostContentField = {
   __typename?: 'PostModelPostContentField';
   blocks: Array<PostModelPostContentBlocksField>;
   inlineBlocks: Array<Scalars['String']['output']>;
-  links: Array<PageRecord>;
+  links: Array<PostModelPostContentLinksField>;
   value: Scalars['JsonField']['output'];
 };
 
@@ -3936,6 +3940,8 @@ export type PostModelPostContentFieldMultiLocaleField = {
   locale?: Maybe<SiteLocale>;
   value?: Maybe<PostModelPostContentField>;
 };
+
+export type PostModelPostContentLinksField = PageRecord | ProductPageRecord;
 
 /** Record of type 📝 Post (post) */
 export type PostRecord = RecordInterface & {
@@ -5808,9 +5814,12 @@ export type UiStringRecord = RecordInterface & {
   _allCartEmptyLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartErrorGenericLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartErrorRateLimitLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartFreeShippingRemainingLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartFreeShippingUnlockedLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartLinkLabelOneLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartLinkLabelOtherLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartQuantityLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCartRecentlyViewedTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartRemoveLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartSoldOutLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCartSubtotalLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -5824,8 +5833,10 @@ export type UiStringRecord = RecordInterface & {
   _allCatalogFiltersLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogInStockOnlyLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogOpenFiltersLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCatalogPriceLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogProfileLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogResultsTemplateLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allCatalogSizeLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogSortLabelLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogSortPriceAscLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allCatalogSortPriceDescLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -5847,6 +5858,7 @@ export type UiStringRecord = RecordInterface & {
   _allPdpInStockLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPdpLowStockLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPdpPaymentHintLocales?: Maybe<Array<StringMultiLocaleField>>;
+  _allPdpQuestionsTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPdpReviewsAggregateTemplateLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPdpReviewsTitleLocales?: Maybe<Array<StringMultiLocaleField>>;
   _allPdpSizeGuideSummaryLocales?: Maybe<Array<StringMultiLocaleField>>;
@@ -5910,9 +5922,12 @@ export type UiStringRecord = RecordInterface & {
   cartEmpty?: Maybe<Scalars['String']['output']>;
   cartErrorGeneric?: Maybe<Scalars['String']['output']>;
   cartErrorRateLimit?: Maybe<Scalars['String']['output']>;
+  cartFreeShippingRemaining?: Maybe<Scalars['String']['output']>;
+  cartFreeShippingUnlocked?: Maybe<Scalars['String']['output']>;
   cartLinkLabelOne?: Maybe<Scalars['String']['output']>;
   cartLinkLabelOther?: Maybe<Scalars['String']['output']>;
   cartQuantity?: Maybe<Scalars['String']['output']>;
+  cartRecentlyViewedTitle?: Maybe<Scalars['String']['output']>;
   cartRemove?: Maybe<Scalars['String']['output']>;
   cartSoldOut?: Maybe<Scalars['String']['output']>;
   cartSubtotal?: Maybe<Scalars['String']['output']>;
@@ -5926,8 +5941,10 @@ export type UiStringRecord = RecordInterface & {
   catalogFiltersLabel?: Maybe<Scalars['String']['output']>;
   catalogInStockOnly?: Maybe<Scalars['String']['output']>;
   catalogOpenFilters?: Maybe<Scalars['String']['output']>;
+  catalogPriceLabel?: Maybe<Scalars['String']['output']>;
   catalogProfileLabel?: Maybe<Scalars['String']['output']>;
   catalogResultsTemplate?: Maybe<Scalars['String']['output']>;
+  catalogSizeLabel?: Maybe<Scalars['String']['output']>;
   catalogSortLabel?: Maybe<Scalars['String']['output']>;
   catalogSortPriceAsc?: Maybe<Scalars['String']['output']>;
   catalogSortPriceDesc?: Maybe<Scalars['String']['output']>;
@@ -5950,6 +5967,7 @@ export type UiStringRecord = RecordInterface & {
   pdpInStock?: Maybe<Scalars['String']['output']>;
   pdpLowStock?: Maybe<Scalars['String']['output']>;
   pdpPaymentHint?: Maybe<Scalars['String']['output']>;
+  pdpQuestionsTitle?: Maybe<Scalars['String']['output']>;
   pdpReviewsAggregateTemplate?: Maybe<Scalars['String']['output']>;
   pdpReviewsTitle?: Maybe<Scalars['String']['output']>;
   pdpSizeGuideSummary?: Maybe<Scalars['String']['output']>;
@@ -6160,6 +6178,18 @@ export type UiStringRecord_AllCartErrorRateLimitLocalesArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartFreeShippingRemainingLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartFreeShippingUnlockedLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllCartLinkLabelOneLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
@@ -6173,6 +6203,12 @@ export type UiStringRecord_AllCartLinkLabelOtherLocalesArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllCartQuantityLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCartRecentlyViewedTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -6257,6 +6293,12 @@ export type UiStringRecord_AllCatalogOpenFiltersLocalesArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCatalogPriceLabelLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllCatalogProfileLabelLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
@@ -6264,6 +6306,12 @@ export type UiStringRecord_AllCatalogProfileLabelLocalesArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllCatalogResultsTemplateLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllCatalogSizeLabelLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -6392,6 +6440,12 @@ export type UiStringRecord_AllPdpLowStockLocalesArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecord_AllPdpPaymentHintLocalesArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecord_AllPdpQuestionsTitleLocalesArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
 };
 
@@ -6739,6 +6793,20 @@ export type UiStringRecordCartErrorRateLimitArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartFreeShippingRemainingArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartFreeShippingUnlockedArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordCartLinkLabelOneArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -6754,6 +6822,13 @@ export type UiStringRecordCartLinkLabelOtherArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordCartQuantityArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCartRecentlyViewedTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
@@ -6852,6 +6927,13 @@ export type UiStringRecordCatalogOpenFiltersArgs = {
 
 
 /** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCatalogPriceLabelArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordCatalogProfileLabelArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
@@ -6860,6 +6942,13 @@ export type UiStringRecordCatalogProfileLabelArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordCatalogResultsTemplateArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordCatalogSizeLabelArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };
@@ -7009,6 +7098,13 @@ export type UiStringRecordPdpLowStockArgs = {
 
 /** Record of type 🔤 UI strings (ui_string) */
 export type UiStringRecordPdpPaymentHintArgs = {
+  fallbackLocales?: InputMaybe<Array<SiteLocale>>;
+  locale?: InputMaybe<SiteLocale>;
+};
+
+
+/** Record of type 🔤 UI strings (ui_string) */
+export type UiStringRecordPdpQuestionsTitleArgs = {
   fallbackLocales?: InputMaybe<Array<SiteLocale>>;
   locale?: InputMaybe<SiteLocale>;
 };

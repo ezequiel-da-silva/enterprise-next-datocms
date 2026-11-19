@@ -58,7 +58,10 @@ export function AccountLink({ locale, signedIn, label, variant = "icon", classNa
   return (
     <IconButton
       asChild
-      className={cn("relative inline-flex items-center justify-center border-border bg-muted hover:bg-muted/80", className)}
+      className={cn(
+        "relative inline-flex items-center justify-center border-transparent bg-transparent shadow-none hover:bg-muted",
+        className,
+      )}
     >
       <Link href={href}>
         <span className="sr-only">{label}</span>

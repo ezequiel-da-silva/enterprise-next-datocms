@@ -1,5 +1,7 @@
 import type { AccountCopy } from "@/lib/i18n/account-copy";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
+import { resolveFreeShippingRemaining } from "@/lib/i18n/cart-copy";
+import type { ChromeCopy } from "@/lib/i18n/chrome-copy";
 import type { ConsentCopy } from "@/lib/i18n/consent-copy";
 import { cleanOverride, interpolate, pickOverrides, pluralTemplate } from "@/lib/i18n/merge-copy";
 import {
@@ -7,7 +9,10 @@ import {
   ACCOUNT_FIELDS,
   ACCOUNT_TEMPLATE_FIELDS,
   CART_FIELDS,
+  CART_FREE_SHIPPING_REMAINING_FIELD,
   CART_LINK_FIELDS,
+  CHROME_ANNOUNCEMENT_FREE_SHIPPING_FIELD,
+  CHROME_FIELDS,
   CONSENT_FIELDS,
   type UiStringsRecord,
 } from "@/lib/i18n/ui-strings-fields";
@@ -24,11 +29,26 @@ export function resolveConsentCopy(base: ConsentCopy, record: UiStringsRecord | 
 export function resolveCartCopy(base: CartCopy, record: UiStringsRecord | null | undefined): CartCopy {
   const one = cleanOverride(record?.[CART_LINK_FIELDS.one]);
   const other = cleanOverride(record?.[CART_LINK_FIELDS.other]);
+  const remainingTemplate =
+    cleanOverride(record?.[CART_FREE_SHIPPING_REMAINING_FIELD]) ?? base.freeShippingRemainingTemplate;
   return {
     ...base,
     ...pickOverrides(CART_FIELDS, record),
+    freeShippingRemainingTemplate: remainingTemplate,
+    freeShippingRemaining: (amount) => resolveFreeShippingRemaining(remainingTemplate, amount),
     // Singular and plural must come together; one alone would print e.g. "1 items".
     linkLabel: one && other ? (count) => pluralTemplate(one, other, count) : base.linkLabel,
+  };
+}
+
+export function resolveChromeCopy(base: ChromeCopy, record: UiStringsRecord | null | undefined): ChromeCopy {
+  const freeShippingTemplate =
+    cleanOverride(record?.[CHROME_ANNOUNCEMENT_FREE_SHIPPING_FIELD]) ??
+    base.announcementFreeShippingTemplate;
+  return {
+    ...base,
+    ...pickOverrides(CHROME_FIELDS, record),
+    announcementFreeShippingTemplate: freeShippingTemplate,
   };
 }
 

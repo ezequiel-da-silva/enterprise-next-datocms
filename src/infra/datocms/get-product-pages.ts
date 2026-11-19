@@ -24,6 +24,7 @@ import {
   readContentListingConfig,
   readContentListingSource,
 } from "@/lib/datocms/resolve-content-listing-section";
+import { computeRatingAggregate } from "@/lib/seo/build-reviews-jsonld";
 import { cache } from "react";
 
 type ProductPageRow = {
@@ -34,6 +35,7 @@ type ProductPageRow = {
   terrain: string | null;
   flex: number | null;
   baseImage: { url: string; alt: string | null; width: number | null; height: number | null } | null;
+  reviews?: { rating: number | null }[] | null;
 };
 
 function mapBaseImage(image: ProductPageRow["baseImage"]): StorefrontProductImage | null {
@@ -67,6 +69,20 @@ const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean)
     const profile = row.profile?.trim() || null;
     const terrain = row.terrain?.trim() || null;
     const flex = typeof row.flex === "number" && Number.isFinite(row.flex) ? row.flex : null;
+    const ratingSummary = computeRatingAggregate(
+      (row.reviews ?? []).flatMap((review, index) => {
+        const rating = typeof review.rating === "number" ? review.rating : NaN;
+        if (!Number.isFinite(rating)) return [];
+        return [
+          {
+            id: `${handle}-r${index}`,
+            authorName: "",
+            rating,
+            comment: "",
+          },
+        ];
+      }),
+    );
     return [
       {
         handle,
@@ -76,6 +92,7 @@ const loadProductPages = cache(async (locale: AppLocale, includeDrafts: boolean)
         terrain,
         flex,
         baseImage: mapBaseImage(row.baseImage),
+        ratingSummary,
       },
     ];
   });
