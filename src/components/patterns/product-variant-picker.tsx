@@ -3,11 +3,11 @@
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
 import { BuyNowButton, type BuyNowAction, type BuyNowCopy } from "@/components/patterns/buy-now-button";
 import { LowStockBadge } from "@/components/patterns/low-stock-badge";
+import { ProductMediaGallery } from "@/components/patterns/product-media-gallery";
 import {
-  ProductMediaGallery,
   toGalleryItemsFromImages,
   type ProductGalleryItem,
-} from "@/components/patterns/product-media-gallery";
+} from "@/lib/shopify/product-gallery-items";
 import {
   ProductShippingEstimate,
   SHIPPING_ESTIMATE_COPY_PT,

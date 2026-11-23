@@ -6,7 +6,7 @@ import { ProductQaSection, type ProductQuestionItem } from "@/components/pattern
 import { ProductReviewsSection, type ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import { ProductSizeGuide } from "@/components/patterns/product-size-guide";
 import { ProductSpecsTable, type ProductSpecValues } from "@/components/patterns/product-specs-table";
-import { toGalleryItemsFromMedia } from "@/components/patterns/product-media-gallery";
+import { toGalleryItemsFromMedia } from "@/lib/shopify/product-gallery-items";
 import {
   ProductVariantPicker,
   type ProductPickerCart,

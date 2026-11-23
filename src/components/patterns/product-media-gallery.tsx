@@ -2,30 +2,11 @@
 
 import { ProductMediaLightbox } from "@/components/patterns/product-media-lightbox";
 import type { ProductGalleryCopy } from "@/lib/i18n/product-gallery-copy";
-import type { StorefrontProductMedia, StorefrontVideoSource } from "@/infra/shopify/storefront";
+import type { ProductGalleryItem } from "@/lib/shopify/product-gallery-items";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 
-export type ProductGalleryImage = {
-  kind: "image";
-  id: string;
-  url: string;
-  alt: string;
-  width: number;
-  height: number;
-};
-
-export type ProductGalleryVideo = {
-  kind: "video";
-  id: string;
-  alt: string | null;
-  previewUrl: string | null;
-  previewWidth: number;
-  previewHeight: number;
-  sources: StorefrontVideoSource[];
-};
-
-export type ProductGalleryItem = ProductGalleryImage | ProductGalleryVideo;
+export type { ProductGalleryItem } from "@/lib/shopify/product-gallery-items";
 
 const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
 
@@ -37,53 +18,6 @@ type ProductMediaGalleryProps = {
   thumbnailLabel: string;
   galleryCopy: ProductGalleryCopy;
 };
-
-export function toGalleryItemsFromMedia(
-  media: StorefrontProductMedia[],
-  fallbackTitle: string,
-): ProductGalleryItem[] {
-  const items: ProductGalleryItem[] = [];
-  media.forEach((entry, index) => {
-    if (entry.kind === "image") {
-      const url = entry.image.url.trim();
-      if (!url) return;
-      items.push({
-        kind: "image",
-        id: `img-${url}`,
-        url,
-        alt: entry.image.altText?.trim() || fallbackTitle,
-        width: entry.image.width && entry.image.width > 0 ? entry.image.width : 800,
-        height: entry.image.height && entry.image.height > 0 ? entry.image.height : 800,
-      });
-      return;
-    }
-    if (entry.sources.length === 0) return;
-    const preview = entry.previewImage;
-    items.push({
-      kind: "video",
-      id: `vid-${entry.sources[0]!.url}-${index}`,
-      alt: entry.alt,
-      previewUrl: preview?.url ?? null,
-      previewWidth: preview?.width && preview.width > 0 ? preview.width : 800,
-      previewHeight: preview?.height && preview.height > 0 ? preview.height : 800,
-      sources: entry.sources,
-    });
-  });
-  return items;
-}
-
-export function toGalleryItemsFromImages(
-  images: { url: string; alt: string; width: number; height: number }[],
-): ProductGalleryItem[] {
-  return images.map((image) => ({
-    kind: "image" as const,
-    id: `img-${image.url}`,
-    url: image.url,
-    alt: image.alt,
-    width: image.width,
-    height: image.height,
-  }));
-}
 
 export function ProductMediaGallery({
   items,

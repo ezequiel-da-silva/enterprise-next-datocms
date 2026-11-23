@@ -1,7 +1,7 @@
 "use client";
 
 import { IconButton } from "@/components/atoms/icon-button";
-import type { ProductGalleryItem } from "@/components/patterns/product-media-gallery";
+import type { ProductGalleryItem } from "@/lib/shopify/product-gallery-items";
 import { useClientMounted } from "@/lib/a11y/use-client-mounted";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
 import { shopifyCdnWidthUrl } from "@/lib/datocms-image-loader";
