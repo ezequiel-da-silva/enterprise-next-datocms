@@ -116,6 +116,7 @@ export function CartDrawer() {
                 locale={locale}
                 title={copy.recentlyViewedTitle}
                 layout="drawer"
+                onProductNavigate={close}
               />
             </div>
           ) : (
