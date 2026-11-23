@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.60.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.59.0...next-dato-v0.60.0) (2026-11-19)
+
+
+### Features
+
+* **ui:** add new UI strings for cart and footer components ([38c111b](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/38c111bc09cbc8b4bce6dc4f0fccf610c59b9c24))
+
+
+### Chores
+
+* **dependencies:** update Next.js and ESLint configuration to version 16.4.6 ([c36b427](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/c36b427a4cb8c7f54f8e6a26fe787fbfed611230))
+
 ## [0.59.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.58.0...next-dato-v0.59.0) (2026-11-15)
 
 
