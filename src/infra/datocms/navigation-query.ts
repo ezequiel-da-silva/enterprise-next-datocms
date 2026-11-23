@@ -18,8 +18,89 @@ function navSubmenuModularOnly(depth: number): string {
   `;
 }
 
-/** `menu_links` e `footer_menu` no schema só aceitam blocos modular no topo. */
+const NAV_LINK_FIELDS = `
+  __typename
+  id
+  ctaLabel
+  typeContent
+  externalLink
+  openInNewTab
+  ctaLinkAria
+  internalLinkPage {
+    __typename
+    slug
+  }
+  internalLinkPost {
+    __typename
+    postSlug
+  }
+  internalLinkCategory {
+    __typename
+    categorySlug
+  }
+  internalLinkAuthor {
+    __typename
+    authorSlug
+  }
+  internalLinkProduct {
+    __typename
+    shopifyHandle
+    title
+  }
+  internalLinkCollection {
+    __typename
+    shopifyHandle
+    title
+  }
+`;
+
+/** Header `menu_links`: classic modular items + mega-menu panels. */
 const NAV_MENU_ROOT = `
+  __typename
+  ... on NavItemModularRecord {
+    id
+    navItemLabel
+    navItemLink
+    navItemLinkAria
+    openInNewTab
+    ${navSubmenuModularOnly(NAV_SUBMENU_DEPTH)}
+  }
+  ... on NavigationMegaMenuRecord {
+    id
+    label
+    categories {
+      __typename
+      ... on NavMegaMenuCategoryRecord {
+        id
+        title
+        links {
+          ${NAV_LINK_FIELDS}
+        }
+      }
+    }
+    campaign {
+      __typename
+      ... on NavMegaMenuCampaignRecord {
+        id
+        title
+        description
+        cta {
+          ${NAV_LINK_FIELDS}
+        }
+        image {
+          url
+          alt
+          width
+          height
+          blurUpThumb
+        }
+      }
+    }
+  }
+`;
+
+/** Footer keeps classic modular items only (mega panels flatten poorly). */
+const NAV_FOOTER_ROOT = `
   __typename
   ... on NavItemModularRecord {
     id
@@ -67,7 +148,7 @@ export const NAVIGATION_SELECTION = `
         ${FILE_FIELD}
       }
       footerMenu {
-        ${NAV_MENU_ROOT}
+        ${NAV_FOOTER_ROOT}
       }
       socialLinks {
         id
