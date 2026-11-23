@@ -10,6 +10,8 @@ const base: MarketPolicy = {
   transit: { min: 3, max: 5 },
   returnDays: 30,
   returnFees: "free",
+  installmentCount: null,
+  installmentMultiplier: null,
 };
 
 describe("formatAnnouncementStrip", () => {

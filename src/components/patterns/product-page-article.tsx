@@ -6,6 +6,7 @@ import { ProductQaSection, type ProductQuestionItem } from "@/components/pattern
 import { ProductReviewsSection, type ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import { ProductSizeGuide } from "@/components/patterns/product-size-guide";
 import { ProductSpecsTable, type ProductSpecValues } from "@/components/patterns/product-specs-table";
+import { toGalleryItemsFromMedia } from "@/components/patterns/product-media-gallery";
 import {
   ProductVariantPicker,
   type ProductPickerCart,
@@ -25,6 +26,7 @@ import { parseSizeChart } from "@/lib/datocms/parse-size-chart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
 import { snowboardBadgeLabel, type PdpCopy } from "@/lib/i18n/pdp-copy";
+import { PRODUCT_GALLERY_COPY } from "@/lib/i18n/product-gallery-copy";
 import {
   currencyForShopifyCountry,
   formatMarketPolicyTrust,
@@ -290,6 +292,8 @@ export function ProductPageArticle({
         <ProductVariantPicker
           variants={variants}
           images={pickerImages(title, storefront)}
+          mediaItems={toGalleryItemsFromMedia(storefront.media, title)}
+          galleryCopy={PRODUCT_GALLERY_COPY[locale]}
           copy={{ thumbnailLabel: pdpCopy.viewImage, unavailableSuffix: pdpCopy.unavailableSuffix }}
           cart={pickerCart(locale, cartCopy, pdpCopy, variants, addToCartAction, buyNowAction)}
           wishlist={pickerWishlist(locale, handle, title, storefront)}
@@ -299,6 +303,9 @@ export function ProductPageArticle({
           returnsTrust={trust.returns}
           checkoutTrust={pdpCopy.checkoutTrust}
           paymentHint={paymentHint}
+          buyBoxLocale={locale}
+          installmentCount={marketPolicy?.installmentCount ?? null}
+          installmentMultiplier={marketPolicy?.installmentMultiplier ?? null}
         />
       ) : null}
 

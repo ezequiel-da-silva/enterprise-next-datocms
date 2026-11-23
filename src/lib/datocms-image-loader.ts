@@ -18,11 +18,11 @@ function isDatoAssetSrc(src: string): boolean {
 }
 
 /** Shopify CDN accepts `width` and keeps its own compression. Hostname check avoids path spoofing. */
-function shopifyWidthUrl(src: string, width: number): string | null {
+export function shopifyCdnWidthUrl(src: string, width: number): string | null {
   try {
     const url = new URL(src);
     if (url.hostname !== "cdn.shopify.com") return null;
-    url.searchParams.set("width", String(width));
+    url.searchParams.set("width", String(Math.max(1, Math.round(width))));
     return url.toString();
   } catch {
     return null;
@@ -35,7 +35,7 @@ export default function datoImageLoader({ src, width, quality }: ImageLoaderProp
     const q = quality ?? DEFAULT_QUALITY;
     return `${src}${sep}auto=format,compress&fit=max&w=${width}&q=${q}`;
   }
-  return shopifyWidthUrl(src, width) ?? src;
+  return shopifyCdnWidthUrl(src, width) ?? src;
 }
 
 /** Para `<picture>` / `srcSet` fora de `next/image`. */

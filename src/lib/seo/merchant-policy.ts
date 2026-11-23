@@ -18,6 +18,8 @@ export const MARKET_POLICY_FIELDS = [
   "transitDaysMax",
   "returnDays",
   "returnFees",
+  "installmentCount",
+  "installmentMultiplier",
 ] as const;
 
 export type MarketPolicyField = (typeof MARKET_POLICY_FIELDS)[number];
@@ -42,6 +44,13 @@ export type MarketPolicy = {
   transit: DayRange | null;
   returnDays: number | null;
   returnFees: ReturnFees | null;
+  /**
+   * Max installments shown on the BR buy box (2–12). `null` hides the computed hint.
+   * Editorial / indicative — not a Shopify Payments contract.
+   */
+  installmentCount: number | null;
+  /** Factor applied to price before dividing by count (`1` = interest-free display). */
+  installmentMultiplier: number | null;
 };
 
 function toNumber(value: unknown): number | null {
@@ -73,6 +82,8 @@ export function normalizeMarketPolicy(record: MarketPolicyRecord | null | undefi
   const rate = toNumber(record.shippingRate);
   const threshold = toNumber(record.freeShippingThreshold);
   const fees = typeof record.returnFees === "string" ? record.returnFees.trim().toLowerCase() : "";
+  const installmentCount = toWholeDays(record.installmentCount, 2, 12);
+  const multiplier = toNumber(record.installmentMultiplier);
   return {
     shippingRate: rate !== null && rate >= 0 && rate <= 10000 ? rate.toFixed(2) : null,
     freeShippingThreshold:
@@ -81,6 +92,9 @@ export function normalizeMarketPolicy(record: MarketPolicyRecord | null | undefi
     transit: dayRange(record.transitDaysMin, record.transitDaysMax),
     returnDays: toWholeDays(record.returnDays, 1, 365),
     returnFees: fees === "free" || fees === "customer" ? fees : null,
+    installmentCount,
+    installmentMultiplier:
+      multiplier !== null && multiplier >= 1 && multiplier <= 3 ? multiplier : null,
   };
 }
 

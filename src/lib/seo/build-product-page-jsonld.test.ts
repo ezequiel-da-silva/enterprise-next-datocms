@@ -33,6 +33,7 @@ function storefront(overrides: Partial<StorefrontProduct> = {}): StorefrontProdu
       { url: "https://cdn.shopify.com/a.jpg", altText: null, width: 800, height: 800 },
       { url: "https://cdn.shopify.com/b.jpg", altText: null, width: 800, height: 800 },
     ],
+    media: [],
     priceRange: { minVariantPrice: money("19.00") },
     compareAtPriceRange: null,
     variants: [variant({})],
