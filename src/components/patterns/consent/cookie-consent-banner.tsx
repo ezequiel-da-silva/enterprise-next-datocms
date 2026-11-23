@@ -64,7 +64,7 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
       aria-describedby={`${descriptionId} ${essentialNoteId}`}
       data-ui-section="CookieConsentBanner"
       data-cookie-consent=""
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/85"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background shadow-lg"
     >
       <Container size="lg" name="CookieConsentBanner" className="flex flex-col gap-4 py-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0 space-y-1">
