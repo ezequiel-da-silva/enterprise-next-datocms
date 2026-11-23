@@ -1,3 +1,4 @@
+import { addToCart } from "@/app/actions/cart";
 import { CollectionPageArticle } from "@/components/patterns/collection-page-article";
 import type { AppLocale } from "@/constants/i18n";
 import { isAppLocale } from "@/constants/i18n";
@@ -8,7 +9,11 @@ import {
   getCollectionsIndexPage,
 } from "@/infra/datocms/get-collections-index-page";
 import { getProductPageCards } from "@/infra/datocms/get-product-pages";
-import { getCatalogFiltersCopy, getCollectionCopy } from "@/infra/datocms/get-ui-strings";
+import {
+  getCartCopy,
+  getCatalogFiltersCopy,
+  getCollectionCopy,
+} from "@/infra/datocms/get-ui-strings";
 import { getStaticParamsCollectionPages } from "@/infra/datocms/static-params";
 import { getStorefrontCollectionByHandle } from "@/infra/shopify/storefront";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
@@ -22,6 +27,7 @@ import { buildDatoPageMetadata } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
 import { buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
+import { resolveCatalogQuickAdd } from "@/lib/shopify/catalog-quick-add";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -72,14 +78,16 @@ export default async function CollectionPlpPage({ params, searchParams }: Collec
   const locale = slug as AppLocale;
   const { isEnabled } = await draftMode();
   const filters = parseCatalogSearchParams(await searchParams);
-  const [result, catalog, storefront, pages, collectionCopy, filtersCopy] = await Promise.all([
-    getCollectionPageByHandle(locale, handle, isEnabled),
-    getCollectionsIndexPage(locale, isEnabled),
-    getStorefrontCollectionByHandle(handle, locale),
-    getProductPageCards(locale, isEnabled),
-    getCollectionCopy(locale),
-    getCatalogFiltersCopy(locale),
-  ]);
+  const [result, catalog, storefront, pages, collectionCopy, filtersCopy, cartCopy] =
+    await Promise.all([
+      getCollectionPageByHandle(locale, handle, isEnabled),
+      getCollectionsIndexPage(locale, isEnabled),
+      getStorefrontCollectionByHandle(handle, locale),
+      getProductPageCards(locale, isEnabled),
+      getCollectionCopy(locale),
+      getCatalogFiltersCopy(locale),
+      getCartCopy(locale),
+    ]);
 
   if ("errors" in result || !result.data.collectionPage) {
     notFound();
@@ -95,6 +103,7 @@ export default async function CollectionPlpPage({ params, searchParams }: Collec
         products: filterAndSortCatalogProducts(enrichedProducts, filters),
       }
     : null;
+  const quickAdd = resolveCatalogQuickAdd(locale, addToCart, cartCopy);
   return (
     <CollectionPageArticle
       locale={locale}
@@ -108,6 +117,7 @@ export default async function CollectionPlpPage({ params, searchParams }: Collec
       emptyLabel={collectionCopy.empty}
       filters={filters}
       filtersCopy={filtersCopy}
+      quickAdd={quickAdd}
     />
   );
 }

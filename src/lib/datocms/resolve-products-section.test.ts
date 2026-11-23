@@ -4,7 +4,9 @@ import {
   applyProductLimit,
   autoSourceCollectionHandle,
   enrichCatalogProducts,
+  excludeCatalogNoiseProducts,
   hideSoldOutProducts,
+  isCatalogNoiseHandle,
   overlayDatoTitles,
   prioritizeAvailableProducts,
   publishedStorefrontProducts,
@@ -199,6 +201,38 @@ describe("applyProductLimit", () => {
   it("slices grid when has_limit is on", () => {
     expect(applyProductLimit(products, true, 2, "grid").map((p) => p.handle)).toEqual(["a", "b"]);
     expect(applyProductLimit(products, false, 1, "grid")).toHaveLength(3);
+  });
+});
+
+describe("excludeCatalogNoiseProducts / isCatalogNoiseHandle", () => {
+  it("drops gift-card handles from auto listings", () => {
+    expect(isCatalogNoiseHandle("gift-card")).toBe(true);
+    expect(isCatalogNoiseHandle("the-complete-snowboard")).toBe(false);
+    const kept = excludeCatalogNoiseProducts([
+      {
+        handle: "gift-card",
+        title: "Gift Card",
+        availableForSale: true,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "25", currencyCode: "USD" } },
+        compareAtPrice: null,
+        sizes: [],
+      },
+      {
+        handle: "the-complete-snowboard",
+        title: "Board",
+        availableForSale: true,
+        featuredImage: null,
+        hoverImage: null,
+        badge: null,
+        priceRange: { minVariantPrice: { amount: "600", currencyCode: "USD" } },
+        compareAtPrice: null,
+        sizes: [],
+      },
+    ]);
+    expect(kept.map((p) => p.handle)).toEqual(["the-complete-snowboard"]);
   });
 });
 

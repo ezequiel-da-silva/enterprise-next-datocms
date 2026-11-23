@@ -1,7 +1,10 @@
 import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { CatalogFilters } from "@/components/patterns/catalog-filters";
-import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
+import {
+  CatalogProductCard,
+  type CatalogProductCardQuickAdd,
+} from "@/components/patterns/catalog-product-card";
 import { ViewItemListTracker } from "@/components/patterns/view-item-list-tracker";
 import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
@@ -33,6 +36,7 @@ type CollectionPageArticleProps = {
   emptyLabel: string;
   filters: CatalogFiltersState;
   filtersCopy: CatalogFiltersCopy;
+  quickAdd?: CatalogProductCardQuickAdd | null;
 };
 
 export async function CollectionPageArticle({
@@ -47,6 +51,7 @@ export async function CollectionPageArticle({
   emptyLabel,
   filters,
   filtersCopy,
+  quickAdd = null,
 }: CollectionPageArticleProps) {
   const path = collectionPagePath(locale, handle);
   const jsonLd = buildCollectionPageJsonLd({
@@ -93,7 +98,7 @@ export async function CollectionPageArticle({
             <ul className="m-0 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
                 <li key={product.handle}>
-                  <CatalogProductCard locale={locale} product={product} />
+                  <CatalogProductCard locale={locale} product={product} quickAdd={quickAdd} />
                 </li>
               ))}
             </ul>

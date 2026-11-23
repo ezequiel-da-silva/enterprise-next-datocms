@@ -1,7 +1,10 @@
 "use client";
 
 import { Button } from "@/components/atoms/button";
-import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
+import {
+  CatalogProductCard,
+  type CatalogProductCardQuickAdd,
+} from "@/components/patterns/catalog-product-card";
 import { useCarouselConfig } from "@/components/ui/carousel/use-carousel-config";
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
@@ -17,9 +20,15 @@ type ProductsSectionCarouselProps = {
   products: StorefrontCollectionProduct[];
   locale: AppLocale;
   setting: CarouselSetting;
+  quickAdd?: CatalogProductCardQuickAdd | null;
 };
 
-export function ProductsSectionCarousel({ products, locale, setting }: ProductsSectionCarouselProps) {
+export function ProductsSectionCarousel({
+  products,
+  locale,
+  setting,
+  quickAdd = null,
+}: ProductsSectionCarouselProps) {
   const copy = productsSectionCopy(locale);
   const { options, plugins, autoplayPlugin } = useCarouselConfig(setting);
   const [emblaRef, emblaApi] = useEmblaCarousel(options, plugins);
@@ -141,7 +150,12 @@ export function ProductsSectionCarousel({ products, locale, setting }: ProductsS
               aria-label={`${index + 1} / ${products.length}`}
               className="min-w-0 shrink-0 basis-full pl-4 md:basis-1/2 lg:basis-1/3"
             >
-              <CatalogProductCard locale={locale} product={product} sizes={CARD_SIZES} />
+              <CatalogProductCard
+                locale={locale}
+                product={product}
+                sizes={CARD_SIZES}
+                quickAdd={quickAdd}
+              />
             </div>
           ))}
         </div>

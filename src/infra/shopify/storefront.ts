@@ -25,6 +25,21 @@ export type StorefrontProductImage = {
   height: number | null;
 };
 
+export type StorefrontVideoSource = {
+  url: string;
+  mimeType: string;
+};
+
+/** Shopify-hosted gallery item from `product.media` (images + videos only). */
+export type StorefrontProductMedia =
+  | { kind: "image"; image: StorefrontProductImage }
+  | {
+      kind: "video";
+      alt: string | null;
+      previewImage: StorefrontProductImage | null;
+      sources: StorefrontVideoSource[];
+    };
+
 export type StorefrontSelectedOption = {
   name: string;
   value: string;
@@ -50,6 +65,8 @@ export type StorefrontProduct = {
   availableForSale: boolean;
   featuredImage: StorefrontProductImage | null;
   images: StorefrontProductImage[];
+  /** Ordered `media` (image + Shopify Video). Empty when the API omits media — use `images`. */
+  media: StorefrontProductMedia[];
   priceRange: { minVariantPrice: StorefrontMoney };
   compareAtPriceRange: { minVariantPrice: StorefrontMoney } | null;
   variants: StorefrontVariant[];
@@ -75,6 +92,32 @@ const PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
           altText
           width
           height
+        }
+      }
+      media(first: 10) {
+        nodes {
+          mediaContentType
+          alt
+          ... on MediaImage {
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+          ... on Video {
+            previewImage {
+              url
+              altText
+              width
+              height
+            }
+            sources {
+              url
+              mimeType
+            }
+          }
         }
       }
       priceRange {
@@ -209,6 +252,50 @@ function readImageNodes(value: unknown): StorefrontProductImage[] {
   return nodes.map(readImage).filter((image): image is StorefrontProductImage => image !== null);
 }
 
+function readVideoSources(value: unknown): StorefrontVideoSource[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry) => {
+    const record = asRecord(entry);
+    if (!record || typeof record.url !== "string" || !record.url.trim()) return [];
+    const mimeType = typeof record.mimeType === "string" && record.mimeType.trim() ? record.mimeType.trim() : "video/mp4";
+    return [{ url: record.url.trim(), mimeType }];
+  });
+}
+
+/** Maps Storefront `media` nodes; skips Model3d / ExternalVideo / empty nodes. */
+export function readProductMediaNodes(value: unknown): StorefrontProductMedia[] {
+  const nodes = asRecord(value)?.nodes;
+  if (!Array.isArray(nodes)) return [];
+  const out: StorefrontProductMedia[] = [];
+  for (const entry of nodes) {
+    const record = asRecord(entry);
+    if (!record) continue;
+    const type =
+      typeof record.mediaContentType === "string" ? record.mediaContentType.toUpperCase() : "";
+    const alt = typeof record.alt === "string" ? record.alt : null;
+    if (type === "IMAGE") {
+      const image = readImage(record.image);
+      if (!image) continue;
+      out.push({
+        kind: "image",
+        image: alt && !image.altText ? { ...image, altText: alt } : image,
+      });
+      continue;
+    }
+    if (type === "VIDEO") {
+      const sources = readVideoSources(record.sources);
+      if (sources.length === 0) continue;
+      out.push({
+        kind: "video",
+        alt,
+        previewImage: readImage(record.previewImage),
+        sources,
+      });
+    }
+  }
+  return out;
+}
+
 function readVariant(value: unknown): StorefrontVariant | null {
   const record = asRecord(value);
   if (!record || typeof record.id !== "string" || typeof record.title !== "string") return null;
@@ -252,6 +339,7 @@ function mapProduct(value: unknown): StorefrontProduct | null {
     availableForSale: record.availableForSale === true,
     featuredImage: readImage(record.featuredImage),
     images: readImageNodes(record.images),
+    media: readProductMediaNodes(record.media),
     priceRange: { minVariantPrice: minPrice },
     compareAtPriceRange: compareAtMin ? { minVariantPrice: compareAtMin } : null,
     variants,

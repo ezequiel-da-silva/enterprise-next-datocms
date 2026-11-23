@@ -1,4 +1,5 @@
 import { Container } from "@/components/atoms/container";
+import type { CatalogProductCardQuickAdd } from "@/components/patterns/catalog-product-card";
 import { HeroPrimaryRepeat, HeroSectionBlock } from "@/components/patterns/hero-section-block";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { MarketPolicyTable } from "@/components/patterns/market-policy-table";
@@ -44,6 +45,7 @@ type CmsPageArticleProps = {
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
+  catalogQuickAdd?: CatalogProductCardQuickAdd | null;
   /** Shipping & returns table rows from `market_policy` (page composition, no CMS block). */
   marketPolicyRows?: readonly MarketPolicyTableRow[];
   marketPolicyCurrentCountry?: string;
@@ -66,6 +68,7 @@ export async function CmsPageArticle({
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
+  catalogQuickAdd = null,
   marketPolicyRows,
   marketPolicyCurrentCountry,
 }: CmsPageArticleProps) {
@@ -153,6 +156,7 @@ export async function CmsPageArticle({
             catalogFilters={catalogFilters}
             catalogFiltersCopy={catalogFiltersCopy}
             catalogFiltersPath={catalogFiltersPath}
+            catalogQuickAdd={catalogQuickAdd}
           />
           {marketPolicyRows?.length ? (
             <MarketPolicyTable

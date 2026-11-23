@@ -1,4 +1,5 @@
 import type { AppLocale } from "@/constants/i18n";
+import type { CatalogProductCardQuickAdd } from "@/components/patterns/catalog-product-card";
 import { StructuredTextBlockView } from "@/components/patterns/structured-text-block-view";
 import type { LatestPostsCatalog } from "@/infra/datocms/types-blog";
 import type { CatalogFilters } from "@/lib/catalog/catalog-filters";
@@ -32,6 +33,7 @@ type PageContentBlocksProps = {
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
+  catalogQuickAdd?: CatalogProductCardQuickAdd | null;
 };
 
 /**
@@ -53,6 +55,7 @@ export function PageContentBlocks({
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
+  catalogQuickAdd = null,
 }: PageContentBlocksProps) {
   if (records.length === 0) {
     return null;
@@ -75,6 +78,7 @@ export function PageContentBlocks({
       catalogFilters={catalogFilters}
       catalogFiltersCopy={catalogFiltersCopy}
       catalogFiltersPath={catalogFiltersPath}
+      catalogQuickAdd={catalogQuickAdd}
     />
   ));
 

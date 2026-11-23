@@ -7,7 +7,7 @@ import { HeaderSearch } from "@/components/patterns/header-search";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
 import { LocaleSwitcher } from "@/components/patterns/locale-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import type { NavigationData } from "@/infra/datocms/types-navigation";
+import { isNavigationMegaMenu, type NavigationData } from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import type { ThemeMode } from "@/constants/theme";
 import { isSearchPageHref } from "@/lib/i18n/nav-href";
@@ -58,10 +58,11 @@ export function GlobalHeader({
   const logo = data?.logo;
   const showTheme = data?.showThemeToggle === true;
   const showSearch = data?.showHeaderSearch === true;
-  /** Com lupa no chrome, omite o item de menu que aponta à página de busca. */
-  const menuLinks = (data?.menuLinks?.filter(Boolean) ?? []).filter(
-    (item) => !(showSearch && isSearchPageHref(item.navItemLink, searchPath, locale)),
-  );
+  /** Com lupa no chrome, omite o item modular que aponta à página de busca. */
+  const menuLinks = (data?.menuLinks?.filter(Boolean) ?? []).filter((item) => {
+    if (isNavigationMegaMenu(item)) return true;
+    return !(showSearch && isSearchPageHref(item.navItemLink, searchPath, locale));
+  });
   const themeToggle = showTheme ? (
     <ThemeToggle key="header-theme-toggle" locale={locale} initialMode={initialThemeMode} />
   ) : null;

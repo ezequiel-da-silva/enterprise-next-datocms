@@ -226,6 +226,25 @@ export function overlayDatoTitles(
   });
 }
 
+/**
+ * Drop Shopify demo / non-board SKUs from auto merchandising listings
+ * (gift cards, etc.). Manual `selected_products` still wins when curated.
+ */
+const CATALOG_NOISE_HANDLES = new Set(["gift-card", "gift_card", "giftcard"]);
+
+export function isCatalogNoiseHandle(handle: string): boolean {
+  const key = handle.trim().toLowerCase();
+  if (!key) return false;
+  if (CATALOG_NOISE_HANDLES.has(key)) return true;
+  return key.includes("gift-card") || key.includes("gift_card");
+}
+
+export function excludeCatalogNoiseProducts(
+  products: StorefrontCollectionProduct[],
+): StorefrontCollectionProduct[] {
+  return products.filter((product) => !isCatalogNoiseHandle(product.handle));
+}
+
 /** Só produtos com ficha `product_page`, para o card não apontar a um PDP 404. */
 export function publishedStorefrontProducts(
   products: StorefrontCollectionProduct[],
@@ -234,7 +253,7 @@ export function publishedStorefrontProducts(
   if (pages.length === 0) return [];
   const allowed = new Set(pages.map((page) => page.handle));
   return enrichCatalogProducts(
-    products.filter((product) => allowed.has(product.handle)),
+    excludeCatalogNoiseProducts(products.filter((product) => allowed.has(product.handle))),
     pages,
   );
 }

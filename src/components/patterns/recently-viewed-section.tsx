@@ -1,6 +1,7 @@
 "use client";
 
 import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
+import { CatalogProductRow } from "@/components/patterns/catalog-product-row";
 import type { AppLocale } from "@/constants/i18n";
 import type { StorefrontCollectionProduct } from "@/infra/shopify/storefront";
 import {
@@ -19,10 +20,12 @@ type RecentlyViewedSectionProps = {
   excludeHandle?: string | null;
   className?: string;
   /**
-   * `drawer`: single-column full-width cards (cart drawer ~24rem).
-   * `grid`: responsive multi-column (PDP / cart page).
+   * `drawer`: compact cross-sell rows (empty cart drawer).
+   * `grid`: responsive multi-column catalog cards (PDP / cart page).
    */
   layout?: "grid" | "drawer";
+  /** Close cart drawer when following a product link (drawer layout). */
+  onProductNavigate?: () => void;
 };
 
 type FetchState = {
@@ -36,6 +39,7 @@ export function RecentlyViewedSection({
   excludeHandle = null,
   className,
   layout = "grid",
+  onProductNavigate,
 }: RecentlyViewedSectionProps) {
   const handles = useSyncExternalStore(
     subscribeRecentlyViewed,
@@ -83,23 +87,27 @@ export function RecentlyViewedSection({
       aria-label={title}
     >
       <h2 className="text-base font-semibold text-foreground">{title}</h2>
-      <ul
-        className={
-          layout === "drawer"
-            ? "grid grid-cols-1 gap-3"
-            : "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4"
-        }
-      >
-        {products.map((product) => (
-          <li key={product.handle} className="min-w-0">
-            <CatalogProductCard
-              locale={locale}
-              product={product}
-              sizes={layout === "drawer" ? "(max-width: 1023px) 100vw, 320px" : CARD_SIZES}
-            />
-          </li>
-        ))}
-      </ul>
+      {layout === "drawer" ? (
+        <ul className="m-0 divide-y divide-border p-0">
+          {products.map((product) => (
+            <li key={product.handle} className="min-w-0 list-none">
+              <CatalogProductRow
+                locale={locale}
+                product={product}
+                onNavigate={onProductNavigate}
+              />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {products.map((product) => (
+            <li key={product.handle} className="min-w-0">
+              <CatalogProductCard locale={locale} product={product} sizes={CARD_SIZES} />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }

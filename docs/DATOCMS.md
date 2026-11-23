@@ -310,9 +310,13 @@ Singleton **🔤 UI strings** com campos **localizados** agrupados por fieldset.
 | Fieldset (típico) | Exemplos de uso |
 |-------------------|-----------------|
 | Cookies | Banner de consentimento + link no rodapé |
-| Cart / Account | Drawer, página de conta, rótulos do ícone |
-| PDP | Stock, specs labels, size guide, low-stock template |
-| Empty states | Wishlist/cart empty, collection empty, products empty, video/captions, order tracking notice |
+| 🛒 Cart | Drawer, free-shipping meter, recently viewed |
+| Checkout & trust | `pdp_checkout_trust`, `pdp_payment_hint` (sem inventar taxas) |
+| 🌐 Global chrome | Announcement strip + rodapé |
+| 🏂 PDP | Stock/spec *labels*, size guide, low-stock template |
+| Account / Empty states / Catalog filters | Conta, empties, facetas |
+
+Reorganizar fieldsets (staging/prod): [`scripts/setup-ui-string-fieldsets.ts`](../scripts/setup-ui-string-fieldsets.ts).
 
 - Campos tipados, não chave/valor: o mapa [`ui-strings-fields.ts`](../src/lib/i18n/ui-strings-fields.ts) liga cada chave ao campo CDA; o teste falha se migrations de `ui_string` divergirem.
 - Placeholders: `{count}` (carrinho / low stock), `{name}` (saudação), `{current}`/`{total}` (paginação), `{order}` (confirmação).
@@ -338,9 +342,11 @@ Coleção **🚚 Market policy**: um registo por país (**US**, **BR**, **ES**, 
 |-------|-------|
 | `country` | obrigatório e único |
 | `shipping_rate` | na moeda da oferta do mercado; `0` = frete grátis |
+| `free_shipping_threshold` | subtotal que libera frete grátis (meter do carrinho + estimativa CEP) |
 | `handling_days_min/max`, `transit_days_min/max` | dias; `max` vazio = igual ao mínimo |
 | `return_days` | 1–365 |
 | `return_fees` | `free` (loja paga) ou `customer` (cliente paga) |
+| `installment_count` / `installment_multiplier` | hint editorial de parcelas no PDP **pt** (2–12; fator ≥1). Script: `setup-market-policy-installments.ts`. Indicativo — taxas reais no checkout Shopify. |
 
 **Alinhamento obrigatório com copy humana:** páginas `shipping-returns` / `refund-policy` (e FAQs geradas por setup) devem espelhar os mesmos números que `market_policy` — tipicamente US **$9.90**, BR **frete grátis**, ES **5 €**, **30 dias** de devolução, frete reverso **grátis** quando `return_fees=free`. O Google e o cliente comparam JSON-LD PDP com o texto publicado; divergência = risco Merchant + confiança (Peak-End).
 
@@ -357,6 +363,10 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 
 | Script | Notas / env |
 |--------|-------------|
+| `setup-market-policy-installments.ts` | Campos `installment_count` / `installment_multiplier` em `market_policy` (hint PDP pt) |
+| `setup-navigation-mega-menu.ts` | Blocos mega-menu + allowlist em `navigation::menu_links` |
+| `setup-ui-string-fieldsets.ts` | Consolida fieldsets Cart / Checkout / Global chrome / PDP |
+| `setup-product-page-publish-gates.ts` | Fieldset Snowboard specs + required publish gates |
 | `setup-home-landing.ts` | Home CMS + blocos (novos listings já em manual + whitelist) |
 | `curate-home-featured.ts` | Home Featured boards → `fetch_mode: manual` + pranchas publicadas (limit 4); idempotente |
 | `clean-footer-search.ts` | Remove Search/Busca/Búsqueda de `navigation.footer_menu` (lupa no header); idempotente |
@@ -445,18 +455,18 @@ Nas fichas `product_page` / `collection_page` o editor mexe em **copy** (`title`
 
 ### Campos técnicos `product_page` (snowboard)
 
-Schema via migrations + [`scripts/setup-snowboard-specs-model.ts`](../scripts/setup-snowboard-specs-model.ts). Queries: `PRODUCT_PAGE_BY_HANDLE` (PDP) e `LIST_PRODUCT_PAGES` (`badge` / `base_image` para cards).
+Schema via [`scripts/setup-snowboard-specs-model.ts`](../scripts/setup-snowboard-specs-model.ts). Publish gates: [`scripts/setup-product-page-publish-gates.ts`](../scripts/setup-product-page-publish-gates.ts) — fieldset **Snowboard specs**, `draft_saving_active`, e **`required`** em `profile` / `flex` / `terrain` / `rider_level` / `size_chart` (draft incompleto ok; publicar sem eles falha). Hint do modelo: preço/stock moram na Shopify.
 
 | api_key | Uso no front |
 |---------|----------------|
-| `profile` | Camber / perfil — `ProductSpecsTable` |
-| `flex` | Inteiro 1–10 (+ `<meter>`) |
-| `terrain` | Terreno |
-| `rider_level` | Nível do rider |
+| `profile` | Camber / perfil — `ProductSpecsTable` (**required** no publish) |
+| `flex` | Inteiro 1–10 (+ `<meter>`) (**required**) |
+| `terrain` | Terreno (**required**) |
+| `rider_level` | Nível do rider (**required**) |
 | `core_material` | Material do núcleo |
 | `badge` | Selo comercial no `CatalogProductCard` |
 | `base_image` | Hover / toggle sola (`hoverImage` após `enrichCatalogProducts`) |
-| `size_chart` | JSON → `parseSizeChart` → `ProductSizeGuide` |
+| `size_chart` | JSON → `parseSizeChart` → `ProductSizeGuide` (**required**) |
 
 Labels da ficha/guia e empty states vêm de `ui_string` (fallbacks em `pdp-copy` / outros). Seed opcional: `SNOWBOARD_SPECS_SEED=1` no script de setup.
 
@@ -469,7 +479,11 @@ Listagens em páginas CMS usam um único bloco **Content listing section** (`con
 - As listagens automáticas Shopify só mostram produtos com `product_page` (evita PDP 404). Uma coleção sem produtos publicáveis produz estado vazio visível.
 - Limite e apresentação (grid, carrossel, paginação, carregar mais) são partilhados.
 
-O bloco **Link** (`type_content` Product / Collection) liga CTAs internos (Hero, CTA banner, tabs, feature grid, pricing) a `product_page` ou `collection_page` pelo `shopify_handle`. Structured Text já resolvia estes modelos; o header (`navItemLink`) continua a ser um path em texto.
+O bloco **Link** (`type_content` Product / Collection) liga CTAs internos (Hero, CTA banner, tabs, feature grid, pricing, **mega-menu**) a `product_page` ou `collection_page` pelo `shopify_handle`.
+
+### Mega-menu (`navigation`)
+
+Schema: [`scripts/setup-navigation-mega-menu.ts`](../scripts/setup-navigation-mega-menu.ts). Em `menu_links` podes misturar **Nav item modular** (flyouts) e **Navigation mega menu** (categorias + banner de campanha). Filhos das categorias usam blocos **Link** (preferir Collection → `collection_page`). O footer continua só com items modulares.
 
 No **Feature GRID**, cada CARD tem `card_source`: editorial (título/imagem/CTA no bloco) ou produto/coleção. Catálogo preenche título (Dato), imagem e href (PDP/PLP) a partir da Storefront; produto mostra preço. Sem handle ou sem Storefront o card é omitido. Isto não substitui o Content listing.
 

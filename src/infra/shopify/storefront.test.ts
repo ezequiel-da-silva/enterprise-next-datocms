@@ -29,6 +29,25 @@ describe("getStorefrontProductByHandle", () => {
                 { url: "" },
               ],
             },
+            media: {
+              nodes: [
+                {
+                  mediaContentType: "IMAGE",
+                  alt: "Hat",
+                  image: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
+                },
+                {
+                  mediaContentType: "VIDEO",
+                  alt: "Clip",
+                  previewImage: { url: "https://cdn.shopify.com/hat-preview.jpg", altText: null, width: 400, height: 400 },
+                  sources: [{ url: "https://cdn.shopify.com/hat.mp4", mimeType: "video/mp4" }],
+                },
+                {
+                  mediaContentType: "MODEL_3D",
+                  sources: [{ url: "https://cdn.shopify.com/hat.glb", mimeType: "model/gltf-binary" }],
+                },
+              ],
+            },
             priceRange: { minVariantPrice: { amount: "19.00", currencyCode: "BRL" } },
             variants: {
               nodes: [
@@ -63,6 +82,18 @@ describe("getStorefrontProductByHandle", () => {
     expect(product?.images.map((image) => image.url)).toEqual([
       "https://cdn.shopify.com/hat.jpg",
       "https://cdn.shopify.com/hat-back.jpg",
+    ]);
+    expect(product?.media).toEqual([
+      {
+        kind: "image",
+        image: { url: "https://cdn.shopify.com/hat.jpg", altText: "Hat", width: 800, height: 800 },
+      },
+      {
+        kind: "video",
+        alt: "Clip",
+        previewImage: { url: "https://cdn.shopify.com/hat-preview.jpg", altText: null, width: 400, height: 400 },
+        sources: [{ url: "https://cdn.shopify.com/hat.mp4", mimeType: "video/mp4" }],
+      },
     ]);
     expect(product?.variants[0]?.selectedOptions).toEqual([
       { name: "Color", value: "Red" },

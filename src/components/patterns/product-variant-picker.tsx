@@ -3,14 +3,24 @@
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
 import { BuyNowButton, type BuyNowAction, type BuyNowCopy } from "@/components/patterns/buy-now-button";
 import { LowStockBadge } from "@/components/patterns/low-stock-badge";
+import { ProductMediaGallery } from "@/components/patterns/product-media-gallery";
+import {
+  toGalleryItemsFromImages,
+  type ProductGalleryItem,
+} from "@/lib/shopify/product-gallery-items";
+import {
+  ProductShippingEstimate,
+  SHIPPING_ESTIMATE_COPY_PT,
+} from "@/components/patterns/product-shipping-estimate";
 import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
 import { trackViewItem } from "@/lib/analytics/ecommerce";
+import type { ProductGalleryCopy } from "@/lib/i18n/product-gallery-copy";
 import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
 import { formatDiscountPill } from "@/lib/shopify/compare-at-price";
+import { formatInstallmentHint } from "@/lib/shopify/format-installment-hint";
 import type { WishlistItem } from "@/lib/wishlist/types";
-import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export type ProductPickerImage = {
@@ -62,6 +72,9 @@ export type ProductPickerWishlist = {
 type ProductVariantPickerProps = {
   variants: ProductPickerVariant[];
   images: ProductPickerImage[];
+  /** Prefers Storefront `media` (images + videos); falls back to `images` when empty. */
+  mediaItems?: ProductGalleryItem[];
+  galleryCopy: ProductGalleryCopy;
   copy: ProductPickerCopy;
   /** Only set when the cart is enabled and every variant id is a Shopify ProductVariant gid. */
   cart?: ProductPickerCart;
@@ -78,9 +91,13 @@ type ProductVariantPickerProps = {
   checkoutTrust: string;
   /** PT-only payment microcopy (PIX/parcelas); empty for other locales. */
   paymentHint?: string | null;
+  /** PT buy-box locale for installment math + CEP estimate. */
+  buyBoxLocale?: AppLocale;
+  /** `market_policy.installment_count` (BR). */
+  installmentCount?: number | null;
+  /** `market_policy.installment_multiplier` (BR). */
+  installmentMultiplier?: number | null;
 };
-
-const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
 
 function optionGroups(variants: ProductPickerVariant[]): { name: string; values: string[] }[] {
   const groups = new Map<string, string[]>();
@@ -105,6 +122,8 @@ function selectionOf(variant: ProductPickerVariant | undefined): Record<string, 
 export function ProductVariantPicker({
   variants,
   images,
+  mediaItems,
+  galleryCopy,
   copy,
   cart,
   wishlist,
@@ -114,6 +133,9 @@ export function ProductVariantPicker({
   returnsTrust = null,
   checkoutTrust,
   paymentHint = null,
+  buyBoxLocale,
+  installmentCount = null,
+  installmentMultiplier = null,
 }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
@@ -126,6 +148,38 @@ export function ProductVariantPicker({
   const groups = useMemo(() => optionGroups(variants), [variants]);
   const showOptions = variants.length > 1 && groups.length > 0;
   const selected = variants.find((variant) => matchesAll(variant, selection)) ?? initial;
+
+  const galleryItems = useMemo(() => {
+    const base = mediaItems && mediaItems.length > 0 ? mediaItems : toGalleryItemsFromImages(images);
+    const out = [...base];
+    for (const variant of variants) {
+      if (
+        variant.image &&
+        !out.some((item) => item.kind === "image" && item.url === variant.image?.url)
+      ) {
+        out.push({
+          kind: "image",
+          id: `img-${variant.image.url}`,
+          url: variant.image.url,
+          alt: variant.image.alt,
+          width: variant.image.width,
+          height: variant.image.height,
+        });
+      }
+    }
+    return out;
+  }, [mediaItems, images, variants]);
+
+  const installmentHint =
+    buyBoxLocale === "pt" && selected
+      ? formatInstallmentHint(
+          buyBoxLocale,
+          selected.price,
+          selected.currency,
+          installmentCount,
+          installmentMultiplier,
+        )
+      : null;
 
   useEffect(() => {
     if (!selected) return;
@@ -181,15 +235,6 @@ export function ProductVariantPicker({
     };
   }, [cart, selected?.id]);
 
-  const gallery = useMemo(() => {
-    const out = [...images];
-    for (const variant of variants) {
-      if (variant.image && !out.some((image) => image.url === variant.image?.url)) out.push(variant.image);
-    }
-    return out;
-  }, [images, variants]);
-  const mainImage = gallery.find((image) => image.url === activeImageUrl) ?? gallery[0] ?? null;
-
   function choose(name: string, value: string) {
     const next = { ...selection, [name]: value };
     const variant =
@@ -207,57 +252,13 @@ export function ProductVariantPicker({
 
   return (
     <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
-      {mainImage ? (
-        <div className="space-y-3">
-          <figure className="overflow-hidden rounded-xl border border-border bg-muted/20">
-            <Image
-              key={mainImage.url}
-              src={mainImage.url}
-              alt={mainImage.alt}
-              width={mainImage.width}
-              height={mainImage.height}
-              sizes={MAIN_SIZES}
-              priority
-              fetchPriority="high"
-              className="h-auto w-full object-cover"
-            />
-          </figure>
-          {gallery.length > 1 ? (
-            <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
-              {gallery.map((image, index) => {
-                const pressed = image.url === mainImage.url;
-                return (
-                  <li key={image.url}>
-                    <button
-                      type="button"
-                      aria-pressed={pressed}
-                      aria-label={`${copy.thumbnailLabel} ${index + 1}`}
-                      onClick={() => setActiveImageUrl(image.url)}
-                      className={[
-                        "touch-target cursor-pointer overflow-hidden rounded-xl border border-border bg-muted/20 p-0",
-                        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                        pressed ? "border-foreground" : "hover:border-foreground/40",
-                      ].join(" ")}
-                    >
-                      <Image
-                        src={image.url}
-                        alt=""
-                        width={64}
-                        height={64}
-                        sizes="64px"
-                        loading="lazy"
-                        className="h-16 w-16 object-cover"
-                      />
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : null}
-        </div>
-      ) : (
-        <div />
-      )}
+      <ProductMediaGallery
+        items={galleryItems}
+        activeImageUrl={activeImageUrl}
+        onActiveImageUrlChange={setActiveImageUrl}
+        thumbnailLabel={copy.thumbnailLabel}
+        galleryCopy={galleryCopy}
+      />
 
       <div className="space-y-6">
         {selected ? (
@@ -282,6 +283,9 @@ export function ProductVariantPicker({
                   </>
                 ) : null}
               </div>
+              {installmentHint ? (
+                <p className="text-sm font-medium text-foreground">{installmentHint}</p>
+              ) : null}
               {paymentHint?.trim() ? (
                 <p className="text-sm text-muted-foreground">{paymentHint.trim()}</p>
               ) : null}
@@ -364,6 +368,13 @@ export function ProductVariantPicker({
         ) : null}
         <div className="space-y-1.5 text-sm text-muted-foreground">
           {shippingTrust ? <p>{shippingTrust}</p> : null}
+          {buyBoxLocale === "pt" ? (
+            <ProductShippingEstimate
+              locale="pt"
+              subtotal={selected?.price ?? null}
+              copy={SHIPPING_ESTIMATE_COPY_PT}
+            />
+          ) : null}
           {returnsTrust ? <p>{returnsTrust}</p> : null}
           {checkoutTrust ? <p>{checkoutTrust}</p> : null}
         </div>

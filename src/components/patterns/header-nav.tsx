@@ -1,6 +1,11 @@
 "use client";
 
-import type { NavItemRecord } from "@/infra/datocms/types-navigation";
+import { DesktopMegaMenu, MobileMegaMenu } from "@/components/patterns/header-mega-menu";
+import {
+  isNavigationMegaMenu,
+  type HeaderMenuItem,
+  type NavItemRecord,
+} from "@/infra/datocms/types-navigation";
 import type { AppLocale } from "@/constants/i18n";
 import { navLinkAriaProps } from "@/lib/a11y/nav-link";
 import { isSafeExternalHref } from "@/lib/datocms/link-block";
@@ -217,43 +222,43 @@ function DesktopMenuBranch({
   );
 }
 
-function MobileNavList({
-  items,
+function MobileNavBranch({
+  item,
   locale,
   depth,
   pathname,
 }: {
-  items: NavItemRecord[];
+  item: NavItemRecord;
   locale: AppLocale;
   depth: number;
   pathname: string;
 }) {
+  const children = item.submenu?.filter(Boolean) ?? [];
+  const href = resolveHref(item.navItemLink, locale);
+  const current = Boolean(href && isCurrentPath(pathname, href));
   return (
-    <ul className={cn("space-y-0.5", depth > 0 && "mt-0.5 pl-4")}>
-      {items.map((item) => {
-        const children = item.submenu?.filter(Boolean) ?? [];
-        const href = resolveHref(item.navItemLink, locale);
-        const current = Boolean(href && isCurrentPath(pathname, href));
-        return (
-          <li key={item.id}>
-            <NavLink
-              item={item}
-              locale={locale}
-              current={current}
-              className="w-full items-center justify-start text-left"
-            />
-            {children.length > 0 ? (
-              <MobileNavList items={children} locale={locale} depth={depth + 1} pathname={pathname} />
-            ) : null}
-          </li>
-        );
-      })}
-    </ul>
+    <div className={cn(depth > 0 && "mt-0.5 pl-4")}>
+      <NavLink
+        item={item}
+        locale={locale}
+        current={current}
+        className="w-full items-center justify-start text-left"
+      />
+      {children.length > 0 ? (
+        <ul className="mt-0.5 space-y-0.5">
+          {children.map((child) => (
+            <li key={child.id}>
+              <MobileNavBranch item={child} locale={locale} depth={depth + 1} pathname={pathname} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
   );
 }
 
 type HeaderNavProps = {
-  menuLinks: NavItemRecord[];
+  menuLinks: HeaderMenuItem[];
   locale: AppLocale;
   themeToggle: ReactNode;
   /** Lupa + painel de busca; o painel posiciona-se sobre o `<header>`. */
@@ -308,7 +313,11 @@ export function HeaderNav({
           <ul className="flex max-w-full flex-wrap items-center justify-start gap-1 xl:gap-2">
             {orderedLinks.map((item) => (
               <li key={item.id} className="relative max-w-full shrink-0">
-                <DesktopMenuBranch item={item} locale={locale} level={0} pathname={pathname} />
+                {isNavigationMegaMenu(item) ? (
+                  <DesktopMegaMenu item={item} locale={locale} />
+                ) : (
+                  <DesktopMenuBranch item={item} locale={locale} level={0} pathname={pathname} />
+                )}
               </li>
             ))}
           </ul>
@@ -389,7 +398,17 @@ export function HeaderNav({
                     >
                       {homeBreadcrumbLabel(locale)}
                     </Link>
-                    <MobileNavList items={orderedLinks} locale={locale} depth={0} pathname={pathname} />
+                    <ul className="space-y-1">
+                      {orderedLinks.map((item) => (
+                        <li key={item.id}>
+                          {isNavigationMegaMenu(item) ? (
+                            <MobileMegaMenu item={item} locale={locale} onNavigate={handleClose} />
+                          ) : (
+                            <MobileNavBranch item={item} locale={locale} depth={0} pathname={pathname} />
+                          )}
+                        </li>
+                      ))}
+                    </ul>
                   </nav>
                   {accountBlock ? (
                     <div className="mt-4 border-t border-border pt-4">{accountBlock}</div>

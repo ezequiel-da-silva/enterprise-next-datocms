@@ -77,7 +77,7 @@ function buildCspHeader(nonce: string, isDev: boolean): string {
     `img-src 'self' data: blob: https://www.datocms-assets.com https://image.mux.com https://cdn.shopify.com${optional.img}`,
     "font-src 'self' data:",
     /* *.mux.com: o Mux entrega por vários CDNs (stream.mux.com → *.fastly.mux.com) e os hosts mudam sem aviso. */
-    `media-src 'self' https://www.datocms-assets.com https://*.mux.com`,
+    `media-src 'self' https://www.datocms-assets.com https://*.mux.com https://cdn.shopify.com`,
     "manifest-src 'self'",
     `connect-src 'self' https://graphql.datocms.com ${DATO_ADMIN_FRAME}${optional.connect}`,
     `frame-ancestors 'self' https://plugins-cdn.datocms.com ${DATO_ADMIN_FRAME}`,

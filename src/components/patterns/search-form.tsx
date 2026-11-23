@@ -9,9 +9,9 @@ type SearchFormProps = {
 };
 
 const FALLBACK_PLACEHOLDER: Record<AppLocale, string> = {
-  en: "Search pages, articles or authors…",
-  pt: "Buscar páginas, artigos ou autores…",
-  es: "Buscar páginas, artículos o autores…",
+  en: "Search products, pages or articles…",
+  pt: "Buscar produtos, páginas ou artigos…",
+  es: "Buscar productos, páginas o artículos…",
 };
 
 const FALLBACK_SUBMIT: Record<AppLocale, string> = {

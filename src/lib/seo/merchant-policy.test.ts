@@ -31,6 +31,7 @@ describe("market_policy field map", () => {
     const sources = [
       readFileSync(join(process.cwd(), "migrations", "1790800000_marketPolicy.ts"), "utf8"),
       readFileSync(join(process.cwd(), "scripts", "setup-market-policy-threshold.ts"), "utf8"),
+      readFileSync(join(process.cwd(), "scripts", "setup-market-policy-installments.ts"), "utf8"),
     ].join("\n");
     for (const field of MARKET_POLICY_FIELDS) {
       expect(sources).toContain(`"${camelToSnake(field)}"`);
@@ -52,7 +53,16 @@ describe("normalizeMarketPolicy", () => {
       transit: { min: 3, max: 10 },
       returnDays: 30,
       returnFees: "free",
+      installmentCount: null,
+      installmentMultiplier: null,
     });
+  });
+
+  it("keeps valid installment display fields", () => {
+    expect(policy({ installmentCount: 10, installmentMultiplier: 1 })?.installmentCount).toBe(10);
+    expect(policy({ installmentCount: 10, installmentMultiplier: 1 })?.installmentMultiplier).toBe(1);
+    expect(policy({ installmentCount: 1 })?.installmentCount).toBeNull();
+    expect(policy({ installmentMultiplier: 0.5 })?.installmentMultiplier).toBeNull();
   });
 
   it("keeps a positive free-shipping threshold", () => {
