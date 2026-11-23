@@ -1,7 +1,10 @@
 "use client";
 
 import { Button } from "@/components/atoms/button";
-import { CatalogProductCard } from "@/components/patterns/catalog-product-card";
+import {
+  CatalogProductCard,
+  type CatalogProductCardQuickAdd,
+} from "@/components/patterns/catalog-product-card";
 import { ViewItemListTracker } from "@/components/patterns/view-item-list-tracker";
 import { ProductsSectionCarousel } from "@/components/sections/products-section-carousel";
 import type { AppLocale } from "@/constants/i18n";
@@ -29,6 +32,7 @@ type ProductsSectionInteractiveProps = {
   cmsCopy: ProductsSectionCmsCopy;
   /** Featured / hasLimit listings: denser 4-column grid on large screens. */
   featuredLayout?: boolean;
+  quickAdd?: CatalogProductCardQuickAdd | null;
 };
 
 export function ProductsSectionInteractive({
@@ -41,6 +45,7 @@ export function ProductsSectionInteractive({
   carousel,
   cmsCopy,
   featuredLayout = false,
+  quickAdd = null,
 }: ProductsSectionInteractiveProps) {
   const base = productsSectionCopy(locale);
   const copy = {
@@ -83,7 +88,12 @@ export function ProductsSectionInteractive({
           {copy.empty}
         </p>
       ) : displayType === "carousel" ? (
-        <ProductsSectionCarousel products={visibleProducts} locale={locale} setting={carousel} />
+        <ProductsSectionCarousel
+          products={visibleProducts}
+          locale={locale}
+          setting={carousel}
+          quickAdd={quickAdd}
+        />
       ) : (
         <>
           <ul
@@ -95,7 +105,12 @@ export function ProductsSectionInteractive({
           >
             {visibleProducts.map((product) => (
               <li key={product.handle} className="min-w-0">
-                <CatalogProductCard locale={locale} product={product} sizes={CARD_SIZES} />
+                <CatalogProductCard
+                  locale={locale}
+                  product={product}
+                  sizes={CARD_SIZES}
+                  quickAdd={quickAdd}
+                />
               </li>
             ))}
           </ul>

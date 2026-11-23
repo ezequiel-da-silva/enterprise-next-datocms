@@ -3,12 +3,17 @@
  *
  * - Locates `page` slug `home`
  * - Sets the first `content_listing_section` to Shopify `fetch_mode: manual`
- *   with explicit `selected_products` (whitelist handles)
+ *   with explicit `selected_products` (whitelist handles — no gift-card)
  * - `has_limit` + limit 4 (Miller); drops duplicate listings
  * - Points `hero_page` image at snowboard/snow media (preferred best-of uploads or library match)
  * - Idempotent: re-run updates existing blocks in place
  *
+ * Ops checklist after run:
+ * - Shopify: deck photos on white/transparent ground; keep gift-card out of home merchandising collections
+ * - Dato: studio `base_image` (sole) on each featured `product_page`; badges only when intentional
+ *
  *   npx datocms cma:script scripts/curate-home-featured.ts --profile=default
+ *   npx datocms cma:script scripts/curate-home-featured.ts --profile=staging
  */
 import { buildBlockRecord } from "@datocms/cma-client-node";
 import type { Client } from "datocms/lib/cma-client-node";

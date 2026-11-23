@@ -1,3 +1,4 @@
+import { addToCart } from "@/app/actions/cart";
 import { CmsPageArticle } from "@/components/patterns/cms-page-article";
 import { submitContact } from "@/app/actions/contact";
 import { submitUserReview } from "@/app/actions/submit-user-review";
@@ -32,7 +33,12 @@ import {
 } from "@/lib/seo/market-policy-table";
 import { shopifyCountryFromLocale } from "@/lib/shopify/locale-map";
 import { getSiteSeo, pickSiteSeo } from "@/infra/datocms/get-site-seo";
-import { getCatalogFiltersCopy, getProductsSectionCmsCopy, getVideoUiCopy } from "@/infra/datocms/get-ui-strings";
+import {
+  getCartCopy,
+  getCatalogFiltersCopy,
+  getProductsSectionCmsCopy,
+  getVideoUiCopy,
+} from "@/infra/datocms/get-ui-strings";
 import { parseCatalogSearchParams } from "@/lib/catalog/catalog-filters";
 import { buildDatoPageMetadata, cmsContentOgImage, withSearchQueryNoIndex } from "@/lib/seo/build-dato-page-metadata";
 import { buildUnavailableMetadata } from "@/lib/seo/build-unavailable-metadata";
@@ -40,6 +46,7 @@ import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { buildHreflangPathsFromSlugLocales, buildLocaleAlternatePaths } from "@/lib/seo/hreflang";
 import { buildSiteIdentity } from "@/lib/seo/site-identity";
 import { getStaticParamsLocaleCmsPages } from "@/infra/datocms/static-params";
+import { resolveCatalogQuickAdd } from "@/lib/shopify/catalog-quick-add";
 import { draftMode } from "next/headers";
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
@@ -192,10 +199,11 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
     ? loadProductsListingCatalog(page.contentPage, locale, isEnabled)
     : undefined;
   const queryParams = await searchParams;
-  const [productsCmsCopy, videoCopy, catalogFiltersCopy] = await Promise.all([
+  const [productsCmsCopy, videoCopy, catalogFiltersCopy, cartCopy] = await Promise.all([
     getProductsSectionCmsCopy(locale),
     getVideoUiCopy(locale),
     needsProducts ? getCatalogFiltersCopy(locale) : Promise.resolve(undefined),
+    getCartCopy(locale),
   ]);
 
   const configuredContactPage = await getContactPage(locale, isEnabled);
@@ -204,6 +212,7 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
     : "";
   const searchResults = query ? searchSite(query, locale) : undefined;
   const canonicalPath = cmsPageCanonicalPath(pageSlug, locale);
+  const catalogQuickAdd = resolveCatalogQuickAdd(locale, addToCart, cartCopy);
   const marketPolicyRows = isShippingReturnsPageSlug(locale, page.slug)
     ? buildMarketPolicyTableRows(
         locale,
@@ -234,6 +243,7 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
       catalogFilters={needsProducts ? parseCatalogSearchParams(queryParams) : undefined}
       catalogFiltersCopy={catalogFiltersCopy}
       catalogFiltersPath={needsProducts ? canonicalPath : undefined}
+      catalogQuickAdd={catalogQuickAdd}
       marketPolicyRows={marketPolicyRows}
       marketPolicyCurrentCountry={shopifyCountryFromLocale(locale)}
     />

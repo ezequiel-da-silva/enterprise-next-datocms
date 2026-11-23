@@ -2,14 +2,35 @@
 
 import { Container } from "@/components/atoms/container";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
+import { SearchResults } from "@/components/patterns/search-results";
 import type { AppLocale } from "@/constants/i18n";
 import { cn } from "@/lib/cn";
+import type { SearchHit, SearchResultsPayload } from "@/lib/datocms/search-hit";
+import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 const TOGGLE_LABELS: Record<AppLocale, { open: string; close: string }> = {
   en: { open: "Open search", close: "Close search" },
   pt: { open: "Abrir busca", close: "Fechar busca" },
   es: { open: "Abrir búsqueda", close: "Cerrar búsqueda" },
+};
+
+const VIEW_ALL: Record<AppLocale, string> = {
+  en: "View all results",
+  pt: "Ver todos os resultados",
+  es: "Ver todos los resultados",
+};
+
+const PREVIEW_HINT: Record<AppLocale, string> = {
+  en: "Type at least 2 characters to preview products and articles.",
+  pt: "Escreva pelo menos 2 caracteres para pré-visualizar produtos e artigos.",
+  es: "Escribe al menos 2 caracteres para previsualizar productos y artículos.",
+};
+
+type SettledPreview = {
+  q: string;
+  hits: SearchHit[];
+  error?: string;
 };
 
 type HeaderSearchProps = {
@@ -22,12 +43,14 @@ type HeaderSearchProps = {
 
 /**
  * Compact lupa trigger (ghost, matches other header utilities). Opens an absolute
- * search strip under `<header>`. Keyboard: ⌘K / Ctrl K (no visible kbd — no hydration mismatch).
+ * search strip under `<header>` with live product preview. Keyboard: ⌘K / Ctrl K.
  */
 export function HeaderSearch({ action, locale, query, placeholder, submitLabel }: HeaderSearchProps) {
   const panelId = useId();
   const hasQuery = Boolean(query?.trim());
   const [open, setOpen] = useState(hasQuery);
+  const [liveQuery, setLiveQuery] = useState(query?.trim() ?? "");
+  const [settled, setSettled] = useState<SettledPreview>({ q: "", hits: [] });
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const focusOnOpen = useRef(false);
@@ -85,6 +108,45 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, close, openPanel]);
 
+  const trimmedLive = liveQuery.trim();
+  const previewReady = open && trimmedLive.length >= 2;
+
+  useEffect(() => {
+    if (!previewReady) return;
+
+    let cancelled = false;
+    const q = trimmedLive;
+    const timer = window.setTimeout(() => {
+      const params = new URLSearchParams({ locale, q });
+      void fetch(`/api/search?${params.toString()}`)
+        .then(async (res) => {
+          if (!res.ok) throw new Error("search failed");
+          return (await res.json()) as SearchResultsPayload;
+        })
+        .then((payload) => {
+          if (cancelled) return;
+          setSettled({ q, hits: payload.hits ?? [], error: payload.error });
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setSettled({ q, hits: [], error: "unavailable" });
+        });
+    }, 250);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [previewReady, trimmedLive, locale]);
+
+  const showPreviewLoading = previewReady && settled.q !== trimmedLive;
+  const previewHits = previewReady && settled.q === trimmedLive ? settled.hits : [];
+  const previewErr = previewReady && settled.q === trimmedLive ? settled.error : undefined;
+
+  const seeAllHref = previewReady
+    ? `${action}${action.includes("?") ? "&" : "?"}q=${encodeURIComponent(trimmedLive)}`
+    : action;
+
   return (
     <>
       <button
@@ -130,14 +192,43 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
           id={panelId}
           className="absolute inset-x-0 top-full z-50 border-b border-border bg-background shadow-lg"
         >
-          <Container size="lg" name="GlobalHeaderSearch" className="py-3">
+          <Container size="lg" name="GlobalHeaderSearch" className="space-y-4 py-3">
             <HeaderSearchForm
               action={action}
               locale={locale}
-              query={query}
               placeholder={placeholder}
               submitLabel={submitLabel}
+              value={liveQuery}
+              onQueryChange={setLiveQuery}
             />
+            {trimmedLive.length < 2 ? (
+              <p className="text-sm text-muted-foreground">{PREVIEW_HINT[locale]}</p>
+            ) : showPreviewLoading ? (
+              <p className="text-sm text-muted-foreground" aria-busy="true">
+                …
+              </p>
+            ) : (
+              <>
+                <SearchResults
+                  query={trimmedLive}
+                  hits={previewHits}
+                  locale={locale}
+                  error={previewErr}
+                  compact
+                />
+                {previewHits.length > 0 ? (
+                  <p className="pb-1">
+                    <Link
+                      href={seeAllHref}
+                      className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                      onClick={() => close(false)}
+                    >
+                      {VIEW_ALL[locale]}
+                    </Link>
+                  </p>
+                ) : null}
+              </>
+            )}
           </Container>
         </div>
       ) : null}

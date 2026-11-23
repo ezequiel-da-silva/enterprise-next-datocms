@@ -4,6 +4,7 @@ import type { CatalogFilters } from "@/lib/catalog/catalog-filters";
 import type { ProductsListingCatalog } from "@/lib/datocms/resolve-products-section";
 import type { ContactActionState } from "@/core/entities/contact";
 import type { UserReviewSubmitAction } from "@/core/entities/user-review";
+import type { CatalogProductCardQuickAdd } from "@/components/patterns/catalog-product-card";
 import { JsonLdScriptSync } from "@/components/patterns/seo-manager";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
 import type { SearchResultsPayload } from "@/lib/datocms/search-hit";
@@ -72,6 +73,7 @@ type StructuredTextBlockViewProps = {
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
+  catalogQuickAdd?: CatalogProductCardQuickAdd | null;
 };
 
 function unknownBlockFallback(record: PageStructuredTextBlock): null {
@@ -186,6 +188,7 @@ export function StructuredTextBlockView({
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
+  catalogQuickAdd = null,
 }: StructuredTextBlockViewProps) {
   switch (record.__typename) {
     case "ImageBlockRecord": {
@@ -291,6 +294,7 @@ export function StructuredTextBlockView({
           formAction={searchFormAction ?? `/${locale}/busca`}
           query={searchQuery ?? ""}
           results={searchResults}
+          catalogQuickAdd={catalogQuickAdd}
         />
       );
     case "ContentListingSectionRecord":
@@ -312,6 +316,7 @@ export function StructuredTextBlockView({
             catalogFilters={catalogFilters}
             catalogFiltersCopy={catalogFiltersCopy}
             catalogFiltersPath={catalogFiltersPath}
+            catalogQuickAdd={catalogQuickAdd}
           />
         </Suspense>
       );

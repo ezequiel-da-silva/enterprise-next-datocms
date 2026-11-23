@@ -29,7 +29,7 @@ function viewDeckLabel(locale: AppLocale): string {
 }
 
 /**
- * Featured image with optional base/hover alternate.
+ * Studio-style product media: soft muted ground, contain (not crop), optional base/hover.
  * Fine pointers get CSS group-hover; coarse/touch get an explicit toggle.
  */
 export function CatalogProductMedia({
@@ -50,20 +50,32 @@ export function CatalogProductMedia({
   }
 
   if (!image?.url) {
-    return <div className={cn("relative aspect-square w-full shrink-0 overflow-hidden bg-muted", soldOut && "opacity-75")} />;
+    return (
+      <div
+        className={cn(
+          "relative aspect-[4/5] w-full shrink-0 overflow-hidden rounded-xl bg-muted/30",
+          soldOut && "opacity-75",
+        )}
+      />
+    );
   }
 
   return (
-    <div className={cn("relative aspect-square w-full shrink-0 overflow-hidden bg-muted", soldOut && "opacity-75")}>
+    <div
+      className={cn(
+        "relative aspect-[4/5] w-full shrink-0 overflow-hidden rounded-xl bg-muted/30",
+        soldOut && "opacity-75",
+      )}
+    >
       <Image
         src={image.url}
         alt={image.altText?.trim() || title}
         width={image.width && image.width > 0 ? image.width : 600}
-        height={image.height && image.height > 0 ? image.height : 600}
+        height={image.height && image.height > 0 ? image.height : 750}
         sizes={sizes}
         loading="lazy"
         className={cn(
-          "h-full w-full object-cover",
+          "h-full w-full object-contain p-3",
           hasHover &&
             "motion-safe:[@media(hover:hover)_and_(pointer:fine)]:transition-opacity motion-safe:[@media(hover:hover)_and_(pointer:fine)]:duration-300 motion-safe:[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-0",
           hasHover && showBase && "opacity-0",
@@ -74,12 +86,12 @@ export function CatalogProductMedia({
           src={hoverImage.url}
           alt=""
           width={hoverImage.width && hoverImage.width > 0 ? hoverImage.width : 600}
-          height={hoverImage.height && hoverImage.height > 0 ? hoverImage.height : 600}
+          height={hoverImage.height && hoverImage.height > 0 ? hoverImage.height : 750}
           sizes={sizes}
           loading="lazy"
           aria-hidden
           className={cn(
-            "absolute inset-0 h-full w-full object-cover opacity-0",
+            "absolute inset-0 h-full w-full object-contain p-3 opacity-0",
             "motion-safe:[@media(hover:hover)_and_(pointer:fine)]:transition-opacity motion-safe:[@media(hover:hover)_and_(pointer:fine)]:duration-300 motion-safe:[@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100",
             showBase && "opacity-100",
           )}
@@ -88,7 +100,7 @@ export function CatalogProductMedia({
       {hasHover ? (
         <IconButton
           type="button"
-          className="absolute bottom-3 right-3 z-10 border-border/80 bg-background/95 shadow-sm [@media(hover:hover)_and_(pointer:fine)]:hidden"
+          className="absolute bottom-3 left-3 z-10 border-border/80 bg-background/95 shadow-sm [@media(hover:hover)_and_(pointer:fine)]:hidden"
           aria-label={showBase ? viewDeckLabel(locale) : viewBaseLabel(locale)}
           aria-pressed={showBase}
           onClick={onToggle}

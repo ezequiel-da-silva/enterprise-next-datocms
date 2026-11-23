@@ -1,4 +1,5 @@
 import { Container } from "@/components/atoms/container";
+import type { CatalogProductCardQuickAdd } from "@/components/patterns/catalog-product-card";
 import { SearchForm } from "@/components/patterns/search-form";
 import { SearchResults } from "@/components/patterns/search-results";
 import { SearchSkeleton } from "@/components/patterns/search-skeleton";
@@ -20,6 +21,7 @@ type SearchSectionBlockProps = {
   formAction: string;
   query: string;
   results?: SearchResultsPayload | Promise<SearchResultsPayload>;
+  catalogQuickAdd?: CatalogProductCardQuickAdd | null;
 };
 
 const FALLBACK_SECTION_LABEL: Record<AppLocale, string> = {
@@ -41,14 +43,16 @@ async function SearchResultsSlot({
   locale,
   emptyHint,
   noResults,
+  catalogQuickAdd,
 }: {
   results?: SearchResultsPayload | Promise<SearchResultsPayload>;
   query: string;
   locale: AppLocale;
   emptyHint?: string;
   noResults?: string;
+  catalogQuickAdd?: CatalogProductCardQuickAdd | null;
 }) {
-  const payload = results ? await results : { hits: [] };
+  const payload: SearchResultsPayload = results ? await results : { hits: [] };
   return (
     <SearchResults
       query={query}
@@ -57,6 +61,7 @@ async function SearchResultsSlot({
       locale={locale}
       emptyHint={emptyHint}
       noResults={noResults}
+      quickAdd={catalogQuickAdd}
     />
   );
 }
@@ -68,6 +73,7 @@ export function SearchSectionBlock({
   formAction,
   query,
   results,
+  catalogQuickAdd = null,
 }: SearchSectionBlockProps) {
   const fields = record as Record<string, unknown>;
   const hasTextHeader = readCdaBool(fields, "hasTextHeader", "has_text_header");
@@ -117,6 +123,7 @@ export function SearchSectionBlock({
             locale={locale}
             emptyHint={emptyHint || undefined}
             noResults={noResults || undefined}
+            catalogQuickAdd={catalogQuickAdd}
           />
         </Suspense>
       </Container>

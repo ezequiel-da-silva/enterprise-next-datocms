@@ -1,10 +1,11 @@
 import type { AppLocale } from "@/constants/i18n";
 import { cn } from "@/lib/cn";
+import type { ChangeEvent } from "react";
 
 const FALLBACK_PLACEHOLDER: Record<AppLocale, string> = {
-  en: "Search pages, articles or authors…",
-  pt: "Buscar páginas, artigos ou autores…",
-  es: "Buscar páginas, artículos o autores…",
+  en: "Search products, pages or articles…",
+  pt: "Buscar produtos, páginas ou artigos…",
+  es: "Buscar productos, páginas o artículos…",
 };
 
 const FALLBACK_SUBMIT: Record<AppLocale, string> = {
@@ -29,6 +30,9 @@ type HeaderSearchFormProps = {
   variant?: "inline" | "block";
   /** Único por instância — no drawer coexiste com a versão do header. */
   inputId?: string;
+  /** Live preview: controlled value + change handler. */
+  value?: string;
+  onQueryChange?: (value: string) => void;
 };
 
 /**
@@ -43,9 +47,16 @@ export function HeaderSearchForm({
   submitLabel,
   variant = "inline",
   inputId = "header-search-query",
+  value,
+  onQueryChange,
 }: HeaderSearchFormProps) {
   const block = variant === "block";
   const submit = submitLabel?.trim() || FALLBACK_SUBMIT[locale];
+  const controlled = typeof onQueryChange === "function";
+
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    onQueryChange?.(event.target.value);
+  }
 
   return (
     <form
@@ -80,7 +91,9 @@ export function HeaderSearchForm({
           id={inputId}
           name="q"
           type="search"
-          defaultValue={query}
+          {...(controlled
+            ? { value: value ?? "", onChange: handleChange }
+            : { defaultValue: query })}
           placeholder={placeholder?.trim() || FALLBACK_PLACEHOLDER[locale]}
           autoComplete="off"
           enterKeyHint="search"

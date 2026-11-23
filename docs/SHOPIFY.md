@@ -305,7 +305,7 @@ Checklist para abrir a loja. A parte de admin é só cliques na Shopify; cada it
 |------|------------------|----------------|
 | **Markets** | US → USD, Brasil → BRL, Espanha → EUR (é o que `shopifyCountryFromLocale` envia em `@inContext`). Produtos publicados no canal **Headless** e em cada Market. | PDP em `/en`, `/pt`, `/es` mostra USD / BRL / EUR; o carrinho e o checkout mantêm a moeda. |
 | **Pagamentos** | Shopify Payments em **modo de teste** (ou *Bogus Gateway* numa development store). Bogus: cartão `1` = aprovado, `2` = recusado. | Compra de teste (abaixo) gera pedido marcado como teste. |
-| **Frete e impostos** | Zonas de envio por Market, tarifas, e impostos incluídos no preço (BR/ES) ou somados no checkout (US). | No checkout, o frete aparece para um endereço de cada país. |
+| **Frete e impostos** | Zonas de envio por Market, tarifas, e impostos incluídos no preço (BR/ES) ou somados no checkout (US). | No checkout, o frete aparece para um endereço de cada país. No PDP **pt**, o campo CEP chama `/api/shipping/estimate` com a tarifa **estática** de `market_policy` (não é cotação live da Shopify). |
 | **Políticas** | Settings → Policies: reembolso, privacidade, termos e envio. Reaproveita o texto das páginas legais do site (rodapé: Privacidade, Termos, Reembolso). | O rodapé do checkout lista as políticas. O site não precisa de linkar as da Shopify. |
 | **Domínio do checkout** | Settings → Domains: `checkout.seudominio.com` (CNAME → `shops.myshopify.com`). Depois define `SHOPIFY_CHECKOUT_DOMAIN` na Vercel e faz redeploy. | “Finalizar compra” em `/{locale}/cart` aponta para o domínio novo. Sem a variável, `safeCheckoutUrl` esconde o botão (aparece “checkout indisponível”). |
 | **Branding do checkout** | Settings → Checkout → Customize: logo, cores, fontes. | Visual do checkout alinhado com o site. |
@@ -382,6 +382,19 @@ Prefixo **só nesse comando**. Não exportes a variável no shell de forma perma
 5. Abre `/{locale}/products` e um PDP: EN mostra USD, PT BRL, ES EUR (Markets US/BR/ES na Storefront `@inContext(country)`). Sem Market para o país, a API devolve a moeda default da loja.
 6. Abre `https://<site>/<locale>/products/<handle>`: título Dato desse locale; preço/imagem da Storefront.
 7. Preenche `description` / `seo` num locale no Dato e publica → o PDP desse idioma mostra a copy; preço e foto continuam da Shopify.
+
+## Home Featured boards (vitrine)
+
+Merchandising da home **não** deve listar gift cards nem SKUs de demo.
+
+1. Whitelist de handles: [`scripts/lib/home-featured-boards.ts`](../scripts/lib/home-featured-boards.ts).
+2. Correr curadoria no Dato:
+   ```bash
+   npx datocms cma:script scripts/curate-home-featured.ts --profile=staging
+   ```
+3. Shopify: fotos de deck com fundo branco/transparente; gift card fora das coleções usadas na home.
+4. Dato `product_page`: `base_image` de estúdio (sola) nos featured; `badge` só quando fizer sentido comercial.
+5. Defesa no Next: `excludeCatalogNoiseProducts` / `publishedStorefrontProducts` em [`resolve-products-section.ts`](../src/lib/datocms/resolve-products-section.ts) remove `gift-card` de listings **auto**.
 
 ## Código
 

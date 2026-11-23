@@ -1,5 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import { Skeleton } from "@/components/atoms/skeleton";
+import type { CatalogProductCardQuickAdd } from "@/components/patterns/catalog-product-card";
 import { CatalogFilters } from "@/components/patterns/catalog-filters";
 import { SectionTextHeader } from "@/components/patterns/section-text-header";
 import { ShopifyCdnPreconnect } from "@/components/patterns/shopify-cdn-preconnect";
@@ -40,6 +41,8 @@ type ContentListingSectionBlockProps = {
   catalogFilters?: CatalogFiltersState;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
+  /** Resolved in `app/` when cart is enabled. */
+  catalogQuickAdd?: CatalogProductCardQuickAdd | null;
 };
 
 export function ContentListingSectionFallback({
@@ -93,6 +96,7 @@ export async function ContentListingSectionBlock({
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
+  catalogQuickAdd = null,
 }: ContentListingSectionBlockProps) {
   const raw = record as Record<string, unknown>;
   if (readContentListingSource(raw) === "blog") {
@@ -135,6 +139,7 @@ export async function ContentListingSectionBlock({
       carousel={options.carousel}
       cmsCopy={emptyCopy}
       featuredLayout={options.hasLimit}
+      quickAdd={catalogQuickAdd}
     />
   );
 
