@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.61.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.60.0...next-dato-v0.61.0) (2026-11-24)
+
+
+### Features
+
+* **cart:** enhance cart and checkout experience with new trust and shipping features ([8a62968](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/8a629685af8f851ca8037a5c3dfa6255c05e3058))
+* **cms:** add Pix discount field and shipping estimate copy for market policy ([1c0f78f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1c0f78ff0a6347b417c0c81a4a288df6456efdf6))
+* **cms:** enhance product pages with warranty and refund policy details ([93462e7](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/93462e71262e259ef2409e4aeba469a8e4fbd2a1))
+* **cms:** enhance PT-BR content and normalize product titles ([0630116](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/06301167702e11bbed2e2d977ed7f6bf85738890))
+* **nav:** add categorized mega-menu, visible search field and refine PT-BR labels ([dd7ef5c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/dd7ef5c7e0ef731f3ab4c43d6c1c57b837cd12ee))
+* **nav:** add categorized mega-menu, visible search field and refine PT-BR labels ([46945f8](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/46945f8815607c2ade03adc33af197674a8c5cd8))
+
+
+### Chores
+
+* **cms:** seed mega-menu content and patch best-of landing labels ([6e158a7](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/6e158a7602b91ba5ed13b22151cc09de21f15c9f))
+
 ## [0.60.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.59.0...next-dato-v0.60.0) (2026-11-19)
 
 
