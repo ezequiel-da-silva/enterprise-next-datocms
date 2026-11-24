@@ -75,12 +75,12 @@ const COPY: Record<string, LocaleCopy> = {
     seoDescription: "Devolução em 30 dias para artigos sem uso, frete de devolução grátis e como o reembolso é pago.",
     blocks: [
       heading("Devoluções"),
-      paragraph("Podes devolver um artigo sem uso no prazo de 30 dias após a entrega."),
+      paragraph("Você pode devolver um artigo sem uso no prazo de 30 dias após a entrega."),
       paragraph("O artigo tem de estar sem uso, com as etiquetas e na embalagem original."),
       heading("Como iniciar uma devolução"),
       paragraph("O frete de devolução é grátis. Enviamos uma etiqueta pré-paga depois do pedido."),
       paragraph(
-        "Pede a etiqueta na página de contacto em /contato, ou a partir do e-mail de confirmação da Shopify. Indica o número do pedido.",
+        "Peça a etiqueta na página de contato em /contato, ou a partir do e-mail de confirmação da Shopify. Informe o número do pedido.",
       ),
       heading("Envio"),
       paragraph(

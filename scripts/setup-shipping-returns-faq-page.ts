@@ -130,7 +130,7 @@ const COPY: Record<string, LocaleCopy> = {
       {
         question: "Qual o prazo de entrega?",
         answer: [
-          `Preparamos pedidos no Brasil em ${POLICY.BR.handling}; o transporte costuma levar ${POLICY.BR.transit}. O rastreio chega pelo e-mail de confirmação da Shopify quando a transportadora regista o envio.`,
+          `Preparamos pedidos no Brasil em ${POLICY.BR.handling}; o transporte costuma levar ${POLICY.BR.transit}. O rastreio chega pelo e-mail de confirmação da Shopify quando a transportadora registra o envio.`,
         ],
       },
       {
@@ -142,19 +142,19 @@ const COPY: Record<string, LocaleCopy> = {
       {
         question: "Qual o prazo para devolver?",
         answer: [
-          `Podes pedir devolução até ${POLICY.BR.returnDays} dias após a entrega, de acordo com a política publicada para o mercado brasileiro.`,
+          `Você pode pedir devolução até ${POLICY.BR.returnDays} dias após a entrega, de acordo com a política publicada para o mercado brasileiro.`,
         ],
       },
       {
         question: "Quem paga o frete da devolução?",
         answer: [
-          "O frete de devolução é gratuito nas devoluções elegíveis no Brasil. Inicia o pedido a partir da confirmação ou da conta; quando o pedido for aceite, a loja cobre a etiqueta de devolução.",
+          "O frete de devolução é gratuito nas devoluções elegíveis no Brasil. Inicie o pedido a partir da confirmação ou da conta; quando o pedido for aceito, a loja cobre a etiqueta de devolução.",
         ],
       },
       {
         question: "Como inicio uma devolução ou reembolso?",
         answer: [
-          `Usa a página de estado do pedido no e-mail da Shopify ou contacta-nos com o número do pedido. Os termos completos estão na política de reembolso (${"/pt/refund-policy"}).`,
+          `Use a página de status do pedido no e-mail da Shopify ou fale conosco com o número do pedido. Os termos completos estão na política de reembolso (${"/pt/refund-policy"}).`,
         ],
       },
     ],

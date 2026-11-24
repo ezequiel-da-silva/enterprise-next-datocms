@@ -8,9 +8,11 @@
  *
  * Idempotent: re-running keeps the first listing/grid per locale and drops duplicates;
  * missing blocks are created. FAQ and other blocks are preserved (FAQs stay before others).
- * Existing listings are not rewritten — use `curate-home-featured.ts` to switch auto → manual.
+ * Existing listings/grids are not rewritten unless `HOME_LANDING_FORCE=1` (refreshes PT-BR/EN/ES copy).
+ * Use `curate-home-featured.ts` to switch auto → manual product picks.
  *
  *   npx datocms cma:script scripts/setup-home-landing.ts --profile=default
+ *   HOME_LANDING_FORCE=1 npx datocms cma:script scripts/setup-home-landing.ts --profile=default
  */
 import { buildBlockRecord } from "@datocms/cma-client-node";
 import type { Client } from "datocms/lib/cma-client-node";
@@ -78,23 +80,23 @@ const COPY: Record<string, LocaleCopy> = {
   },
   "pt-BR": {
     listingTitle: "Pranchas em destaque",
-    listingDescription: "Escolhe a prancha para a próxima descida — preços confirmados no checkout Shopify.",
-    benefitsTitle: "Porque comprar connosco",
+    listingDescription: "Escolha a prancha para a próxima descida — preços confirmados no checkout Shopify.",
+    benefitsTitle: "Por que comprar conosco",
     benefitsDescription: "Checkout enterprise, políticas claras e pranchas feitas para durar.",
     benefits: [
       {
         title: "Entrega global segura",
-        description: "Envio com rastreio até à porta e cobertura da transportadora em cada encomenda.",
+        description: "Envio com rastreio até a porta e cobertura da transportadora em cada pedido.",
         icon: faTruck,
       },
       {
         title: "Garantia de 2 anos",
-        description: "Defeitos de fabrico cobertos para poderes andar com confiança.",
+        description: "Defeitos de fabricação cobertos para que você possa andar com confiança.",
         icon: faShieldHalved,
       },
       {
-        title: "Checkout Shopify directo",
-        description: "Paga com segurança na Shopify — carrinho e pagamento num stack de confiança.",
+        title: "Checkout Shopify direto",
+        description: "Pague com segurança na Shopify — carrinho e pagamento num stack de confiança.",
         icon: faLock,
       },
       {
@@ -163,8 +165,10 @@ async function loadFeaturedProductIds(client: Client): Promise<string[]> {
 export default async function setupHomeLanding(client: Client): Promise<void> {
   const site = await client.site.find();
   const locales = site.locales;
+  const force = process.env.HOME_LANDING_FORCE === "1";
   console.log(`Site ${site.id} (${site.name}) — locales: ${locales.join(", ")}`);
   console.log(`Environment: ${process.env.DATOCMS_ENVIRONMENT ?? "(default / profile)"}`);
+  if (force) console.log("  HOME_LANDING_FORCE=1 — a reescrever listing + feature_grid");
 
   const [textHeader, listingSection, shopifyConfig, featureGrid, card, carouselSetting, faqGroup] =
     await Promise.all([
@@ -188,9 +192,10 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
     `  featured boards para novos listings: ${selectedProducts.length}/${HOME_FEATURED_BOARD_HANDLES.length}`,
   );
 
-  const listingBlock = (locale: string) => {
+  const listingBlock = (locale: string, existingId?: string | null) => {
     const c = copyFor(locale);
     return buildBlockRecord({
+      ...(existingId ? { id: existingId } : {}),
       item_type: ref(listingSection.id),
       text_header_section: [textHeaderBlock(textHeader.id, c.listingTitle, c.listingDescription)],
       listing_config: buildBlockRecord({
@@ -215,9 +220,10 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
     });
   };
 
-  const benefitsBlock = (locale: string) => {
+  const benefitsBlock = (locale: string, existingId?: string | null) => {
     const c = copyFor(locale);
     return buildBlockRecord({
+      ...(existingId ? { id: existingId } : {}),
       item_type: ref(featureGrid.id),
       text_header_section: [textHeaderBlock(textHeader.id, c.benefitsTitle, c.benefitsDescription)],
       advanced_options: false,
@@ -250,6 +256,8 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
   let gridsCreated = 0;
   let listingsDeduped = 0;
   let gridsDeduped = 0;
+  let listingsForced = 0;
+  let gridsForced = 0;
   let faqsKept = 0;
 
   const nextContent = Object.fromEntries(
@@ -268,7 +276,12 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
             listingsDeduped += 1;
             continue;
           }
-          listing = id;
+          if (force) {
+            listing = listingBlock(l, id);
+            listingsForced += 1;
+          } else {
+            listing = id;
+          }
           continue;
         }
         if (typeId === featureGrid.id) {
@@ -276,7 +289,12 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
             gridsDeduped += 1;
             continue;
           }
-          grid = id;
+          if (force) {
+            grid = benefitsBlock(l, id);
+            gridsForced += 1;
+          } else {
+            grid = id;
+          }
           continue;
         }
         if (typeId === faqGroup.id) {
@@ -301,7 +319,12 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
   );
 
   const changed =
-    listingsCreated > 0 || gridsCreated > 0 || listingsDeduped > 0 || gridsDeduped > 0;
+    listingsCreated > 0 ||
+    gridsCreated > 0 ||
+    listingsDeduped > 0 ||
+    gridsDeduped > 0 ||
+    listingsForced > 0 ||
+    gridsForced > 0;
 
   if (changed) {
     await client.items.update(page.id, { content_page: nextContent });
@@ -311,6 +334,8 @@ export default async function setupHomeLanding(client: Client): Promise<void> {
       );
     }
     if (gridsCreated > 0) console.log(`  feature_grid de benefícios criado (${gridsCreated} locale(s))`);
+    if (listingsForced > 0) console.log(`  listing copy forçada: ${listingsForced}`);
+    if (gridsForced > 0) console.log(`  feature_grid copy forçada: ${gridsForced}`);
     if (listingsDeduped > 0) console.log(`  listings duplicados removidos: ${listingsDeduped}`);
     if (gridsDeduped > 0) console.log(`  feature_grids duplicados removidos: ${gridsDeduped}`);
   } else {

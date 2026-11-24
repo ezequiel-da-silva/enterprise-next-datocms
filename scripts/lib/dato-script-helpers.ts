@@ -53,7 +53,9 @@ export function textIn(raw: Raw, locale: string): string | null {
 }
 
 export async function publishIfDraftModel(client: Client, item: { id: string; meta: object }, label: string) {
-  if (typeof field(item.meta, "status") !== "string") return;
+  const status = field(item.meta, "status");
+  // Non-draft models omit status; already-published records reject publish (INVALID_DRAFT).
+  if (status !== "draft" && status !== "updated") return;
   await client.items.publish(item.id);
   console.log(`  publicado: ${label}`);
 }

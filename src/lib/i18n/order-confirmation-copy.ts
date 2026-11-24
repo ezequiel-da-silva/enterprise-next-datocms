@@ -20,12 +20,12 @@ export const ORDER_CONFIRMATION_COPY: Record<AppLocale, OrderConfirmationCopy> =
     continueShopping: "Continue shopping",
   },
   pt: {
-    title: "Obrigado pela sua encomenda",
+    title: "Obrigado pelo seu pedido",
     lead: "Recebemos o pagamento. Em breve chega um e-mail da Shopify com os detalhes de envio.",
     trackingNotice: "Você receberá o código de rastreamento assim que o pacote for despachado pela transportadora.",
     orderLabelTemplate: "Pedido {order}",
     orderLabel: (order) => `Pedido ${order}`,
-    continueShopping: "Continuar a comprar",
+    continueShopping: "Continuar comprando",
   },
   es: {
     title: "Gracias por tu pedido",
