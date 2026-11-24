@@ -8,7 +8,9 @@ import {
   toGalleryItemsFromImages,
   type ProductGalleryItem,
 } from "@/lib/shopify/product-gallery-items";
+import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
 import { ProductShippingEstimate } from "@/components/patterns/product-shipping-estimate";
+import { chromeCopy } from "@/lib/i18n/chrome-copy";
 import type { ShippingEstimateCopy } from "@/lib/i18n/shipping-estimate-copy";
 import { formatPixHint } from "@/lib/shopify/format-pix-hint";
 import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
@@ -56,7 +58,7 @@ export type ProductPickerCopy = {
 
 export type ProductPickerCart = {
   action: AddToCartAction;
-  locale: string;
+  locale: AppLocale;
   cartHref: string;
   copy: AddToCartCopy;
   buyNowAction?: BuyNowAction;
@@ -376,6 +378,11 @@ export function ProductVariantPicker({
                 copy={cart.buyNowCopy}
               />
             ) : null}
+            <CheckoutTrustStrip
+              locale={cart.locale}
+              paymentsLabel={chromeCopy(cart.locale).footerPaymentsLabel}
+              secureNote={checkoutTrust}
+            />
           </div>
         ) : null}
         <div className="space-y-1.5 text-sm text-muted-foreground">
@@ -388,7 +395,6 @@ export function ProductVariantPicker({
             />
           ) : null}
           {returnsTrust ? <p>{returnsTrust}</p> : null}
-          {checkoutTrust ? <p>{checkoutTrust}</p> : null}
         </div>
       </div>
 
