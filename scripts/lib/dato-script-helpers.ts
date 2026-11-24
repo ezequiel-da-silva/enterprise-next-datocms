@@ -94,7 +94,7 @@ export async function findPageBySlug(client: Client, slugs: Set<string>): Promis
 
 /**
  * Appends a top-level `navigation.menu_links` item per locale pointing at `pathFor(locale)`,
- * removing duplicates of that link. Skips locales that already have it.
+ * removing duplicates of that link. Updates label/aria when the link already exists but copy drifted.
  */
 export async function ensureNavLink(
   client: Client,
@@ -116,40 +116,69 @@ export async function ensureNavLink(
   const nestedMenu = asLocalized<Raw[]>(field(navigation, "menu_links"));
   let added = 0;
   let removed = 0;
+  let updated = 0;
   const nextMenu = Object.fromEntries(
     options.locales.map((l) => {
       const kept: BlockPayload[] = [];
       let seen = false;
+      const desiredLabel = options.labelFor(l);
+      const desiredPath = options.pathFor(l);
       for (const block of nestedMenu[l] ?? []) {
         const id = blockId(block);
         if (!id) continue;
         const raw = blockAttr(block, "nav_item_link");
         const link = typeof raw === "string" ? raw.replace(/\/$/, "") : null;
-        if (link && link !== options.pathFor(l) && options.stalePathsFor?.(l).includes(link)) {
+        if (link && link !== desiredPath && options.stalePathsFor?.(l).includes(link)) {
           removed += 1;
           continue;
         }
-        if (link === options.pathFor(l)) {
+        if (link === desiredPath) {
           if (seen) {
             removed += 1;
             continue;
           }
           seen = true;
+          const currentLabel = blockAttr(block, "nav_item_label");
+          const currentAria = blockAttr(block, "nav_item_link_aria");
+          const labelOk = typeof currentLabel === "string" && currentLabel === desiredLabel;
+          const ariaOk =
+            (typeof currentAria === "string" && currentAria === desiredLabel) ||
+            (currentAria == null && labelOk);
+          if (labelOk && ariaOk) {
+            kept.push(id);
+            continue;
+          }
+          updated += 1;
+          const submenuRaw = blockAttr(block, "submenu");
+          const submenu = Array.isArray(submenuRaw)
+            ? submenuRaw.map((child) => blockId(child)).filter((childId): childId is string => Boolean(childId))
+            : [];
+          kept.push(
+            buildBlockRecord({
+              id,
+              item_type: ref(options.navItemTypeId),
+              nav_item_label: desiredLabel,
+              nav_item_link: desiredPath,
+              nav_item_link_aria: desiredLabel,
+              open_in_new_tab: blockAttr(block, "open_in_new_tab") ?? false,
+              submenu,
+            }),
+          );
+          continue;
         }
         kept.push(id);
       }
       if (seen) return [l, kept];
       added += 1;
-      const label = options.labelFor(l);
       return [
         l,
         [
           ...kept,
           buildBlockRecord({
             item_type: ref(options.navItemTypeId),
-            nav_item_label: label,
-            nav_item_link: options.pathFor(l),
-            nav_item_link_aria: label,
+            nav_item_label: desiredLabel,
+            nav_item_link: desiredPath,
+            nav_item_link_aria: desiredLabel,
             open_in_new_tab: false,
             submenu: [],
           }),
@@ -158,12 +187,13 @@ export async function ensureNavLink(
     }),
   );
 
-  if (added === 0 && removed === 0) {
+  if (added === 0 && removed === 0 && updated === 0) {
     console.log(`  menu já tem o link ${options.name}`);
     return;
   }
   await client.items.update(navigation.id, { menu_links: nextMenu });
   if (added > 0) console.log(`  item de menu adicionado (${options.name})`);
+  if (updated > 0) console.log(`  rótulo de menu atualizado (${options.name}): ${updated}`);
   if (removed > 0) console.log(`  itens de menu duplicados/antigos removidos: ${removed}`);
   await publishIfDraftModel(client, await client.items.find(navigation.id), "navigation");
 }
