@@ -261,9 +261,9 @@ type HeaderNavProps = {
   menuLinks: HeaderMenuItem[];
   locale: AppLocale;
   themeToggle: ReactNode;
-  /** Lupa + painel de busca; o painel posiciona-se sobre o `<header>`. */
+  /** Campo de busca desktop (lg+); preview absoluto sob o chrome. */
   searchToggle: ReactNode;
-  /** Formulário já aberto no drawer: no móvel a lupa sairia do ecrã com o painel. */
+  /** Formulário já aberto no drawer móvel (Parkinson — sem lupa duplicada no header). */
   searchBlock: ReactNode;
   /** Compact locale control for the desktop chrome. */
   localeSwitcher: ReactNode;
@@ -310,9 +310,9 @@ export function HeaderNav({
     <>
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
         <nav aria-label="Principal" className="hidden min-w-0 flex-1 lg:block">
-          <ul className="flex max-w-full flex-wrap items-center justify-start gap-1 xl:gap-2">
+          <ul className="flex max-w-full flex-nowrap items-center justify-start gap-1 xl:gap-2">
             {orderedLinks.map((item) => (
-              <li key={item.id} className="relative max-w-full shrink-0">
+              <li key={item.id} className="relative shrink-0">
                 {isNavigationMegaMenu(item) ? (
                   <DesktopMegaMenu item={item} locale={locale} />
                 ) : (

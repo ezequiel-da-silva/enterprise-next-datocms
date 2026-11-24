@@ -97,7 +97,10 @@ export function HeaderSearchForm({
           placeholder={placeholder?.trim() || FALLBACK_PLACEHOLDER[locale]}
           autoComplete="off"
           enterKeyHint="search"
-          className="min-h-12 w-full min-w-0 rounded-full border border-border bg-background py-2 pl-12 pr-4 text-sm text-foreground shadow-sm transition placeholder:truncate placeholder:text-muted-foreground hover:border-foreground/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className={cn(
+            "w-full min-w-0 rounded-full border border-border bg-background py-2 pl-12 pr-4 text-sm text-foreground shadow-sm transition placeholder:truncate placeholder:text-muted-foreground hover:border-foreground/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            block ? "min-h-12" : "h-10 min-h-10",
+          )}
         />
       </div>
     </form>

@@ -281,13 +281,11 @@ Slugs locais de exemplo: `search` (en), `busca` (pt), `busqueda` (es). `/busca` 
 
 Em **Navigation → 🧭 Header**:
 
-- `show_header_search`: mostra/oculta a segunda linha de busca;
-- `header_search_placeholder`: placeholder localizado;
-- `header_search_submit_label`: rótulo localizado do botão.
+- `show_header_search`: mostra/oculta o campo de busca no chrome (desktop) e no drawer móvel;
+- `header_search_placeholder`: placeholder localizado (desktop + drawer);
+- `header_search_submit_label`: rótulo localizado do botão submit (ícone lupa).
 
-O formulário usa GET `?q=` e aponta para a Search Page configurada em Global setting. Em páginas
-com Hero, o chrome sticky não reserva altura no fluxo: a hero passa por baixo do header translúcido,
-com uma área segura para que título e ações não fiquem encobertos.
+No desktop o input fica sempre visível no header; o preview em tempo real abre ao focar/digitar (⌘K / Ctrl K). No móvel a busca vive no drawer. O formulário usa GET `?q=` e aponta para a Search Page configurada em Global setting. Em páginas com Hero, o chrome sticky não reserva altura no fluxo: a hero passa por baixo do header translúcido, com uma área segura para que título e ações não fiquem encobertos.
 
 ## Páginas legais (`legal_page`)
 
@@ -347,6 +345,7 @@ Coleção **🚚 Market policy**: um registo por país (**US**, **BR**, **ES**, 
 | `return_days` | 1–365 |
 | `return_fees` | `free` (loja paga) ou `customer` (cliente paga) |
 | `installment_count` / `installment_multiplier` | hint editorial de parcelas no PDP **pt** (2–12; fator ≥1). Script: `setup-market-policy-installments.ts`. Indicativo — taxas reais no checkout Shopify. |
+| `pix_discount_percent` | hint opcional “X% OFF no Pix” no PDP **pt** (1–20). Vazio = sem linha. Script: `setup-market-policy-pix.ts`. Não inventar % — alinhar ao Shopify. |
 
 **Alinhamento obrigatório com copy humana:** páginas `shipping-returns` / `refund-policy` (e FAQs geradas por setup) devem espelhar os mesmos números que `market_policy` — tipicamente US **$9.90**, BR **frete grátis**, ES **5 €**, **30 dias** de devolução, frete reverso **grátis** quando `return_fees=free`. O Google e o cliente comparam JSON-LD PDP com o texto publicado; divergência = risco Merchant + confiança (Peak-End).
 
@@ -364,7 +363,9 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 | Script | Notas / env |
 |--------|-------------|
 | `setup-market-policy-installments.ts` | Campos `installment_count` / `installment_multiplier` em `market_policy` (hint PDP pt) |
+| `setup-market-policy-pix.ts` | Campo `pix_discount_percent` em `market_policy` (hint Pix PDP pt; valor vazio por defeito) |
 | `setup-navigation-mega-menu.ts` | Blocos mega-menu + allowlist em `navigation::menu_links` |
+| `seed-navigation-mega-menu-content.ts` | Conteúdo mega Loja (Nível / Terreno / Coleções + campaign); remove Loja plana; `MEGA_MENU_FORCE=1` |
 | `setup-ui-string-fieldsets.ts` | Consolida fieldsets Cart / Checkout / Global chrome / PDP |
 | `setup-product-page-publish-gates.ts` | Fieldset Snowboard specs + required publish gates |
 | `setup-home-landing.ts` | Home CMS + blocos (novos listings já em manual + whitelist) |
@@ -373,7 +374,7 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 | `setup-shopify-store-page.ts` | Índice shop / products |
 | `setup-shopify-collections-page.ts` | Índice collections; `COLLECTIONS_PAGE_FORCE=1` sobrescreve pointer em `global_setting` |
 | `setup-shipping-returns-faq-page.ts` | FAQ frete/devolução a partir de `market_policy`; `SHIPPING_FAQ_FORCE=1` |
-| `setup-best-of-landing.ts` | Landing “Best of”; `BEST_OF_FORCE=1` rebuild hero/grids |
+| `setup-best-of-landing.ts` | Landing Best of / Destaques / Destacados; atualiza rótulo de nav; `BEST_OF_FORCE=1` rebuild hero/grids |
 | `update-refund-policy-page.ts` | Alinha legal refund; `REFUND_POLICY_FORCE=1` |
 | `setup-snowboard-specs-model.ts` | Garante campos técnicos no `product_page`; `SNOWBOARD_SPECS_SEED=1` preenche boards demo (hydrogen, liquid, complete, multi-managed, videographer) |
 | `seed-ui-strings.ts` | Preenche só campos vazios de `ui_string` |
@@ -483,7 +484,7 @@ O bloco **Link** (`type_content` Product / Collection) liga CTAs internos (Hero,
 
 ### Mega-menu (`navigation`)
 
-Schema: [`scripts/setup-navigation-mega-menu.ts`](../scripts/setup-navigation-mega-menu.ts). Em `menu_links` podes misturar **Nav item modular** (flyouts) e **Navigation mega menu** (categorias + banner de campanha). Filhos das categorias usam blocos **Link** (preferir Collection → `collection_page`). O footer continua só com items modulares.
+Schema: [`scripts/setup-navigation-mega-menu.ts`](../scripts/setup-navigation-mega-menu.ts). Conteúdo seed (Loja / Shop / Tienda com colunas **Nível · Terreno · Coleções** + campaign Best of): [`scripts/seed-navigation-mega-menu-content.ts`](../scripts/seed-navigation-mega-menu-content.ts) — `npm run dato:seed:mega-menu` (default) / `dato:seed:mega-menu:staging`. Em `menu_links` podes misturar **Nav item modular** (flyouts) e **Navigation mega menu**. O seed remove o item plano Loja/Shop/Tienda para evitar duplicar a descoberta (Hick). Filhos das categorias usam blocos **Link** (preferir Collection → `collection_page`). O footer continua só com items modulares.
 
 No **Feature GRID**, cada CARD tem `card_source`: editorial (título/imagem/CTA no bloco) ou produto/coleção. Catálogo preenche título (Dato), imagem e href (PDP/PLP) a partir da Storefront; produto mostra preço. Sem handle ou sem Storefront o card é omitido. Isto não substitui o Content listing.
 

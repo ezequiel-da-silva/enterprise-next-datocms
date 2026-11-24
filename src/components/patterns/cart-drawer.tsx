@@ -3,10 +3,13 @@
 import { Button } from "@/components/atoms/button";
 import { CartDrawerLineItem } from "@/components/patterns/cart-drawer-line-item";
 import { useCartDrawer } from "@/components/patterns/cart-drawer-context";
+import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
+import { FreeShippingMeter } from "@/components/patterns/free-shipping-meter";
 import { RecentlyViewedSection } from "@/components/patterns/recently-viewed-section";
 import { trackBeginCheckout } from "@/lib/analytics/ecommerce";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
 import { resolveFreeShippingRemaining } from "@/lib/i18n/cart-copy";
+import { chromeCopy } from "@/lib/i18n/chrome-copy";
 import { computeFreeShippingProgress } from "@/lib/shopify/free-shipping-progress";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import Link from "next/link";
@@ -68,6 +71,8 @@ export function CartDrawer() {
             ),
           )
       : null;
+  const chrome = chromeCopy(locale);
+  const secureNote = copy.checkoutNote;
 
   return createPortal(
     <div className="fixed inset-0 z-[70]" role="presentation">
@@ -137,31 +142,18 @@ export function CartDrawer() {
         </div>
 
         <footer className="shrink-0 space-y-3 border-t border-border px-4 py-4">
-          {shippingProgress.kind === "progress" && progressLabel ? (
-            <div className="space-y-2" data-free-shipping-progress="">
-              <p className="text-xs font-medium text-foreground">{progressLabel}</p>
-              <div
-                className="h-1.5 overflow-hidden rounded-full bg-muted"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round(shippingProgress.ratio * 100)}
-                aria-label={progressLabel}
-              >
-                <div
-                  className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
-                  style={{ width: `${Math.round(shippingProgress.ratio * 100)}%` }}
-                />
-              </div>
-            </div>
-          ) : null}
+          <FreeShippingMeter
+            progress={shippingProgress}
+            progressLabel={progressLabel}
+            simpleFreeLabel={copy.freeShippingUnlocked}
+          />
           {subtotal ? (
             <p className="flex justify-between text-sm font-medium text-foreground">
               <span>{copy.subtotal}</span>
               <span>{formatStorefrontMoney(locale, subtotal.amount, subtotal.currencyCode)}</span>
             </p>
           ) : null}
-          <p className="text-xs text-muted-foreground">{trustNote?.trim() || copy.checkoutNote}</p>
+          {trustNote?.trim() ? <p className="text-xs text-muted-foreground">{trustNote.trim()}</p> : null}
           {checkoutUrl ? (
             <Button asChild variant="primary" className="w-full">
               <a
@@ -190,6 +182,7 @@ export function CartDrawer() {
               {copy.checkoutUnavailable}
             </Button>
           )}
+          <CheckoutTrustStrip locale={locale} paymentsLabel={chrome.footerPaymentsLabel} secureNote={secureNote} />
           <Link
             href={cartHref}
             className="touch-target-text block text-center text-sm font-medium text-primary underline-offset-4 hover:underline"

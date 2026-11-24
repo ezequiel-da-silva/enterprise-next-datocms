@@ -32,6 +32,7 @@ describe("market_policy field map", () => {
       readFileSync(join(process.cwd(), "migrations", "1790800000_marketPolicy.ts"), "utf8"),
       readFileSync(join(process.cwd(), "scripts", "setup-market-policy-threshold.ts"), "utf8"),
       readFileSync(join(process.cwd(), "scripts", "setup-market-policy-installments.ts"), "utf8"),
+      readFileSync(join(process.cwd(), "scripts", "setup-market-policy-pix.ts"), "utf8"),
     ].join("\n");
     for (const field of MARKET_POLICY_FIELDS) {
       expect(sources).toContain(`"${camelToSnake(field)}"`);
@@ -55,6 +56,7 @@ describe("normalizeMarketPolicy", () => {
       returnFees: "free",
       installmentCount: null,
       installmentMultiplier: null,
+      pixDiscountPercent: null,
     });
   });
 
@@ -63,6 +65,12 @@ describe("normalizeMarketPolicy", () => {
     expect(policy({ installmentCount: 10, installmentMultiplier: 1 })?.installmentMultiplier).toBe(1);
     expect(policy({ installmentCount: 1 })?.installmentCount).toBeNull();
     expect(policy({ installmentMultiplier: 0.5 })?.installmentMultiplier).toBeNull();
+  });
+
+  it("keeps a valid Pix discount percent", () => {
+    expect(policy({ pixDiscountPercent: 5 })?.pixDiscountPercent).toBe(5);
+    expect(policy({ pixDiscountPercent: 0 })?.pixDiscountPercent).toBeNull();
+    expect(policy({ pixDiscountPercent: 21 })?.pixDiscountPercent).toBeNull();
   });
 
   it("keeps a positive free-shipping threshold", () => {

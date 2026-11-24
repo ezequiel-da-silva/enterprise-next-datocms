@@ -1,16 +1,11 @@
 "use client";
 
 import { Button } from "@/components/atoms/button";
+import type { ShippingEstimateCopy } from "@/lib/i18n/shipping-estimate-copy";
 import { normalizeBrCep } from "@/lib/shopify/estimate-shipping";
 import { useId, useState, type FormEvent } from "react";
 
-export type ProductShippingEstimateCopy = {
-  cepLabel: string;
-  cepPlaceholder: string;
-  submit: string;
-  invalidCep: string;
-  error: string;
-};
+export type ProductShippingEstimateCopy = ShippingEstimateCopy;
 
 type EstimateResponse = {
   free: boolean;
@@ -24,14 +19,6 @@ type ProductShippingEstimateProps = {
   /** Selected variant price — unlocks free shipping when over threshold. */
   subtotal: number | null;
   copy: ProductShippingEstimateCopy;
-};
-
-export const SHIPPING_ESTIMATE_COPY_PT: ProductShippingEstimateCopy = {
-  cepLabel: "Calcular frete",
-  cepPlaceholder: "00000-000",
-  submit: "Calcular",
-  invalidCep: "Informe um CEP válido com 8 dígitos.",
-  error: "Não foi possível estimar o frete. Tente de novo.",
 };
 
 export function ProductShippingEstimate({ locale, subtotal, copy }: ProductShippingEstimateProps) {
@@ -78,7 +65,7 @@ export function ProductShippingEstimate({ locale, subtotal, copy }: ProductShipp
   }
 
   return (
-    <div className="space-y-2" data-ui-section="ProductShippingEstimate">
+    <div className="space-y-2 rounded-lg border border-border/80 bg-muted/30 p-3" data-ui-section="ProductShippingEstimate">
       <form className="flex flex-wrap items-end gap-2" onSubmit={onSubmit}>
         <div className="min-w-[10rem] flex-1 space-y-1">
           <label htmlFor={inputId} className="text-sm font-medium text-foreground">
@@ -101,11 +88,16 @@ export function ProductShippingEstimate({ locale, subtotal, copy }: ProductShipp
       </form>
       {localError ? <p className="text-sm text-destructive">{localError}</p> : null}
       {result ? (
-        <div className="space-y-1 text-sm text-muted-foreground" aria-live="polite">
-          <p className="font-medium text-foreground">
-            {[result.rateLabel, result.etaLabel].filter(Boolean).join(" · ")}
-          </p>
-          <p>{result.disclaimer}</p>
+        <div className="space-y-1 text-sm" aria-live="polite">
+          {result.rateLabel ? (
+            <p className="font-semibold text-foreground">{result.rateLabel}</p>
+          ) : null}
+          {result.etaLabel ? (
+            <p className="font-medium text-foreground">
+              {copy.etaPrefix} {result.etaLabel}
+            </p>
+          ) : null}
+          <p className="text-muted-foreground">{result.disclaimer}</p>
         </div>
       ) : null}
     </div>

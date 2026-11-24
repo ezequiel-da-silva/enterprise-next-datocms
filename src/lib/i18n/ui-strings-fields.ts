@@ -120,7 +120,19 @@ export const PDP_TEXT_FIELDS = {
   sizeLength: "pdpSizeLength",
   sizeWeight: "pdpSizeWeight",
   sizeWaist: "pdpSizeWaist",
-} as const satisfies Record<Exclude<keyof PdpCopy, "lowStock" | "lowStockTemplate">, string>;
+} as const satisfies Record<
+  Exclude<
+    keyof PdpCopy,
+    | "lowStock"
+    | "lowStockTemplate"
+    | "warrantyTrust"
+    | "refundPolicyLink"
+    | "viewSpecs"
+    | "viewSizeGuide"
+    | "reviewsEmpty"
+  >,
+  string
+>;
 
 export const COLLECTION_FIELDS = {
   empty: "collectionEmpty",
@@ -181,7 +193,7 @@ export const CHROME_FIELDS = {
   footerSecureCheckout: "footerSecureCheckout",
   footerPaymentsLabel: "footerPaymentsLabel",
 } as const satisfies Record<
-  Exclude<keyof ChromeCopy, "announcementFreeShippingTemplate">,
+  Exclude<keyof ChromeCopy, "announcementFreeShippingTemplate" | "announcementCdcCoolingOff">,
   string
 >;
 

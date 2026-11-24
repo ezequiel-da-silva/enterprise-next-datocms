@@ -72,15 +72,30 @@ const COPY: Record<string, LocaleCopy> = {
   },
   "pt-BR": {
     title: "Política de reembolso",
-    seoDescription: "Devolução em 30 dias para artigos sem uso, frete de devolução grátis e como o reembolso é pago.",
+    seoDescription:
+      "Devolução em 30 dias, arrependimento em 7 dias (Art. 49 CDC), garantia legal de 90 dias e frete de devolução grátis.",
     blocks: [
       heading("Devoluções"),
-      paragraph("Podes devolver um artigo sem uso no prazo de 30 dias após a entrega."),
+      paragraph("Você pode devolver um artigo sem uso no prazo de 30 dias após a entrega."),
       paragraph("O artigo tem de estar sem uso, com as etiquetas e na embalagem original."),
+      heading("Arrependimento (Art. 49 do CDC)"),
+      paragraph(
+        "Em compras à distância no Brasil, você pode desistir da compra em até 7 dias corridos a contar da entrega, nos termos do Art. 49 do Código de Defesa do Consumidor.",
+      ),
+      paragraph(
+        "Para exercer o arrependimento, use o mesmo fluxo de devolução: página de contato em /contato ou o e-mail de confirmação da Shopify, com o número do pedido. O frete de devolução segue as regras desta política (etiqueta pré-paga nas devoluções elegíveis).",
+      ),
+      heading("Garantia legal e garantia comercial"),
+      paragraph(
+        "Garantia legal (CDC): para vícios aparentes do produto, o prazo de reclamação é de 90 dias a partir da entrega. Entre em contato em /contato com o número do pedido e a descrição do problema.",
+      ),
+      paragraph(
+        "Garantia comercial de 2 anos: cobre defeitos de fabricação da prancha além da garantia legal. Solicite a análise pelo /contato; não substitui o direito de arrependimento nem a garantia legal de 90 dias.",
+      ),
       heading("Como iniciar uma devolução"),
       paragraph("O frete de devolução é grátis. Enviamos uma etiqueta pré-paga depois do pedido."),
       paragraph(
-        "Pede a etiqueta na página de contacto em /contato, ou a partir do e-mail de confirmação da Shopify. Indica o número do pedido.",
+        "Peça a etiqueta na página de contato em /contato, ou a partir do e-mail de confirmação da Shopify. Informe o número do pedido.",
       ),
       heading("Envio"),
       paragraph(

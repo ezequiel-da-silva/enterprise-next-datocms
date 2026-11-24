@@ -14,6 +14,7 @@ const POLICY: MarketPolicy = {
   returnFees: "free",
   installmentCount: 10,
   installmentMultiplier: 1,
+  pixDiscountPercent: null,
 };
 
 describe("normalizeBrCep", () => {

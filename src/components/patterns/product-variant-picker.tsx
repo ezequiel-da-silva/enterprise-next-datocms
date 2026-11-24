@@ -8,10 +8,11 @@ import {
   toGalleryItemsFromImages,
   type ProductGalleryItem,
 } from "@/lib/shopify/product-gallery-items";
-import {
-  ProductShippingEstimate,
-  SHIPPING_ESTIMATE_COPY_PT,
-} from "@/components/patterns/product-shipping-estimate";
+import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
+import { ProductShippingEstimate } from "@/components/patterns/product-shipping-estimate";
+import { chromeCopy } from "@/lib/i18n/chrome-copy";
+import type { ShippingEstimateCopy } from "@/lib/i18n/shipping-estimate-copy";
+import { formatPixHint } from "@/lib/shopify/format-pix-hint";
 import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
@@ -21,6 +22,7 @@ import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
 import { formatDiscountPill } from "@/lib/shopify/compare-at-price";
 import { formatInstallmentHint } from "@/lib/shopify/format-installment-hint";
 import type { WishlistItem } from "@/lib/wishlist/types";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export type ProductPickerImage = {
@@ -57,7 +59,7 @@ export type ProductPickerCopy = {
 
 export type ProductPickerCart = {
   action: AddToCartAction;
-  locale: string;
+  locale: AppLocale;
   cartHref: string;
   copy: AddToCartCopy;
   buyNowAction?: BuyNowAction;
@@ -87,6 +89,14 @@ type ProductVariantPickerProps = {
   shippingTrust?: string | null;
   /** Free-returns line when `returnFees=free`. */
   returnsTrust?: string | null;
+  /** Commercial / legal warranty cue under returns. */
+  warrantyTrust?: string | null;
+  /** Label + href for the refund policy page (under returns). */
+  refundPolicyLink?: string | null;
+  refundPolicyHref?: string | null;
+  /** In-page jump links when specs / size chart exist on the PDP. */
+  viewSpecsLabel?: string | null;
+  viewSizeGuideLabel?: string | null;
   /** Already resolved on the server (`ui_string` or the built-in PDP copy). */
   checkoutTrust: string;
   /** PT-only payment microcopy (PIX/parcelas); empty for other locales. */
@@ -97,6 +107,10 @@ type ProductVariantPickerProps = {
   installmentCount?: number | null;
   /** `market_policy.installment_multiplier` (BR). */
   installmentMultiplier?: number | null;
+  /** `market_policy.pix_discount_percent` (BR); omit/null hides the Pix line. */
+  pixDiscountPercent?: number | null;
+  /** CEP form copy when `buyBoxLocale === "pt"`. */
+  shippingEstimateCopy?: ShippingEstimateCopy | null;
 };
 
 function optionGroups(variants: ProductPickerVariant[]): { name: string; values: string[] }[] {
@@ -131,11 +145,18 @@ export function ProductVariantPicker({
   badgeLabel = null,
   shippingTrust = null,
   returnsTrust = null,
+  warrantyTrust = null,
+  refundPolicyLink = null,
+  refundPolicyHref = null,
+  viewSpecsLabel = null,
+  viewSizeGuideLabel = null,
   checkoutTrust,
   paymentHint = null,
   buyBoxLocale,
   installmentCount = null,
   installmentMultiplier = null,
+  pixDiscountPercent = null,
+  shippingEstimateCopy = null,
 }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
@@ -179,6 +200,10 @@ export function ProductVariantPicker({
           installmentCount,
           installmentMultiplier,
         )
+      : null;
+  const pixHint =
+    buyBoxLocale === "pt" && selected
+      ? formatPixHint(buyBoxLocale, selected.price, selected.currency, pixDiscountPercent)
       : null;
 
   useEffect(() => {
@@ -286,6 +311,9 @@ export function ProductVariantPicker({
               {installmentHint ? (
                 <p className="text-sm font-medium text-foreground">{installmentHint}</p>
               ) : null}
+              {pixHint ? (
+                <p className="text-sm font-medium text-foreground">{pixHint}</p>
+              ) : null}
               {paymentHint?.trim() ? (
                 <p className="text-sm text-muted-foreground">{paymentHint.trim()}</p>
               ) : null}
@@ -364,19 +392,54 @@ export function ProductVariantPicker({
                 copy={cart.buyNowCopy}
               />
             ) : null}
+            <CheckoutTrustStrip
+              locale={cart.locale}
+              paymentsLabel={chromeCopy(cart.locale).footerPaymentsLabel}
+              secureNote={checkoutTrust}
+            />
           </div>
         ) : null}
         <div className="space-y-1.5 text-sm text-muted-foreground">
           {shippingTrust ? <p>{shippingTrust}</p> : null}
-          {buyBoxLocale === "pt" ? (
+          {buyBoxLocale === "pt" && shippingEstimateCopy ? (
             <ProductShippingEstimate
               locale="pt"
               subtotal={selected?.price ?? null}
-              copy={SHIPPING_ESTIMATE_COPY_PT}
+              copy={shippingEstimateCopy}
             />
           ) : null}
           {returnsTrust ? <p>{returnsTrust}</p> : null}
-          {checkoutTrust ? <p>{checkoutTrust}</p> : null}
+          {warrantyTrust?.trim() ? <p>{warrantyTrust.trim()}</p> : null}
+          {refundPolicyHref && refundPolicyLink?.trim() ? (
+            <p>
+              <Link
+                href={refundPolicyHref}
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {refundPolicyLink.trim()}
+              </Link>
+            </p>
+          ) : null}
+          {viewSpecsLabel || viewSizeGuideLabel ? (
+            <p className="flex flex-wrap gap-x-3 gap-y-1">
+              {viewSpecsLabel ? (
+                <a
+                  href="#product-specs"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {viewSpecsLabel}
+                </a>
+              ) : null}
+              {viewSizeGuideLabel ? (
+                <a
+                  href="#product-size-guide"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {viewSizeGuideLabel}
+                </a>
+              ) : null}
+            </p>
+          ) : null}
         </div>
       </div>
 

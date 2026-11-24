@@ -41,4 +41,14 @@ describe("prioritizeCommerceNavLinks", () => {
     const input = [item("1", "Blog", "/blog"), item("2", "Melhores", "/melhores")];
     expect(prioritizeCommerceNavLinks(input).map((entry) => entry.id)).toEqual(["2", "1"]);
   });
+
+  it("treats Destaques and Destacados as commerce", () => {
+    const input = [
+      item("1", "Blog", "/blog"),
+      item("2", "Destaques", "/melhores"),
+      item("3", "Contact", "/contato"),
+      item("4", "Destacados", "/lo-mejor"),
+    ];
+    expect(prioritizeCommerceNavLinks(input).map((entry) => entry.id)).toEqual(["2", "4", "1", "3"]);
+  });
 });

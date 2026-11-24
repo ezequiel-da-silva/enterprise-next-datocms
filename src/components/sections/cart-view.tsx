@@ -1,15 +1,19 @@
 import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
 import { EmptyStateCollectionGrid } from "@/components/patterns/empty-state-collection-grid";
+import { FreeShippingMeter } from "@/components/patterns/free-shipping-meter";
 import { RecentlyViewedSection } from "@/components/patterns/recently-viewed-section";
 import type { AppLocale } from "@/constants/i18n";
 import { CART_MAX_QUANTITY } from "@/core/entities/cart";
 import type { StorefrontCart, StorefrontCartLine } from "@/infra/shopify/cart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import type { CartCopy } from "@/lib/i18n/cart-copy";
+import { resolveFreeShippingRemaining, type CartCopy } from "@/lib/i18n/cart-copy";
+import { chromeCopy } from "@/lib/i18n/chrome-copy";
 import { crumbsToNavItems, homeBreadcrumbLabel } from "@/lib/seo/breadcrumb-labels";
 import { cartPath } from "@/lib/shopify/cart-cookie";
+import { computeFreeShippingProgress } from "@/lib/shopify/free-shipping-progress";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
 import type { EmptyStateCollection } from "@/lib/storefront/empty-state-collection";
 import Image from "next/image";
@@ -30,6 +34,11 @@ type CartViewProps = {
   shopPath: string;
   suggestedCollections: EmptyStateCollection[];
   actions: CartViewActions;
+  /** Formatted `market_policy` summary; falls back to `copy.checkoutNote` under badges. */
+  trustNote?: string | null;
+  freeShippingThreshold?: number | null;
+  marketCurrencyCode?: string | null;
+  shippingRate?: string | null;
 };
 
 function variantLabel(line: StorefrontCartLine): string | null {
@@ -169,9 +178,46 @@ function CartLineItem({ line, locale, copy, actions }: CartLineItemProps) {
   );
 }
 
-export function CartView({ locale, copy, cart, shopPath, suggestedCollections, actions }: CartViewProps) {
+export function CartView({
+  locale,
+  copy,
+  cart,
+  shopPath,
+  suggestedCollections,
+  actions,
+  trustNote = null,
+  freeShippingThreshold = null,
+  marketCurrencyCode = null,
+  shippingRate = null,
+}: CartViewProps) {
   const lines = cart?.lines ?? [];
   const subtotal = cart?.subtotal;
+  const subtotalAmount = subtotal ? Number(subtotal.amount) : NaN;
+  const currencyOk = Boolean(
+    subtotal &&
+      marketCurrencyCode &&
+      subtotal.currencyCode.trim().toUpperCase() === marketCurrencyCode.trim().toUpperCase(),
+  );
+  const shippingProgress = computeFreeShippingProgress({
+    subtotal: Number.isFinite(subtotalAmount) ? subtotalAmount : 0,
+    threshold: freeShippingThreshold ?? null,
+    currencyOk,
+    shippingRate: shippingRate ?? null,
+  });
+  const progressLabel =
+    shippingProgress.kind === "progress"
+      ? shippingProgress.unlocked
+        ? copy.freeShippingUnlocked
+        : resolveFreeShippingRemaining(
+            copy.freeShippingRemainingTemplate,
+            formatStorefrontMoney(
+              locale,
+              shippingProgress.remaining.toFixed(2),
+              subtotal?.currencyCode ?? marketCurrencyCode ?? "USD",
+            ),
+          )
+      : null;
+  const chrome = chromeCopy(locale);
 
   return (
     <Container as="section" size="sm" name="CartView" data-ui-section="CartView" className="py-12">
@@ -205,13 +251,18 @@ export function CartView({ locale, copy, cart, shopPath, suggestedCollections, a
             ))}
           </ul>
           <div className="mt-8 w-full max-w-md space-y-4 rounded-xl border border-border bg-muted/40 p-6">
+            <FreeShippingMeter
+              progress={shippingProgress}
+              progressLabel={progressLabel}
+              simpleFreeLabel={copy.freeShippingUnlocked}
+            />
             {subtotal ? (
               <p className="flex justify-between text-lg font-semibold text-foreground">
                 <span>{copy.subtotal}</span>
                 <span>{formatStorefrontMoney(locale, subtotal.amount, subtotal.currencyCode)}</span>
               </p>
             ) : null}
-            <p className="text-sm text-muted-foreground">{copy.checkoutNote}</p>
+            {trustNote?.trim() ? <p className="text-sm text-muted-foreground">{trustNote.trim()}</p> : null}
             {cart?.checkoutUrl ? (
               <Button asChild className="touch-target h-12 w-full rounded-lg">
                 <a href={cart.checkoutUrl}>{copy.checkout}</a>
@@ -221,6 +272,11 @@ export function CartView({ locale, copy, cart, shopPath, suggestedCollections, a
                 {copy.checkoutUnavailable}
               </p>
             )}
+            <CheckoutTrustStrip
+              locale={locale}
+              paymentsLabel={chrome.footerPaymentsLabel}
+              secureNote={copy.checkoutNote}
+            />
             <Link
               href={shopPath}
               className="touch-target-text block text-center text-sm font-medium text-primary underline-offset-4 hover:underline"

@@ -1,9 +1,9 @@
 /**
  * Creates (or completes) the promotional “Best of” landing:
  *
- * - `page` Best of / Melhores / Lo mejor with `hero_page` + two `feature_grid`s
+ * - `page` Best of / Destaques / Destacados with `hero_page` + two `feature_grid`s
  *   (featured snowboards products; gift card + Hydrogen collection)
- * - `navigation.menu_links`: top-level item per locale
+ * - `navigation.menu_links`: top-level item per locale (updates drifted labels)
  *
  * Idempotent. `BEST_OF_FORCE=1` rebuilds hero + grids.
  *
@@ -73,10 +73,10 @@ const COPY: Record<string, LocaleCopy> = {
     seoDescription: "Curated snowboards and gift cards from our best-of picks.",
   },
   "pt-BR": {
-    title: "Melhores",
+    title: "Destaques",
     slug: "melhores",
     appLocale: "pt",
-    navLabel: "Melhores",
+    navLabel: "Destaques",
     heroTitle: "As melhores pranchas da temporada",
     heroSubtitle: "Uma seleção de snowboards — e um cartão-presente quando precisares de algo fácil de oferecer.",
     ctaLabel: "Ver loja",
@@ -84,13 +84,13 @@ const COPY: Record<string, LocaleCopy> = {
     boardsDescription: "Destaques do catálogo, prontas para a próxima descida.",
     exploreTitle: "Explorar também",
     exploreDescription: "Cartões-presente e mais da coleção Hydrogen.",
-    seoDescription: "Snowboards e cartões-presente selecionados dos nossos melhores.",
+    seoDescription: "Snowboards e cartões-presente selecionados dos nossos destaques.",
   },
   es: {
-    title: "Lo mejor",
+    title: "Destacados",
     slug: "lo-mejor",
     appLocale: "es",
-    navLabel: "Lo mejor",
+    navLabel: "Destacados",
     heroTitle: "Las mejores tablas de la temporada",
     heroSubtitle: "Una selección de snowboards — y una tarjeta regalo cuando necesites algo fácil de regalar.",
     ctaLabel: "Ver tienda",
@@ -98,7 +98,7 @@ const COPY: Record<string, LocaleCopy> = {
     boardsDescription: "Destacados del catálogo, listas para la próxima bajada.",
     exploreTitle: "Explora también",
     exploreDescription: "Tarjetas regalo y más de la colección Hydrogen.",
-    seoDescription: "Snowboards y tarjetas regalo de nuestra selección lo mejor.",
+    seoDescription: "Snowboards y tarjetas regalo de nuestra selección destacada.",
   },
 };
 
@@ -363,29 +363,34 @@ export default async function setupBestOfLanding(client: Client): Promise<void> 
     }),
   );
 
+  const titlePayload = {
+    title: Object.fromEntries(locales.map((l) => [l, copyFor(l).title])),
+    slug: Object.fromEntries(locales.map((l) => [l, copyFor(l).slug])),
+    seo_settings_social: Object.fromEntries(
+      locales.map((l) => [
+        l,
+        {
+          title: copyFor(l).title,
+          description: copyFor(l).seoDescription,
+          image: null,
+          twitter_card: null,
+          no_index: false,
+        },
+      ]),
+    ),
+  };
+
   if (contentChanged || heroChanged) {
     await client.items.update(page.id, {
       ...(heroChanged ? { hero_page: nextHero } : {}),
       ...(contentChanged ? { content_page: nextContent } : {}),
-      title: Object.fromEntries(locales.map((l) => [l, copyFor(l).title])),
-      slug: Object.fromEntries(locales.map((l) => [l, copyFor(l).slug])),
-      seo_settings_social: Object.fromEntries(
-        locales.map((l) => [
-          l,
-          {
-            title: copyFor(l).title,
-            description: copyFor(l).seoDescription,
-            image: null,
-            twitter_card: null,
-            no_index: false,
-          },
-        ]),
-      ),
+      ...titlePayload,
     });
     if (heroChanged) console.log("  hero_page atualizado");
     if (contentChanged) console.log("  content_page (feature grids) atualizado");
   } else {
-    console.log("  hero e grids já presentes (BEST_OF_FORCE=1 para reescrever)");
+    await client.items.update(page.id, titlePayload);
+    console.log("  hero e grids já presentes — título/SEO sincronizados (BEST_OF_FORCE=1 para reescrever)");
   }
 
   await publishIfDraftModel(client, await client.items.find(page.id), "página best-of");

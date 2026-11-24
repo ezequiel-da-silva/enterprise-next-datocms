@@ -4,6 +4,8 @@ export type WishlistItem = {
   imageUrl: string | null;
   priceAmount: string;
   currencyCode: string;
+  /** Storefront compare-at when strictly above `priceAmount`; omit/null for legacy rows. */
+  compareAtAmount?: string | null;
   savedAt: number;
 };
 

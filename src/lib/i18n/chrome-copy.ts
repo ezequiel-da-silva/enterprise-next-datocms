@@ -6,6 +6,11 @@ export type ChromeCopy = {
   /** Flat free shipping when `shippingRate === "0.00"` and no threshold. */
   announcementFreeShippingFlat: string;
   announcementReturns: string;
+  /**
+   * PT-only CDC cooling-off cue appended after free-shipping lines.
+   * Empty in en/es — never invent Art. 49 outside Brazilian storefront.
+   */
+  announcementCdcCoolingOff: string;
   footerBrandTagline: string;
   footerSecureCheckout: string;
   footerPaymentsLabel: string;
@@ -16,6 +21,7 @@ export const CHROME_COPY: Record<AppLocale, ChromeCopy> = {
     announcementFreeShippingTemplate: "Free shipping from {amount}",
     announcementFreeShippingFlat: "Free shipping on all orders",
     announcementReturns: "Free returns within 30 days",
+    announcementCdcCoolingOff: "",
     footerBrandTagline: "Premium boards and gear for every mountain.",
     footerSecureCheckout: "Secure checkout powered by Shopify",
     footerPaymentsLabel: "Accepted payment methods",
@@ -24,6 +30,8 @@ export const CHROME_COPY: Record<AppLocale, ChromeCopy> = {
     announcementFreeShippingTemplate: "Frete grátis a partir de {amount}",
     announcementFreeShippingFlat: "Frete grátis em todos os pedidos",
     announcementReturns: "Devolução grátis em até 30 dias",
+    announcementCdcCoolingOff:
+      "Arrependimento em 7 dias (Art. 49) — detalhes na Política de reembolso",
     footerBrandTagline: "Pranchas e equipamento premium para cada montanha.",
     footerSecureCheckout: "Checkout seguro com Shopify",
     footerPaymentsLabel: "Formas de pagamento aceitas",
@@ -32,6 +40,7 @@ export const CHROME_COPY: Record<AppLocale, ChromeCopy> = {
     announcementFreeShippingTemplate: "Envío gratis desde {amount}",
     announcementFreeShippingFlat: "Envío gratis en todos los pedidos",
     announcementReturns: "Devoluciones gratis en 30 días",
+    announcementCdcCoolingOff: "",
     footerBrandTagline: "Tablas y equipo premium para cada montaña.",
     footerSecureCheckout: "Pago seguro con Shopify",
     footerPaymentsLabel: "Métodos de pago aceptados",

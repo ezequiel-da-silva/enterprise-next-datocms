@@ -29,7 +29,6 @@ import {
   findPageBySlug,
   publishIfDraftModel,
   ref,
-  textHeaderBlock,
 } from "./lib/dato-script-helpers";
 import {
   HOME_FEATURED_BOARD_HANDLES,
@@ -49,7 +48,7 @@ const COPY: Record<string, LocaleCopy> = {
   },
   "pt-BR": {
     listingTitle: "Pranchas em destaque",
-    listingDescription: "Escolhe a prancha para a próxima descida — preços confirmados no checkout Shopify.",
+    listingDescription: "Escolha a prancha para a próxima descida — preços confirmados no checkout Shopify.",
   },
   es: {
     listingTitle: "Tablas destacadas",
@@ -260,13 +259,22 @@ export default async function curateHomeFeatured(client: Client): Promise<void> 
       selected_products: selectedIds,
     });
 
+    const textHeaderSection = [
+      buildBlockRecord({
+        ...(headerIds[0] ? { id: headerIds[0] } : {}),
+        item_type: ref(textHeader.id),
+        title: c.listingTitle,
+        has_description: true,
+        description: c.listingDescription,
+        has_section_id: false,
+        section_id: null,
+      }),
+    ];
+
     return buildBlockRecord({
       ...(listingId ? { id: listingId } : {}),
       item_type: ref(listingSection.id),
-      text_header_section:
-        headerIds.length > 0
-          ? headerIds
-          : [textHeaderBlock(textHeader.id, c.listingTitle, c.listingDescription)],
+      text_header_section: textHeaderSection,
       listing_config: listingConfig,
       display_type: "grid",
       has_limit: true,

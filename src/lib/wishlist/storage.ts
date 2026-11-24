@@ -14,6 +14,7 @@ const wishlistItemSchema = z.object({
   imageUrl: z.string().trim().url().nullable().catch(null),
   priceAmount: z.string().trim().min(1).max(40),
   currencyCode: z.string().trim().min(1).max(8),
+  compareAtAmount: z.string().trim().min(1).max(40).nullable().optional().catch(null),
   savedAt: z.number().finite().nonnegative(),
 });
 

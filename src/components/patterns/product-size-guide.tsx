@@ -9,13 +9,14 @@ type ProductSizeGuideProps = {
 };
 
 /**
- * Native disclosure. The table is in the HTML even while the details element is closed.
+ * Native disclosure (open by default so size/waist data is discoverable without an extra click).
+ * The table stays in the HTML if the visitor collapses the details.
  */
 export function ProductSizeGuide({ summary, lengthLabel, weightLabel, waistLabel, rows }: ProductSizeGuideProps) {
   if (rows.length === 0) return null;
 
   return (
-    <details className="group mt-8 rounded-xl border border-border">
+    <details id="product-size-guide" open className="group mt-8 scroll-mt-24 rounded-xl border border-border">
       <summary className="touch-target-text cursor-pointer list-none px-4 py-3 text-sm font-medium text-foreground [&::-webkit-details-marker]:hidden">
         <span className="inline-flex items-center gap-2">
           <span aria-hidden className="text-muted-foreground group-open:rotate-90">

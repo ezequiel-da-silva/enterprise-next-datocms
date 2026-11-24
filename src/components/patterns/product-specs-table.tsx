@@ -62,5 +62,9 @@ export function ProductSpecsTable({ locale, labels, values }: ProductSpecsTableP
 
   if (items.length === 0) return null;
 
-  return <dl className="mt-10 border-t border-border text-sm">{items}</dl>;
+  return (
+    <section id="product-specs" className="mt-10 scroll-mt-24">
+      <dl className="border-t border-border text-sm">{items}</dl>
+    </section>
+  );
 }

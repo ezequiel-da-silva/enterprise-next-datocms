@@ -32,6 +32,14 @@ export type PdpCopy = {
   sizeLength: string;
   sizeWeight: string;
   sizeWaist: string;
+  /** Commercial + legal warranty cue under buy-box shipping/returns. */
+  warrantyTrust: string;
+  /** Link label to the store refund policy page. */
+  refundPolicyLink: string;
+  viewSpecs: string;
+  viewSizeGuide: string;
+  /** Shown when the PDP has no curated reviews yet. */
+  reviewsEmpty: string;
 };
 
 const EN: PdpCopy = {
@@ -41,10 +49,10 @@ const EN: PdpCopy = {
   soldOut: "Sold out",
   viewImage: "View image",
   unavailableSuffix: "(sold out)",
-  checkoutTrust: "Checkout is processed securely by Shopify.",
+  checkoutTrust: "Secure payment — you’ll finish on Shopify checkout.",
   paymentHint: "",
   buyNow: "Buy now",
-  buying: "Redirecting…",
+  buying: "Opening secure checkout…",
   reviewsTitle: "Rider reviews",
   verifiedRider: "Verified rider",
   reviewsAggregateTemplate: "{average} out of 5 · {count} reviews",
@@ -58,6 +66,11 @@ const EN: PdpCopy = {
   sizeLength: "Length (cm)",
   sizeWeight: "Rider weight (kg)",
   sizeWaist: "Waist width (mm)",
+  warrantyTrust: "2-year manufacturing warranty — contact us to start a claim.",
+  refundPolicyLink: "Refund policy",
+  viewSpecs: "View specs",
+  viewSizeGuide: "Size guide",
+  reviewsEmpty: "No rider reviews yet for this board.",
 };
 
 const PT: PdpCopy = {
@@ -67,11 +80,10 @@ const PT: PdpCopy = {
   soldOut: "Esgotado",
   viewImage: "Ver imagem",
   unavailableSuffix: "(esgotado)",
-  checkoutTrust: "Checkout processado com segurança pela Shopify.",
-  paymentHint:
-    "PIX e parcelamento aparecem no checkout Shopify quando estiverem activos na loja — sem taxas inventadas neste site.",
+  checkoutTrust: "Pagamento seguro — finalizas no checkout da Shopify.",
+  paymentHint: "Formas de pagamento confirmadas no checkout Shopify.",
   buyNow: "Comprar agora",
-  buying: "A redirecionar…",
+  buying: "A abrir o checkout seguro…",
   reviewsTitle: "Avaliações de riders",
   verifiedRider: "Rider verificado",
   reviewsAggregateTemplate: "{average} de 5 · {count} avaliações",
@@ -85,6 +97,12 @@ const PT: PdpCopy = {
   sizeLength: "Comprimento (cm)",
   sizeWeight: "Peso do rider (kg)",
   sizeWaist: "Largura da cintura (mm)",
+  warrantyTrust:
+    "Garantia comercial 2 anos (defeitos de fabricação) · garantia legal 90 dias — fale conosco em Contato.",
+  refundPolicyLink: "Política de reembolso",
+  viewSpecs: "Ver especificações",
+  viewSizeGuide: "Guia de tamanhos",
+  reviewsEmpty: "Ainda não há avaliações de riders para esta prancha.",
 };
 
 const ES: PdpCopy = {
@@ -94,10 +112,10 @@ const ES: PdpCopy = {
   soldOut: "Agotado",
   viewImage: "Ver imagen",
   unavailableSuffix: "(agotado)",
-  checkoutTrust: "El checkout se procesa de forma segura con Shopify.",
+  checkoutTrust: "Pago seguro — terminas en el checkout de Shopify.",
   paymentHint: "",
   buyNow: "Comprar ahora",
-  buying: "Redirigiendo…",
+  buying: "Abriendo el checkout seguro…",
   reviewsTitle: "Reseñas de riders",
   verifiedRider: "Rider verificado",
   reviewsAggregateTemplate: "{average} de 5 · {count} reseñas",
@@ -111,6 +129,11 @@ const ES: PdpCopy = {
   sizeLength: "Largo (cm)",
   sizeWeight: "Peso del rider (kg)",
   sizeWaist: "Ancho de cintura (mm)",
+  warrantyTrust: "Garantía comercial de 2 años (defectos de fabricación) — contáctanos para abrir un caso.",
+  refundPolicyLink: "Política de devoluciones",
+  viewSpecs: "Ver especificaciones",
+  viewSizeGuide: "Guía de tallas",
+  reviewsEmpty: "Aún no hay reseñas de riders para esta tabla.",
 };
 
 export const PDP_COPY: Record<AppLocale, PdpCopy> = { en: EN, pt: PT, es: ES };

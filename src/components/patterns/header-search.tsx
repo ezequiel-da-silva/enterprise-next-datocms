@@ -1,24 +1,22 @@
 "use client";
 
-import { Container } from "@/components/atoms/container";
 import { HeaderSearchForm } from "@/components/patterns/header-search-form";
 import { SearchResults } from "@/components/patterns/search-results";
 import type { AppLocale } from "@/constants/i18n";
-import { cn } from "@/lib/cn";
 import type { SearchHit, SearchResultsPayload } from "@/lib/datocms/search-hit";
 import Link from "next/link";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-
-const TOGGLE_LABELS: Record<AppLocale, { open: string; close: string }> = {
-  en: { open: "Open search", close: "Close search" },
-  pt: { open: "Abrir busca", close: "Fechar busca" },
-  es: { open: "Abrir búsqueda", close: "Cerrar búsqueda" },
-};
 
 const VIEW_ALL: Record<AppLocale, string> = {
   en: "View all results",
   pt: "Ver todos os resultados",
   es: "Ver todos los resultados",
+};
+
+const PREVIEW_REGION: Record<AppLocale, string> = {
+  en: "Search suggestions",
+  pt: "Sugestões de busca",
+  es: "Sugerencias de búsqueda",
 };
 
 const PREVIEW_HINT: Record<AppLocale, string> = {
@@ -42,51 +40,41 @@ type HeaderSearchProps = {
 };
 
 /**
- * Compact lupa trigger (ghost, matches other header utilities). Opens an absolute
- * search strip under `<header>` with live product preview. Keyboard: ⌘K / Ctrl K.
+ * Desktop chrome search: always-visible compact field (Jakob) with live preview strip.
+ * Keyboard: ⌘K / Ctrl K focuses the input; Escape closes the preview.
+ * Mobile uses the drawer `HeaderSearchForm` (`searchBlock`) instead — this component is lg+.
  */
 export function HeaderSearch({ action, locale, query, placeholder, submitLabel }: HeaderSearchProps) {
   const panelId = useId();
+  const inputId = useId();
   const hasQuery = Boolean(query?.trim());
   const [open, setOpen] = useState(hasQuery);
   const [liveQuery, setLiveQuery] = useState(query?.trim() ?? "");
   const [settled, setSettled] = useState<SettledPreview>({ q: "", hits: [] });
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const focusOnOpen = useRef(false);
-  const labels = TOGGLE_LABELS[locale];
 
-  const close = useCallback((restoreFocus: boolean) => {
+  const close = useCallback(() => {
     setOpen(false);
-    if (restoreFocus) {
-      requestAnimationFrame(() => buttonRef.current?.focus());
-    }
   }, []);
 
-  const openPanel = useCallback(() => {
-    focusOnOpen.current = true;
+  const focusInput = useCallback(() => {
     setOpen(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open || !focusOnOpen.current) return;
-    focusOnOpen.current = false;
-    const frame = requestAnimationFrame(() => {
-      panelRef.current?.querySelector<HTMLInputElement>('input[name="q"]')?.focus();
+    requestAnimationFrame(() => {
+      rootRef.current?.querySelector<HTMLInputElement>(`#${CSS.escape(inputId)}`)?.focus();
     });
-    return () => cancelAnimationFrame(frame);
-  }, [open]);
+  }, [inputId]);
 
   useEffect(() => {
     if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close(true);
+      if (e.key === "Escape") close();
     };
     const onPointerDown = (e: PointerEvent) => {
       const target = e.target as Node | null;
       if (!target) return;
-      if (panelRef.current?.contains(target) || buttonRef.current?.contains(target)) return;
-      close(false);
+      if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      close();
     };
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onPointerDown);
@@ -101,12 +89,11 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
       if (!(e.key === "k" || e.key === "K")) return;
       if (!(e.metaKey || e.ctrlKey)) return;
       e.preventDefault();
-      if (open) close(false);
-      else openPanel();
+      focusInput();
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, close, openPanel]);
+  }, [focusInput]);
 
   const trimmedLive = liveQuery.trim();
   const previewReady = open && trimmedLive.length >= 2;
@@ -148,90 +135,63 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
     : action;
 
   return (
-    <>
-      <button
-        type="button"
-        ref={buttonRef}
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => {
-          if (open) {
-            close(false);
-            return;
-          }
-          openPanel();
+    <div
+      ref={rootRef}
+      className="relative w-full min-w-[10rem] max-w-[13rem] shrink-0 xl:max-w-[16rem]"
+      onFocusCapture={() => setOpen(true)}
+    >
+      <HeaderSearchForm
+        action={action}
+        locale={locale}
+        placeholder={placeholder}
+        submitLabel={submitLabel}
+        value={liveQuery}
+        onQueryChange={(value) => {
+          setLiveQuery(value);
+          setOpen(true);
         }}
-        className={cn(
-          "touch-target size-10 inline-flex cursor-pointer items-center justify-center rounded-md border-transparent bg-transparent text-muted-foreground shadow-none transition hover:bg-muted",
-          "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-        )}
-      >
-        <span className="sr-only">{open ? labels.close : labels.open}</span>
-        <svg
-          aria-hidden
-          className="h-5 w-5"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          {open ? (
-            <path d="M6 18L18 6M6 6l12 12" />
-          ) : (
-            <>
-              <circle cx="11" cy="11" r="7" />
-              <path d="m20 20-3.5-3.5" />
-            </>
-          )}
-        </svg>
-      </button>
+        inputId={inputId}
+      />
 
       {open ? (
         <div
           ref={panelRef}
           id={panelId}
-          className="absolute inset-x-0 top-full z-50 border-b border-border bg-background shadow-lg"
+          role="region"
+          aria-label={PREVIEW_REGION[locale]}
+          data-ui-section="GlobalHeaderSearch"
+          className="absolute top-full right-0 z-50 mt-2 w-[min(100vw-2rem,28rem)] space-y-3 rounded-md border border-border bg-background px-3 py-3 shadow-lg"
         >
-          <Container size="lg" name="GlobalHeaderSearch" className="space-y-4 py-3">
-            <HeaderSearchForm
-              action={action}
-              locale={locale}
-              placeholder={placeholder}
-              submitLabel={submitLabel}
-              value={liveQuery}
-              onQueryChange={setLiveQuery}
-            />
-            {trimmedLive.length < 2 ? (
-              <p className="text-sm text-muted-foreground">{PREVIEW_HINT[locale]}</p>
-            ) : showPreviewLoading ? (
-              <p className="text-sm text-muted-foreground" aria-busy="true">
-                …
-              </p>
-            ) : (
-              <>
-                <SearchResults
-                  query={trimmedLive}
-                  hits={previewHits}
-                  locale={locale}
-                  error={previewErr}
-                  compact
-                />
-                {previewHits.length > 0 ? (
-                  <p className="pb-1">
-                    <Link
-                      href={seeAllHref}
-                      className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                      onClick={() => close(false)}
-                    >
-                      {VIEW_ALL[locale]}
-                    </Link>
-                  </p>
-                ) : null}
-              </>
-            )}
-          </Container>
+          {trimmedLive.length < 2 ? (
+            <p className="text-sm text-muted-foreground">{PREVIEW_HINT[locale]}</p>
+          ) : showPreviewLoading ? (
+            <p className="text-sm text-muted-foreground" aria-busy="true">
+              …
+            </p>
+          ) : (
+            <>
+              <SearchResults
+                query={trimmedLive}
+                hits={previewHits}
+                locale={locale}
+                error={previewErr}
+                compact
+              />
+              {previewHits.length > 0 ? (
+                <p className="pb-1">
+                  <Link
+                    href={seeAllHref}
+                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    onClick={() => close()}
+                  >
+                    {VIEW_ALL[locale]}
+                  </Link>
+                </p>
+              ) : null}
+            </>
+          )}
         </div>
       ) : null}
-    </>
+    </div>
   );
 }

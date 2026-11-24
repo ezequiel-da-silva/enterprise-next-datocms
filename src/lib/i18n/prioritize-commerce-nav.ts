@@ -5,9 +5,9 @@ import {
 } from "@/infra/datocms/types-navigation";
 
 const COMMERCE_LABEL =
-  /\b(shop|loja|tienda|collections?|colec(?:[aã]o|ões|iones?)|best\s*of|melhores|destaques?)\b/i;
+  /\b(shop|loja|tienda|collections?|colec(?:[aã]o|ões|iones?)|best\s*of|melhores|destaques?|destacados|mais\s*vendidos)\b/i;
 const COMMERCE_PATH =
-  /\/(shop|loja|tienda|collections?|colec(?:oes|iones)|best|melhores)(\/|$)/i;
+  /\/(shop|loja|tienda|collections?|colec(?:oes|iones)|best|melhores|lo-mejor)(\/|$)/i;
 
 function isCommerceModular(item: NavItemRecord): boolean {
   if (COMMERCE_LABEL.test(item.navItemLabel)) return true;
