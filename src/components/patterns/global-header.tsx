@@ -76,15 +76,13 @@ export function GlobalHeader({
       submitLabel={data?.headerSearchSubmitLabel}
     />
   ) : null;
-  const drawerSearchPlaceholder =
-    locale === "pt" ? "Buscar…" : locale === "es" ? "Buscar…" : "Search…";
   const searchBlock: ReactNode = showSearch ? (
     <HeaderSearchForm
       key="header-search-block"
       action={searchPath}
       locale={locale}
       query={searchQuery}
-      placeholder={drawerSearchPlaceholder}
+      placeholder={data?.headerSearchPlaceholder}
       submitLabel={data?.headerSearchSubmitLabel}
       variant="block"
       inputId="header-search-query-menu"
