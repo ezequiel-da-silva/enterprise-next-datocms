@@ -49,7 +49,7 @@ export function useModalDialog({
 
   useEffect(() => {
     const targets = inertTargets?.() ?? [
-      document.getElementById("conteudo-principal"),
+      document.getElementById("main-content"),
       document.querySelector("footer"),
     ];
     if (open) {

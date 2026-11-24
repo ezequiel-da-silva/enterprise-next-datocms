@@ -205,7 +205,7 @@ export default async function RootLayout({
           accountLinkLabel={accountCopy.linkLabel(customerSession !== null)}
         />
       </div>
-      <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
       <SiteFooter

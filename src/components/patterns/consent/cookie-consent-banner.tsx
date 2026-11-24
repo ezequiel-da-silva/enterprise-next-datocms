@@ -54,7 +54,7 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
     const hadFocus = regionRef.current?.contains(document.activeElement) ?? false;
     setConsent(state);
     if (shopifyPrivacy) void syncShopifyConsent(shopifyPrivacy, state);
-    if (hadFocus) document.getElementById("conteudo-principal")?.focus({ preventScroll: true });
+    if (hadFocus) document.getElementById("main-content")?.focus({ preventScroll: true });
   }
 
   return (
