@@ -32,6 +32,14 @@ export type PdpCopy = {
   sizeLength: string;
   sizeWeight: string;
   sizeWaist: string;
+  /** Commercial + legal warranty cue under buy-box shipping/returns. */
+  warrantyTrust: string;
+  /** Link label to the store refund policy page. */
+  refundPolicyLink: string;
+  viewSpecs: string;
+  viewSizeGuide: string;
+  /** Shown when the PDP has no curated reviews yet. */
+  reviewsEmpty: string;
 };
 
 const EN: PdpCopy = {
@@ -58,6 +66,11 @@ const EN: PdpCopy = {
   sizeLength: "Length (cm)",
   sizeWeight: "Rider weight (kg)",
   sizeWaist: "Waist width (mm)",
+  warrantyTrust: "2-year manufacturing warranty — contact us to start a claim.",
+  refundPolicyLink: "Refund policy",
+  viewSpecs: "View specs",
+  viewSizeGuide: "Size guide",
+  reviewsEmpty: "No rider reviews yet for this board.",
 };
 
 const PT: PdpCopy = {
@@ -84,6 +97,12 @@ const PT: PdpCopy = {
   sizeLength: "Comprimento (cm)",
   sizeWeight: "Peso do rider (kg)",
   sizeWaist: "Largura da cintura (mm)",
+  warrantyTrust:
+    "Garantia comercial 2 anos (defeitos de fabricação) · garantia legal 90 dias — fale conosco em Contato.",
+  refundPolicyLink: "Política de reembolso",
+  viewSpecs: "Ver especificações",
+  viewSizeGuide: "Guia de tamanhos",
+  reviewsEmpty: "Ainda não há avaliações de riders para esta prancha.",
 };
 
 const ES: PdpCopy = {
@@ -110,6 +129,11 @@ const ES: PdpCopy = {
   sizeLength: "Largo (cm)",
   sizeWeight: "Peso del rider (kg)",
   sizeWaist: "Ancho de cintura (mm)",
+  warrantyTrust: "Garantía comercial de 2 años (defectos de fabricación) — contáctanos para abrir un caso.",
+  refundPolicyLink: "Política de devoluciones",
+  viewSpecs: "Ver especificaciones",
+  viewSizeGuide: "Guía de tallas",
+  reviewsEmpty: "Aún no hay reseñas de riders para esta tabla.",
 };
 
 export const PDP_COPY: Record<AppLocale, PdpCopy> = { en: EN, pt: PT, es: ES };

@@ -232,6 +232,14 @@ export function ProductPageArticle({
   });
   const variants = storefront ? pickerVariants(locale, title, storefront, pdpCopy) : null;
   const sizeRows = parseSizeChart(sizeChart);
+  const hasSpecs = Boolean(
+    specs.profile?.trim() ||
+      (specs.flex !== null && Number.isInteger(specs.flex)) ||
+      specs.terrain?.trim() ||
+      specs.riderLevel?.trim() ||
+      specs.coreMaterial?.trim(),
+  );
+  const hasSizeGuide = sizeRows.length > 0;
   const trust = formatMarketPolicyTrust(
     locale,
     marketPolicy,
@@ -305,6 +313,11 @@ export function ProductPageArticle({
           badgeLabel={badgeLabel}
           shippingTrust={trust.shipping}
           returnsTrust={trust.returns}
+          warrantyTrust={pdpCopy.warrantyTrust}
+          refundPolicyLink={pdpCopy.refundPolicyLink}
+          refundPolicyHref={`/${locale}/refund-policy`}
+          viewSpecsLabel={hasSpecs ? pdpCopy.viewSpecs : null}
+          viewSizeGuideLabel={hasSizeGuide ? pdpCopy.viewSizeGuide : null}
           checkoutTrust={pdpCopy.checkoutTrust}
           paymentHint={paymentHint}
           buyBoxLocale={locale}

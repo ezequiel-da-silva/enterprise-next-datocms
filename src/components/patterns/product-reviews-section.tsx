@@ -22,7 +22,10 @@ export type ProductReviewItem = {
 type ProductReviewsSectionProps = {
   locale: AppLocale;
   reviews: ProductReviewItem[];
-  copy: Pick<PdpCopy, "reviewsTitle" | "verifiedRider" | "reviewsAggregateTemplate">;
+  copy: Pick<
+    PdpCopy,
+    "reviewsTitle" | "verifiedRider" | "reviewsAggregateTemplate" | "reviewsEmpty"
+  >;
 };
 
 function StarRating({ rating, label }: { rating: number; label?: string }) {
@@ -52,6 +55,20 @@ function StarRating({ rating, label }: { rating: number; label?: string }) {
   );
 }
 
+function VerifiedChip({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-xs font-medium text-foreground">
+      <svg viewBox="0 0 16 16" className="size-3.5 text-primary" aria-hidden>
+        <path
+          fill="currentColor"
+          d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm3.03 4.72-3.4 3.4a.75.75 0 0 1-1.06 0l-1.6-1.6a.75.75 0 1 1 1.06-1.06l1.07 1.07 2.87-2.87a.75.75 0 1 1 1.06 1.06Z"
+        />
+      </svg>
+      {label}
+    </span>
+  );
+}
+
 function formatReviewDate(locale: AppLocale, raw: string | null): string | null {
   if (!raw?.trim()) return null;
   const date = new Date(raw);
@@ -60,9 +77,24 @@ function formatReviewDate(locale: AppLocale, raw: string | null): string | null 
   return new Intl.DateTimeFormat(tag, { year: "numeric", month: "short", day: "numeric" }).format(date);
 }
 
-/** Product-page curated reviews. Returns null when there are no published reviews. */
+/** Product-page curated reviews (or empty-state cue when none are published). */
 export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsSectionProps) {
-  if (reviews.length === 0) return null;
+  const headingId = "product-reviews-heading";
+
+  if (reviews.length === 0) {
+    return (
+      <section
+        className="mt-12 space-y-2"
+        aria-labelledby={headingId}
+        data-datocms-content-link-boundary=""
+      >
+        <h2 id={headingId} className="type-heading">
+          {copy.reviewsTitle}
+        </h2>
+        <p className="text-sm text-muted-foreground">{copy.reviewsEmpty}</p>
+      </section>
+    );
+  }
 
   const rated = reviews
     .filter((r) => Number.isFinite(r.rating) && r.rating >= 1 && r.rating <= 5 && r.comment.trim())
@@ -79,7 +111,6 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
     aggregate && averageLabel
       ? resolvePdpReviewsAggregate(copy.reviewsAggregateTemplate, averageLabel, aggregate.count)
       : null;
-  const headingId = "product-reviews-heading";
 
   return (
     <section
@@ -135,11 +166,7 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
                 <header className="space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <h3 className="text-base font-medium text-card-foreground">{review.authorName}</h3>
-                    {review.verifiedRider ? (
-                      <span className="rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                        {copy.verifiedRider}
-                      </span>
-                    ) : null}
+                    {review.verifiedRider ? <VerifiedChip label={copy.verifiedRider} /> : null}
                   </div>
                   {review.rating > 0 ? (
                     <StarRating rating={review.rating} label={`${review.rating} / 5`} />
@@ -148,7 +175,7 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
                   {dateLabel ? <p className="text-xs text-muted-foreground">{dateLabel}</p> : null}
                 </header>
                 {review.comment ? (
-                  <p className="type-body whitespace-pre-wrap">{review.comment}</p>
+                  <p className="type-body whitespace-pre-wrap text-foreground">{review.comment}</p>
                 ) : null}
               </article>
             </li>

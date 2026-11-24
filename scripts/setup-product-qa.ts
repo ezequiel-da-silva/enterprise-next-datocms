@@ -6,9 +6,9 @@
  *   npx datocms cma:script scripts/setup-product-qa.ts --profile=staging
  *   npx datocms cma:script scripts/setup-product-qa.ts --profile=default
  *
- * With `PRODUCT_QA_SEED=1`, creates sample Q&A (general fit/riding guidance, no shipping or
- * pricing claims) and links them on hydrogen / liquid product pages that have an empty
- * `questions` list.
+ * With `PRODUCT_QA_SEED=1`, creates sample Q&A (concrete flex/profile/waist numbers, no shipping
+ * or pricing claims) and links them on hydrogen / liquid product pages that have an empty
+ * `questions` list. `PRODUCT_QA_FORCE=1` also rewrites answers on already-linked questions.
  */
 import { ApiError, type ApiTypes } from "@datocms/cma-client-node";
 import type { Client } from "datocms/lib/cma-client-node";
@@ -32,10 +32,10 @@ const SEEDS: SeedQuestion[] = [
       es: "¿Cómo elijo el largo correcto de la tabla?",
     },
     answer: {
-      en: "Start from your height and weight and check the size guide on this page. Shorter boards turn quicker; longer boards are more stable at speed.",
+      en: "Hydrogen runs flex 6/10 with a hybrid profile for all-mountain riding. Use the size guide above: 152 cm (waist 248 mm) for roughly 55–70 kg, 156 cm (252 mm) for 65–80 kg, 160 cm (256 mm) for 75–95 kg. Shorter lengths turn quicker; longer lengths stay more stable at speed.",
       "pt-BR":
-        "Parta da sua altura e peso e consulte o guia de tamanhos nesta página. Pranchas mais curtas viram mais rápido; as mais longas são mais estáveis em velocidade.",
-      es: "Parte de tu altura y peso y consulta la guía de tallas de esta página. Las tablas más cortas giran más rápido; las más largas son más estables a velocidad.",
+        "A Hydrogen tem flex 6/10 e perfil híbrido para all-mountain. No guia de tamanhos acima: 152 cm (cintura 248 mm) para cerca de 55–70 kg, 156 cm (252 mm) para 65–80 kg, 160 cm (256 mm) para 75–95 kg. Comprimentos menores viram mais rápido; os maiores ficam mais estáveis em velocidade.",
+      es: "Hydrogen tiene flex 6/10 y perfil híbrido para all-mountain. En la guía de tallas: 152 cm (cintura 248 mm) para unos 55–70 kg, 156 cm (252 mm) para 65–80 kg, 160 cm (256 mm) para 75–95 kg. Las más cortas giran más rápido; las más largas son más estables a velocidad.",
     },
   },
   {
@@ -46,10 +46,10 @@ const SEEDS: SeedQuestion[] = [
       es: "¿Esta tabla sirve para días de powder?",
     },
     answer: {
-      en: "Check the recommended terrain and camber profile in the specs above. Rocker-leaning profiles float better in deep snow.",
+      en: "Yes for powder-first days: Liquid is rocker, flex 4/10, terrain rated powder, advanced rider level. Size chart: 148 cm (waist 246 mm) for about 50–65 kg, 154 cm (252 mm) for 60–80 kg. Expect less bite on hardpack than a camber all-mountain board.",
       "pt-BR":
-        "Veja o terreno recomendado e o perfil de curvatura nas especificações acima. Perfis com mais rocker flutuam melhor em neve profunda.",
-      es: "Consulta el terreno recomendado y el perfil de curvatura en las especificaciones. Los perfiles con más rocker flotan mejor en nieve profunda.",
+        "Sim para dias de powder: a Liquid é rocker, flex 4/10, terreno powder e nível avançado. Guia: 148 cm (cintura 246 mm) para cerca de 50–65 kg, 154 cm (252 mm) para 60–80 kg. Em pista dura morde menos que uma all-mountain de camber.",
+      es: "Sí para powder: Liquid es rocker, flex 4/10, terreno powder y nivel avanzado. Guía: 148 cm (cintura 246 mm) para unos 50–65 kg, 154 cm (252 mm) para 60–80 kg. En pista dura muerde menos que una all-mountain de camber.",
     },
   },
 ];
@@ -215,6 +215,8 @@ async function ensureProductQuestionsField(client: Client, questionModelId: stri
 }
 
 async function seedQuestions(client: Client, locales: string[], questionModelId: string): Promise<void> {
+  const force = process.env.PRODUCT_QA_FORCE === "1";
+
   for (const seed of SEEDS) {
     let productId: string | null = null;
     let existing: string[] = [];
@@ -235,15 +237,27 @@ async function seedQuestions(client: Client, locales: string[], questionModelId:
       console.log(`  seed: nenhuma product_page com handle a conter "${seed.match}"`);
       continue;
     }
+
+    const payload = {
+      question: localizedMap(locales, seed.question),
+      answer: localizedMap(locales, seed.answer),
+    };
+
     if (existing.length > 0) {
-      console.log(`  seed ignorado (perguntas já ligadas): ${seed.match}`);
+      if (!force) {
+        console.log(`  seed ignorado (perguntas já ligadas): ${seed.match}`);
+        continue;
+      }
+      const firstId = existing[0];
+      await client.items.update(firstId, payload);
+      await publishIfDraftModel(client, await client.items.find(firstId), `question force:${seed.match}`);
+      console.log(`  seed atualizado (FORCE): ${seed.match}`);
       continue;
     }
 
     const created = await client.items.create({
       item_type: { type: "item_type", id: questionModelId },
-      question: localizedMap(locales, seed.question),
-      answer: localizedMap(locales, seed.answer),
+      ...payload,
     });
     await publishIfDraftModel(client, await client.items.find(created.id), `question:${seed.match}`);
 

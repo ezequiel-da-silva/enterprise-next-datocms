@@ -39,7 +39,8 @@ const SHIPPING_COPY: Record<
 
 const RETURNS_COPY: Record<AppLocale, (days: number) => string> = {
   en: (days) => `Free returns within ${days} days`,
-  pt: (days) => `Devolução grátis em até ${days} dias`,
+  pt: (days) =>
+    `Devolução grátis em até ${days} dias · arrependimento 7 dias (Art. 49) — ver política`,
   es: (days) => `Devoluciones gratis en ${days} días`,
 };
 

@@ -8,6 +8,7 @@
  *
  * With `PRODUCT_REVIEWS_SEED=1`, creates sample reviews and links them on
  * hydrogen / liquid product pages that have an empty `reviews` list.
+ * `PRODUCT_REVIEWS_FORCE=1` rewrites comment/title/verified on already-linked reviews.
  */
 import { ApiError, type ApiTypes } from "@datocms/cma-client-node";
 import type { Client } from "datocms/lib/cma-client-node";
@@ -37,9 +38,10 @@ const SEEDS: SeedReview[] = [
       es: "Favorita all-mountain",
     },
     comment: {
-      en: "Stable at speed and still playful in the park. True to size.",
-      "pt-BR": "Estável em velocidade e divertida no park. Tamanho fiel.",
-      es: "Estable a velocidad y divertida en el park. Talla fiel.",
+      en: "Rode the 156 all season. Flex feels right around mid (specs say 6/10) — stable on groomers yet still playful in the park. Size matched the waist chart for my weight. Binding setup was standard; no surprises on mounting.",
+      "pt-BR":
+        "Andei a temporada toda no 156. O flex bate com o mid da ficha (6/10): estável em pista e ainda divertida no park. O tamanho bateu com a cintura do guia para o meu peso. Bindings padrão, sem surpresa na montagem.",
+      es: "Usé el 156 toda la temporada. El flex encaja con el mid de la ficha (6/10): estable en pista y divertida en el park. La talla coincidió con la cintura de la guía para mi peso. Bindings estándar, sin sorpresas al montar.",
     },
     verified: true,
     date: "2025-12-01",
@@ -54,9 +56,10 @@ const SEEDS: SeedReview[] = [
       es: "Flota cuando importa",
     },
     comment: {
-      en: "Great in powder; a bit soft on hardpack for aggressive carving.",
-      "pt-BR": "Óptima em powder; um pouco mole em pista dura para carving agressivo.",
-      es: "Genial en powder; un poco blanda en pista dura para carving agresivo.",
+      en: "Took the 154 into deep days — rocker and soft flex (4/10) keep the nose up. On hardpack it is less precise than a camber board, which matches the powder-first terrain label. Chart waist felt accurate; verified purchase through this store.",
+      "pt-BR":
+        "Levei o 154 em dias profundos — rocker e flex macio (4/10) mantêm o nose alto. Em pista dura é menos precisa que uma de camber, alinhado ao terreno powder da ficha. A cintura do guia bateu certo; compra verificada nesta loja.",
+      es: "Llevé el 154 a días profundos: rocker y flex suave (4/10) mantienen la punta arriba. En pista dura es menos precisa que una de camber, coherente con el terreno powder. La cintura de la guía fue correcta; compra verificada en esta tienda.",
     },
     verified: true,
     date: "2026-01-15",
@@ -259,6 +262,8 @@ async function ensureProductReviewsField(client: Client, reviewModelId: string):
 }
 
 async function seedReviews(client: Client, locales: string[], reviewModelId: string): Promise<void> {
+  const force = process.env.PRODUCT_REVIEWS_FORCE === "1";
+
   for (const seed of SEEDS) {
     let productId: string | null = null;
     let existingReviews: string[] = [];
@@ -279,19 +284,31 @@ async function seedReviews(client: Client, locales: string[], reviewModelId: str
       console.log(`  seed: nenhuma product_page com handle a conter "${seed.match}"`);
       continue;
     }
-    if (existingReviews.length > 0) {
-      console.log(`  seed ignorado (reviews já ligadas): ${seed.match}`);
-      continue;
-    }
 
-    const created = await client.items.create({
-      item_type: { type: "item_type", id: reviewModelId },
+    const payload = {
       author_name: seed.author,
       rating: seed.rating,
       title: localizedMap(locales, seed.title),
       comment: localizedMap(locales, seed.comment),
       verified_rider: seed.verified,
       date: seed.date,
+    };
+
+    if (existingReviews.length > 0) {
+      if (!force) {
+        console.log(`  seed ignorado (reviews já ligadas): ${seed.match}`);
+        continue;
+      }
+      const firstId = existingReviews[0];
+      await client.items.update(firstId, payload);
+      await publishIfDraftModel(client, await client.items.find(firstId), `review force:${seed.author}`);
+      console.log(`  seed atualizado (FORCE): ${seed.match} ← ${seed.author}`);
+      continue;
+    }
+
+    const created = await client.items.create({
+      item_type: { type: "item_type", id: reviewModelId },
+      ...payload,
     });
     await publishIfDraftModel(client, await client.items.find(created.id), `review:${seed.author}`);
 

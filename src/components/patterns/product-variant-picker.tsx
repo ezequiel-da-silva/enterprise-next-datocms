@@ -22,6 +22,7 @@ import { resolveLowStockMessage } from "@/lib/i18n/pdp-copy";
 import { formatDiscountPill } from "@/lib/shopify/compare-at-price";
 import { formatInstallmentHint } from "@/lib/shopify/format-installment-hint";
 import type { WishlistItem } from "@/lib/wishlist/types";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 export type ProductPickerImage = {
@@ -88,6 +89,14 @@ type ProductVariantPickerProps = {
   shippingTrust?: string | null;
   /** Free-returns line when `returnFees=free`. */
   returnsTrust?: string | null;
+  /** Commercial / legal warranty cue under returns. */
+  warrantyTrust?: string | null;
+  /** Label + href for the refund policy page (under returns). */
+  refundPolicyLink?: string | null;
+  refundPolicyHref?: string | null;
+  /** In-page jump links when specs / size chart exist on the PDP. */
+  viewSpecsLabel?: string | null;
+  viewSizeGuideLabel?: string | null;
   /** Already resolved on the server (`ui_string` or the built-in PDP copy). */
   checkoutTrust: string;
   /** PT-only payment microcopy (PIX/parcelas); empty for other locales. */
@@ -136,6 +145,11 @@ export function ProductVariantPicker({
   badgeLabel = null,
   shippingTrust = null,
   returnsTrust = null,
+  warrantyTrust = null,
+  refundPolicyLink = null,
+  refundPolicyHref = null,
+  viewSpecsLabel = null,
+  viewSizeGuideLabel = null,
   checkoutTrust,
   paymentHint = null,
   buyBoxLocale,
@@ -395,6 +409,37 @@ export function ProductVariantPicker({
             />
           ) : null}
           {returnsTrust ? <p>{returnsTrust}</p> : null}
+          {warrantyTrust?.trim() ? <p>{warrantyTrust.trim()}</p> : null}
+          {refundPolicyHref && refundPolicyLink?.trim() ? (
+            <p>
+              <Link
+                href={refundPolicyHref}
+                className="font-medium text-primary underline-offset-4 hover:underline"
+              >
+                {refundPolicyLink.trim()}
+              </Link>
+            </p>
+          ) : null}
+          {viewSpecsLabel || viewSizeGuideLabel ? (
+            <p className="flex flex-wrap gap-x-3 gap-y-1">
+              {viewSpecsLabel ? (
+                <a
+                  href="#product-specs"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {viewSpecsLabel}
+                </a>
+              ) : null}
+              {viewSizeGuideLabel ? (
+                <a
+                  href="#product-size-guide"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  {viewSizeGuideLabel}
+                </a>
+              ) : null}
+            </p>
+          ) : null}
         </div>
       </div>
 

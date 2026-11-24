@@ -63,7 +63,8 @@ const COPY: Record<string, LocaleCopy> = {
       },
       {
         title: "2-year board warranty",
-        description: "Manufacturing defects covered so you can ride with confidence.",
+        description:
+          "Manufacturing defects covered for 2 years. Contact us with your order number to start a claim.",
         icon: faShieldHalved,
       },
       {
@@ -91,7 +92,8 @@ const COPY: Record<string, LocaleCopy> = {
       },
       {
         title: "Garantia de 2 anos",
-        description: "Defeitos de fabricação cobertos para que você possa andar com confiança.",
+        description:
+          "Defeitos de fabricação cobertos por 2 anos (garantia comercial). Garantia legal de 90 dias para vícios aparentes (CDC). Para acionar, fale conosco em Contato com o número do pedido.",
         icon: faShieldHalved,
       },
       {
@@ -119,7 +121,8 @@ const COPY: Record<string, LocaleCopy> = {
       },
       {
         title: "Garantía de 2 años",
-        description: "Defectos de fabricación cubiertos para que puedas disfrutar con confianza.",
+        description:
+          "Defectos de fabricación cubiertos durante 2 años. Contáctanos con el número de pedido para abrir un caso.",
         icon: faShieldHalved,
       },
       {

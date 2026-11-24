@@ -46,10 +46,12 @@ describe("formatMarketPolicyTrust", () => {
     expect(lines.returns).toBe("Free returns within 30 days");
   });
 
-  it("formats free BR shipping in Portuguese", () => {
+  it("formats free BR shipping in Portuguese with Art. 49 cue", () => {
     const lines = formatMarketPolicyTrust("pt", BR, "BRL");
     expect(lines.shipping).toMatch(/^Frete grátis/);
-    expect(lines.returns).toBe("Devolução grátis em até 30 dias");
+    expect(lines.returns).toMatch(/Devolução grátis em até 30 dias/);
+    expect(lines.returns).toMatch(/Art\. 49/);
+    expect(lines.returns).toMatch(/7 dias/);
   });
 
   it("omits shipping when rate or day ranges are missing", () => {

@@ -31,10 +31,27 @@ describe("formatAnnouncementStrip", () => {
     expect(text?.toLowerCase()).toContain("free shipping");
   });
 
-  it("uses flat free shipping when rate is 0", () => {
-    expect(
-      formatAnnouncementStrip("pt", { ...base, shippingRate: "0.00" }, "BRL", CHROME_COPY.pt),
-    ).toBe(CHROME_COPY.pt.announcementFreeShippingFlat);
+  it("uses flat free shipping when rate is 0 and appends PT Art. 49 cue", () => {
+    const text = formatAnnouncementStrip(
+      "pt",
+      { ...base, shippingRate: "0.00" },
+      "BRL",
+      CHROME_COPY.pt,
+    );
+    expect(text).toContain(CHROME_COPY.pt.announcementFreeShippingFlat);
+    expect(text).toMatch(/Art\. 49/);
+    expect(text).toMatch(/7 dias/);
+  });
+
+  it("does not append Art. 49 outside PT", () => {
+    const text = formatAnnouncementStrip(
+      "en",
+      { ...base, shippingRate: "0.00", freeShippingThreshold: null },
+      "USD",
+      CHROME_COPY.en,
+    );
+    expect(text).toBe(CHROME_COPY.en.announcementFreeShippingFlat);
+    expect(text).not.toMatch(/Art\. 49/);
   });
 
   it("falls back to returns copy", () => {
