@@ -345,6 +345,7 @@ Coleção **🚚 Market policy**: um registo por país (**US**, **BR**, **ES**, 
 | `return_days` | 1–365 |
 | `return_fees` | `free` (loja paga) ou `customer` (cliente paga) |
 | `installment_count` / `installment_multiplier` | hint editorial de parcelas no PDP **pt** (2–12; fator ≥1). Script: `setup-market-policy-installments.ts`. Indicativo — taxas reais no checkout Shopify. |
+| `pix_discount_percent` | hint opcional “X% OFF no Pix” no PDP **pt** (1–20). Vazio = sem linha. Script: `setup-market-policy-pix.ts`. Não inventar % — alinhar ao Shopify. |
 
 **Alinhamento obrigatório com copy humana:** páginas `shipping-returns` / `refund-policy` (e FAQs geradas por setup) devem espelhar os mesmos números que `market_policy` — tipicamente US **$9.90**, BR **frete grátis**, ES **5 €**, **30 dias** de devolução, frete reverso **grátis** quando `return_fees=free`. O Google e o cliente comparam JSON-LD PDP com o texto publicado; divergência = risco Merchant + confiança (Peak-End).
 
@@ -362,6 +363,7 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 | Script | Notas / env |
 |--------|-------------|
 | `setup-market-policy-installments.ts` | Campos `installment_count` / `installment_multiplier` em `market_policy` (hint PDP pt) |
+| `setup-market-policy-pix.ts` | Campo `pix_discount_percent` em `market_policy` (hint Pix PDP pt; valor vazio por defeito) |
 | `setup-navigation-mega-menu.ts` | Blocos mega-menu + allowlist em `navigation::menu_links` |
 | `seed-navigation-mega-menu-content.ts` | Conteúdo mega Loja (Nível / Terreno / Coleções + campaign); remove Loja plana; `MEGA_MENU_FORCE=1` |
 | `setup-ui-string-fieldsets.ts` | Consolida fieldsets Cart / Checkout / Global chrome / PDP |

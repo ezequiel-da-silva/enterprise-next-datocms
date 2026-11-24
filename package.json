@@ -41,6 +41,8 @@
     "dato:seed:mega-menu:staging": "datocms cma:script scripts/seed-navigation-mega-menu-content.ts --profile=staging",
     "dato:setup:best-of": "datocms cma:script scripts/setup-best-of-landing.ts --profile=default",
     "dato:setup:best-of:staging": "datocms cma:script scripts/setup-best-of-landing.ts --profile=staging",
+    "dato:setup:market-policy-pix": "datocms cma:script scripts/setup-market-policy-pix.ts --profile=default",
+    "dato:setup:market-policy-pix:staging": "datocms cma:script scripts/setup-market-policy-pix.ts --profile=staging",
     "shopify:backfill": "node scripts/backfill-shopify-products.mjs",
     "shopify:backfill:collections": "node scripts/backfill-shopify-collections.mjs",
     "lighthouse:ci": "lhci autorun",

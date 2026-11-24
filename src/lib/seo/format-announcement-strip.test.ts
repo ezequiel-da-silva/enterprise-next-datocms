@@ -12,6 +12,7 @@ const base: MarketPolicy = {
   returnFees: "free",
   installmentCount: null,
   installmentMultiplier: null,
+  pixDiscountPercent: null,
 };
 
 describe("formatAnnouncementStrip", () => {

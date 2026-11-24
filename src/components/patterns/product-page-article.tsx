@@ -27,6 +27,7 @@ import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
 import { snowboardBadgeLabel, type PdpCopy } from "@/lib/i18n/pdp-copy";
 import { PRODUCT_GALLERY_COPY } from "@/lib/i18n/product-gallery-copy";
+import { SHIPPING_ESTIMATE_COPY_PT } from "@/lib/i18n/shipping-estimate-copy";
 import {
   currencyForShopifyCountry,
   formatMarketPolicyTrust,
@@ -171,6 +172,8 @@ function pickerWishlist(
   storefront: StorefrontProduct,
 ): ProductPickerWishlist {
   const price = storefront.priceRange.minVariantPrice;
+  const compareAt = storefront.compareAtPriceRange?.minVariantPrice;
+  const deal = resolveCompareAtDeal(locale, price, compareAt);
   return {
     locale,
     item: {
@@ -179,6 +182,7 @@ function pickerWishlist(
       imageUrl: storefront.featuredImage?.url ?? null,
       priceAmount: price.amount,
       currencyCode: price.currencyCode,
+      compareAtAmount: deal && compareAt ? compareAt.amount : null,
     },
   };
 }
@@ -306,6 +310,8 @@ export function ProductPageArticle({
           buyBoxLocale={locale}
           installmentCount={marketPolicy?.installmentCount ?? null}
           installmentMultiplier={marketPolicy?.installmentMultiplier ?? null}
+          pixDiscountPercent={marketPolicy?.pixDiscountPercent ?? null}
+          shippingEstimateCopy={locale === "pt" ? SHIPPING_ESTIMATE_COPY_PT : null}
         />
       ) : null}
 

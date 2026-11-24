@@ -8,10 +8,9 @@ import {
   toGalleryItemsFromImages,
   type ProductGalleryItem,
 } from "@/lib/shopify/product-gallery-items";
-import {
-  ProductShippingEstimate,
-  SHIPPING_ESTIMATE_COPY_PT,
-} from "@/components/patterns/product-shipping-estimate";
+import { ProductShippingEstimate } from "@/components/patterns/product-shipping-estimate";
+import type { ShippingEstimateCopy } from "@/lib/i18n/shipping-estimate-copy";
+import { formatPixHint } from "@/lib/shopify/format-pix-hint";
 import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
@@ -97,6 +96,10 @@ type ProductVariantPickerProps = {
   installmentCount?: number | null;
   /** `market_policy.installment_multiplier` (BR). */
   installmentMultiplier?: number | null;
+  /** `market_policy.pix_discount_percent` (BR); omit/null hides the Pix line. */
+  pixDiscountPercent?: number | null;
+  /** CEP form copy when `buyBoxLocale === "pt"`. */
+  shippingEstimateCopy?: ShippingEstimateCopy | null;
 };
 
 function optionGroups(variants: ProductPickerVariant[]): { name: string; values: string[] }[] {
@@ -136,6 +139,8 @@ export function ProductVariantPicker({
   buyBoxLocale,
   installmentCount = null,
   installmentMultiplier = null,
+  pixDiscountPercent = null,
+  shippingEstimateCopy = null,
 }: ProductVariantPickerProps) {
   const initial = variants.find((variant) => variant.available) ?? variants[0];
   const [selection, setSelection] = useState<Record<string, string>>(() => selectionOf(initial));
@@ -179,6 +184,10 @@ export function ProductVariantPicker({
           installmentCount,
           installmentMultiplier,
         )
+      : null;
+  const pixHint =
+    buyBoxLocale === "pt" && selected
+      ? formatPixHint(buyBoxLocale, selected.price, selected.currency, pixDiscountPercent)
       : null;
 
   useEffect(() => {
@@ -286,6 +295,9 @@ export function ProductVariantPicker({
               {installmentHint ? (
                 <p className="text-sm font-medium text-foreground">{installmentHint}</p>
               ) : null}
+              {pixHint ? (
+                <p className="text-sm font-medium text-foreground">{pixHint}</p>
+              ) : null}
               {paymentHint?.trim() ? (
                 <p className="text-sm text-muted-foreground">{paymentHint.trim()}</p>
               ) : null}
@@ -368,11 +380,11 @@ export function ProductVariantPicker({
         ) : null}
         <div className="space-y-1.5 text-sm text-muted-foreground">
           {shippingTrust ? <p>{shippingTrust}</p> : null}
-          {buyBoxLocale === "pt" ? (
+          {buyBoxLocale === "pt" && shippingEstimateCopy ? (
             <ProductShippingEstimate
               locale="pt"
               subtotal={selected?.price ?? null}
-              copy={SHIPPING_ESTIMATE_COPY_PT}
+              copy={shippingEstimateCopy}
             />
           ) : null}
           {returnsTrust ? <p>{returnsTrust}</p> : null}

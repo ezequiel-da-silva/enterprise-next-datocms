@@ -309,7 +309,7 @@ export function HeaderNav({
   return (
     <>
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2 lg:gap-3">
-        <nav aria-label="Principal" className="hidden min-w-0 flex-1 overflow-x-auto lg:block [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav aria-label="Principal" className="hidden min-w-0 flex-1 lg:block">
           <ul className="flex max-w-full flex-nowrap items-center justify-start gap-1 xl:gap-2">
             {orderedLinks.map((item) => (
               <li key={item.id} className="relative shrink-0">

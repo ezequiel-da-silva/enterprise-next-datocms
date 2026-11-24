@@ -68,8 +68,7 @@ const PT: PdpCopy = {
   viewImage: "Ver imagem",
   unavailableSuffix: "(esgotado)",
   checkoutTrust: "Checkout processado com segurança pela Shopify.",
-  paymentHint:
-    "PIX e parcelamento aparecem no checkout Shopify quando estiverem activos na loja — sem taxas inventadas neste site.",
+  paymentHint: "Formas de pagamento confirmadas no checkout Shopify.",
   buyNow: "Comprar agora",
   buying: "A redirecionar…",
   reviewsTitle: "Avaliações de riders",

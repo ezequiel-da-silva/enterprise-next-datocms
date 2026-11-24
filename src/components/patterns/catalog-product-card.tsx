@@ -56,6 +56,7 @@ export function CatalogProductCard({
           imageUrl: image?.url ?? null,
           priceAmount: price.amount,
           currencyCode: price.currencyCode,
+          compareAtAmount: deal && product.compareAtPrice ? product.compareAtPrice.amount : null,
         }}
       />
       {marketingBadge ? (
