@@ -275,6 +275,11 @@ export function ProductVariantPicker({
     return variants.some((variant) => variant.available && matchesAll(variant, next));
   }
 
+  const trustLine = [shippingTrust, returnsTrust, warrantyTrust?.trim()]
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
+
   return (
     <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
       <ProductMediaGallery
@@ -400,7 +405,7 @@ export function ProductVariantPicker({
           </div>
         ) : null}
         <div className="space-y-1.5 text-sm text-muted-foreground">
-          {shippingTrust ? <p>{shippingTrust}</p> : null}
+          {trustLine ? <p>{trustLine}</p> : null}
           {buyBoxLocale === "pt" && shippingEstimateCopy ? (
             <ProductShippingEstimate
               locale="pt"
@@ -408,8 +413,6 @@ export function ProductVariantPicker({
               copy={shippingEstimateCopy}
             />
           ) : null}
-          {returnsTrust ? <p>{returnsTrust}</p> : null}
-          {warrantyTrust?.trim() ? <p>{warrantyTrust.trim()}</p> : null}
           {refundPolicyHref && refundPolicyLink?.trim() ? (
             <p>
               <Link

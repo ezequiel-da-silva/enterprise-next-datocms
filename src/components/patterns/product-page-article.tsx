@@ -26,6 +26,7 @@ import { parseSizeChart } from "@/lib/datocms/parse-size-chart";
 import { productPagePath } from "@/lib/datocms/product-page-path";
 import type { CartCopy } from "@/lib/i18n/cart-copy";
 import { snowboardBadgeLabel, type PdpCopy } from "@/lib/i18n/pdp-copy";
+import { formatProductSpecEyebrow } from "@/lib/i18n/product-spec-eyebrow";
 import { PRODUCT_GALLERY_COPY } from "@/lib/i18n/product-gallery-copy";
 import { SHIPPING_ESTIMATE_COPY_PT } from "@/lib/i18n/shipping-estimate-copy";
 import {
@@ -247,9 +248,13 @@ export function ProductPageArticle({
   );
   const badgeLabel = snowboardBadgeLabel(locale, badge);
   const paymentHint = locale === "pt" ? pdpCopy.paymentHint.trim() || null : null;
+  const specEyebrow = formatProductSpecEyebrow(locale, specs);
   const editorial = (
     <>
       <h1 className="type-display">{title}</h1>
+      {specEyebrow ? (
+        <p className="mt-2 text-sm text-muted-foreground">{specEyebrow}</p>
+      ) : null}
       {description ? <p className="type-lead whitespace-pre-line">{description}</p> : null}
     </>
   );

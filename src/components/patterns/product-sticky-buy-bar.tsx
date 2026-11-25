@@ -20,7 +20,7 @@ export function ProductStickyBuyBar({ title, priceLabel, visible, children }: Pr
   return (
     <div
       data-ui-section="ProductStickyBuyBar"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="fixed inset-x-0 bottom-[length:var(--site-cookie-banner-height,0px)] z-40 border-t border-border bg-background/95 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
       <Container size="lg" className="flex items-center gap-3 py-3">
         <div className="min-w-0 flex-1">

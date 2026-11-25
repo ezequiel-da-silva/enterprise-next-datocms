@@ -128,7 +128,7 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
             <span>{aggregateLabel}</span>
           </p>
         ) : null}
-        {histogram ? (
+        {histogram && reviews.length >= 3 ? (
           <ul
             className="m-0 grid max-w-sm list-none gap-1.5 p-0 pt-2"
             data-testid="rating-histogram"
@@ -150,7 +150,13 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
         ) : null}
       </div>
 
-      <ul className="m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2">
+      <ul
+        className={
+          reviews.length === 1
+            ? "m-0 grid max-w-prose list-none grid-cols-1 gap-6 p-0"
+            : "m-0 grid list-none grid-cols-1 gap-6 p-0 sm:grid-cols-2"
+        }
+      >
         {reviews.map((review) => {
           const dateLabel = formatReviewDate(locale, review.date);
           return (
@@ -175,7 +181,9 @@ export function ProductReviewsSection({ locale, reviews, copy }: ProductReviewsS
                   {dateLabel ? <p className="text-xs text-muted-foreground">{dateLabel}</p> : null}
                 </header>
                 {review.comment ? (
-                  <p className="type-body whitespace-pre-wrap text-foreground">{review.comment}</p>
+                  <p className="type-body whitespace-pre-wrap leading-relaxed text-foreground">
+                    {review.comment}
+                  </p>
                 ) : null}
               </article>
             </li>
