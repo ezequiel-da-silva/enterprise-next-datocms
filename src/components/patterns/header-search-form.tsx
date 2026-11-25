@@ -33,6 +33,12 @@ type HeaderSearchFormProps = {
   /** Live preview: controlled value + change handler. */
   value?: string;
   onQueryChange?: (value: string) => void;
+  /** Close preview before navigation (Enter / lupa submit). */
+  onSubmit?: () => void;
+  /** `aria-expanded` for the live preview panel. */
+  expanded?: boolean;
+  /** `aria-controls` id of the preview region when open. */
+  controlsId?: string;
 };
 
 /**
@@ -49,6 +55,9 @@ export function HeaderSearchForm({
   inputId = "header-search-query",
   value,
   onQueryChange,
+  onSubmit,
+  expanded,
+  controlsId,
 }: HeaderSearchFormProps) {
   const block = variant === "block";
   const submit = submitLabel?.trim() || FALLBACK_SUBMIT[locale];
@@ -65,6 +74,7 @@ export function HeaderSearchForm({
       role="search"
       aria-label={submit}
       className={cn("flex w-full", block ? "flex-col items-stretch" : "items-center")}
+      onSubmit={() => onSubmit?.()}
     >
       <label className="sr-only" htmlFor={inputId}>
         {FALLBACK_LABEL[locale]}
@@ -97,6 +107,9 @@ export function HeaderSearchForm({
           placeholder={placeholder?.trim() || FALLBACK_PLACEHOLDER[locale]}
           autoComplete="off"
           enterKeyHint="search"
+          aria-expanded={typeof expanded === "boolean" ? expanded : undefined}
+          aria-controls={expanded && controlsId ? controlsId : undefined}
+          aria-autocomplete={typeof expanded === "boolean" ? "list" : undefined}
           className={cn(
             "w-full min-w-0 rounded-full border border-border bg-background py-2 pl-12 pr-4 text-sm text-foreground shadow-sm transition placeholder:truncate placeholder:text-muted-foreground hover:border-foreground/25 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             block ? "min-h-12" : "h-10 min-h-10",
