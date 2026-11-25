@@ -166,6 +166,10 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
           setLiveQuery(value);
           if (!onSearchPage) setOpen(true);
         }}
+        onClear={() => {
+          setLiveQuery("");
+          if (!onSearchPage) setOpen(true);
+        }}
         onSubmit={close}
         inputId={inputId}
         expanded={showPanel}
@@ -174,9 +178,13 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
 
       {showPanel ? (
         <>
+          {/*
+            Scrim starts below sticky chrome so nav/locale/icons stay clickable.
+            (A full inset-0 scrim inside .site-chrome covers sibling header controls.)
+          */}
           <div
             aria-hidden
-            className="fixed inset-0 z-40 bg-black/20"
+            className="fixed inset-x-0 bottom-0 top-[length:var(--site-chrome-overlay-space,4rem)] z-40 bg-black/20"
             onClick={close}
           />
           <div
