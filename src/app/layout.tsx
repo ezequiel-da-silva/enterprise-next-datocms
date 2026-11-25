@@ -189,7 +189,10 @@ export default async function RootLayout({
 
   const pageChrome = (
     <>
-      <SiteAnnouncementStrip text={announcementText} />
+      <SiteAnnouncementStrip
+        text={announcementText}
+        href={announcementText ? `/${appLocale}/refund-policy` : null}
+      />
       <div className="site-chrome sticky top-0 z-50 overflow-visible">
         <DraftChrome />
         <GlobalHeader

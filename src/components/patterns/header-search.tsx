@@ -8,6 +8,7 @@ import { isSearchResultsPath } from "@/lib/datocms/search-query";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const VIEW_ALL: Record<AppLocale, string> = {
   en: "View all results",
@@ -27,6 +28,8 @@ const PREVIEW_HINT: Record<AppLocale, string> = {
   es: "Escribe al menos 2 caracteres para previsualizar productos y artículos.",
 };
 
+const SCRIM_TOP_VAR = "--site-search-scrim-top";
+
 type SettledPreview = {
   q: string;
   hits: SearchHit[];
@@ -40,6 +43,13 @@ type HeaderSearchProps = {
   placeholder?: string | null;
   submitLabel?: string | null;
 };
+
+function syncSearchScrimTop() {
+  const chrome = document.querySelector(".site-chrome");
+  const bottom = chrome?.getBoundingClientRect().bottom;
+  const px = bottom != null && bottom > 0 ? `${Math.round(bottom)}px` : "4rem";
+  document.documentElement.style.setProperty(SCRIM_TOP_VAR, px);
+}
 
 /**
  * Desktop chrome search: always-visible compact field (Jakob) with live preview strip.
@@ -78,6 +88,26 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
   }, [inputId, onSearchPage]);
 
   const showPanel = open && !onSearchPage;
+
+  useEffect(() => {
+    if (!showPanel) {
+      document.documentElement.style.removeProperty(SCRIM_TOP_VAR);
+      return;
+    }
+    syncSearchScrimTop();
+    const chrome = document.querySelector(".site-chrome");
+    const observer =
+      chrome instanceof Element ? new ResizeObserver(() => syncSearchScrimTop()) : null;
+    if (chrome instanceof Element) observer?.observe(chrome);
+    window.addEventListener("resize", syncSearchScrimTop);
+    window.addEventListener("scroll", syncSearchScrimTop, { passive: true });
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", syncSearchScrimTop);
+      window.removeEventListener("scroll", syncSearchScrimTop);
+      document.documentElement.style.removeProperty(SCRIM_TOP_VAR);
+    };
+  }, [showPanel]);
 
   useEffect(() => {
     if (!showPanel) return;
@@ -148,6 +178,20 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
     ? `${action}${action.includes("?") ? "&" : "?"}q=${encodeURIComponent(trimmedLive)}`
     : action;
 
+  const scrim =
+    showPanel && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            aria-hidden
+            data-ui-section="GlobalHeaderSearchScrim"
+            className="fixed inset-x-0 bottom-0 z-40 bg-black/20"
+            style={{ top: `var(${SCRIM_TOP_VAR}, 4rem)` }}
+            onClick={close}
+          />,
+          document.body,
+        )
+      : null;
+
   return (
     <div
       ref={rootRef}
@@ -176,56 +220,47 @@ export function HeaderSearch({ action, locale, query, placeholder, submitLabel }
         controlsId={panelId}
       />
 
+      {scrim}
+
       {showPanel ? (
-        <>
-          {/*
-            Scrim starts below sticky chrome so nav/locale/icons stay clickable.
-            (A full inset-0 scrim inside .site-chrome covers sibling header controls.)
-          */}
-          <div
-            aria-hidden
-            className="fixed inset-x-0 bottom-0 top-[length:var(--site-chrome-overlay-space,4rem)] z-40 bg-black/20"
-            onClick={close}
-          />
-          <div
-            ref={panelRef}
-            id={panelId}
-            role="region"
-            aria-label={PREVIEW_REGION[locale]}
-            data-ui-section="GlobalHeaderSearch"
-            className="absolute top-full right-0 z-50 mt-2 max-h-[min(70vh,28rem)] w-[min(100vw-2rem,28rem)] space-y-3 overflow-y-auto rounded-md border border-border bg-background px-3 py-3 shadow-lg xl:w-[min(100vw-2rem,32rem)]"
-          >
-            {trimmedLive.length < 2 ? (
-              <p className="text-sm text-muted-foreground">{PREVIEW_HINT[locale]}</p>
-            ) : showPreviewLoading ? (
-              <p className="text-sm text-muted-foreground" aria-busy="true">
-                …
-              </p>
-            ) : (
-              <>
-                <SearchResults
-                  query={trimmedLive}
-                  hits={previewHits}
-                  locale={locale}
-                  error={previewErr}
-                  compact
-                  onNavigate={close}
-                />
-                {previewHits.length > 0 ? (
-                  <p className="pb-1">
-                    <Link
-                      href={seeAllHref}
-                      className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-                      onClick={() => close()}
-                    >
-                      {VIEW_ALL[locale]}
-                    </Link>
-                  </p>
-                ) : null}
-              </>
-            )}
-          </div>
-        </>
+        <div
+          ref={panelRef}
+          id={panelId}
+          role="region"
+          aria-label={PREVIEW_REGION[locale]}
+          data-ui-section="GlobalHeaderSearch"
+          className="absolute top-full right-0 z-50 mt-2 max-h-[min(70vh,28rem)] w-[min(100vw-2rem,28rem)] space-y-3 overflow-y-auto rounded-md border border-border bg-background px-3 py-3 shadow-lg xl:w-[min(100vw-2rem,32rem)]"
+        >
+          {trimmedLive.length < 2 ? (
+            <p className="text-sm text-muted-foreground">{PREVIEW_HINT[locale]}</p>
+          ) : showPreviewLoading ? (
+            <p className="text-sm text-muted-foreground" aria-busy="true">
+              …
+            </p>
+          ) : (
+            <>
+              <SearchResults
+                query={trimmedLive}
+                hits={previewHits}
+                locale={locale}
+                error={previewErr}
+                compact
+                onNavigate={close}
+              />
+              {previewHits.length > 0 ? (
+                <p className="pb-1">
+                  <Link
+                    href={seeAllHref}
+                    className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                    onClick={() => close()}
+                  >
+                    {VIEW_ALL[locale]}
+                  </Link>
+                </p>
+              ) : null}
+            </>
+          )}
+        </div>
       ) : null}
     </div>
   );

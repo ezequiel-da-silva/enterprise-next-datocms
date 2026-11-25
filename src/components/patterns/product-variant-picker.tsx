@@ -424,11 +424,11 @@ export function ProductVariantPicker({
             </p>
           ) : null}
           {viewSpecsLabel || viewSizeGuideLabel ? (
-            <p className="flex flex-wrap gap-x-3 gap-y-1">
+            <p className="flex flex-wrap gap-2">
               {viewSpecsLabel ? (
                 <a
                   href="#product-specs"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   {viewSpecsLabel}
                 </a>
@@ -436,7 +436,7 @@ export function ProductVariantPicker({
               {viewSizeGuideLabel ? (
                 <a
                   href="#product-size-guide"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   {viewSizeGuideLabel}
                 </a>
