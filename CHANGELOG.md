@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.62.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.61.0...next-dato-v0.62.0) (2026-11-26)
+
+
+### Features
+
+* **ui:** enhance header search form with clear button functionality ([90fe9fd](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/90fe9fdaa50cff540684de4a8311ffe4ba87582a))
+* **ui:** refine hero PT copy, card ratings and mega-menu keyboard ([be1fb36](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/be1fb36b01bdfa83ce43584b4781ca9d842e91be))
+
+
+### Bug Fixes
+
+* **ui:** densify PDP buy box and clean EN product titles ([3c8cf70](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/3c8cf7017b40c0d64c8d62038ffd0279cd9a9f09))
+* **ui:** stop header search preview colliding with /search ([366bd92](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/366bd92a547c00206d910ac4d3f31b5e82d7f6c6))
+* **ui:** unblock header search chrome and tighten CRO cues ([5c3d584](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/5c3d5843752e6a4e03873b16ea479d5ab2b74959))
+* **ui:** unblock header search chrome and tighten CRO cues ([ecf0a2c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/ecf0a2c5287d759f082def8eb5ce3c873f47948d))
+* **ui:** update a11y skip-link to universal id and remove dummy footer link ([b99cbdd](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b99cbdddbb4b56074275860d0268f31da08c2e47))
+
+
+### Refactoring
+
+* **ui:** update aria attributes in header search form for improved accessibility ([7a69a83](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/7a69a8348c588704b87dd45ef302f8b7913b7c82))
+
 ## [0.61.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.60.0...next-dato-v0.61.0) (2026-11-24)
 
 
