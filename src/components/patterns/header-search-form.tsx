@@ -45,7 +45,7 @@ type HeaderSearchFormProps = {
   onClear?: () => void;
   /** Close preview before navigation (Enter / lupa submit). */
   onSubmit?: () => void;
-  /** `aria-expanded` for the live preview panel. */
+  /** When true, the preview region is open and linked with `aria-controls`. */
   expanded?: boolean;
   /** `aria-controls` id of the preview region when open. */
   controlsId?: string;
@@ -128,7 +128,6 @@ export function HeaderSearchForm({
           placeholder={placeholder?.trim() || FALLBACK_PLACEHOLDER[locale]}
           autoComplete="off"
           enterKeyHint="search"
-          aria-expanded={typeof expanded === "boolean" ? expanded : undefined}
           aria-controls={expanded && controlsId ? controlsId : undefined}
           aria-autocomplete={typeof expanded === "boolean" ? "list" : undefined}
           className={cn(
