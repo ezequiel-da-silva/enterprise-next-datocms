@@ -37,7 +37,9 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
     const root = document.documentElement;
     if (!region) return;
     const sync = () => {
-      root.style.scrollPaddingBottom = `${region.offsetHeight}px`;
+      const height = `${region.offsetHeight}px`;
+      root.style.scrollPaddingBottom = height;
+      root.style.setProperty("--site-cookie-banner-height", height);
     };
     sync();
     const observer = new ResizeObserver(sync);
@@ -45,6 +47,7 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
     return () => {
       observer.disconnect();
       root.style.scrollPaddingBottom = "";
+      root.style.setProperty("--site-cookie-banner-height", "0px");
     };
   }, [visible]);
 
@@ -54,7 +57,7 @@ export function CookieConsentBanner({ copy, privacyPolicyUrl, shopifyPrivacy }: 
     const hadFocus = regionRef.current?.contains(document.activeElement) ?? false;
     setConsent(state);
     if (shopifyPrivacy) void syncShopifyConsent(shopifyPrivacy, state);
-    if (hadFocus) document.getElementById("conteudo-principal")?.focus({ preventScroll: true });
+    if (hadFocus) document.getElementById("main-content")?.focus({ preventScroll: true });
   }
 
   return (

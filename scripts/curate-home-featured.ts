@@ -44,15 +44,15 @@ type LocaleCopy = {
 const COPY: Record<string, LocaleCopy> = {
   en: {
     listingTitle: "Featured boards",
-    listingDescription: "Pick a board for the next run — prices confirmed at Shopify checkout.",
+    listingDescription: "Pick a board for the next run — clear shipping and payment through checkout.",
   },
   "pt-BR": {
     listingTitle: "Pranchas em destaque",
-    listingDescription: "Escolha a prancha para a próxima descida — preços confirmados no checkout Shopify.",
+    listingDescription: "Escolha a prancha para a próxima descida — frete e pagamento claros até ao checkout.",
   },
   es: {
     listingTitle: "Tablas destacadas",
-    listingDescription: "Elige una tabla para la próxima bajada — precios confirmados en el checkout de Shopify.",
+    listingDescription: "Elige una tabla para la próxima bajada — envío y pago claros hasta el checkout.",
   },
 };
 

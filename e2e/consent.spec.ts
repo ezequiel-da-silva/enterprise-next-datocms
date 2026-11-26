@@ -25,7 +25,7 @@ test.describe("cookie consent", () => {
     expect(await consentCookie(context)).toBe("v1:granted");
 
     await page.reload();
-    await expect(page.locator("main#conteudo-principal")).toBeVisible();
+    await expect(page.locator("main#main-content")).toBeVisible();
     await expect(banner(page)).toHaveCount(0);
   });
 

@@ -52,9 +52,9 @@ type LocaleCopy = {
 const COPY: Record<string, LocaleCopy> = {
   en: {
     listingTitle: "Featured boards",
-    listingDescription: "Pick a board for the next run — prices confirmed at Shopify checkout.",
+    listingDescription: "Pick a board for the next run — clear shipping and payment through checkout.",
     benefitsTitle: "Why shop with us",
-    benefitsDescription: "Enterprise checkout, clear policies, and boards built to last.",
+    benefitsDescription: "Secure checkout, clear policies, and boards built to last.",
     benefits: [
       {
         title: "Secure global delivery",
@@ -68,8 +68,8 @@ const COPY: Record<string, LocaleCopy> = {
         icon: faShieldHalved,
       },
       {
-        title: "Direct Shopify checkout",
-        description: "Pay securely on Shopify — cart and payment stay on a trusted stack.",
+        title: "Secure payment",
+        description: "Protected checkout with card and order tracking on a trusted stack.",
         icon: faLock,
       },
       {
@@ -81,9 +81,9 @@ const COPY: Record<string, LocaleCopy> = {
   },
   "pt-BR": {
     listingTitle: "Pranchas em destaque",
-    listingDescription: "Escolha a prancha para a próxima descida — preços confirmados no checkout Shopify.",
+    listingDescription: "Escolha a prancha para a próxima descida — frete e pagamento claros até ao checkout.",
     benefitsTitle: "Por que comprar conosco",
-    benefitsDescription: "Checkout enterprise, políticas claras e pranchas feitas para durar.",
+    benefitsDescription: "Checkout seguro, políticas claras e pranchas feitas para durar.",
     benefits: [
       {
         title: "Entrega global segura",
@@ -97,8 +97,8 @@ const COPY: Record<string, LocaleCopy> = {
         icon: faShieldHalved,
       },
       {
-        title: "Checkout Shopify direto",
-        description: "Pague com segurança na Shopify — carrinho e pagamento num stack de confiança.",
+        title: "Pagamento seguro",
+        description: "Checkout protegido, com Pix, cartão e acompanhamento do pedido.",
         icon: faLock,
       },
       {
@@ -110,9 +110,9 @@ const COPY: Record<string, LocaleCopy> = {
   },
   es: {
     listingTitle: "Tablas destacadas",
-    listingDescription: "Elige una tabla para la próxima bajada — precios confirmados en el checkout de Shopify.",
+    listingDescription: "Elige una tabla para la próxima bajada — envío y pago claros hasta el checkout.",
     benefitsTitle: "Por qué comprar con nosotros",
-    benefitsDescription: "Checkout enterprise, políticas claras y tablas hechas para durar.",
+    benefitsDescription: "Checkout seguro, políticas claras y tablas hechas para durar.",
     benefits: [
       {
         title: "Entrega global segura",
@@ -126,8 +126,8 @@ const COPY: Record<string, LocaleCopy> = {
         icon: faShieldHalved,
       },
       {
-        title: "Checkout Shopify directo",
-        description: "Paga con seguridad en Shopify — carrito y pago en un stack de confianza.",
+        title: "Pago seguro",
+        description: "Checkout protegido, con tarjeta y seguimiento del pedido.",
         icon: faLock,
       },
       {

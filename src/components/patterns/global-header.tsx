@@ -103,7 +103,7 @@ export function GlobalHeader({
   const homeLabel = homeAriaLabel(locale);
 
   return (
-    <header className="relative h-16 overflow-visible border-b border-border/80 bg-background/95 backdrop-blur-sm">
+    <header className="relative h-16 overflow-visible border-b border-border/80 bg-background">
       <Container
         size="lg"
         name="GlobalHeader"

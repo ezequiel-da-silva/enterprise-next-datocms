@@ -21,6 +21,7 @@ import {
   searchPagePath,
 } from "@/infra/datocms/get-search-page";
 import { searchSite } from "@/infra/datocms/search";
+import { getNavigation, pickNavigationData } from "@/infra/datocms/get-navigation";
 import { readSearchQuery, searchResultsPath } from "@/lib/datocms/search-query";
 import { getLegalPageBySlug, getLegalPageBySlugResult, legalPagePath } from "@/infra/datocms/get-legal-page";
 import { LegalPageArticle } from "@/components/patterns/legal-page-article";
@@ -207,10 +208,12 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
   ]);
 
   const configuredContactPage = await getContactPage(locale, isEnabled);
-  const query = contentNeedsSearchResults(page.contentPage)
-    ? readSearchQuery(queryParams.q)
-    : "";
+  const needsSearch = contentNeedsSearchResults(page.contentPage);
+  const query = needsSearch ? readSearchQuery(queryParams.q) : "";
   const searchResults = query ? searchSite(query, locale) : undefined;
+  const hideSearchForm = needsSearch
+    ? pickNavigationData(await getNavigation(locale, isEnabled))?.showHeaderSearch === true
+    : false;
   const canonicalPath = cmsPageCanonicalPath(pageSlug, locale);
   const catalogQuickAdd = resolveCatalogQuickAdd(locale, addToCart, cartCopy);
   const marketPolicyRows = isShippingReturnsPageSlug(locale, page.slug)
@@ -240,6 +243,7 @@ export default async function LocalePrefixedCmsPage({ params, searchParams }: Pa
       jsonLdPageType={configuredContactPage?.id === page.id ? "ContactPage" : "WebPage"}
       searchQuery={query || undefined}
       searchResults={searchResults}
+      hideSearchForm={hideSearchForm}
       catalogFilters={needsProducts ? parseCatalogSearchParams(queryParams) : undefined}
       catalogFiltersCopy={catalogFiltersCopy}
       catalogFiltersPath={needsProducts ? canonicalPath : undefined}

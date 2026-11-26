@@ -4,13 +4,13 @@ test.describe("smoke", () => {
   test("root redirects to default locale home", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveURL(/\/en\/?$/);
-    await expect(page.locator("main#conteudo-principal")).toBeVisible();
+    await expect(page.locator("main#main-content")).toBeVisible();
     await expect(page.locator("h1").first()).toBeVisible();
   });
 
   test("CMS blog Page renders for default locale", async ({ page }) => {
     await page.goto("/en/blog");
-    await expect(page.locator("main#conteudo-principal")).toBeVisible();
+    await expect(page.locator("main#main-content")).toBeVisible();
     await expect(page.locator("h1").first()).toBeVisible();
   });
 
@@ -38,7 +38,7 @@ test.describe("smoke", () => {
 
   test("contact page keeps honeypot out of reach of users", async ({ page }) => {
     await page.goto("/en/contact");
-    await expect(page.locator("main#conteudo-principal")).toBeVisible();
+    await expect(page.locator("main#main-content")).toBeVisible();
     await expect(page.locator("h1").first()).toBeVisible();
 
     const honeypot = page.locator('input[name="company_website"]');

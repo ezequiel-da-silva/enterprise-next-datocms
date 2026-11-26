@@ -38,7 +38,7 @@ Uma rule global; dividir só quando um domínio crescer muito. Ao alterar UI, p�
 
 ## ATF
 
-- `SkipLink` → `<main id="conteudo-principal" tabIndex={-1}>`.
+- `SkipLink` → `<main id="main-content" tabIndex={-1}>`.
 - Chrome sticky único em `layout.tsx` (Draft + header); header com `flex-wrap`, nav `min-w-0` + `flex-wrap` (evita cortar links).
 - LCP: `priority` em logo/hero conforme layout.
 

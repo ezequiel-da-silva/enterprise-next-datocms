@@ -2,6 +2,7 @@ import {
   CatalogProductCard,
   type CatalogProductCardQuickAdd,
 } from "@/components/patterns/catalog-product-card";
+import { CatalogProductRow } from "@/components/patterns/catalog-product-row";
 import type { AppLocale } from "@/constants/i18n";
 import type { SearchHit } from "@/lib/datocms/search-hit";
 import Link from "next/link";
@@ -52,8 +53,10 @@ type SearchResultsProps = {
   emptyHint?: string;
   noResults?: string;
   quickAdd?: CatalogProductCardQuickAdd | null;
-  /** Compact grid for header live preview. */
+  /** Compact list for header live preview (rows, not cards). */
   compact?: boolean;
+  /** Close preview when navigating to a hit. */
+  onNavigate?: () => void;
 };
 
 function interpolateQuery(template: string, query: string): string {
@@ -69,6 +72,7 @@ export function SearchResults({
   noResults,
   quickAdd = null,
   compact = false,
+  onNavigate,
 }: SearchResultsProps) {
   if (error) {
     return (
@@ -93,38 +97,48 @@ export function SearchResults({
   const labels = kindLabel[locale];
   const products = hits.filter((hit) => hit.kind === "product" && hit.product);
   const content = hits.filter((hit) => hit.kind !== "product" || !hit.product);
-  const productLimit = compact ? 6 : products.length;
+  const productLimit = compact ? 4 : products.length;
   const contentLimit = compact ? 3 : content.length;
   const shownProducts = products.slice(0, productLimit);
   const shownContent = content.slice(0, contentLimit);
 
   return (
-    <div className="space-y-8">
+    <div className={compact ? "space-y-4" : "space-y-8"}>
       {shownProducts.length > 0 ? (
         <section aria-label={SECTION_PRODUCTS[locale]} className="space-y-3">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {SECTION_PRODUCTS[locale]}
           </h2>
-          <ul
-            className={
-              compact
-                ? "m-0 grid list-none grid-cols-2 gap-3 p-0 sm:grid-cols-3"
-                : "m-0 grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3"
-            }
-          >
-            {shownProducts.map((hit) =>
-              hit.product ? (
-                <li key={`${hit.kind}-${hit.id}`} className="min-w-0">
-                  <CatalogProductCard
-                    locale={locale}
-                    product={hit.product}
-                    sizes={CARD_SIZES}
-                    quickAdd={compact ? null : quickAdd}
-                  />
-                </li>
-              ) : null,
-            )}
-          </ul>
+          {compact ? (
+            <ul className="m-0 list-none divide-y divide-border p-0">
+              {shownProducts.map((hit) =>
+                hit.product ? (
+                  <li key={`${hit.kind}-${hit.id}`} className="min-w-0">
+                    <CatalogProductRow
+                      locale={locale}
+                      product={hit.product}
+                      onNavigate={onNavigate}
+                    />
+                  </li>
+                ) : null,
+              )}
+            </ul>
+          ) : (
+            <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3">
+              {shownProducts.map((hit) =>
+                hit.product ? (
+                  <li key={`${hit.kind}-${hit.id}`} className="min-w-0">
+                    <CatalogProductCard
+                      locale={locale}
+                      product={hit.product}
+                      sizes={CARD_SIZES}
+                      quickAdd={quickAdd}
+                    />
+                  </li>
+                ) : null,
+              )}
+            </ul>
+          )}
         </section>
       ) : null}
 
@@ -137,7 +151,11 @@ export function SearchResults({
             {shownContent.map((hit) => (
               <li key={`${hit.kind}-${hit.id}-${hit.href}`} className="py-3">
                 <div className="flex flex-wrap items-baseline gap-2">
-                  <Link className="font-medium text-foreground hover:underline" href={hit.href}>
+                  <Link
+                    className="font-medium text-foreground hover:underline"
+                    href={hit.href}
+                    onClick={onNavigate}
+                  >
                     {hit.title}
                   </Link>
                   <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">

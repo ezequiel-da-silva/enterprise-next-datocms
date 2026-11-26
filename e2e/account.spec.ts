@@ -21,7 +21,7 @@ test.describe("account", () => {
     test(`signed-out page in ${locale}`, async ({ page }) => {
       await page.goto(`/${locale}/account`);
       await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
-      const main = page.locator("main#conteudo-principal");
+      const main = page.locator("main#main-content");
       await expect(main.getByRole("link", { name: signIn, exact: true })).toHaveAttribute(
         "href",
         `/api/account/login?locale=${locale}`,

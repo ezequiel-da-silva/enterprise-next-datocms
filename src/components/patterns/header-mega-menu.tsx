@@ -11,7 +11,7 @@ import { resolveLinkBlock } from "@/lib/datocms/link-block";
 import { cn } from "@/lib/cn";
 import Image from "next/image";
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 function ResolvedMegaLink({
   record,
@@ -126,19 +126,45 @@ type DesktopMegaMenuProps = {
 
 export function DesktopMegaMenu({ item, locale }: DesktopMegaMenuProps) {
   const menuId = useId();
-  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [hoverOpen, setHoverOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const open = hoverOpen || pinned;
   const label = item.label?.trim() || "Menu";
   const campaign = item.campaign[0] ?? null;
   const categories = item.categories.filter(Boolean);
 
+  useEffect(() => {
+    if (!pinned) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setPinned(false);
+        setHoverOpen(false);
+      }
+    };
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target as Node | null;
+      if (!target || rootRef.current?.contains(target)) return;
+      setPinned(false);
+      setHoverOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [pinned]);
+
   return (
     <div
+      ref={rootRef}
       className="relative inline-flex items-stretch"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-      onFocusCapture={() => setOpen(true)}
+      onMouseEnter={() => setHoverOpen(true)}
+      onMouseLeave={() => setHoverOpen(false)}
+      onFocusCapture={() => setHoverOpen(true)}
       onBlurCapture={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setHoverOpen(false);
       }}
     >
       <button
@@ -147,6 +173,10 @@ export function DesktopMegaMenu({ item, locale }: DesktopMegaMenuProps) {
         aria-expanded={open}
         aria-haspopup="true"
         aria-controls={menuId}
+        onClick={(event) => {
+          event.preventDefault();
+          setPinned((value) => !value);
+        }}
       >
         {label}
         <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

@@ -4,7 +4,7 @@ import { expectNoSeriousA11yViolations } from "./a11y";
 /** axe (WCAG 2.1 A/AA) on Home, a PDP and the account page; fails on critical/serious only. */
 async function gotoMain(page: Page, path: string) {
   await page.goto(path);
-  await expect(page.locator("main#conteudo-principal")).toBeVisible();
+  await expect(page.locator("main#main-content")).toBeVisible();
 }
 
 test.describe("accessibility", () => {

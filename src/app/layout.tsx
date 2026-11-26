@@ -189,7 +189,10 @@ export default async function RootLayout({
 
   const pageChrome = (
     <>
-      <SiteAnnouncementStrip text={announcementText} />
+      <SiteAnnouncementStrip
+        text={announcementText}
+        href={announcementText ? `/${appLocale}/refund-policy` : null}
+      />
       <div className="site-chrome sticky top-0 z-50 overflow-visible">
         <DraftChrome />
         <GlobalHeader
@@ -205,7 +208,7 @@ export default async function RootLayout({
           accountLinkLabel={accountCopy.linkLabel(customerSession !== null)}
         />
       </div>
-      <main id="conteudo-principal" tabIndex={-1} className="flex-1 outline-none">
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         {children}
       </main>
       <SiteFooter

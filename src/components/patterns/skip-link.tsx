@@ -16,7 +16,7 @@ type SkipLinkProps = {
 /**
  * Link de salto no ATF — oculto até foco; `fixed` evita interferir no layout do header.
  */
-export function SkipLink({ locale, mainId = "conteudo-principal" }: SkipLinkProps) {
+export function SkipLink({ locale, mainId = "main-content" }: SkipLinkProps) {
   return (
     <Link href={`#${mainId}`} className="skip-link">
       {skipLabel(locale)}

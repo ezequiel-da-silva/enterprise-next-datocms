@@ -70,6 +70,7 @@ type StructuredTextBlockViewProps = {
   searchQuery?: string;
   searchFormAction?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
+  hideSearchForm?: boolean;
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
@@ -185,6 +186,7 @@ export function StructuredTextBlockView({
   searchQuery,
   searchFormAction,
   searchResults,
+  hideSearchForm = false,
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
@@ -295,6 +297,7 @@ export function StructuredTextBlockView({
           query={searchQuery ?? ""}
           results={searchResults}
           catalogQuickAdd={catalogQuickAdd}
+          hideForm={hideSearchForm}
         />
       );
     case "ContentListingSectionRecord":

@@ -275,6 +275,11 @@ export function ProductVariantPicker({
     return variants.some((variant) => variant.available && matchesAll(variant, next));
   }
 
+  const trustLine = [shippingTrust, returnsTrust, warrantyTrust?.trim()]
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part))
+    .join(" · ");
+
   return (
     <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-10">
       <ProductMediaGallery
@@ -400,7 +405,7 @@ export function ProductVariantPicker({
           </div>
         ) : null}
         <div className="space-y-1.5 text-sm text-muted-foreground">
-          {shippingTrust ? <p>{shippingTrust}</p> : null}
+          {trustLine ? <p>{trustLine}</p> : null}
           {buyBoxLocale === "pt" && shippingEstimateCopy ? (
             <ProductShippingEstimate
               locale="pt"
@@ -408,8 +413,6 @@ export function ProductVariantPicker({
               copy={shippingEstimateCopy}
             />
           ) : null}
-          {returnsTrust ? <p>{returnsTrust}</p> : null}
-          {warrantyTrust?.trim() ? <p>{warrantyTrust.trim()}</p> : null}
           {refundPolicyHref && refundPolicyLink?.trim() ? (
             <p>
               <Link
@@ -421,11 +424,11 @@ export function ProductVariantPicker({
             </p>
           ) : null}
           {viewSpecsLabel || viewSizeGuideLabel ? (
-            <p className="flex flex-wrap gap-x-3 gap-y-1">
+            <p className="flex flex-wrap gap-2">
               {viewSpecsLabel ? (
                 <a
                   href="#product-specs"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   {viewSpecsLabel}
                 </a>
@@ -433,7 +436,7 @@ export function ProductVariantPicker({
               {viewSizeGuideLabel ? (
                 <a
                   href="#product-size-guide"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-3 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 >
                   {viewSizeGuideLabel}
                 </a>

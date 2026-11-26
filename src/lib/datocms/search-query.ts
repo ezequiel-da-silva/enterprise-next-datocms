@@ -12,3 +12,15 @@ export function searchResultsPath(canonicalPath: string, query?: string): string
   if (!q) return canonicalPath;
   return `${canonicalPath}?q=${encodeURIComponent(q)}`;
 }
+
+/** Strip query/hash and trailing slash for path equality (locale search routes). */
+function normalizeSearchPath(path: string): string {
+  const bare = path.split(/[?#]/)[0] ?? path;
+  if (bare.length > 1 && bare.endsWith("/")) return bare.slice(0, -1);
+  return bare || "/";
+}
+
+/** True when the current pathname is the configured search results page. */
+export function isSearchResultsPath(pathname: string, searchPath: string): boolean {
+  return normalizeSearchPath(pathname) === normalizeSearchPath(searchPath);
+}

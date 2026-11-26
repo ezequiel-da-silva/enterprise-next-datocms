@@ -41,6 +41,8 @@ type CmsPageArticleProps = {
   jsonLdPageType?: PageJsonLdType;
   searchQuery?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
+  /** Omit in-page SearchForm when chrome header search is enabled. */
+  hideSearchForm?: boolean;
   /** SSR catalog facets for Shopify `content_listing_section` blocks. */
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
@@ -65,6 +67,7 @@ export async function CmsPageArticle({
   jsonLdPageType = "WebPage",
   searchQuery,
   searchResults,
+  hideSearchForm = false,
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
@@ -153,6 +156,7 @@ export async function CmsPageArticle({
             searchQuery={searchQuery}
             searchFormAction={canonicalPath}
             searchResults={searchResults}
+            hideSearchForm={hideSearchForm}
             catalogFilters={catalogFilters}
             catalogFiltersCopy={catalogFiltersCopy}
             catalogFiltersPath={catalogFiltersPath}

@@ -30,6 +30,7 @@ type PageContentBlocksProps = {
   searchQuery?: string;
   searchFormAction?: string;
   searchResults?: SearchResultsPayload | Promise<SearchResultsPayload>;
+  hideSearchForm?: boolean;
   catalogFilters?: CatalogFilters;
   catalogFiltersCopy?: CatalogFiltersCopy;
   catalogFiltersPath?: string;
@@ -52,6 +53,7 @@ export function PageContentBlocks({
   searchQuery,
   searchFormAction,
   searchResults,
+  hideSearchForm = false,
   catalogFilters,
   catalogFiltersCopy,
   catalogFiltersPath,
@@ -75,6 +77,7 @@ export function PageContentBlocks({
       searchQuery={searchQuery}
       searchFormAction={searchFormAction}
       searchResults={searchResults}
+      hideSearchForm={hideSearchForm}
       catalogFilters={catalogFilters}
       catalogFiltersCopy={catalogFiltersCopy}
       catalogFiltersPath={catalogFiltersPath}

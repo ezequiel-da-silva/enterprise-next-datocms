@@ -22,6 +22,8 @@ type SearchSectionBlockProps = {
   query: string;
   results?: SearchResultsPayload | Promise<SearchResultsPayload>;
   catalogQuickAdd?: CatalogProductCardQuickAdd | null;
+  /** When header chrome search is on, omit the duplicate in-page form (Jakob). */
+  hideForm?: boolean;
 };
 
 const FALLBACK_SECTION_LABEL: Record<AppLocale, string> = {
@@ -74,6 +76,7 @@ export function SearchSectionBlock({
   query,
   results,
   catalogQuickAdd = null,
+  hideForm = false,
 }: SearchSectionBlockProps) {
   const fields = record as Record<string, unknown>;
   const hasTextHeader = readCdaBool(fields, "hasTextHeader", "has_text_header");
@@ -109,13 +112,15 @@ export function SearchSectionBlock({
             <StructuredTextRenderer data={intro} contentLinkGroup={contentLinkGroup} locale={locale} />
           </div>
         ) : null}
-        <SearchForm
-          action={formAction}
-          query={query}
-          locale={locale}
-          placeholder={placeholder || undefined}
-          submitLabel={submitLabel || undefined}
-        />
+        {hideForm ? null : (
+          <SearchForm
+            action={formAction}
+            query={query}
+            locale={locale}
+            placeholder={placeholder || undefined}
+            submitLabel={submitLabel || undefined}
+          />
+        )}
         <Suspense fallback={<SearchSkeleton />}>
           <SearchResultsSlot
             results={results}

@@ -40,7 +40,7 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 
 **Pass when:**
 
-- Landmarks: `<header>`, `<main id="conteudo-principal">`, `<footer>`, labelled `<nav>`
+- Landmarks: `<header>`, `<main id="main-content">`, `<footer>`, labelled `<nav>`
 - One `<h1>` per page
 - Focus visible; mobile menu has focus trap + Escape
 - Theme toggle: `role="switch"` + `aria-checked`
