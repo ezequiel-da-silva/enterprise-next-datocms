@@ -69,6 +69,15 @@ describe("proxy", () => {
     expect(a).not.toBe(b);
   });
 
+  it("forwards the same CSP on the request so Next can nonce inlined styles", async () => {
+    const res = await proxy(makeRequest(`/${DEFAULT_APP_LOCALE}`));
+    const responseCsp = res.headers.get("content-security-policy") ?? "";
+    const requestCsp = res.headers.get("x-middleware-request-content-security-policy") ?? "";
+    expect(requestCsp).toBe(responseCsp);
+    const nonce = requestCsp.match(/'nonce-([^']+)'/)?.[1] ?? "";
+    expect(nonce).toMatch(/^[A-Za-z0-9+/_-]+={0,2}$/);
+  });
+
   it("applies a published CMS redirect with security headers", async () => {
     getRedirects.mockResolvedValue({
       data: {
