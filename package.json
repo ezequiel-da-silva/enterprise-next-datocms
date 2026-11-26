@@ -50,6 +50,7 @@
     "test:e2e": "playwright test",
     "test:e2e:shop": "dotenv -e .env.prod -v SHOPIFY_CART_ENABLED=1 -v E2E_SHOP=1 -- playwright test e2e/shop-cart.spec.ts e2e/shop-catalog-filters.spec.ts",
     "test:e2e:audit-pt": "dotenv -e .env.prod -v SHOPIFY_CART_ENABLED=1 -v E2E_AUDIT_PT=1 -v PLAYWRIGHT_BASE_URL=http://localhost:3000 -- playwright test e2e/audit-pt-screenshots.spec.ts",
+    "test:e2e:ga": "dotenv -e .env.prod -v SHOPIFY_CART_ENABLED=1 -v E2E_SHOP=1 -v PLAYWRIGHT_BASE_URL=http://localhost:3000 -- playwright test e2e/ga4-pdp.spec.ts",
     "prepare": "husky"
   },
   "dependencies": {
