@@ -236,6 +236,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://www.datocms-assets.com" />
         <link rel="preconnect" href="https://image.mux.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://image.mux.com" />
+        <link rel="preconnect" href="https://cdn.shopify.com" />
       </head>
       <body className="relative flex min-h-dvh flex-col bg-background text-foreground">
         <script

@@ -8,6 +8,35 @@ import type { ImageLoaderProps } from "next/image";
  */
 const DEFAULT_QUALITY = 75;
 
+/** Keep in sync with `images.deviceSizes` / `images.imageSizes` in `next.config.ts`. */
+export const NEXT_IMAGE_DEVICE_SIZES = [384, 480, 640, 672, 750, 828, 960, 1080] as const;
+export const NEXT_IMAGE_IMAGE_SIZES = [16, 32, 48, 64, 96, 128, 256, 320, 384] as const;
+
+/** `sizes` of the PDP gallery main image. `100vw` makes next/image emit every width from the first device size up. */
+export const PDP_GALLERY_SIZES = "(max-width: 768px) 100vw, 720px";
+
+/**
+ * Widths `next/image` puts in `srcSet` when `sizes` contains `100vw`.
+ * `384` appears twice because it is in both `imageSizes` and `deviceSizes`.
+ */
+export function nextWidthsFor100vw(): number[] {
+  const deviceSizes = [...NEXT_IMAGE_DEVICE_SIZES].sort((a, b) => a - b);
+  const allSizes = [...deviceSizes, ...NEXT_IMAGE_IMAGE_SIZES].sort((a, b) => a - b);
+  const floor = deviceSizes[0] ?? 0;
+  return allSizes.filter((size) => size >= floor);
+}
+
+/** `href` + `imageSrcSet` matching a `priority` `next/image` of this `src` at `PDP_GALLERY_SIZES`. */
+export function pdpGalleryPreloadProps(src: string): { href: string; imageSrcSet: string; imageSizes: string } {
+  const widths = nextWidthsFor100vw();
+  const last = widths[widths.length - 1] ?? NEXT_IMAGE_DEVICE_SIZES[NEXT_IMAGE_DEVICE_SIZES.length - 1];
+  return {
+    href: datoImageLoader({ src, width: last, quality: DEFAULT_QUALITY }),
+    imageSrcSet: widths.map((width) => `${datoImageLoader({ src, width, quality: DEFAULT_QUALITY })} ${width}w`).join(", "),
+    imageSizes: PDP_GALLERY_SIZES,
+  };
+}
+
 function isDatoAssetSrc(src: string): boolean {
   try {
     const host = new URL(src, "https://www.datocms-assets.com").hostname;
