@@ -12,7 +12,12 @@ const nextConfig: NextConfig = {
   output: process.env.VERCEL ? undefined : "standalone",
   poweredByHeader: false,
   experimental: {
-    inlineCss: true,
+    /*
+     * Do not enable experimental.inlineCss while prod CSP keeps style-src /
+     * style-src-elem nonce-only. Next still has a gap applying that nonce to
+     * inlined <style> tags, so Tailwind never loads and smoke fails on the
+     * contact honeypot opacity. External /_next CSS is allowed via 'self'.
+     */
     optimizePackageImports: [
       "@fortawesome/free-solid-svg-icons",
       "@fortawesome/free-regular-svg-icons",
