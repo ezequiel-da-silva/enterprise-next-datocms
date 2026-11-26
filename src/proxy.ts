@@ -99,8 +99,8 @@ function readThemeCookie(request: NextRequest): ThemeMode | null {
  * Um 308 sem CSP/HSTS deixa a resposta exposta e falha o smoke de headers,
  * por isso o redirect raiz `/ → /{locale}` também tem de os carregar.
  */
-function applySecurityHeaders(response: NextResponse, nonce: string, isDev: boolean): NextResponse {
-  response.headers.set("Content-Security-Policy", buildCspHeader(nonce, isDev));
+function applySecurityHeaders(response: NextResponse, isDev: boolean, csp: string): NextResponse {
+  response.headers.set("Content-Security-Policy", csp);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
@@ -115,12 +115,13 @@ function applySecurityHeaders(response: NextResponse, nonce: string, isDev: bool
 export async function proxy(request: NextRequest) {
   const nonce = createNonce();
   const isDev = process.env.NODE_ENV === "development";
+  const csp = buildCspHeader(nonce, isDev);
   const pathname = request.nextUrl.pathname;
 
   if (pathname === "/" || pathname === "") {
     const url = request.nextUrl.clone();
     url.pathname = `/${DEFAULT_APP_LOCALE}`;
-    return applySecurityHeaders(NextResponse.redirect(url, 308), nonce, isDev);
+    return applySecurityHeaders(NextResponse.redirect(url, 308), isDev, csp);
   }
 
   if (shouldLookupCmsRedirects(pathname)) {
@@ -135,12 +136,20 @@ export async function proxy(request: NextRequest) {
             url.pathname = matched.destination;
             return url;
           })();
-      return applySecurityHeaders(NextResponse.redirect(target, matched.status), nonce, isDev);
+      return applySecurityHeaders(NextResponse.redirect(target, matched.status), isDev, csp);
     }
   }
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(NONCE_HEADER, nonce);
+  /*
+   * Next lê o nonce em `Content-Security-Policy` do pedido (`getScriptNonceFromHeaders`)
+   * para carimbar scripts/recursos. Mantém-se o pedido alinhado com a resposta mesmo
+   * com `experimental.inlineCss` **desligado** (a flag não é fiável sob CSP nonce-only;
+   * o Tailwind vai por `<link>` `/_next`, permitido por `'self'`). `x-nonce` serve aos
+   * scripts/estilo que a app monta à mão (tema, JSON-LD).
+   */
+  requestHeaders.set("Content-Security-Policy", csp);
 
   const firstSegment = pathname.split("/").filter(Boolean)[0];
   const requestLocale = firstSegment && isAppLocale(firstSegment) ? firstSegment : DEFAULT_APP_LOCALE;
@@ -150,8 +159,8 @@ export async function proxy(request: NextRequest) {
 
   const response = applySecurityHeaders(
     NextResponse.next({ request: { headers: requestHeaders } }),
-    nonce,
     isDev,
+    csp,
   );
 
   const theme = readThemeCookie(request);

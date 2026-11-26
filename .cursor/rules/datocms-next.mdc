@@ -44,6 +44,8 @@ Use [`DatoResponsivePicture`](../../src/components/patterns/dato-responsive-pict
 
 New or updated image fields: add `blurUpThumb` to the GraphQL fragment and pass `placeholder="blur"` + `blurDataURL` on `next/image`. `priority` / `fetchPriority="high"` only for LCP.
 
+PDP gallery LCP (Shopify CDN): Server Component calls `preload()` with `pdpGalleryPreloadProps` / `PDP_GALLERY_SIZES` from `datocms-image-loader.ts`, matching the client gallery `srcset`; priority Image uses `decoding="sync"`. Home / CMS hero LCP stays on `DatoResponsivePicture` — do **not** copy the PDP preload path onto Dato heroes.
+
 ## Anti-patterns
 
 - Dato fetch in client components

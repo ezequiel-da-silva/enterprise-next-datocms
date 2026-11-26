@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { NEXT_IMAGE_DEVICE_SIZES, NEXT_IMAGE_IMAGE_SIZES } from "./src/lib/datocms-image-loader";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -11,6 +12,12 @@ const nextConfig: NextConfig = {
   output: process.env.VERCEL ? undefined : "standalone",
   poweredByHeader: false,
   experimental: {
+    /*
+     * Do not enable experimental.inlineCss while prod CSP keeps style-src /
+     * style-src-elem nonce-only. Next still has a gap applying that nonce to
+     * inlined <style> tags, so Tailwind never loads and smoke fails on the
+     * contact honeypot opacity. External /_next CSS is allowed via 'self'.
+     */
     optimizePackageImports: [
       "@fortawesome/free-solid-svg-icons",
       "@fortawesome/free-regular-svg-icons",
@@ -20,8 +27,8 @@ const nextConfig: NextConfig = {
   images: {
     loader: "custom",
     loaderFile: "./src/lib/datocms-image-loader.ts",
-    deviceSizes: [384, 480, 640, 672, 750, 828, 960, 1080],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 320, 384],
+    deviceSizes: [...NEXT_IMAGE_DEVICE_SIZES],
+    imageSizes: [...NEXT_IMAGE_IMAGE_SIZES],
     minimumCacheTTL: 86400,
     remotePatterns: [
       {

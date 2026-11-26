@@ -12,7 +12,7 @@ When finishing a new or redesigned surface, run Playwright against `http://local
 4. **Width** — Content uses `<Container>` so side gutters align with the header logo row (no hand-rolled `max-w-* px-*` wrappers).
 5. **Vertical rhythm** — Spacing matches neighbouring CMS blocks (`my-12` / existing section padding); no random tight `my-4` on new section roots.
 6. **Viewports** — Screenshot at **1440** and **390**; cards that look fine on desktop must not collapse or overflow on mobile.
-7. **LCP / hero** — Hero image still has `priority` / sensible `fetchPriority` where it is LCP; overlay text remains readable without stacking glass effects on the copy panel.
+7. **LCP** — Home/CMS: hero `DatoResponsivePicture` with `priority` where it is LCP; overlay text readable without stacking glass on the copy panel. PDP: gallery image uses matching `preload()` + `decoding="sync"` (not the hero block pattern).
 
 ## Quick anti-patterns
 

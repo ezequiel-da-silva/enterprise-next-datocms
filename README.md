@@ -1,4 +1,15 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# next-dato
+
+Next.js 16 + DatoCMS + Shopify Storefront. **Agents and contributors:** start at [AGENTS.md](AGENTS.md).
+
+| Doc | Purpose |
+|-----|---------|
+| [AGENTS.md](AGENTS.md) | Stack, commands, anti-patterns |
+| [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) | How agents pick rules/skills |
+| [docs/SECURITY.md](docs/SECURITY.md) | CSP, headers, honeypot smoke |
+| [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) | Pre-merge pillars |
+| [docs/DATOCMS.md](docs/DATOCMS.md) | CMS, CLI, CMA scripts |
+| [docs/SHOPIFY.md](docs/SHOPIFY.md) | Catalog, cart, GA4 |
 
 ## Getting Started
 

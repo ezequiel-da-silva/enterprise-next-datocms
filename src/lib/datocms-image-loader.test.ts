@@ -4,6 +4,9 @@ import datoImageLoader, {
   clampLayoutDimensions,
   datoAssetUrlWithParams,
   DATO_DESKTOP_SRCSET_WIDTHS,
+  nextWidthsFor100vw,
+  pdpGalleryPreloadProps,
+  PDP_GALLERY_SIZES,
 } from "@/lib/datocms-image-loader";
 
 describe("datoImageLoader", () => {
@@ -25,6 +28,22 @@ describe("datoImageLoader", () => {
   it("leaves other hosts untouched", () => {
     const src = "https://example.com/cdn.shopify.com/photo.jpg";
     expect(datoImageLoader({ src, width: 320, quality: 75 })).toBe(src);
+  });
+});
+
+describe("pdpGalleryPreloadProps", () => {
+  it("matches next/image srcset widths for a 100vw sizes string, including the duplicate 384", () => {
+    expect(nextWidthsFor100vw()).toEqual([384, 384, 480, 640, 672, 750, 828, 960, 1080]);
+  });
+
+  it("builds a Shopify srcset whose last candidate is the preload href", () => {
+    const src = "https://cdn.shopify.com/s/files/1/image.jpg?v=123";
+    const preload = pdpGalleryPreloadProps(src);
+    expect(preload.imageSizes).toBe(PDP_GALLERY_SIZES);
+    expect(preload.href).toBe(datoImageLoader({ src, width: 1080, quality: 75 }));
+    expect(preload.imageSrcSet.endsWith(`${preload.href} 1080w`)).toBe(true);
+    expect(preload.imageSrcSet).toContain("width=384");
+    expect(preload.imageSrcSet.split(", ")).toHaveLength(9);
   });
 });
 

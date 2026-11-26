@@ -31,7 +31,12 @@ Runner: **Vitest** (`npm test`, `npm run test:watch`).
 ## CI
 
 - Unit: [`.github/workflows/ci.yml`](../../.github/workflows/ci.yml) — typecheck, lint, test, security:audit, build, codegen:check
-- E2E smoke: [`.github/workflows/e2e.yml`](../../.github/workflows/e2e.yml) — `npm run test:e2e` (Playwright)
+- E2E smoke: [`.github/workflows/e2e.yml`](../../.github/workflows/e2e.yml) — `npm run test:e2e` (Playwright; contact honeypot asserts `opacity: 0`)
+
+## Opt-in Playwright (not CI)
+
+- `npm run test:e2e:shop` — cart funnel (`E2E_SHOP=1`, Shopify env)
+- `npm run test:e2e:ga` — consent + `view_item` / `add_to_cart` + FAQPage (`E2E_SHOP=1`, `.env.prod`)
 
 ## Before merge
 

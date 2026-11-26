@@ -56,6 +56,43 @@ export function toGalleryItemsFromMedia(
   return items;
 }
 
+type GalleryImageSource = { url: string; alt: string; width: number; height: number };
+
+/**
+ * URL of the image the PDP gallery paints first. Matches `ProductMediaGallery`:
+ * media (or the image list), then variant images not already present, then the
+ * active variant URL, otherwise the first image. A leading video returns null.
+ */
+export function resolveGalleryMainImageUrl(input: {
+  mediaItems: ProductGalleryItem[];
+  images: GalleryImageSource[];
+  variantImages: GalleryImageSource[];
+  activeImageUrl: string | null;
+}): string | null {
+  const base = input.mediaItems.length > 0 ? input.mediaItems : toGalleryItemsFromImages(input.images);
+  const items = [...base];
+  for (const image of input.variantImages) {
+    if (!image.url.trim()) continue;
+    if (!items.some((item) => item.kind === "image" && item.url === image.url)) {
+      items.push({
+        kind: "image",
+        id: `img-${image.url}`,
+        url: image.url,
+        alt: image.alt,
+        width: image.width,
+        height: image.height,
+      });
+    }
+  }
+  let index = 0;
+  if (input.activeImageUrl) {
+    const byUrl = items.findIndex((item) => item.kind === "image" && item.url === input.activeImageUrl);
+    if (byUrl >= 0) index = byUrl;
+  }
+  const main = items[index];
+  return main?.kind === "image" ? main.url : null;
+}
+
 /** Fallback when Storefront `media` is empty — use classic image list. */
 export function toGalleryItemsFromImages(
   images: { url: string; alt: string; width: number; height: number }[],

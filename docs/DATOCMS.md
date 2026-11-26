@@ -287,6 +287,8 @@ Em **Navigation → 🧭 Header**:
 
 No desktop o input fica sempre visível no header; o preview em tempo real abre ao focar/digitar (⌘K / Ctrl K). No móvel a busca vive no drawer. O formulário usa GET `?q=` e aponta para a Search Page configurada em Global setting. Em páginas com Hero, o chrome sticky não reserva altura no fluxo: a hero passa por baixo do header translúcido, com uma área segura para que título e ações não fiquem encobertos.
 
+A11y: o `input type="search"` **não** usa `aria-expanded` (proibido em searchbox / axe). Com o preview aberto, liga `aria-controls` e `aria-autocomplete="list"` (`header-search-form.tsx`).
+
 ## Páginas legais (`legal_page`)
 
 Modelo de colecção (não singleton): privacy, terms, refund, etc. **Não** é uma `Page` de landing — o corpo é Structured Text sem blocos de secção.
@@ -368,6 +370,7 @@ Correr com `npx datocms cma:script <ficheiro> --profile=staging|default`. Idempo
 | `seed-navigation-mega-menu-content.ts` | Conteúdo mega Loja (Nível / Terreno / Coleções + campaign); remove Loja plana; `MEGA_MENU_FORCE=1` |
 | `setup-ui-string-fieldsets.ts` | Consolida fieldsets Cart / Checkout / Global chrome / PDP |
 | `setup-product-page-publish-gates.ts` | Fieldset Snowboard specs + required publish gates |
+| `setup-product-qa.ts` | Seed `product_question` ligado a `product_page` (pares Q&A → FAQPage no PDP); `PRODUCT_QA_SEED=1` lista publicados; `PRODUCT_QA_FORCE=1` reescreve o primeiro incompleto |
 | `setup-home-landing.ts` | Home CMS + blocos (novos listings já em manual + whitelist) |
 | `curate-home-featured.ts` | Home Featured boards → `fetch_mode: manual` + pranchas publicadas (limit 4); idempotente |
 | `clean-footer-search.ts` | Remove Search/Busca/Búsqueda de `navigation.footer_menu` (lupa no header); idempotente |
@@ -394,7 +397,7 @@ Cada POST a `graphql.datocms.com` conta para o tecto mensal, **mesmo com cache d
 - O layout faz **uma** query de chrome (`GET_LAYOUT_CHROME`: navigation + `_site`), **uma** de `global_setting` (404 + páginas índice) e **uma** de `ui_string` (por locale, ISR 300s). O PDP acrescenta **uma** de `market_policy` (partilhada por todos os mercados). React `cache()` junta `getNavigation` / `getSiteSeo` e `getSearchPage` / `getContactPage` / `getBlogIndexPage` no mesmo request.
 - **Não** misturar `PAGE_BY_SLUG` no layout: a query é enorme, as tags de revalidate são por slug, e rotas sem página CMS (PDP, 404, posts) não têm `$slug`.
 - Em `next dev`, chrome/settings/redirects usam ISR de 60s. Páginas/posts por slug continuam `no-store` para não cachear `page: null` após um publish. Draft/Preview continua `no-store` + Content Link (`contentLink: v1` só com `draftMode`).
-- `unstable_cache` no middleware **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
+- `unstable_cache` no **proxy** ([`src/proxy.ts`](../src/proxy.ts); Next 16 — não há `middleware.ts`) **não** é usado: o Data Cache do `fetch` + `revalidateTag("datocms:redirects")` já cobre produção; memória no isolate da Vercel não é invalidada pelo webhook.
 - `npm run codegen` / `codegen:check` / pre-push **não** chamam a CDA: usam o SDL em `generated/schema.graphql`. Só `npm run codegen:schema` (ou `codegen:from-dato`) introspecta, após mudar o modelo. O dump não envia `X-Exclude-Invalid` porque o cliente do app também não: com strict mode o Dato estreita os tipos (`AltTitleFileField`, `width`/`height` não-nulos) e os tipos gerados deixariam de descrever o que o runtime recebe. Não mockar Lighthouse: os scores de a11y/SEO/ATF precisam do HTML verdadeiro.
 
 Rota: [`POST /api/revalidate`](../src/app/api/revalidate/route.ts).

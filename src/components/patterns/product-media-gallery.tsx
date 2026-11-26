@@ -2,13 +2,12 @@
 
 import { ProductMediaLightbox } from "@/components/patterns/product-media-lightbox";
 import type { ProductGalleryCopy } from "@/lib/i18n/product-gallery-copy";
+import { PDP_GALLERY_SIZES } from "@/lib/datocms-image-loader";
 import type { ProductGalleryItem } from "@/lib/shopify/product-gallery-items";
 import Image from "next/image";
 import { useMemo, useRef, useState } from "react";
 
 export type { ProductGalleryItem } from "@/lib/shopify/product-gallery-items";
-
-const MAIN_SIZES = "(max-width: 768px) 100vw, 720px";
 
 type ProductMediaGalleryProps = {
   items: ProductGalleryItem[];
@@ -70,9 +69,10 @@ export function ProductMediaGallery({
               alt={main.alt}
               width={main.width}
               height={main.height}
-              sizes={MAIN_SIZES}
+              sizes={PDP_GALLERY_SIZES}
               priority
               fetchPriority="high"
+              decoding="sync"
               className="h-auto w-full object-contain"
             />
           </button>

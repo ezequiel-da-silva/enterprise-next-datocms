@@ -6,7 +6,9 @@ import { ProductQaSection, type ProductQuestionItem } from "@/components/pattern
 import { ProductReviewsSection, type ProductReviewItem } from "@/components/patterns/product-reviews-section";
 import { ProductSizeGuide } from "@/components/patterns/product-size-guide";
 import { ProductSpecsTable, type ProductSpecValues } from "@/components/patterns/product-specs-table";
-import { toGalleryItemsFromMedia } from "@/lib/shopify/product-gallery-items";
+import { pdpGalleryPreloadProps } from "@/lib/datocms-image-loader";
+import { resolveGalleryMainImageUrl, toGalleryItemsFromMedia } from "@/lib/shopify/product-gallery-items";
+import { preload } from "react-dom";
 import {
   ProductVariantPicker,
   type ProductPickerCart,
@@ -249,6 +251,25 @@ export function ProductPageArticle({
   const badgeLabel = snowboardBadgeLabel(locale, badge);
   const paymentHint = locale === "pt" ? pdpCopy.paymentHint.trim() || null : null;
   const specEyebrow = formatProductSpecEyebrow(locale, specs);
+  if (storefront && variants) {
+    const images = pickerImages(title, storefront);
+    const initial = variants.find((variant) => variant.available) ?? variants[0];
+    const lcpSrc = resolveGalleryMainImageUrl({
+      mediaItems: toGalleryItemsFromMedia(storefront.media, title),
+      images,
+      variantImages: variants.flatMap((variant) => (variant.image ? [variant.image] : [])),
+      activeImageUrl: initial?.image?.url ?? images[0]?.url ?? null,
+    });
+    if (lcpSrc) {
+      const lcp = pdpGalleryPreloadProps(lcpSrc);
+      preload(lcp.href, {
+        as: "image",
+        fetchPriority: "high",
+        imageSrcSet: lcp.imageSrcSet,
+        imageSizes: lcp.imageSizes,
+      });
+    }
+  }
   const editorial = (
     <>
       <h1 className="type-display">{title}</h1>

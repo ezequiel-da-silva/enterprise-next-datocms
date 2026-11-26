@@ -101,6 +101,7 @@ Register new **page** blocks in [`structured-text-block-view.tsx`](../src/compon
 | JSON-LD site graph | `layout.tsx` → `buildSiteJsonLdGraph()` |
 | Page JSON-LD | `CmsPageArticle` → `JsonLdScriptSync` |
 | FAQ / block JSON-LD | Async block + `JsonLdScriptSync` with nonce |
+| PDP Product + FAQPage | `buildProductPageJsonLd()` — FAQPage só com pares Q&A completos (`product_question`; seed `setup-product-qa.ts`) |
 | Sitemap / robots / manifest | `src/app/sitemap.ts`, `robots.ts`, `manifest.ts` |
 
 See [QUALITY-GATES.md](./QUALITY-GATES.md) (SEO/AEO pillars) and [AI-PLAYBOOK.md](./AI-PLAYBOOK.md).
@@ -126,11 +127,12 @@ flowchart LR
 | `begin_checkout` | Checkout handoff |
 | `purchase` | Server only: Shopify webhook `orders/paid` → Measurement Protocol |
 
-Helpers: [`src/lib/analytics/ecommerce.ts`](../src/lib/analytics/ecommerce.ts) (`gtagSafe` no-ops without browser gtag / pre-consent). **Do not** fire `purchase` from `/{locale}/order/confirmation` via `?order=` (fraud / double-count). Ops detail: [SHOPIFY.md](./SHOPIFY.md) (GA4 purchase / consent).
+Helpers: [`src/lib/analytics/ecommerce.ts`](../src/lib/analytics/ecommerce.ts) (`gtagSafe` no-ops without browser gtag / pre-consent). **Do not** fire `purchase` from `/{locale}/order/confirmation` via `?order=` (fraud / double-count). Ops detail: [SHOPIFY.md](./SHOPIFY.md) (GA4 purchase / consent). Local opt-in: `npm run test:e2e:ga`.
 
 ## Security boundary
 
-- CSP and nonce: [`src/proxy.ts`](../src/proxy.ts)
+- CSP and nonce: [`src/proxy.ts`](../src/proxy.ts) — same CSP on **request** (Next nonce discovery) and **response**; `x-nonce` for app-owned scripts/styles
+- CSS: external `/_next` under prod CSP; **do not** enable `experimental.inlineCss` while `style-src-elem` is nonce-only ([SECURITY.md](./SECURITY.md))
 - Server-only tokens: `DATOCMS_*`, `DATOCMS_PREVIEW_SECRET`, `SHOPIFY_*` ([SHOPIFY.md](./SHOPIFY.md))
 - Draft mode: [`src/app/api/draft/`](../src/app/api/draft/)
 - Details: [SECURITY.md](./SECURITY.md), `.cursor/rules/security.mdc`

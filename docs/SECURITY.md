@@ -23,6 +23,13 @@ Corre `npm run security:audit:all` periodicamente para reavaliar; quando houver 
 
 O proxy em [`src/proxy.ts`](../src/proxy.ts) aplica CSP estrita e HSTS só quando o processo do Next corre com **`NODE_ENV=production`**.
 
+### CSP, Next e entrega de CSS
+
+- O proxy gera um nonce por pedido e põe a **mesma** `Content-Security-Policy` na **resposta** e no **pedido** que segue para o Next (`getScriptNonceFromHeaders`). O header `x-nonce` serve aos scripts/estilo que a app monta (`getNonce()`, boot do tema, JSON-LD).
+- Em produção, `style-src` / `style-src-elem` usam `'self'` + nonce. O CSS do Tailwind vai por `<link>` em `/_next/...` (permitido por `'self'`). O único `<style>` controlado da app é o das variáveis de tema, com `nonce`.
+- **Não** activar `experimental.inlineCss` enquanto a CSP for nonce-only nos estilos: o Next ainda não carimba o nonce de forma fiável nos `<style>` inlined, o browser bloqueia o CSS e o smoke do honeypot (`opacity: 0` em `company_website`) falha. Ver comentário em [`next.config.ts`](../next.config.ts).
+- Skills oficiais Dato que mostram CSP em `next.config.js` **não** se aplicam a este repo — a CSP vive só no proxy.
+
 Hosts de terceiros entram na CSP só quando a env correspondente existe: GA4 (`GA_MEASUREMENT_ID`) e Shopify Customer Privacy (`SHOPIFY_STOREFRONT_PUBLIC_TOKEN`). Os dois scripts só carregam depois da escolha no banner de cookies ([SHOPIFY.md → Consentimento de cookies](./SHOPIFY.md#consentimento-de-cookies)). `SHOPIFY_STOREFRONT_PUBLIC_TOKEN` é o único token que chega ao browser, e tem de ser o **público**.
 
 O Vercel Speed Insights (Web Vitals de usuários reais) também só monta depois de "Aceitar todos". Reporta para `/_vercel/speed-insights/*` no mesmo origin, então a CSP só ganha `https://va.vercel-scripts.com` quando ele está ativo (`VERCEL=1` ou `SPEED_INSIGHTS_ENABLED=1`).
@@ -93,8 +100,9 @@ Com HTTPS e domínio público:
 ## Checklist manual
 
 - [ ] Lighthouse **Best Practices** e **Security** em `npm run build && npm run start` (não em `next dev`)
-- [ ] Console sem violações de CSP em páginas principais (FA com CSS estático; sem `<style>` injectado sem nonce)
-- [ ] Produção: `style-src-elem` com nonce; `style-src-attr` permite atributos (next/image)
+- [ ] Console sem violações de CSP em páginas principais (FA com CSS estático; sem `<style>` injectado sem nonce; `experimental.inlineCss` **desligado**)
+- [ ] Produção: CSS via `<link>` `/_next` + `style-src-elem` com nonce; `style-src-attr` permite atributos (next/image)
+- [ ] Smoke: `npm run test:e2e` — honeypot `company_website` com `opacity: 0` (prova que o Tailwind chegou ao browser)
 - [ ] `/api/draft` sem secret → 401 ou 500 (nunca preview aberto)
 - [ ] `/api/draft?secret=wrong` → 401 quando secret configurado
 - [ ] `/api/draft?secret=…&redirect=https://evil.com` → 422
@@ -115,4 +123,4 @@ Com HTTPS e domínio público:
 - HSTS em localhost não implica TLS real — validar SSL no deploy.
 - O admin de produção é `https://boilerplate-dato.admin.datocms.com` (site `201057`). Em Production, `DATOCMS_ADMIN_FRAME_ANCESTOR` deve ter esse valor, sem barra no fim. O fallback do código é o mesmo host.
 - Não submeter o domínio à lista de preload do HSTS enquanto algum subdomínio não for HTTPS para sempre. O header já inclui `preload`; retirar o domínio da lista depois exige espera.
-- CORS `*` em `/api/preview-links` é intencional para o plugin DatoCMS — não replicar em APIs novas.
+- `/api/preview-links` usa CORS **só** para origens Dato (`resolveDatoCorsOrigin` / admin + `plugins-cdn.datocms.com`) — **não** `Access-Control-Allow-Origin: *`. Não abrir APIs novas com `*`.
