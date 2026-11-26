@@ -1,3 +1,5 @@
+"use client";
+
 import type { AppLocale } from "@/constants/i18n";
 import { cn } from "@/lib/cn";
 import type { ChangeEvent, MouseEvent } from "react";
