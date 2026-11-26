@@ -100,6 +100,7 @@ export async function POST(request: NextRequest) {
       currency: order.currency,
       value: order.totalPrice,
       items: order.items,
+      client_id: order.gaClientId,
     });
     if (!mp.ok) {
       logError("webhook.shopify.order", "GA4 Measurement Protocol failed", {

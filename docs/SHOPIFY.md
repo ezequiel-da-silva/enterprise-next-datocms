@@ -230,17 +230,20 @@ Desligado por defeito. Com `SHOPIFY_CART_ENABLED=1`:
 - **`/{locale}/cart`:** linhas, quantidade (0 remove), remover, subtotal e link “Finalizar compra” para o `checkoutUrl` da Shopify. A página tem `noindex`; com a flag desligada devolve 404.
 - **`/{locale}/order/confirmation`:** thank-you branded (`noindex`). Query opcional `?order=#1001` só para mostrar o número — **não** dispara `purchase` no browser (evita fraude por URL). O evento GA4 `purchase` vem do webhook (abaixo).
 
-### GA4 `purchase` (headless)
+### GA4 (funil + purchase headless)
 
-O checkout fica na Shopify; o Next **não** recebe um redirect automático pós-pagamento. A receita fecha assim:
+**No código (já ligado):** após consentimento, `view_item_list` → `select_item` (card) → `view_item` → `add_to_cart` → `begin_checkout` → `purchase` (Measurement Protocol). O CTA primário do hero dispara `select_content` (`content_type=hero_cta`). O browser grava `nd-ga-cid`; as mutações do carrinho escrevem o atributo Shopify `ga_client_id`, que o webhook `orders/paid` reutiliza no MP (só `^\d+\.\d+$`; senão UUID). Sem inventar BI no Next.
 
-1. **GA4 Admin** → Data stream → Measurement Protocol API secrets → cria um secret → `GA_API_SECRET` na Vercel (junto com `GA_MEASUREMENT_ID`) → redeploy.
-2. **`shopify.app.toml`:** topic `orders/paid` + scope `read_orders`. Depois `npx shopify app deploy` e **atualizar a app na loja** (aprovar o scope novo).
-3. Webhook HMAC → `/api/webhooks/shopify` → Measurement Protocol `purchase` com `transaction_id` = `order.name`. Sem `GA_API_SECRET`, o webhook faz no-op e responde 200 (Shopify não deve repetir).
-4. **Não** actives um pixel GA4 de compra na Shopify em paralelo (double-count). O gtag do site continua a servir `view_item` / `add_to_cart` após consentimento.
-5. No editor Thank you / Order status da Shopify, adiciona um botão “Continuar a comprar” → `https://{teu-dominio}/{locale}/order/confirmation` (opcional `?order={name}`).
-6. Validar: pedido de teste → GA4 DebugView / Realtime com `purchase` e o `transaction_id` do pedido.
-7. Funil local (opt-in): `npm run test:e2e:ga` — consentimento → `view_item` / `add_to_cart` + eyebrow de specs + FAQPage no HTML (`e2e/ga4-pdp.spec.ts`).
+**Ops no GA4 Admin (fora do repo):**
+
+1. Measurement Protocol API secret → `GA_API_SECRET` na Vercel (junto com `GA_MEASUREMENT_ID`) → redeploy.
+2. **`shopify.app.toml`:** topic `orders/paid` + scope `read_orders`. Depois `npx shopify app deploy` e **atualizar a app na loja**.
+3. Webhook HMAC → `/api/webhooks/shopify` → MP `purchase` com `transaction_id` = `order.name` e `client_id` do carrinho quando existir. Sem `GA_API_SECRET`, no-op + 200.
+4. **Não** actives um pixel GA4 de compra na Shopify em paralelo (double-count).
+5. Thank you / Order status: botão “Continuar a comprar” → `https://{teu-dominio}/{locale}/order/confirmation` (opcional `?order={name}`).
+6. **Explorar** → Funnel exploration com os eventos acima; breakdown por path (`/en`, `/pt`, `/es`) para idioma.
+7. (Opcional) BigQuery linking (sandbox) no Admin — eventos brutos em SQL; Looker Studio / Metabase ligam ao BQ, não ao Next. Dimensões custom para `content_type` / `content_id` se quiseres relatórios de `select_content`.
+8. Validar: DebugView / Realtime + opt-in `npm run test:e2e:ga`.
 
 Fluxo e segurança:
 

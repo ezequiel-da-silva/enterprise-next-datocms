@@ -2,6 +2,7 @@ import type { AppLocale } from "@/constants/i18n";
 import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
 import { DatoResponsivePicture } from "@/components/patterns/dato-responsive-picture";
+import { HeroTrackedPrimaryCta } from "@/components/patterns/hero-select-content-link";
 import { SmartLink } from "@/components/patterns/smart-link";
 import { StructuredTextRenderer } from "@/components/patterns/structured-text-renderer";
 import type { HeroSectionRecord, LinkBlockRecord } from "@/infra/datocms/types-page";
@@ -76,13 +77,29 @@ function heroCtaLinks(record: HeroSectionRecord, locale: AppLocale): LinkBlockRe
 function HeroButtons({ record, locale }: { record: HeroSectionRecord; locale: AppLocale }) {
   const items = heroCtaLinks(record, locale);
   if (items.length === 0) return null;
+  const layout = readLayout(record);
   return (
     <div className="mt-8 flex flex-wrap gap-3">
-      {items.map((link, index) => (
-        <Button key={link.id} asChild variant={index === 0 ? "primary" : "outline"}>
-          <SmartLink record={link} locale={locale} tone="inherit" />
-        </Button>
-      ))}
+      {items.map((link, index) => {
+        const resolved = resolveLinkBlock(link, locale);
+        if (index === 0 && resolved?.href && resolved.label) {
+          return (
+            <HeroTrackedPrimaryCta
+              key={link.id}
+              href={resolved.href}
+              label={resolved.label}
+              contentId={`${layout}:${resolved.href}`}
+              newTab={resolved.newTab}
+              ariaLabel={resolved.ariaLabel}
+            />
+          );
+        }
+        return (
+          <Button key={link.id} asChild variant={index === 0 ? "primary" : "outline"}>
+            <SmartLink record={link} locale={locale} tone="inherit" />
+          </Button>
+        );
+      })}
     </div>
   );
 }
@@ -97,6 +114,20 @@ export function HeroPrimaryRepeat({
 }) {
   const link = heroCtaLinks(record, locale)[0];
   if (!link) return null;
+  const resolved = resolveLinkBlock(link, locale);
+  if (resolved?.href && resolved.label) {
+    return (
+      <section className="not-prose mt-12 flex flex-wrap">
+        <HeroTrackedPrimaryCta
+          href={resolved.href}
+          label={resolved.label}
+          contentId={`${readLayout(record)}:${resolved.href}`}
+          newTab={resolved.newTab}
+          ariaLabel={resolved.ariaLabel}
+        />
+      </section>
+    );
+  }
   return (
     <section className="not-prose mt-12 flex flex-wrap">
       <Button asChild variant="primary">

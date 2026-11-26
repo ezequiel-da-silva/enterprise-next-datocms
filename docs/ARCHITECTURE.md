@@ -112,7 +112,8 @@ Ecommerce funnel (consent-gated on the client; Measurement Protocol for purchase
 
 ```mermaid
 flowchart LR
-  list[view_item_list] --> pdp[view_item]
+  list[view_item_list] --> select[select_item]
+  select --> pdp[view_item]
   pdp --> atc[add_to_cart]
   atc --> rem[remove_from_cart]
   atc --> begin[begin_checkout]
@@ -122,12 +123,14 @@ flowchart LR
 | Event | Where |
 |-------|--------|
 | `view_item_list` | Listing / featured (`ViewItemListTracker`) |
+| `select_item` | Catalog product card click |
+| `select_content` | Hero primary CTA only (`hero_cta`) |
 | `view_item` | PDP |
 | `add_to_cart` / `remove_from_cart` | Cart actions / drawer |
 | `begin_checkout` | Checkout handoff |
-| `purchase` | Server only: Shopify webhook `orders/paid` → Measurement Protocol |
+| `purchase` | Server: `orders/paid` → MP with cart `ga_client_id` when valid |
 
-Helpers: [`src/lib/analytics/ecommerce.ts`](../src/lib/analytics/ecommerce.ts) (`gtagSafe` no-ops without browser gtag / pre-consent). **Do not** fire `purchase` from `/{locale}/order/confirmation` via `?order=` (fraud / double-count). Ops detail: [SHOPIFY.md](./SHOPIFY.md) (GA4 purchase / consent). Local opt-in: `npm run test:e2e:ga`.
+Helpers: [`src/lib/analytics/ecommerce.ts`](../src/lib/analytics/ecommerce.ts), [`ga-client-id.ts`](../src/lib/analytics/ga-client-id.ts) (`nd-ga-cid` cookie). **Do not** fire `purchase` from confirmation `?order=`. Ops (Explorar / BigQuery): [SHOPIFY.md](./SHOPIFY.md). Opt-in: `npm run test:e2e:ga`.
 
 ## Security boundary
 

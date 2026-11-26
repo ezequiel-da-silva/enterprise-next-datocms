@@ -1,4 +1,5 @@
 import { CatalogProductMedia } from "@/components/patterns/catalog-product-media";
+import { CatalogSelectItemLink } from "@/components/patterns/catalog-select-item-link";
 import {
   CatalogProductQuickAdd,
   type CatalogProductQuickAddProps,
@@ -10,7 +11,6 @@ import { productPagePath } from "@/lib/datocms/product-page-path";
 import { PDP_COPY, snowboardBadgeLabel } from "@/lib/i18n/pdp-copy";
 import { formatDiscountPill, resolveCompareAtDeal } from "@/lib/shopify/compare-at-price";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
-import Link from "next/link";
 
 /** Align with products-section / carousel CARD_SIZES. */
 const DEFAULT_SIZES = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px";
@@ -26,6 +26,9 @@ type CatalogProductCardProps = {
   sizes?: string;
   /** When set (cart enabled), shows hover / mobile quick-add. */
   quickAdd?: CatalogProductCardQuickAdd | null;
+  /** GA4 `select_item` list identity (same as ViewItemListTracker). */
+  itemListId?: string;
+  itemListName?: string;
 };
 
 export function CatalogProductCard({
@@ -33,6 +36,8 @@ export function CatalogProductCard({
   product,
   sizes = DEFAULT_SIZES,
   quickAdd = null,
+  itemListId,
+  itemListName,
 }: CatalogProductCardProps) {
   const href = productPagePath(locale, product.handle);
   const image = product.featuredImage;
@@ -43,6 +48,12 @@ export function CatalogProductCard({
   const soldOutLabel = PDP_COPY[locale].soldOut;
   const marketingBadge = snowboardBadgeLabel(locale, product.badge);
   const showQuickAdd = Boolean(quickAdd) && !soldOut;
+  const selectItem = {
+    item_id: product.handle,
+    item_name: product.title,
+    price: Number(price.amount) || 0,
+    quantity: 1,
+  };
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden">
@@ -66,8 +77,11 @@ export function CatalogProductCard({
       ) : null}
 
       <div className="relative">
-        <Link
+        <CatalogSelectItemLink
           href={href}
+          itemListId={itemListId}
+          itemListName={itemListName}
+          item={selectItem}
           className="block rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           <CatalogProductMedia
@@ -83,7 +97,7 @@ export function CatalogProductCard({
               {soldOutLabel}
             </p>
           ) : null}
-        </Link>
+        </CatalogSelectItemLink>
         {showQuickAdd && quickAdd ? (
           <CatalogProductQuickAdd
             locale={locale}
@@ -97,8 +111,11 @@ export function CatalogProductCard({
         ) : null}
       </div>
 
-      <Link
+      <CatalogSelectItemLink
         href={href}
+        itemListId={itemListId}
+        itemListName={itemListName}
+        item={selectItem}
         className="flex flex-1 flex-col gap-1.5 px-1 pb-2 pt-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <h3 className="text-balance text-sm font-medium tracking-tight text-foreground group-hover:text-primary sm:text-base">
@@ -127,7 +144,7 @@ export function CatalogProductCard({
             </>
           ) : null}
         </p>
-      </Link>
+      </CatalogSelectItemLink>
     </article>
   );
 }

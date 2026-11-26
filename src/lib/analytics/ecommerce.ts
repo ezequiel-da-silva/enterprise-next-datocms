@@ -1,3 +1,5 @@
+import { resolveMeasurementProtocolClientId } from "@/lib/analytics/ga-client-id";
+
 export type Ga4Item = {
   item_id: string;
   item_name: string;
@@ -23,6 +25,16 @@ export type EcommercePayload = {
 
 export type PurchasePayload = EcommercePayload & {
   transaction_id: string;
+  /** Stable GA4 client_id from the cart (`^\d+\.\d+$`); invalid/missing → random UUID. */
+  client_id?: string | null;
+};
+
+export type SelectItemPayload = ViewItemListPayload;
+
+export type SelectContentPayload = {
+  content_type: string;
+  content_id: string;
+  link_url?: string;
 };
 
 type Gtag = (...args: unknown[]) => void;
@@ -78,6 +90,24 @@ export function trackViewItemList(payload: ViewItemListPayload): void {
   });
 }
 
+/** GA4 `select_item` — list → PDP; safe on Link click (gtag uses sendBeacon / keepalive). */
+export function trackSelectItem(payload: SelectItemPayload): void {
+  gtagSafe("event", "select_item", {
+    ...(payload.item_list_id ? { item_list_id: payload.item_list_id } : {}),
+    ...(payload.item_list_name ? { item_list_name: payload.item_list_name } : {}),
+    items: payload.items,
+  });
+}
+
+/** GA4 `select_content` — generic CMS / CTA click (hero primary only for now). */
+export function trackSelectContent(payload: SelectContentPayload): void {
+  gtagSafe("event", "select_content", {
+    content_type: payload.content_type,
+    content_id: payload.content_id,
+    ...(payload.link_url ? { link_url: payload.link_url } : {}),
+  });
+}
+
 /** GA4 `purchase` (browser) — no-op without gtag. Prefer Measurement Protocol for headless checkout. */
 export function trackPurchase(payload: PurchasePayload): void {
   const normalized = withNormalizedPayload(payload);
@@ -112,10 +142,7 @@ export async function sendPurchaseMeasurementProtocol(
   }
 
   const normalized = withNormalizedPayload(payload);
-  const clientId =
-    typeof crypto !== "undefined" && "randomUUID" in crypto
-      ? crypto.randomUUID()
-      : `${Date.now()}.${Math.floor(Math.random() * 1e9)}`;
+  const clientId = resolveMeasurementProtocolClientId(payload.client_id);
 
   const url = new URL("https://www.google-analytics.com/mp/collect");
   url.searchParams.set("measurement_id", measurementId);
