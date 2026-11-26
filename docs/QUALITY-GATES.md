@@ -52,9 +52,9 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 
 **Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, contact, cart (empty) and account.
 
-**Manual (Lighthouse / keyboard):** Tab order, `aria-expanded` on menus, no hover-only submenus.
+**Manual (Lighthouse / keyboard):** Tab order, `aria-expanded` on **menus** (not on `input type="search"` — searchbox forbids it; use `aria-controls` when the preview is open), no hover-only submenus.
 
-**Anti-patterns:** Redundant `aria-label` matching visible text; submenu without keyboard support.
+**Anti-patterns:** Redundant `aria-label` matching visible text; submenu without keyboard support; `aria-expanded` on searchbox.
 
 **Rules:** [`.cursor/rules/web-excellence.mdc`](../.cursor/rules/web-excellence.mdc) (A11y) · [`.cursor/rules/ux-principles.mdc`](../.cursor/rules/ux-principles.mdc)
 
@@ -64,18 +64,20 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 
 **Pass when:**
 
-- LCP image uses `priority` / `fetchPriority="high"` only where needed
+- **LCP by surface:** home/CMS hero = Dato `priority` picture; PDP = Shopify gallery with `preload()` + `PDP_GALLERY_SIZES` + `decoding="sync"` (same srcset as `next/image`)
 - Below-fold images: `loading="lazy"` + realistic `sizes`
 - Dato images via `datocms-image-loader` (q=75, auto format)
+- Preconnect: Dato/Mux with `crossorigin`; Shopify CDN **without** `crossorigin`
 - Server Components by default; minimal client boundaries
 - No `dynamic()` on Server Components in Structured Text blocks
 - Hydrated badges (wishlist/cart from `localStorage`): reserve space / stable layout to avoid CLS
+- CSS via external `/_next` links under prod CSP — `experimental.inlineCss` stays off ([SECURITY.md](./SECURITY.md))
 
 **Measure:** `npm run build && npm run start` — not `next dev` for Lighthouse.
 
 **Real users:** Vercel Speed Insights, after cookie consent (enable it in the Vercel dashboard; see `SPEED_INSIGHTS_ENABLED` in `.env.example`). Target at p75: LCP < 2.5 s, INP < 200 ms, CLS < 0.1. Server errors: filter Vercel Logs by `scope` / `level:error` ([SECURITY.md → Logs de erro](./SECURITY.md#logs-de-erro)).
 
-**Anti-patterns:** Inflated `sizes="100vw"`; duplicate sticky headers; client-only theme boot.
+**Anti-patterns:** Inflated `sizes="100vw"`; duplicate sticky headers; client-only theme boot; PDP gallery preload reused on home hero; `experimental.inlineCss` with nonce-only CSP.
 
 ---
 
@@ -105,7 +107,8 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 - JSON-LD uses `@context` + `@graph` with nonce (CSP-safe)
 - Site graph: Organization, WebSite, SearchAction
 - CMS pages: WebPage + BreadcrumbList where applicable
-- FAQ blocks: conditional FAQPage schema
+- FAQ blocks (`faq_group`): conditional FAQPage schema
+- PDP: FAQPage from complete `product_page.questions` pairs (`buildProductPageJsonLd`); seed with `scripts/setup-product-qa.ts` when needed
 - Visible breadcrumbs align with BreadcrumbList
 - Product specs / size guide exposed as semantic HTML (`<dl>`, `<table>` / `<details>`), not image-only facts — crawlers and AEO can read them
 
@@ -138,7 +141,8 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 - Vitest covers parsers, resolvers, link-block, JSON-LD builders
 - Tests cover snake_case and camelCase CMS field aliases where relevant
 - `npm test` passes in CI
-- Playwright smoke (`npm run test:e2e`) on PRs — home, blog, draft auth, contact honeypot
+- Playwright smoke (`npm run test:e2e`) on PRs — home, blog, draft auth, contact honeypot (`opacity: 0` on `company_website`)
+- Opt-in (not CI): `npm run test:e2e:shop`, `npm run test:e2e:ga` (`E2E_SHOP=1`, consent cookie, `.env.prod`)
 - No trivial snapshot tests unless explicitly requested
 
 **Anti-patterns:** Testing implementation details; skipping tests for new `resolve-*` helpers.

@@ -39,12 +39,13 @@ npm run codegen:from-dato
 git diff --exit-code src/infra/datocms/generated/  # SDL + types committed
 ```
 
-**If `src/proxy.ts`, `src/app/api/`, security, or auth changed:**
+**If `src/proxy.ts`, `src/app/api/`, `next.config.ts`, security, or auth changed:**
 
 ```bash
 npm run build && npm run start:prod   # terminal 1
 NODE_ENV=production npm run security:headers   # terminal 2
 # or: npm run security:check after build in CI-like env
+npm run test:e2e   # honeypot opacity proves Tailwind under prod CSP; keep experimental.inlineCss off
 ```
 
 **Full local gate:**
@@ -57,9 +58,9 @@ npm run check-all
 
 | Pillar | Quick check |
 |--------|-------------|
-| Security | No secrets in diff; safe external links; nonce on scripts |
-| A11y | One h1; landmarks; focus on new interactive UI |
-| Perf | Image priority/lazy/sizes; no unnecessary `"use client"` |
+| Security | No secrets in diff; safe external links; nonce on scripts; `inlineCss` still off |
+| A11y | One h1; landmarks; focus on new interactive UI; no `aria-expanded` on searchbox |
+| Perf | LCP by surface (hero vs PDP gallery); priority/lazy/sizes; no unnecessary `"use client"` |
 | SEO | Metadata on new routes; canonical/noIndex correct |
 | AEO | JSON-LD with nonce; async/sync JSON-LD pattern correct |
 | Maintainability | Layer boundaries; minimal diff; readCda* used |

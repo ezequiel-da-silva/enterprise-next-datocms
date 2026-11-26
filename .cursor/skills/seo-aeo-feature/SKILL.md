@@ -30,7 +30,8 @@ Base URL, 404 / search `noIndex` cases and the existing builders: `web-excellenc
 - Location: `src/lib/seo/`
 - Add unit test in `*.test.ts` beside builder
 - Shape: `{ "@context": "https://schema.org", "@graph": [...] }`
-- Also: `buildFaqPageJsonLd()` (FAQ block), `buildProductPageJsonLd()` / `buildCollectionPageJsonLd()` (Shopify)
+- Also: `buildFaqPageJsonLd()` (CMS `faq_group`), `buildProductPageJsonLd()` / `buildCollectionPageJsonLd()` (Shopify)
+- PDP FAQPage: emitted only when `product_page.questions` has at least one complete question+answer pair; seed via `scripts/setup-product-qa.ts` (`PRODUCT_QA_SEED=1` / `PRODUCT_QA_FORCE=1`) on staging then default
 
 ## Injection (CSP-safe)
 
@@ -58,3 +59,4 @@ return <JsonLdScriptSync graph={jsonLd} nonce={nonce} />;
 - View page source: `<script type="application/ld+json" nonce="...">`
 - Rich Results Test / Schema validator for new types
 - `npm test` for builder unit tests
+- PDP FAQPage: confirm seeded Q&A or manual CMS pairs; optional `npm run test:e2e:ga` asserts FAQPage in HTML after consent

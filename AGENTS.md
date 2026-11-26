@@ -41,6 +41,7 @@ Full diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 | Proxy / API / auth changed | `npm run security:check` |
 | Full local gate | `npm run check-all` |
 | E2E smoke (needs build + Chromium) | `npm run build && npm run test:e2e` |
+| Opt-in shop / GA4 E2E | `npm run test:e2e:shop` · `npm run test:e2e:ga` (`E2E_SHOP=1`, `.env.prod`) |
 
 Copy [`.env.example`](.env.example) to `.env` for CMS (CDA tokens). `npm run codegen` is offline; `codegen:schema` needs the CDA token after Dato model changes.
 
@@ -63,7 +64,7 @@ Playbook: [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) · Gates: [docs/QUALITY-GAT
 
 ## Commercial pages (prefer CMS)
 
-Before adding an App Router route: use a Dato `content_page` (or legal page) with modular blocks (`hero_section`, `faq_group`, `feature_grid`, content listing, …) and an idempotent CMA script under `scripts/setup-*.ts` when seeding. Custom routes only when Shopify/checkout/account semantics require them (Occam — `ux-principles`).
+Before adding an App Router route: use a Dato `content_page` (or legal page) with modular blocks (`hero_section`, `faq_group`, `feature_grid`, content listing, …) and an idempotent CMA script under `scripts/setup-*.ts` when seeding. PDP FAQPage Q&A: `scripts/setup-product-qa.ts`. Custom routes only when Shopify/checkout/account semantics require them (Occam — `ux-principles`).
 
 ## RSC / `ui_string` boundaries
 
@@ -79,6 +80,7 @@ Before adding an App Router route: use a Dato `content_page` (or legal page) wit
 4. **`SmartLink` inside `Button asChild`** — pass `tone="inherit"` so button colors are not overridden by `text-primary`.
 5. **GraphQL drift** — update both [`queries.ts`](src/infra/datocms/queries.ts) and [`page-by-slug.graphql`](src/infra/datocms/graphql/page-by-slug.graphql), then codegen.
 6. **Content Link drift in CMS blocks** — every ST block root needs a boundary; Structured Text needs a group; non-render string logic must use `readCdaStringForLogic()` / `stripStega()`; textless blocks need `_editingUrl @include(if: $withEditingUrl)` (unguarded `_editingUrl` breaks published reads — CDA requires `X-Base-Editing-Url`).
+7. **`experimental.inlineCss` under prod nonce CSP** — leave it off in `next.config.ts`. Inlined `<style>` does not get a reliable nonce; Tailwind never applies and the contact honeypot smoke fails (`opacity` stays `1`). CSS must load via `/_next` `<link>` (`style-src 'self'`). See [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Do not edit
 

@@ -143,10 +143,11 @@ export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(NONCE_HEADER, nonce);
   /*
-   * Next só lê o nonce em `Content-Security-Policy` do pedido
-   * (`getScriptNonceFromHeaders`) e carimba-o nos `<style>` de `experimental.inlineCss`.
-   * O `x-nonce` chega aos scripts que a app monta à mão; sem esta cópia a CSP de
-   * produção bloqueia o CSS atómico (o honeypot fica com opacity 1).
+   * Next lê o nonce em `Content-Security-Policy` do pedido (`getScriptNonceFromHeaders`)
+   * para carimbar scripts/recursos. Mantém-se o pedido alinhado com a resposta mesmo
+   * com `experimental.inlineCss` **desligado** (a flag não é fiável sob CSP nonce-only;
+   * o Tailwind vai por `<link>` `/_next`, permitido por `'self'`). `x-nonce` serve aos
+   * scripts/estilo que a app monta à mão (tema, JSON-LD).
    */
   requestHeaders.set("Content-Security-Policy", csp);
 

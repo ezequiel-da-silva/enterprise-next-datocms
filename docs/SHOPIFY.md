@@ -240,6 +240,7 @@ O checkout fica na Shopify; o Next **não** recebe um redirect automático pós-
 4. **Não** actives um pixel GA4 de compra na Shopify em paralelo (double-count). O gtag do site continua a servir `view_item` / `add_to_cart` após consentimento.
 5. No editor Thank you / Order status da Shopify, adiciona um botão “Continuar a comprar” → `https://{teu-dominio}/{locale}/order/confirmation` (opcional `?order={name}`).
 6. Validar: pedido de teste → GA4 DebugView / Realtime com `purchase` e o `transaction_id` do pedido.
+7. Funil local (opt-in): `npm run test:e2e:ga` — consentimento → `view_item` / `add_to_cart` + eyebrow de specs + FAQPage no HTML (`e2e/ga4-pdp.spec.ts`).
 
 Fluxo e segurança:
 
@@ -323,9 +324,10 @@ Checklist para abrir a loja. A parte de admin é só cliques na Shopify; cada it
 npm run build:prod
 npm run lighthouse:shop   # /pt/loja, um PDP e /pt/collections (LHCI_PATHS)
 npm run test:e2e:shop     # loja → produto → carrinho (opt-in, precisa de E2E_SHOP=1 e da flag)
+npm run test:e2e:ga       # consentimento + view_item / add_to_cart + FAQPage (mesmo opt-in; .env.prod)
 ```
 
-O E2E não entra no checkout. Fica de fora do CI porque precisa de credenciais Shopify reais.
+O E2E de loja / GA não entra no checkout. Fica de fora do CI porque precisa de credenciais Shopify reais e de `PLAYWRIGHT_BASE_URL` apontando a um servidor com dados de produção.
 
 Notas sobre o Lighthouse local:
 

@@ -17,9 +17,9 @@ How AI agents should work in this repository. Start every session with [AGENTS.m
 | New DatoCMS ST block | `datocms-blocks.mdc` | `add-datocms-block` |
 | Page metadata / JSON-LD | `web-excellence.mdc` | `seo-aeo-feature` |
 | UI / commercial flows / UX audit | `ux-principles.mdc` + `ui-visual.mdc` | `ux-audit` |
-| CSP, draft, API, forms | `security.mdc` | — |
+| CSP, draft, API, forms | `security.mdc` + [SECURITY.md](./SECURITY.md) | — |
 | Dato webhook / cache tags | `datocms-next.mdc` + [DATOCMS.md](./DATOCMS.md) | — |
-| Shopify webhooks / Headless / PDP | [SHOPIFY.md](./SHOPIFY.md) | — |
+| Shopify webhooks / Headless / PDP / GA e2e | [SHOPIFY.md](./SHOPIFY.md) (`test:e2e:ga`) | — |
 | Schema / migrations / CLI | [DATOCMS.md](./DATOCMS.md) (CLI passo a passo) | `.agents/skills/datocms-cli` |
 | RSC, error boundaries, client boundaries | `react-rsc.mdc` | — |
 | Layer / import boundaries | `architecture.mdc` | — |
@@ -63,6 +63,14 @@ Prefer this order (**Occam** / `ux-principles`):
 | `ux-audit` | New/refactored UI or commercial flow; UX law review |
 
 Official DatoCMS CLI/CMA skills: [`.agents/skills/`](../.agents/skills/). Bootstrap: [DATOCMS.md](./DATOCMS.md).
+
+### Vendor skills vs this repo
+
+`.agents/skills/` are **generic Dato** recipes (other frameworks, CSP in `next.config.js`, etc.). For **this** codebase:
+
+- Prefer [AGENTS.md](../AGENTS.md), [SECURITY.md](./SECURITY.md), `.cursor/rules/security.mdc`, and `src/proxy.ts` over vendor Next CSP snippets.
+- Prefer `.cursor/skills/` for SEO/AEO, blocks, pre-merge, and UX in next-dato.
+- Do **not** rewrite vendor skill trees to match this repo; document project truth here and in `docs/`.
 
 ## Do not edit
 
