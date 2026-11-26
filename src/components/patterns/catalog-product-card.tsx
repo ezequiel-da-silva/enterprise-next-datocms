@@ -109,7 +109,8 @@ export function CatalogProductCard({
             className="text-xs text-muted-foreground"
             aria-label={`${product.ratingSummary.average.toLocaleString(locale)} (${product.ratingSummary.count})`}
           >
-            ★ {product.ratingSummary.average.toLocaleString(locale)} ({product.ratingSummary.count})
+            ★ {product.ratingSummary.average.toLocaleString(locale)}
+            {product.ratingSummary.count >= 3 ? ` (${product.ratingSummary.count})` : ""}
           </p>
         ) : null}
         <p className="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-base font-semibold text-foreground">
