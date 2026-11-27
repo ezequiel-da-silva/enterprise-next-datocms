@@ -75,7 +75,7 @@ Workflow: [`.github/workflows/security.yml`](../.github/workflows/security.yml)
 
 1. `npm run security:audit`
 2. `npm run build` (requer rede; recomenda-se secret `DATOCMS_API_TOKEN` no repositório)
-3. `npm run start` em background
+3. `npm run start:prod` em background (como [`.github/workflows/security.yml`](../.github/workflows/security.yml))
 4. `npm run security:headers` com `NODE_ENV=production`
 
 Secrets opcionais no GitHub (**Settings → Secrets and variables → Actions**):
@@ -99,7 +99,7 @@ Com HTTPS e domínio público:
 
 ## Checklist manual
 
-- [ ] Lighthouse **Best Practices** e **Security** em `npm run build && npm run start` (não em `next dev`)
+- [ ] Lighthouse **Best Practices** e **Security** em `npm run build && npm run start:prod` (não em `next dev`)
 - [ ] Console sem violações de CSP em páginas principais (FA com CSS estático; sem `<style>` injectado sem nonce; `experimental.inlineCss` **desligado**)
 - [ ] Produção: CSS via `<link>` `/_next` + `style-src-elem` com nonce; `style-src-attr` permite atributos (next/image)
 - [ ] Smoke: `npm run test:e2e` — honeypot `company_website` com `opacity: 0` (prova que o Tailwind chegou ao browser)

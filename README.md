@@ -6,26 +6,22 @@ Next.js 16 + DatoCMS + Shopify Storefront. **Agents and contributors:** start at
 |-----|---------|
 | [AGENTS.md](AGENTS.md) | Stack, commands, anti-patterns |
 | [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.md) | How agents pick rules/skills |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Layers, RSC boundaries, analytics |
 | [docs/SECURITY.md](docs/SECURITY.md) | CSP, headers, honeypot smoke |
 | [docs/QUALITY-GATES.md](docs/QUALITY-GATES.md) | Pre-merge pillars |
+| [docs/GITHUB.md](docs/GITHUB.md) | Branches, Actions, required checks |
 | [docs/DATOCMS.md](docs/DATOCMS.md) | CMS, CLI, CMA scripts |
 | [docs/SHOPIFY.md](docs/SHOPIFY.md) | Catalog, cart, GA4 |
 
-## Getting Started
+Stack notes: App Router under `src/app/[slug]/…`; fonts **Inter** + **Roboto Mono** via `next/font` in [`src/app/layout.tsx`](src/app/layout.tsx). Package manager: **npm** (`package-lock.json`).
 
-First, run the development server:
+## Getting Started
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
 Copy [`.env.example`](.env.example) to `.env` and configure DatoCMS **CDA** tokens before fetching CMS content (Next.js / Vercel). `npm run codegen` is local; `npm run codegen:schema` needs the token after Dato model changes.
 
@@ -69,11 +65,9 @@ Checklist (repo **Settings**):
 
 - [ ] **Actions → General → Workflow permissions:** Read and write + **Allow GitHub Actions to create and approve pull requests**
 - [ ] **General → Pull Requests:** Automatically delete head branches
-- [ ] **Branches:** protect `main`, `develop`, `qa` — **Allow deletions** off; required checks `quality`, `lighthouse (desktop)`, `lighthouse (mobile)`, `security`, `smoke`
+- [ ] **Branches:** protect `main`, `develop` — **Allow deletions** off; required checks `quality`, `lighthouse (desktop)`, `lighthouse (mobile)`, `security`, `smoke`
 - [ ] **Do not allow bypassing** on `main` (recommended on `develop` if the team is more than one person)
 - [ ] **Secrets and variables → Actions:** DatoCMS tokens for CI builds (see [docs/SECURITY.md](docs/SECURITY.md))
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Segurança
 
@@ -86,20 +80,3 @@ NODE_ENV=production npm run security:headers         # terminal 2
 ```
 
 Guia completo: [docs/SECURITY.md](docs/SECURITY.md). CI: [`.github/workflows/security.yml`](.github/workflows/security.yml).
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
