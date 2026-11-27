@@ -1,4 +1,5 @@
 import type { AppLocale } from "@/constants/i18n";
+import { accessibleNameIncludesVisible } from "@/lib/a11y/label-in-name";
 
 type NavLinkAriaOptions = {
   customAria?: string | null;
@@ -13,7 +14,10 @@ export function navLinkAriaLabel(
   { customAria, external, newTab }: NavLinkAriaOptions,
 ): string | undefined {
   const custom = customAria?.trim();
-  if (custom && custom !== label) return custom;
+  // WCAG 2.5.3: custom aria must include the visible label (skip CMS placeholders).
+  if (custom && custom !== label && accessibleNameIncludesVisible(custom, label)) {
+    return custom;
+  }
   if (external && newTab) {
     if (locale === "pt") return `${label} (abre em nova janela)`;
     if (locale === "es") return `${label} (abre en nueva ventana)`;
