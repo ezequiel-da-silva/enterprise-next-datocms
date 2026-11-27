@@ -98,9 +98,10 @@ export function CartDrawerProvider({
   const openFromServer = useCallback(
     async (returnFocus?: HTMLElement | null) => {
       returnFocusRef.current = returnFocus ?? null;
+      // Open immediately so the dialog is a11y-testable and feels instant; then hydrate lines.
+      setOpen(true);
       const snapshot = await loadCartSnapshot(locale);
       setCart(snapshot);
-      setOpen(true);
     },
     [locale, loadCartSnapshot],
   );
