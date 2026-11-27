@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.63.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.62.0...next-dato-v0.63.0) (2026-11-26)
+
+
+### Features
+
+* **config:** enhance image handling and preloading for product galleries ([496d3b5](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/496d3b543641b1da37592b0a28f2bf23a2d06e7c))
+* **config:** enhance image handling and preloading for product galleries ([572141f](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/572141f6000468c4915c7b4d24c9ed803f92cfd6))
+* **docs:** update AGENTS and SECURITY documentation for improved clarity and new testing commands ([b90e5dc](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/b90e5dce864dd005ba01fe90b08cdfba88fbd7c2))
+* **proxy:** enhance CSP handling in proxy requests ([3d2eea2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/3d2eea2f5405124af9e1b6653e39cacb382bfec3))
+
+
+### Bug Fixes
+
+* **config:** disable experimental inlineCss due to CSP limitations ([1a3183d](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/1a3183d8695e273d207758f367446fb067f7f9fb))
+
 ## [0.62.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.61.0...next-dato-v0.62.0) (2026-11-26)
 
 
