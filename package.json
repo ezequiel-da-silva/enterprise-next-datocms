@@ -61,7 +61,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^3.1.1",
-    "@hookform/resolvers": "^5.2.2",
+    "@hookform/resolvers": "^7.0.9",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@upstash/redis": "^1.39.0",
