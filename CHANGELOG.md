@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.63.2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.63.1...next-dato-v0.63.2) (2026-11-27)
+
+
+### Bug Fixes
+
+* **a11y:** omit CMS aria-label when it fails Label in Name ([39fd796](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/39fd7968b2a7cc5e3585f0a8fa04f9262d1f00f6))
+
+
+### Chores
+
+* **deps:** bump the npm-minor-patch group across 1 directory with 26 updates ([49b9df6](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/49b9df69fde136b70c083d97d6135348102a304d))
+* **deps:** bump the npm-minor-patch group across 1 directory with 26 updates ([364da4c](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/364da4cea717f0b77c886836c738fa72f3975463))
+
 ## [0.63.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.63.0...next-dato-v0.63.1) (2026-11-27)
 
 
