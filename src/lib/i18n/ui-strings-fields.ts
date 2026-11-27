@@ -51,7 +51,12 @@ export const CART_FIELDS = {
 } as const satisfies Record<
   Exclude<
     keyof CartCopy,
-    "linkLabel" | "closeDrawer" | "freeShippingRemaining" | "freeShippingRemainingTemplate"
+    | "linkLabel"
+    | "closeDrawer"
+    | "freeShippingRemaining"
+    | "freeShippingRemainingTemplate"
+    | "itemCountOne"
+    | "itemCountOther"
   >,
   string
 >;
