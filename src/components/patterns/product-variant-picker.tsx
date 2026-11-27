@@ -9,11 +9,11 @@ import {
   type ProductGalleryItem,
 } from "@/lib/shopify/product-gallery-items";
 import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
-import { ProductShippingEstimate } from "@/components/patterns/product-shipping-estimate";
+import { ProductShippingEstimateLazy } from "@/components/patterns/product-shipping-estimate-lazy";
 import { chromeCopy } from "@/lib/i18n/chrome-copy";
 import type { ShippingEstimateCopy } from "@/lib/i18n/shipping-estimate-copy";
 import { formatPixHint } from "@/lib/shopify/format-pix-hint";
-import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
+import { ProductStickyBuyBarLazy } from "@/components/patterns/product-sticky-buy-bar-lazy";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
 import { trackViewItem } from "@/lib/analytics/ecommerce";
@@ -407,7 +407,7 @@ export function ProductVariantPicker({
         <div className="space-y-1.5 text-sm text-muted-foreground">
           {trustLine ? <p>{trustLine}</p> : null}
           {buyBoxLocale === "pt" && shippingEstimateCopy ? (
-            <ProductShippingEstimate
+            <ProductShippingEstimateLazy
               locale="pt"
               subtotal={selected?.price ?? null}
               copy={shippingEstimateCopy}
@@ -447,7 +447,7 @@ export function ProductVariantPicker({
       </div>
 
       {cart && selected ? (
-        <ProductStickyBuyBar
+        <ProductStickyBuyBarLazy
           title={selected.itemName}
           priceLabel={selected.priceLabel}
           visible={stickyVisible}
@@ -468,7 +468,7 @@ export function ProductVariantPicker({
               item_variant: selected.itemVariant,
             }}
           />
-        </ProductStickyBuyBar>
+        </ProductStickyBuyBarLazy>
       ) : null}
     </div>
   );
