@@ -39,7 +39,7 @@ Full diagram: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 | UI / routes / layout changed | `npm run build` |
 | GraphQL or Dato schema changed | `npm run codegen` (queries only) or `npm run codegen:from-dato` (Dato model changed) |
 | Proxy / API / auth changed | `npm run security:check` |
-| Full local gate | `npm run check-all` |
+| Full local gate | `npm run check-all` (`codegen:check` · typecheck · test · lint · `security:audit` · build) |
 | E2E smoke (needs build + Chromium) | `npm run build && npm run test:e2e` |
 | Opt-in shop / GA4 E2E | `npm run test:e2e:shop` · `npm run test:e2e:ga` (`E2E_SHOP=1`, `.env.prod`) |
 

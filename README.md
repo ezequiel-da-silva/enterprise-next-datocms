@@ -55,7 +55,7 @@ Start with [AGENTS.md](AGENTS.md), then [docs/AI-PLAYBOOK.md](docs/AI-PLAYBOOK.m
 
 Architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Cursor rules: `.cursor/rules/`. Skills: `.cursor/skills/` (this repo) and `.agents/skills/` (official DatoCMS).
 
-Quality gate: `npm run check-all` (typecheck, test, lint, build). GraphQL drift: `npm run codegen:check`.
+Quality gate: `npm run check-all` (codegen:check, typecheck, test, lint, security:audit, build).
 
 ## GitHub
 

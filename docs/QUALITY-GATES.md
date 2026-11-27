@@ -12,7 +12,7 @@ Seven pillars agents and reviewers must verify before merge. Each pillar lists *
 | UI, routes, layout | `npm run build` |
 | GraphQL / Dato schema | `npm run codegen` (queries) or `codegen:from-dato` (modelo Dato); `codegen:check` in CI (offline) |
 | Security / proxy / API | `npm run security:check` |
-| Full pre-merge | `npm run check-all` |
+| Full pre-merge | `npm run check-all` (`codegen:check` · typecheck · test · lint · `security:audit` · build — mirrors pre-push minus Dato migrations status) |
 
 CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflows/security.yml`](../.github/workflows/security.yml). Required checks on protected branches: `quality`, `lighthouse (desktop)`, `lighthouse (mobile)`, `security`, `smoke`. Repo settings: [GITHUB.md](./GITHUB.md).
 
@@ -50,7 +50,7 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - Links inside muted body copy are distinguishable without color alone (e.g. underline on `.structured-text a`)
 - Contrast AA for `text-muted-foreground` on `background` / `card` (light + dark); avoid `opacity-*` on whole cards that dims price text
 
-**Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, contact, cart (empty) and account.
+**Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, collection PLP, contact, cart (empty), **open cart drawer**, and account.
 
 **Manual (Lighthouse / keyboard):** Tab order, `aria-expanded` on **menus** (not on `input type="search"` — searchbox forbids it; use `aria-controls` when the preview is open), no hover-only submenus.
 
