@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/atoms/button";
 import { trackSelectContent } from "@/lib/analytics/ecommerce";
+import { ariaLabelIfLabelInName } from "@/lib/a11y/label-in-name";
 import { cn } from "@/lib/cn";
 import Link from "next/link";
 
@@ -31,7 +32,7 @@ export function HeroTrackedPrimaryCta({
       link_url: href,
     });
   };
-  const aria = ariaLabel?.trim() ? { "aria-label": ariaLabel.trim() } : {};
+  const aria = ariaLabelIfLabelInName(label, ariaLabel);
 
   return (
     <Button asChild variant="primary">
