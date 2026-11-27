@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.63.1](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.63.0...next-dato-v0.63.1) (2026-11-27)
+
+
+### CI
+
+* **security:** ignore Dependabot major version PRs ([354c050](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/354c050e5bb1bc0deb1b2df6c049ed85760d76a8))
+* **security:** ignore Dependabot major version PRs ([c7e70b2](https://github.com/ezequiel-da-silva/enterprise-next-datocms/commit/c7e70b251a3a01e9df5a19f0cebbb672d28a70ea))
+
 ## [0.63.0](https://github.com/ezequiel-da-silva/enterprise-next-datocms/compare/next-dato-v0.62.0...next-dato-v0.63.0) (2026-11-26)
 
 
