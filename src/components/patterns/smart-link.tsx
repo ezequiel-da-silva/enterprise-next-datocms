@@ -1,4 +1,5 @@
 import type { AppLocale } from "@/constants/i18n";
+import { ariaLabelIfLabelInName } from "@/lib/a11y/label-in-name";
 import { cn } from "@/lib/cn";
 import { isSafeExternalHref, resolveLinkBlock } from "@/lib/datocms/link-block";
 import Link from "next/link";
@@ -42,7 +43,9 @@ export function SmartLink({ record, locale, className, children, tone = "default
     return null;
   }
 
-  const aria = resolved.ariaLabel?.trim() ? { "aria-label": resolved.ariaLabel.trim() } : {};
+  const visibleForAria =
+    typeof text === "string" || typeof text === "number" ? String(text) : (resolved.label ?? "");
+  const aria = ariaLabelIfLabelInName(visibleForAria, resolved.ariaLabel);
   const rel = resolved.newTab ? ("noopener noreferrer" as const) : undefined;
   const target = resolved.newTab ? ("_blank" as const) : undefined;
   const linkClass = cn(TONE_CLASSES[tone], className);
