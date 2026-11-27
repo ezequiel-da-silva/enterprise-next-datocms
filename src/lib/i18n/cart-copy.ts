@@ -1,4 +1,5 @@
 import type { AppLocale } from "@/constants/i18n";
+import { pluralTemplate } from "@/lib/i18n/merge-copy";
 
 export type CartCopy = {
   title: string;
@@ -29,9 +30,18 @@ export type CartCopy = {
   freeShippingUnlocked: string;
   /** Recently viewed products heading (empty cart / PDP). */
   recentlyViewedTitle: string;
+  /** Drawer badge singular — `{count}` (e.g. "1 item"). */
+  itemCountOne: string;
+  /** Drawer badge plural — `{count}` (e.g. "2 itens"). */
+  itemCountOther: string;
   /** Accessible name for the header cart link, e.g. "Carrinho, 2 itens". */
   linkLabel: (count: number) => string;
 };
+
+/** Singular/plural drawer item badge from `{count}` templates. */
+export function resolveItemCountLabel(one: string, other: string, count: number): string {
+  return pluralTemplate(one, other, count);
+}
 
 function freeShippingRemainingFrom(template: string, amountLabel: string): string {
   return template.replaceAll("{amount}", amountLabel);
@@ -62,6 +72,8 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     freeShippingRemaining: (amount) => freeShippingRemainingFrom("Add {amount} more for free shipping", amount),
     freeShippingUnlocked: "You've unlocked free shipping",
     recentlyViewedTitle: "Recently viewed",
+    itemCountOne: "{count} item",
+    itemCountOther: "{count} items",
     linkLabel: (count) => `Cart, ${count} ${count === 1 ? "item" : "items"}`,
   },
   pt: {
@@ -88,6 +100,8 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     freeShippingRemaining: (amount) => freeShippingRemainingFrom("Faltam {amount} para frete grátis", amount),
     freeShippingUnlocked: "Frete grátis desbloqueado",
     recentlyViewedTitle: "Vistos recentemente",
+    itemCountOne: "{count} item",
+    itemCountOther: "{count} itens",
     linkLabel: (count) => `Carrinho, ${count} ${count === 1 ? "item" : "itens"}`,
   },
   es: {
@@ -114,6 +128,8 @@ export const CART_COPY: Record<AppLocale, CartCopy> = {
     freeShippingRemaining: (amount) => freeShippingRemainingFrom("Faltan {amount} para envío gratis", amount),
     freeShippingUnlocked: "Envío gratis desbloqueado",
     recentlyViewedTitle: "Vistos recientemente",
+    itemCountOne: "{count} artículo",
+    itemCountOther: "{count} artículos",
     linkLabel: (count) => `Carrito, ${count} ${count === 1 ? "artículo" : "artículos"}`,
   },
 };

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { pickShopifyLocale, shopifyCountryFromLocale, translationValue } from "@/lib/shopify/locale-map";
+import {
+  pickShopifyLocale,
+  shopifyCountryFromLocale,
+  shopifyLanguageFromLocale,
+  translationValue,
+} from "@/lib/shopify/locale-map";
 
 describe("pickShopifyLocale", () => {
   it("prefers pt-BR when the shop publishes it", () => {
@@ -20,6 +25,14 @@ describe("shopifyCountryFromLocale", () => {
     expect(shopifyCountryFromLocale("en")).toBe("US");
     expect(shopifyCountryFromLocale("pt")).toBe("BR");
     expect(shopifyCountryFromLocale("es")).toBe("ES");
+  });
+});
+
+describe("shopifyLanguageFromLocale", () => {
+  it("maps site locales to Storefront LanguageCode", () => {
+    expect(shopifyLanguageFromLocale("en")).toBe("EN");
+    expect(shopifyLanguageFromLocale("pt")).toBe("PT");
+    expect(shopifyLanguageFromLocale("es")).toBe("ES");
   });
 });
 

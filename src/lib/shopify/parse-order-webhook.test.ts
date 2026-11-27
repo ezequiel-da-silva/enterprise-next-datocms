@@ -54,7 +54,35 @@ describe("parseShopifyOrderWebhook", () => {
           item_variant: "Ice",
         },
       ],
+      gaClientId: null,
     });
+  });
+
+  it("reads a valid ga_client_id from note_attributes", () => {
+    const order = parseShopifyOrderWebhook({
+      id: 1,
+      name: "#2",
+      currency: "USD",
+      total_price: "1",
+      line_items: [{ title: "A", quantity: 1, price: "1" }],
+      note_attributes: [
+        { name: "other", value: "x" },
+        { name: "ga_client_id", value: "123456789.1700000000" },
+      ],
+    });
+    expect(order?.gaClientId).toBe("123456789.1700000000");
+  });
+
+  it("ignores invalid ga_client_id note_attributes", () => {
+    const order = parseShopifyOrderWebhook({
+      id: 1,
+      name: "#2",
+      currency: "USD",
+      total_price: "1",
+      line_items: [{ title: "A", quantity: 1, price: "1" }],
+      note_attributes: [{ name: "ga_client_id", value: "not-a-ga-id" }],
+    });
+    expect(order?.gaClientId).toBeNull();
   });
 
   it("rejects incomplete payloads", () => {

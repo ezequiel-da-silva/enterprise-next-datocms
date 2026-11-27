@@ -6,6 +6,7 @@ import type { AppLocale } from "@/constants/i18n";
 import type { CartSnapshot } from "@/core/entities/cart";
 import type { CartDrawerLineActions } from "@/components/patterns/cart-drawer-line-actions";
 import type { CartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
+import type { EmptyStateCollection } from "@/lib/storefront/empty-state-collection";
 import type { ReactNode } from "react";
 
 type CartChromeProps = {
@@ -19,6 +20,10 @@ type CartChromeProps = {
   marketCurrencyCode?: string | null;
   /** Normalized flat shipping rate (`"0.00"` = free). */
   shippingRate?: string | null;
+  /** Products index (or shop) path for empty-drawer CTA. */
+  shopPath: string;
+  /** Suggested collections for the empty drawer (same source as cart page). */
+  suggestedCollections?: EmptyStateCollection[];
   loadCartSnapshot: (locale: AppLocale) => Promise<CartSnapshot | null>;
   lineActions: CartDrawerLineActions;
   children: ReactNode;
@@ -32,6 +37,8 @@ export function CartChrome({
   freeShippingThreshold = null,
   marketCurrencyCode = null,
   shippingRate = null,
+  shopPath,
+  suggestedCollections = [],
   loadCartSnapshot,
   lineActions,
   children,
@@ -44,6 +51,8 @@ export function CartChrome({
       freeShippingThreshold={freeShippingThreshold}
       marketCurrencyCode={marketCurrencyCode}
       shippingRate={shippingRate}
+      shopPath={shopPath}
+      suggestedCollections={suggestedCollections}
       loadCartSnapshot={loadCartSnapshot}
       lineActions={lineActions}
     >

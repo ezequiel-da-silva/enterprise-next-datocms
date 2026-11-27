@@ -1,6 +1,7 @@
 import { Button } from "@/components/atoms/button";
 import { Container } from "@/components/atoms/container";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
+import { CartCheckoutLink } from "@/components/patterns/cart-checkout-link";
 import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
 import { EmptyStateCollectionGrid } from "@/components/patterns/empty-state-collection-grid";
 import { FreeShippingMeter } from "@/components/patterns/free-shipping-meter";
@@ -264,9 +265,12 @@ export function CartView({
             ) : null}
             {trustNote?.trim() ? <p className="text-sm text-muted-foreground">{trustNote.trim()}</p> : null}
             {cart?.checkoutUrl ? (
-              <Button asChild className="touch-target h-12 w-full rounded-lg">
-                <a href={cart.checkoutUrl}>{copy.checkout}</a>
-              </Button>
+              <CartCheckoutLink
+                checkoutUrl={cart.checkoutUrl}
+                label={copy.checkout}
+                cart={cart}
+                className="touch-target h-12 w-full rounded-lg"
+              />
             ) : (
               <p role="alert" className="text-sm text-destructive">
                 {copy.checkoutUnavailable}

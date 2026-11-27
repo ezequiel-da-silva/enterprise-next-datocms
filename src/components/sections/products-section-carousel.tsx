@@ -155,6 +155,8 @@ export function ProductsSectionCarousel({
                 product={product}
                 sizes={CARD_SIZES}
                 quickAdd={quickAdd}
+                itemListId="shop"
+                itemListName="Shop"
               />
             </div>
           ))}

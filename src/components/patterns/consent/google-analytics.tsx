@@ -1,9 +1,18 @@
 "use client";
 
+import type { AppLocale } from "@/constants/i18n";
 import Script from "next/script";
 import { useEffect } from "react";
+import {
+  parseGaClientIdFromGaCookie,
+  readGaCookieFromHeader,
+  serializeGaClientIdCookie,
+  serializeGaClientIdCookieRemoval,
+} from "@/lib/analytics/ga-client-id";
 import { ConsentScript } from "./consent-script";
 import { useConsent } from "./consent-store";
+
+export type StampGaClientIdAction = (locale: AppLocale) => Promise<void>;
 
 const DENIED = {
   ad_storage: "denied",
@@ -21,6 +30,48 @@ const GRANTED = {
 
 type Gtag = (...args: unknown[]) => void;
 
+function isSecureContext(): boolean {
+  return typeof window !== "undefined" && window.location.protocol === "https:";
+}
+
+function writeGaClientIdCookie(clientId: string): void {
+  document.cookie = serializeGaClientIdCookie(clientId, isSecureContext());
+}
+
+function clearGaClientIdCookie(): void {
+  document.cookie = serializeGaClientIdCookieRemoval(isSecureContext());
+}
+
+/** Prefer gtag get; fall back to parsing `_ga` so ATC before the callback still has an id. */
+function syncGaClientIdCookie(
+  measurementId: string,
+  locale: AppLocale,
+  stampGaClientId: StampGaClientIdAction,
+): void {
+  const stamp = () => {
+    void stampGaClientId(locale);
+  };
+  const fromGa = parseGaClientIdFromGaCookie(readGaCookieFromHeader(document.cookie));
+  if (fromGa) {
+    writeGaClientIdCookie(fromGa);
+    stamp();
+  }
+
+  const gtag = (window as unknown as { gtag?: Gtag }).gtag;
+  if (typeof gtag !== "function") return;
+  try {
+    gtag("get", measurementId, "client_id", (clientId: string) => {
+      const trimmed = typeof clientId === "string" ? clientId.trim() : "";
+      if (/^\d+\.\d+$/.test(trimmed)) {
+        writeGaClientIdCookie(trimmed);
+        stamp();
+      }
+    });
+  } catch {
+    /* gtag get may throw if the field API is unavailable — _ga fallback already applied */
+  }
+}
+
 function bootstrap(measurementId: string): string {
   return [
     "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}",
@@ -32,13 +83,28 @@ function bootstrap(measurementId: string): string {
 }
 
 /** GA4 (gtag) behind consent. If consent is withdrawn later, Consent Mode is switched back to denied. */
-export function GoogleAnalytics({ measurementId, nonce }: { measurementId: string; nonce: string | null }) {
+export function GoogleAnalytics({
+  measurementId,
+  nonce,
+  locale,
+  stampGaClientId,
+}: {
+  measurementId: string;
+  nonce: string | null;
+  locale: AppLocale;
+  stampGaClientId: StampGaClientIdAction;
+}) {
   const consent = useConsent();
 
   useEffect(() => {
     const gtag = (window as unknown as { gtag?: Gtag }).gtag;
-    if (consent !== "granted" && gtag) gtag("consent", "update", DENIED);
-  }, [consent]);
+    if (consent !== "granted") {
+      if (gtag) gtag("consent", "update", DENIED);
+      clearGaClientIdCookie();
+      return;
+    }
+    syncGaClientIdCookie(measurementId, locale, stampGaClientId);
+  }, [consent, measurementId, locale, stampGaClientId]);
 
   return (
     <ConsentScript>
@@ -47,11 +113,17 @@ export function GoogleAnalytics({ measurementId, nonce }: { measurementId: strin
         nonce={nonce ?? undefined}
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{ __html: bootstrap(measurementId) }}
+        onLoad={() => {
+          if (consent === "granted") syncGaClientIdCookie(measurementId, locale, stampGaClientId);
+        }}
       />
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`}
         nonce={nonce ?? undefined}
         strategy="afterInteractive"
+        onLoad={() => {
+          if (consent === "granted") syncGaClientIdCookie(measurementId, locale, stampGaClientId);
+        }}
       />
     </ConsentScript>
   );

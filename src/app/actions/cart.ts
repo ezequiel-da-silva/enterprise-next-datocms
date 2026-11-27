@@ -15,11 +15,13 @@ import {
   createCart,
   getCartFromCookie,
   removeCartLines,
+  updateCartAttributes,
   updateCartLines,
   type CartMutationResult,
 } from "@/infra/shopify/cart";
 import { logError } from "@/infra/observability/log-error";
 import { getCartCopy } from "@/infra/datocms/get-ui-strings";
+import { GA_CLIENT_ID_CART_ATTR, GA_CLIENT_ID_COOKIE, isValidGaClientId } from "@/lib/analytics/ga-client-id";
 import { getClientIpKey } from "@/lib/security/client-ip";
 import { checkRateLimit } from "@/infra/security/rate-limit";
 import { toCartSnapshot } from "@/lib/shopify/cart-snapshot";
@@ -40,11 +42,51 @@ async function readCartId(): Promise<string | null> {
   return parsed.success ? parsed.data : null;
 }
 
-async function persist(result: CartMutationResult, action: string): Promise<void> {
+async function readGaClientIdFromJar(): Promise<string | null> {
+  const raw = (await cookies()).get(GA_CLIENT_ID_COOKIE)?.value ?? "";
+  return isValidGaClientId(raw) ? raw.trim() : null;
+}
+
+function gaClientIdAttributes(clientId: string | null): { key: string; value: string }[] | undefined {
+  return clientId ? [{ key: GA_CLIENT_ID_CART_ATTR, value: clientId }] : undefined;
+}
+
+/** After consent, stamp `ga_client_id` on an existing cart (idempotent). Failures are non-fatal. */
+async function ensureGaClientIdAttribute(cartId: string, locale: AppLocale): Promise<void> {
+  const clientId = await readGaClientIdFromJar();
+  if (!clientId) return;
+  const result = await updateCartAttributes(cartId, [{ key: GA_CLIENT_ID_CART_ATTR, value: clientId }], locale);
+  if (!result.ok) {
+    logError("action.cart", "GA client_id cart attribute update failed", { context: { action: "ga_attr" } });
+  }
+}
+
+/**
+ * Called when analytics consent is granted after a cart already exists.
+ * Reads `nd-ga-cid` + cart cookie; no-op when either is missing. Never throws to the client.
+ */
+export async function stampGaClientIdOnExistingCart(locale: AppLocale): Promise<void> {
+  if (!isCartEnabled()) return;
+  if (!isAppLocale(locale)) return;
+  try {
+    const cartId = await readCartId();
+    if (!cartId) return;
+    await ensureGaClientIdAttribute(cartId, locale);
+  } catch {
+    logError("action.cart", "GA client_id consent stamp failed", { context: { action: "ga_consent_stamp" } });
+  }
+}
+
+async function persist(
+  result: CartMutationResult,
+  action: string,
+  opts?: { locale?: AppLocale; /** Skip when createCart already sent `ga_client_id`. */ skipGaStamp?: boolean },
+): Promise<void> {
   if (!result.ok) {
     logError("action.cart", "Cart mutation failed", { context: { action } });
     return;
   }
+  if (opts?.locale && !opts.skipGaStamp) await ensureGaClientIdAttribute(result.cart.id, opts.locale);
   const jar = await cookies();
   const options = cartCookieOptions();
   jar.set(CART_COOKIE, result.cart.id, options);
@@ -74,17 +116,20 @@ export async function addToCart(_prev: CartActionState, formData: FormData): Pro
 
   const lines = [{ merchandiseId: input.data.variantId, quantity: input.data.quantity }];
   const cartId = await readCartId();
+  const gaAttrs = gaClientIdAttributes(await readGaClientIdFromJar());
+  let stampedGaOnCreate = false;
   let result: CartMutationResult = cartId ? await addCartLines(cartId, lines, locale) : { ok: false };
   if (!result.ok) {
     const session = readCustomerSession((await cookies()).get(CUSTOMER_COOKIE)?.value);
-    result = await createCart(lines, locale, activeAccessToken(session));
+    result = await createCart(lines, locale, activeAccessToken(session), gaAttrs);
+    stampedGaOnCreate = Boolean(gaAttrs?.length);
   }
   if (!result.ok) {
     logError("action.cart", "Cart create failed after add fallback", { context: { action: "add" } });
     return { status: "error", message: copy.errorGeneric };
   }
 
-  await persist(result, "add");
+  await persist(result, "add", { locale, skipGaStamp: stampedGaOnCreate });
   return {
     status: "success",
     message: copy.added,
@@ -111,10 +156,12 @@ export async function buyNow(_prev: BuyNowActionState, formData: FormData): Prom
   if (!input.success) return { status: "error", message: copy.errorGeneric };
 
   const session = readCustomerSession((await cookies()).get(CUSTOMER_COOKIE)?.value);
+  const gaAttrs = gaClientIdAttributes(await readGaClientIdFromJar());
   const result = await createCart(
     [{ merchandiseId: input.data.variantId, quantity: input.data.quantity }],
     locale,
     activeAccessToken(session),
+    gaAttrs,
   );
   if (!result.ok || !result.cart.checkoutUrl) {
     logError("action.cart", "Buy now cart create failed", { context: { action: "buyNow" } });
@@ -166,7 +213,7 @@ async function updateCartLineMutation(formData: FormData): Promise<CartSnapshot 
     input.data.quantity === 0
       ? await removeCartLines(cartId, [input.data.lineId], locale)
       : await updateCartLines(cartId, [{ id: input.data.lineId, quantity: input.data.quantity }], locale);
-  await persist(result, input.data.quantity === 0 ? "remove" : "update");
+  await persist(result, input.data.quantity === 0 ? "remove" : "update", { locale });
   return result.ok ? toCartSnapshot(result.cart) : null;
 }
 
@@ -175,8 +222,9 @@ async function removeCartLineMutation(formData: FormData): Promise<CartSnapshot 
   const input = removeCartLineSchema.safeParse({ lineId: formData.get("lineId") });
   const cartId = await readCartId();
   if (!input.success || !cartId) return null;
-  const result = await removeCartLines(cartId, [input.data.lineId], readLocale(formData));
-  await persist(result, "remove");
+  const locale = readLocale(formData);
+  const result = await removeCartLines(cartId, [input.data.lineId], locale);
+  await persist(result, "remove", { locale });
   return result.ok ? toCartSnapshot(result.cart) : null;
 }
 

@@ -1,14 +1,15 @@
 "use client";
 
 import { Button } from "@/components/atoms/button";
+import { CartCheckoutLink } from "@/components/patterns/cart-checkout-link";
 import { CartDrawerLineItem } from "@/components/patterns/cart-drawer-line-item";
 import { useCartDrawer } from "@/components/patterns/cart-drawer-context";
 import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
+import { EmptyStateCollectionGrid } from "@/components/patterns/empty-state-collection-grid";
 import { FreeShippingMeter } from "@/components/patterns/free-shipping-meter";
 import { RecentlyViewedSection } from "@/components/patterns/recently-viewed-section";
-import { trackBeginCheckout } from "@/lib/analytics/ecommerce";
 import { useModalDialog } from "@/lib/a11y/use-modal-dialog";
-import { resolveFreeShippingRemaining } from "@/lib/i18n/cart-copy";
+import { resolveFreeShippingRemaining, resolveItemCountLabel } from "@/lib/i18n/cart-copy";
 import { chromeCopy } from "@/lib/i18n/chrome-copy";
 import { computeFreeShippingProgress } from "@/lib/shopify/free-shipping-progress";
 import { formatStorefrontMoney } from "@/lib/shopify/format-money";
@@ -27,6 +28,8 @@ export function CartDrawer() {
     marketCurrencyCode,
     shippingRate,
     cartHref,
+    shopPath,
+    suggestedCollections,
     lineActions,
     close,
     returnFocusRef,
@@ -73,6 +76,10 @@ export function CartDrawer() {
       : null;
   const chrome = chromeCopy(locale);
   const secureNote = copy.checkoutNote;
+  const itemCountLabel =
+    cart && cart.totalQuantity > 0
+      ? resolveItemCountLabel(copy.itemCountOne, copy.itemCountOther, cart.totalQuantity)
+      : null;
 
   return createPortal(
     <div className="fixed inset-0 z-[70]" role="presentation">
@@ -95,9 +102,9 @@ export function CartDrawer() {
             <h2 id={titleId} className="text-base font-semibold text-foreground">
               {copy.title}
             </h2>
-            {cart && cart.totalQuantity > 0 ? (
+            {itemCountLabel ? (
               <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {cart.totalQuantity} {cart.totalQuantity === 1 ? "item" : locale === "pt" ? "itens" : "items"}
+                {itemCountLabel}
               </span>
             ) : null}
           </div>
@@ -116,12 +123,24 @@ export function CartDrawer() {
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-4">
           {!cart || cart.lines.length === 0 ? (
             <div className="space-y-6">
-              <p className="text-muted-foreground">{copy.empty}</p>
+              <div className="space-y-3">
+                <p className="text-muted-foreground">{copy.empty}</p>
+                <Button asChild variant="primary" className="w-full">
+                  <Link href={shopPath} onClick={close}>
+                    {copy.continueShopping}
+                  </Link>
+                </Button>
+              </div>
               <RecentlyViewedSection
                 locale={locale}
                 title={copy.recentlyViewedTitle}
                 layout="drawer"
                 onProductNavigate={close}
+              />
+              <EmptyStateCollectionGrid
+                collections={suggestedCollections}
+                layout="drawer"
+                onNavigate={close}
               />
             </div>
           ) : (
@@ -154,29 +173,13 @@ export function CartDrawer() {
             </p>
           ) : null}
           {trustNote?.trim() ? <p className="text-xs text-muted-foreground">{trustNote.trim()}</p> : null}
-          {checkoutUrl ? (
-            <Button asChild variant="primary" className="w-full">
-              <a
-                href={checkoutUrl}
-                rel="noopener noreferrer"
-                onClick={() => {
-                  if (!cart?.subtotal) return;
-                  trackBeginCheckout({
-                    currency: cart.subtotal.currencyCode,
-                    value: Number(cart.subtotal.amount) || 0,
-                    items: cart.lines.map((line) => ({
-                      item_id: line.productHandle,
-                      item_name: line.productTitle,
-                      price: Number(line.unitPrice.amount) || 0,
-                      quantity: line.quantity,
-                      item_variant: line.variantTitle ?? undefined,
-                    })),
-                  });
-                }}
-              >
-                {copy.checkout}
-              </a>
-            </Button>
+          {checkoutUrl && cart ? (
+            <CartCheckoutLink
+              checkoutUrl={checkoutUrl}
+              label={copy.checkout}
+              cart={cart}
+              className="w-full"
+            />
           ) : (
             <Button type="button" variant="primary" className="w-full" disabled>
               {copy.checkoutUnavailable}

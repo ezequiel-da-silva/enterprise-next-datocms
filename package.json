@@ -18,7 +18,7 @@
     "codegen:schema": "dotenv -e .env --cascade -- node scripts/codegen-schema.mjs",
     "codegen:from-dato": "npm run codegen:schema && npm run codegen",
     "codegen:check": "node scripts/codegen-check.mjs",
-    "check-all": "npm run typecheck && npm run test && npm run lint && npm run build",
+    "check-all": "npm run codegen:check && npm run typecheck && npm run test && npm run lint && npm run security:audit && npm run build",
     "security:audit": "npm audit --omit=dev --audit-level=high",
     "security:audit:all": "npm audit --audit-level=high",
     "security:headers": "node scripts/check-security-headers.mjs",

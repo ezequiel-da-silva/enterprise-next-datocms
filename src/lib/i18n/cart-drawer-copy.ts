@@ -30,5 +30,7 @@ export function toCartDrawerCopy(copy: CartCopy): CartDrawerCopy {
     freeShippingRemainingTemplate: copy.freeShippingRemainingTemplate,
     freeShippingUnlocked: copy.freeShippingUnlocked,
     recentlyViewedTitle: copy.recentlyViewedTitle,
+    itemCountOne: copy.itemCountOne,
+    itemCountOther: copy.itemCountOther,
   };
 }

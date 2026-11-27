@@ -98,7 +98,13 @@ export async function CollectionPageArticle({
             <ul className="m-0 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
                 <li key={product.handle}>
-                  <CatalogProductCard locale={locale} product={product} quickAdd={quickAdd} />
+                  <CatalogProductCard
+                    locale={locale}
+                    product={product}
+                    quickAdd={quickAdd}
+                    itemListId={handle}
+                    itemListName={title}
+                  />
                 </li>
               ))}
             </ul>

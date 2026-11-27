@@ -2,11 +2,18 @@
  * Paths estáveis para Lighthouse CI + smoke HTTP 200.
  * Única fonte de verdade — smoke (workflow) e lighthouserc.cjs leem daqui.
  *
+ * Defaults: home + PDP + PLP (handles alinhados a E2E / Shopify Hydrogen demo).
+ * O smoke em lighthouse.yml exige HTTP 200 e ausência de noindex em cada path.
+ *
  * Override opcional: LHCI_PATHS="/en,/en/about" (lista separada por vírgulas).
  * Base: LHCI_BASE_URL (default http://127.0.0.1:3000).
  */
 /* eslint-disable @typescript-eslint/no-require-imports */
-const DEFAULT_PATHS = ["/en"];
+const DEFAULT_PATHS = [
+  "/en",
+  "/en/products/the-collection-snowboard-hydrogen",
+  "/en/collections/hydrogen",
+];
 
 function parsePathsFromEnv(raw) {
   if (!raw || typeof raw !== "string") return null;

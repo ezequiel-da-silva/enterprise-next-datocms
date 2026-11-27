@@ -12,7 +12,7 @@ Seven pillars agents and reviewers must verify before merge. Each pillar lists *
 | UI, routes, layout | `npm run build` |
 | GraphQL / Dato schema | `npm run codegen` (queries) or `codegen:from-dato` (modelo Dato); `codegen:check` in CI (offline) |
 | Security / proxy / API | `npm run security:check` |
-| Full pre-merge | `npm run check-all` |
+| Full pre-merge | `npm run check-all` (`codegen:check` · typecheck · test · lint · `security:audit` · build — mirrors pre-push minus Dato migrations status) |
 
 CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflows/security.yml`](../.github/workflows/security.yml). Required checks on protected branches: `quality`, `lighthouse (desktop)`, `lighthouse (mobile)`, `security`, `smoke`. Repo settings: [GITHUB.md](./GITHUB.md).
 
@@ -50,7 +50,7 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - Links inside muted body copy are distinguishable without color alone (e.g. underline on `.structured-text a`)
 - Contrast AA for `text-muted-foreground` on `background` / `card` (light + dark); avoid `opacity-*` on whole cards that dims price text
 
-**Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, contact, cart (empty) and account.
+**Automated (axe, `e2e/a11y.spec.ts`):** WCAG 2.1 A/AA, fails on critical/serious for Home, PDP, collection PLP, contact, cart (empty), **open cart drawer**, and account.
 
 **Manual (Lighthouse / keyboard):** Tab order, `aria-expanded` on **menus** (not on `input type="search"` — searchbox forbids it; use `aria-controls` when the preview is open), no hover-only submenus.
 
@@ -73,7 +73,7 @@ CI: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml), [`.github/workflo
 - Hydrated badges (wishlist/cart from `localStorage`): reserve space / stable layout to avoid CLS
 - CSS via external `/_next` links under prod CSP — `experimental.inlineCss` stays off ([SECURITY.md](./SECURITY.md))
 
-**Measure:** `npm run build && npm run start` — not `next dev` for Lighthouse.
+**Measure:** `npm run build && npm run start:prod` — not `next dev` for Lighthouse. CI Lighthouse uses `start:standalone` ([`lighthouse.yml`](../.github/workflows/lighthouse.yml)); paths come from [`lighthouse-paths.cjs`](../lighthouse-paths.cjs) (home + PDP + PLP; override with `LHCI_PATHS`).
 
 **Real users:** Vercel Speed Insights, after cookie consent (enable it in the Vercel dashboard; see `SPEED_INSIGHTS_ENABLED` in `.env.example`). Target at p75: LCP < 2.5 s, INP < 200 ms, CLS < 0.1. Server errors: filter Vercel Logs by `scope` / `level:error` ([SECURITY.md → Logs de erro](./SECURITY.md#logs-de-erro)).
 
@@ -141,8 +141,8 @@ read, an `X-Robots-Tag` header, or a site-wide `Disallow: /` in `robots.txt`. Th
 - Vitest covers parsers, resolvers, link-block, JSON-LD builders
 - Tests cover snake_case and camelCase CMS field aliases where relevant
 - `npm test` passes in CI
-- Playwright smoke (`npm run test:e2e`) on PRs — home, blog, draft auth, contact honeypot (`opacity: 0` on `company_website`)
-- Opt-in (not CI): `npm run test:e2e:shop`, `npm run test:e2e:ga` (`E2E_SHOP=1`, consent cookie, `.env.prod`)
+- Playwright on PRs (`npm run test:e2e` → job `smoke`): `e2e/smoke.spec.ts` (home, blog, draft auth, contact honeypot `opacity: 0` on `company_website`), plus `a11y.spec.ts`, `consent.spec.ts`, and `account.spec.ts` (account skips when Customer Account is disabled)
+- Opt-in (not CI): `npm run test:e2e:shop` / catalog filters (`E2E_SHOP=1`), `npm run test:e2e:ga` (`ga4-pdp.spec.ts`), `E2E_AUDIT_PT=1` screenshots — need Storefront + `.env.prod` where noted
 - No trivial snapshot tests unless explicitly requested
 
 **Anti-patterns:** Testing implementation details; skipping tests for new `resolve-*` helpers.

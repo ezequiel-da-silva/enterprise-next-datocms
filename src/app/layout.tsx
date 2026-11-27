@@ -4,6 +4,7 @@ import { SkipLink } from "@/components/patterns/skip-link";
 import {
   getCartSnapshot,
   removeCartLineForDrawer,
+  stampGaClientIdOnExistingCart,
   updateCartLineForDrawer,
 } from "@/app/actions/cart";
 import { toCartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
@@ -16,7 +17,12 @@ import { JsonLdScript } from "@/components/patterns/seo-manager";
 import { buildThemeBootScript } from "@/lib/theme-boot-script";
 import { DEFAULT_APP_LOCALE, REQUEST_LOCALE_HEADER, REQUEST_PATHNAME_HEADER, REQUEST_SEARCH_HEADER, appLocaleFromParam } from "@/constants/i18n";
 import { THEME_COOKIE_NAME, isThemeMode } from "@/constants/theme";
+import { getEmptyStateCollections } from "@/infra/datocms/get-empty-state-collections";
 import { pickNavigationData, getNavigation } from "@/infra/datocms/get-navigation";
+import {
+  getProductsIndexPage,
+  productsIndexPath,
+} from "@/infra/datocms/get-products-index-page";
 import { getSearchPage, searchPagePath } from "@/infra/datocms/get-search-page";
 import { getMarketPolicy } from "@/infra/datocms/get-market-policy";
 import {
@@ -158,7 +164,9 @@ export default async function RootLayout({
     : null;
   const initialConsent = parseConsent(cookieStore.get(CONSENT_COOKIE)?.value);
   const marketCountry = shopifyCountryFromLocale(appLocale);
-  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy, chromeCopy, marketPolicy] =
+  const { isEnabled: includeDrafts } = await draftMode();
+  const cartEnabled = isCartEnabled();
+  const [privacyPolicyUrl, consentCopy, cartCopy, accountCopy, chromeCopy, marketPolicy, productsIndex, suggestedCollections] =
     await Promise.all([
       getShopPrivacyPolicyUrl(),
       getConsentCopy(appLocale),
@@ -166,8 +174,11 @@ export default async function RootLayout({
       getAccountCopy(appLocale),
       getChromeCopy(appLocale),
       getMarketPolicy(marketCountry),
+      cartEnabled ? getProductsIndexPage(appLocale, includeDrafts) : Promise.resolve(null),
+      cartEnabled ? getEmptyStateCollections(appLocale, includeDrafts) : Promise.resolve([]),
     ]);
   const marketCurrencyCode = currencyForShopifyCountry(marketCountry);
+  const cartShopPath = productsIndexPath(appLocale, productsIndex);
   const cartTrustNote = formatMarketPolicyTrustNote(appLocale, marketPolicy, marketCurrencyCode);
   const announcementText = formatAnnouncementStrip(
     appLocale,
@@ -185,7 +196,6 @@ export default async function RootLayout({
   const themeCss = buildThemeCssVariables();
 
   const siteJsonLd = buildSiteJsonLdGraph(identity, searchPath);
-  const cartEnabled = isCartEnabled();
 
   const pageChrome = (
     <>
@@ -255,6 +265,8 @@ export default async function RootLayout({
               freeShippingThreshold={marketPolicy?.freeShippingThreshold ?? null}
               marketCurrencyCode={marketCurrencyCode}
               shippingRate={marketPolicy?.shippingRate ?? null}
+              shopPath={cartShopPath}
+              suggestedCollections={suggestedCollections}
               loadCartSnapshot={getCartSnapshot}
               lineActions={{ updateLine: updateCartLineForDrawer, removeLine: removeCartLineForDrawer }}
             >
@@ -272,6 +284,8 @@ export default async function RootLayout({
           shopifyPrivacy={readShopifyPrivacyConfig()}
           privacyPolicyUrl={privacyPolicyUrl}
           nonce={nonce ?? null}
+          locale={appLocale}
+          stampGaClientId={stampGaClientIdOnExistingCart}
         />
         {/*
           Única injeção: paletas depois do bundle Tailwind (`@theme` em globals.css).

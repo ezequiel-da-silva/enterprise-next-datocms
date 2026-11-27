@@ -110,6 +110,8 @@ export function ProductsSectionInteractive({
                   product={product}
                   sizes={CARD_SIZES}
                   quickAdd={quickAdd}
+                  itemListId="shop"
+                  itemListName="Shop"
                 />
               </li>
             ))}

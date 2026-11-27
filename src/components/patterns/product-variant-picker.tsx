@@ -1,6 +1,10 @@
 "use client";
 
 import { AddToCartButton, type AddToCartAction, type AddToCartCopy } from "@/components/patterns/add-to-cart-button";
+import {
+  BackInStockForm,
+  type BackInStockAction,
+} from "@/components/patterns/back-in-stock-form";
 import { BuyNowButton, type BuyNowAction, type BuyNowCopy } from "@/components/patterns/buy-now-button";
 import { LowStockBadge } from "@/components/patterns/low-stock-badge";
 import { ProductMediaGallery } from "@/components/patterns/product-media-gallery";
@@ -9,11 +13,12 @@ import {
   type ProductGalleryItem,
 } from "@/lib/shopify/product-gallery-items";
 import { CheckoutTrustStrip } from "@/components/patterns/checkout-trust-strip";
-import { ProductShippingEstimate } from "@/components/patterns/product-shipping-estimate";
+import { ProductShippingEstimateLazy } from "@/components/patterns/product-shipping-estimate-lazy";
 import { chromeCopy } from "@/lib/i18n/chrome-copy";
+import { backInStockCopy } from "@/lib/i18n/back-in-stock-copy";
 import type { ShippingEstimateCopy } from "@/lib/i18n/shipping-estimate-copy";
 import { formatPixHint } from "@/lib/shopify/format-pix-hint";
-import { ProductStickyBuyBar } from "@/components/patterns/product-sticky-buy-bar";
+import { ProductStickyBuyBarLazy } from "@/components/patterns/product-sticky-buy-bar-lazy";
 import { WishlistToggleButton } from "@/components/patterns/wishlist-toggle-button";
 import type { AppLocale } from "@/constants/i18n";
 import { trackViewItem } from "@/lib/analytics/ecommerce";
@@ -64,6 +69,8 @@ export type ProductPickerCart = {
   copy: AddToCartCopy;
   buyNowAction?: BuyNowAction;
   buyNowCopy?: BuyNowCopy;
+  /** Server Action for OOS notify-me; omit to hide the form. */
+  backInStockAction?: BackInStockAction;
 };
 
 export type ProductPickerWishlist = {
@@ -370,33 +377,59 @@ export function ProductVariantPicker({
 
         {cart && selected ? (
           <div className="flex flex-col gap-3">
-            <div ref={primaryAtcRef}>
-              <AddToCartButton
-                action={cart.action}
-                variantId={selected.id}
-                available={selected.available}
-                locale={cart.locale}
-                cartHref={cart.cartHref}
-                copy={cart.copy}
-                currency={selected.currency}
-                item={{
-                  item_id: selected.itemId,
-                  item_name: selected.itemName,
-                  price: selected.price,
-                  quantity: 1,
-                  item_variant: selected.itemVariant,
-                }}
-              />
-            </div>
-            {cart.buyNowAction && cart.buyNowCopy ? (
-              <BuyNowButton
-                action={cart.buyNowAction}
-                variantId={selected.id}
-                available={selected.available}
-                locale={cart.locale}
-                copy={cart.buyNowCopy}
-              />
-            ) : null}
+            {selected.available ? (
+              <>
+                <div ref={primaryAtcRef}>
+                  <AddToCartButton
+                    action={cart.action}
+                    variantId={selected.id}
+                    available={selected.available}
+                    locale={cart.locale}
+                    cartHref={cart.cartHref}
+                    copy={cart.copy}
+                    currency={selected.currency}
+                    item={{
+                      item_id: selected.itemId,
+                      item_name: selected.itemName,
+                      price: selected.price,
+                      quantity: 1,
+                      item_variant: selected.itemVariant,
+                    }}
+                  />
+                </div>
+                {cart.buyNowAction && cart.buyNowCopy ? (
+                  <BuyNowButton
+                    action={cart.buyNowAction}
+                    variantId={selected.id}
+                    available={selected.available}
+                    locale={cart.locale}
+                    copy={cart.buyNowCopy}
+                  />
+                ) : null}
+              </>
+            ) : cart.backInStockAction ? (
+              <div ref={primaryAtcRef}>
+                <BackInStockForm
+                  key={selected.id}
+                  locale={cart.locale}
+                  variantId={selected.id}
+                  productHandle={selected.itemId}
+                  copy={backInStockCopy(cart.locale)}
+                  action={cart.backInStockAction}
+                />
+              </div>
+            ) : (
+              <div ref={primaryAtcRef}>
+                <AddToCartButton
+                  action={cart.action}
+                  variantId={selected.id}
+                  available={false}
+                  locale={cart.locale}
+                  cartHref={cart.cartHref}
+                  copy={cart.copy}
+                />
+              </div>
+            )}
             <CheckoutTrustStrip
               locale={cart.locale}
               paymentsLabel={chromeCopy(cart.locale).footerPaymentsLabel}
@@ -407,7 +440,7 @@ export function ProductVariantPicker({
         <div className="space-y-1.5 text-sm text-muted-foreground">
           {trustLine ? <p>{trustLine}</p> : null}
           {buyBoxLocale === "pt" && shippingEstimateCopy ? (
-            <ProductShippingEstimate
+            <ProductShippingEstimateLazy
               locale="pt"
               subtotal={selected?.price ?? null}
               copy={shippingEstimateCopy}
@@ -447,7 +480,7 @@ export function ProductVariantPicker({
       </div>
 
       {cart && selected ? (
-        <ProductStickyBuyBar
+        <ProductStickyBuyBarLazy
           title={selected.itemName}
           priceLabel={selected.priceLabel}
           visible={stickyVisible}
@@ -468,7 +501,7 @@ export function ProductVariantPicker({
               item_variant: selected.itemVariant,
             }}
           />
-        </ProductStickyBuyBar>
+        </ProductStickyBuyBarLazy>
       ) : null}
     </div>
   );

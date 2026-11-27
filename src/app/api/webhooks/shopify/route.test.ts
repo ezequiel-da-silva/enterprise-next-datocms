@@ -101,6 +101,29 @@ describe("POST /api/webhooks/shopify", () => {
       currency: "USD",
       value: 10,
       items: [{ item_id: "B1", item_name: "Board", price: 10, quantity: 1, item_variant: undefined }],
+      client_id: null,
     });
+  });
+
+  it("forwards ga_client_id from note_attributes to Measurement Protocol", async () => {
+    vi.stubEnv("SHOPIFY_CLIENT_ID", "cid");
+    vi.stubEnv("SHOPIFY_API_SECRET_KEY", SECRET);
+    vi.stubEnv("SHOPIFY_STORE_DOMAIN", SHOP);
+    vi.stubEnv("DATOCMS_USER_REVIEWS_CDA_TOKEN", "dato");
+    sendPurchaseMeasurementProtocol.mockResolvedValue({ ok: true });
+
+    const body = JSON.stringify({
+      id: 9,
+      name: "#1002",
+      currency: "USD",
+      total_price: "10.00",
+      line_items: [{ title: "Board", sku: "B1", quantity: 1, price: "10.00" }],
+      note_attributes: [{ name: "ga_client_id", value: "111.222" }],
+    });
+    const res = await POST(signedRequest(body, "orders/paid"));
+    expect(res.status).toBe(200);
+    expect(sendPurchaseMeasurementProtocol).toHaveBeenCalledWith(
+      expect.objectContaining({ transaction_id: "#1002", client_id: "111.222" }),
+    );
   });
 });

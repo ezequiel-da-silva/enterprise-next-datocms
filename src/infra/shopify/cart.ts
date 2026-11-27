@@ -116,6 +116,16 @@ const CART_LINES_REMOVE = /* GraphQL */ `
   }
 `;
 
+const CART_ATTRIBUTES_UPDATE = /* GraphQL */ `
+  mutation CartAttributesUpdate($cartId: ID!, $attributes: [AttributeInput!]!, $country: CountryCode!)
+  @inContext(country: $country) {
+    cartAttributesUpdate(cartId: $cartId, attributes: $attributes) {
+      cart { ${CART_FIELDS} }
+      userErrors { field message }
+    }
+  }
+`;
+
 const CART_BUYER_IDENTITY_UPDATE = /* GraphQL */ `
   mutation CartBuyerIdentityUpdate($cartId: ID!, $buyerIdentity: CartBuyerIdentityInput!, $country: CountryCode!)
   @inContext(country: $country) {
@@ -220,15 +230,33 @@ export async function getCartFromCookie(
   return parsed.success ? getCart(parsed.data, locale, customerAccessToken) : null;
 }
 
+export type CartAttributeInput = { key: string; value: string };
+
 /** `customerAccessToken` (Customer Account API token) makes checkout open logged in. */
 export function createCart(
   lines: { merchandiseId: string; quantity: number }[],
   locale: AppLocale,
   customerAccessToken?: string | null,
+  attributes?: CartAttributeInput[],
 ): Promise<CartMutationResult> {
   const country = shopifyCountryFromLocale(locale);
   const buyerIdentity = customerAccessToken ? { countryCode: country, customerAccessToken } : { countryCode: country };
-  return runMutation("cartCreate", CART_CREATE, { input: { lines, buyerIdentity }, country });
+  const input: Record<string, unknown> = { lines, buyerIdentity };
+  if (attributes && attributes.length > 0) input.attributes = attributes;
+  return runMutation("cartCreate", CART_CREATE, { input, country });
+}
+
+/** Idempotent cart note attributes (e.g. `ga_client_id` for Measurement Protocol stitching). */
+export function updateCartAttributes(
+  cartId: string,
+  attributes: CartAttributeInput[],
+  locale: AppLocale,
+): Promise<CartMutationResult> {
+  return runMutation("cartAttributesUpdate", CART_ATTRIBUTES_UPDATE, {
+    cartId,
+    attributes,
+    country: shopifyCountryFromLocale(locale),
+  });
 }
 
 /** Attaches a logged-in customer to an existing cart; call again after every token refresh. */

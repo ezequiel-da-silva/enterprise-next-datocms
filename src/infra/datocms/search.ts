@@ -1,12 +1,10 @@
 import { DEFAULT_APP_LOCALE, toDatoSiteLocale, type AppLocale } from "@/constants/i18n";
 import { datocmsFetch } from "@/infra/datocms/client";
-import { getProductPageCards } from "@/infra/datocms/get-product-pages";
 import { SEARCH_CATALOG, SEARCH_LEGAL_PAGES, SEARCH_SITE } from "@/infra/datocms/queries";
-import { getStorefrontProductsByHandles } from "@/infra/shopify/storefront";
+import { catalogProductsToHits, searchStorefrontProducts } from "@/infra/shopify/catalog-search";
 import { cmsPageCanonicalPath } from "@/lib/datocms/cms-page-path";
 import { collectionPagePath } from "@/lib/datocms/collection-page-path";
 import { productPagePath } from "@/lib/datocms/product-page-path";
-import { enrichCatalogProducts } from "@/lib/datocms/resolve-products-section";
 import type { SearchHit, SearchResultsPayload } from "@/lib/datocms/search-hit";
 import { shouldSkipShopifyCollectionHandle } from "@/lib/shopify/skip-collection-handle";
 import { stripStega } from "react-datocms/stega";
@@ -101,36 +99,13 @@ export function mergeHits(data: SearchSiteData, locale: AppLocale): SearchHit[] 
   return out;
 }
 
-async function enrichProductHits(hits: SearchHit[], locale: AppLocale): Promise<SearchHit[]> {
-  const productHits = hits.filter((hit) => hit.kind === "product");
-  if (productHits.length === 0) return hits;
-
-  const handles = productHits.map((hit) => {
-    const parts = hit.href.split("/");
-    return parts[parts.length - 1] ?? "";
-  }).filter(Boolean);
-
-  if (handles.length === 0) return hits;
-
-  const [storefront, pages] = await Promise.all([
-    getStorefrontProductsByHandles(handles, locale),
-    getProductPageCards(locale, false),
-  ]);
-  const enriched = enrichCatalogProducts(storefront, pages);
-  const byHandle = new Map(enriched.map((product) => [product.handle, product]));
-
-  return hits.map((hit) => {
-    if (hit.kind !== "product") return hit;
-    const handle = hit.href.split("/").pop() ?? "";
-    const product = byHandle.get(handle);
-    if (!product) return hit;
-    return { ...hit, title: product.title || hit.title, product };
-  });
-}
-
 export type { SearchResultsPayload };
 
-export async function searchSite(
+/**
+ * Pages / posts / authors / legal only — no Dato catalog products/collections.
+ * Used by the header `/api/search` hybrid preview (Shopify owns product suggestions).
+ */
+export async function searchEditorialSite(
   query: string,
   locale: AppLocale = DEFAULT_APP_LOCALE,
 ): Promise<SearchResultsPayload> {
@@ -150,15 +125,38 @@ export async function searchSite(
     return { hits: [], error: result.errors[0]?.message };
   }
 
-  const [legalResult, catalogResult] = await Promise.all([
-    datocmsFetch<{
-      allLegalPages: { id: string; title: string; slug: string | null }[];
-    }>({
-      query: SEARCH_LEGAL_PAGES,
-      variables: { q, locale: toDatoSiteLocale(locale) },
-      tags: [SEARCH_TAG, `search:${q.toLowerCase()}`],
-      revalidate: 120,
-    }),
+  const legalResult = await datocmsFetch<{
+    allLegalPages: { id: string; title: string; slug: string | null }[];
+  }>({
+    query: SEARCH_LEGAL_PAGES,
+    variables: { q, locale: toDatoSiteLocale(locale) },
+    tags: [SEARCH_TAG, `search:${q.toLowerCase()}`],
+    revalidate: 120,
+  });
+
+  const legalPages = "errors" in legalResult ? [] : legalResult.data.allLegalPages;
+  const hits = mergeHits({ ...result.data, legalPages }, locale).filter(
+    (hit) => hit.kind !== "product" && hit.kind !== "collection",
+  );
+  return { hits };
+}
+
+/**
+ * Full search results page: live Storefront products + Dato editorial + Dato collections.
+ * Shopify failure degrades to editorial/collections only (never throws).
+ */
+export async function searchSite(
+  query: string,
+  locale: AppLocale = DEFAULT_APP_LOCALE,
+): Promise<SearchResultsPayload> {
+  const q = query.trim();
+  if (q.length < 2) {
+    return { hits: [] };
+  }
+
+  const [storefrontSettled, editorialSettled, catalogSettled] = await Promise.allSettled([
+    searchStorefrontProducts(q, locale, 24),
+    searchEditorialSite(q, locale),
     datocmsFetch<{ products: CatalogSearchRow[]; collections: CatalogSearchRow[] }>({
       query: SEARCH_CATALOG,
       variables: { q, locale: toDatoSiteLocale(locale) },
@@ -167,12 +165,44 @@ export async function searchSite(
     }),
   ]);
 
-  const legalPages = "errors" in legalResult ? [] : legalResult.data.allLegalPages;
-  const catalog = "errors" in catalogResult ? { products: [], collections: [] } : catalogResult.data;
+  const productHits =
+    storefrontSettled.status === "fulfilled"
+      ? catalogProductsToHits(storefrontSettled.value, locale)
+      : [];
 
-  const hits = mergeHits({ ...result.data, legalPages, ...catalog }, locale);
-  const enriched = await enrichProductHits(hits, locale);
-  return { hits: enriched };
+  const editorialPayload =
+    editorialSettled.status === "fulfilled" ? editorialSettled.value : { hits: [] as SearchHit[], error: "editorial unavailable" };
+  const editorialHits = editorialPayload.hits ?? [];
+
+  let collectionHits: SearchHit[] = [];
+  if (catalogSettled.status === "fulfilled" && !("errors" in catalogSettled.value)) {
+    collectionHits = mergeHits(
+      {
+        pages: [],
+        posts: [],
+        authors: [],
+        collections: catalogSettled.value.data.collections,
+      },
+      locale,
+    );
+  }
+
+  const hits = [...productHits, ...editorialHits, ...collectionHits];
+  const storefrontFailed = storefrontSettled.status === "rejected";
+  const editorialFailed =
+    editorialSettled.status === "rejected" || Boolean(editorialPayload.error);
+  const catalogFailed =
+    catalogSettled.status === "rejected" ||
+    (catalogSettled.status === "fulfilled" && "errors" in catalogSettled.value);
+
+  if (hits.length === 0 && storefrontFailed && editorialFailed && catalogFailed) {
+    return {
+      hits: [],
+      error: editorialPayload.error || "Search unavailable",
+    };
+  }
+
+  return { hits };
 }
 
 export function searchRevalidateTags(query: string): string[] {

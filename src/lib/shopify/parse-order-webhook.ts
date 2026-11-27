@@ -1,4 +1,5 @@
 import type { Ga4Item } from "@/lib/analytics/ecommerce";
+import { GA_CLIENT_ID_CART_ATTR, isValidGaClientId } from "@/lib/analytics/ga-client-id";
 
 const ORDER_PAID_TOPICS = new Set(["orders/paid"]);
 
@@ -10,6 +11,8 @@ export type ShopifyOrderWebhook = {
   currency: string;
   totalPrice: number;
   items: Ga4Item[];
+  /** From cart attribute `ga_client_id` when present and valid. */
+  gaClientId: string | null;
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -92,5 +95,19 @@ export function parseShopifyOrderWebhook(body: unknown): ShopifyOrderWebhook | n
     });
   }
 
-  return { id, name, currency, totalPrice, items };
+  let gaClientId: string | null = null;
+  const noteAttributes = Array.isArray(record.note_attributes) ? record.note_attributes : [];
+  for (const entry of noteAttributes) {
+    const note = asRecord(entry);
+    if (!note) continue;
+    const noteName = typeof note.name === "string" ? note.name.trim() : "";
+    if (noteName !== GA_CLIENT_ID_CART_ATTR) continue;
+    const noteValue = typeof note.value === "string" ? note.value.trim() : "";
+    if (isValidGaClientId(noteValue)) {
+      gaClientId = noteValue;
+      break;
+    }
+  }
+
+  return { id, name, currency, totalPrice, items, gaClientId };
 }

@@ -5,6 +5,7 @@ import type { CartSnapshot } from "@/core/entities/cart";
 import type { CartDrawerLineActions } from "@/components/patterns/cart-drawer-line-actions";
 import type { CartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
 import { cartPath } from "@/lib/shopify/cart-cookie";
+import type { EmptyStateCollection } from "@/lib/storefront/empty-state-collection";
 import {
   createContext,
   useCallback,
@@ -27,6 +28,8 @@ type CartDrawerContextValue = {
   marketCurrencyCode: string | null;
   shippingRate: string | null;
   cartHref: string;
+  shopPath: string;
+  suggestedCollections: EmptyStateCollection[];
   lineActions: CartDrawerLineActions;
   returnFocusRef: RefObject<HTMLElement | null>;
   openWithCart: (cart: CartSnapshot, returnFocus?: HTMLElement | null) => void;
@@ -57,6 +60,8 @@ type CartDrawerProviderProps = {
   freeShippingThreshold?: number | null;
   marketCurrencyCode?: string | null;
   shippingRate?: string | null;
+  shopPath: string;
+  suggestedCollections?: EmptyStateCollection[];
   loadCartSnapshot: LoadCartSnapshot;
   lineActions: CartDrawerLineActions;
   children: ReactNode;
@@ -69,6 +74,8 @@ export function CartDrawerProvider({
   freeShippingThreshold = null,
   marketCurrencyCode = null,
   shippingRate = null,
+  shopPath,
+  suggestedCollections = [],
   loadCartSnapshot,
   lineActions,
   children,
@@ -91,9 +98,10 @@ export function CartDrawerProvider({
   const openFromServer = useCallback(
     async (returnFocus?: HTMLElement | null) => {
       returnFocusRef.current = returnFocus ?? null;
+      // Open immediately so the dialog is a11y-testable and feels instant; then hydrate lines.
+      setOpen(true);
       const snapshot = await loadCartSnapshot(locale);
       setCart(snapshot);
-      setOpen(true);
     },
     [locale, loadCartSnapshot],
   );
@@ -117,6 +125,8 @@ export function CartDrawerProvider({
       marketCurrencyCode,
       shippingRate,
       cartHref: cartPath(locale),
+      shopPath,
+      suggestedCollections,
       lineActions,
       returnFocusRef,
       openWithCart,
@@ -134,6 +144,8 @@ export function CartDrawerProvider({
       freeShippingThreshold,
       marketCurrencyCode,
       shippingRate,
+      shopPath,
+      suggestedCollections,
       lineActions,
       openWithCart,
       openFromServer,
