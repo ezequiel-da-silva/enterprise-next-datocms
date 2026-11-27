@@ -225,7 +225,7 @@ Se o `scope` não incluir `write_products`, `read_locales`, `read_translations` 
 
 Desligado por defeito. Com `SHOPIFY_CART_ENABLED=1`:
 
-- **PDP:** botão “Adicionar ao carrinho” no seletor de variantes. Só aparece quando todas as variantes têm id `gid://shopify/ProductVariant/…` (produtos sem variantes da Storefront não mostram o botão).
+- **PDP:** botão “Adicionar ao carrinho” no seletor de variantes. Só aparece quando todas as variantes têm id `gid://shopify/ProductVariant/…` (produtos sem variantes da Storefront não mostram o botão). Variante esgotada: formulário “avise-me” (`submitBackInStock`) — log estruturado + webhook opcional `BACK_IN_STOCK_WEBHOOK_URL` (não há API Storefront nativa de BIS).
 - **Header:** ícone com contador → `/{locale}/cart`.
 - **`/{locale}/cart`:** linhas, quantidade (0 remove), remover, subtotal e link “Finalizar compra” para o `checkoutUrl` da Shopify. A página tem `noindex`; com a flag desligada devolve 404.
 - **`/{locale}/order/confirmation`:** thank-you branded (`noindex`). Query opcional `?order=#1001` só para mostrar o número — **não** dispara `purchase` no browser (evita fraude por URL). O evento GA4 `purchase` vem do webhook (abaixo).

@@ -1,5 +1,6 @@
 import { Container } from "@/components/atoms/container";
 import type { AddToCartAction } from "@/components/patterns/add-to-cart-button";
+import type { BackInStockAction } from "@/components/patterns/back-in-stock-form";
 import type { BuyNowAction } from "@/components/patterns/buy-now-button";
 import { BreadcrumbNav } from "@/components/patterns/breadcrumb-nav";
 import { ProductQaSection, type ProductQuestionItem } from "@/components/patterns/product-qa-section";
@@ -58,6 +59,8 @@ type ProductPageArticleProps = {
   addToCartAction?: AddToCartAction;
   /** Ephemeral checkout; omit when cart is disabled. */
   buyNowAction?: BuyNowAction;
+  /** OOS notify-me; omit to keep the sold-out ATC only. */
+  backInStockAction?: BackInStockAction;
   /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
   cartCopy: CartCopy;
   /** Resolved in `app/` (CMS `ui_string` over the built-in copy). */
@@ -151,6 +154,7 @@ function pickerCart(
   variants: ProductPickerVariant[],
   addToCartAction: AddToCartAction | undefined,
   buyNowAction: BuyNowAction | undefined,
+  backInStockAction: BackInStockAction | undefined,
 ): ProductPickerCart | undefined {
   if (!addToCartAction || !isCartEnabled() || !variants.every((variant) => isShopifyVariantId(variant.id))) {
     return undefined;
@@ -165,6 +169,7 @@ function pickerCart(
     buyNowCopy: buyNowAction
       ? { buyNow: pdpCopy.buyNow, buying: pdpCopy.buying, soldOut: pdpCopy.soldOut }
       : undefined,
+    backInStockAction,
   };
 }
 
@@ -209,6 +214,7 @@ export function ProductPageArticle({
   storefront,
   addToCartAction,
   buyNowAction,
+  backInStockAction,
   cartCopy,
   pdpCopy,
   marketPolicy,
@@ -333,7 +339,15 @@ export function ProductPageArticle({
           mediaItems={toGalleryItemsFromMedia(storefront.media, title)}
           galleryCopy={PRODUCT_GALLERY_COPY[locale]}
           copy={{ thumbnailLabel: pdpCopy.viewImage, unavailableSuffix: pdpCopy.unavailableSuffix }}
-          cart={pickerCart(locale, cartCopy, pdpCopy, variants, addToCartAction, buyNowAction)}
+          cart={pickerCart(
+            locale,
+            cartCopy,
+            pdpCopy,
+            variants,
+            addToCartAction,
+            buyNowAction,
+            backInStockAction,
+          )}
           wishlist={pickerWishlist(locale, handle, title, storefront)}
           lowStockTemplate={pdpCopy.lowStockTemplate}
           badgeLabel={badgeLabel}

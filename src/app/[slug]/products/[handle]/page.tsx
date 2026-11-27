@@ -1,3 +1,4 @@
+import { submitBackInStock } from "@/app/actions/back-in-stock";
 import { addToCart, buyNow } from "@/app/actions/cart";
 import { ProductPageArticle } from "@/components/patterns/product-page-article";
 import type { ProductQuestionItem } from "@/components/patterns/product-qa-section";
@@ -119,6 +120,7 @@ export default async function ProductPdpPage({ params }: ProductPdpProps) {
       storefront={storefront}
       addToCartAction={addToCart}
       buyNowAction={buyNow}
+      backInStockAction={submitBackInStock}
       cartCopy={cartCopy}
       pdpCopy={pdpCopy}
       marketPolicy={marketPolicy}
