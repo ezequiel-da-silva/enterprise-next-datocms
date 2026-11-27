@@ -7,10 +7,19 @@ export const DATO_ES_SHOPIFY_CANDIDATES = ["es", "es-ES"] as const;
 /** Storefront `@inContext(country:)` alinhado aos Markets da loja. */
 export type ShopifyCountryCode = "US" | "BR" | "ES";
 
+/** Storefront `@inContext(language:)` para títulos traduzidos. */
+export type ShopifyLanguageCode = "EN" | "PT" | "ES";
+
 export function shopifyCountryFromLocale(locale: AppLocale): ShopifyCountryCode {
   if (locale === "pt") return "BR";
   if (locale === "es") return "ES";
   return "US";
+}
+
+export function shopifyLanguageFromLocale(locale: AppLocale): ShopifyLanguageCode {
+  if (locale === "pt") return "PT";
+  if (locale === "es") return "ES";
+  return "EN";
 }
 
 export function pickShopifyLocale(

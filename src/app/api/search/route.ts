@@ -1,7 +1,12 @@
 import { clientIpKey } from "@/app/api/account/account-route-utils";
 import { isAppLocale, type AppLocale } from "@/constants/i18n";
-import { searchSite } from "@/infra/datocms/search";
+import { searchEditorialSite } from "@/infra/datocms/search";
 import { checkRateLimit } from "@/infra/security/rate-limit";
+import {
+  predictiveProductsToHits,
+  predictiveSearchProducts,
+} from "@/infra/shopify/predictive-search";
+import { buildPreviewSearchPayload } from "@/lib/datocms/hybrid-search";
 import { NextResponse, type NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +21,7 @@ function parseLocale(raw: string | null): AppLocale | null {
 
 /**
  * Live search preview for the header strip.
+ * Hybrid: Shopify `predictiveSearch` products + DatoCMS editorial pages.
  * `GET /api/search?locale=&q=`
  */
 export async function GET(request: NextRequest) {
@@ -37,7 +43,42 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ hits: [] }, { headers: { "Cache-Control": "private, max-age=15" } });
   }
 
-  const payload = await searchSite(q, locale);
+  const [shopifySettled, editorialSettled] = await Promise.allSettled([
+    predictiveSearchProducts(q, locale),
+    searchEditorialSite(q, locale),
+  ]);
+
+  const productsFailed = shopifySettled.status === "rejected";
+  const editorialFailed = editorialSettled.status === "rejected";
+
+  const products =
+    shopifySettled.status === "fulfilled"
+      ? predictiveProductsToHits(shopifySettled.value, locale)
+      : [];
+  const editorial =
+    editorialSettled.status === "fulfilled" ? (editorialSettled.value.hits ?? []) : [];
+  const editorialError =
+    editorialSettled.status === "fulfilled"
+      ? editorialSettled.value.error
+      : editorialSettled.reason instanceof Error
+        ? editorialSettled.reason.message
+        : "editorial unavailable";
+  const productsError =
+    shopifySettled.status === "rejected"
+      ? shopifySettled.reason instanceof Error
+        ? shopifySettled.reason.message
+        : "shopify unavailable"
+      : undefined;
+
+  const payload = buildPreviewSearchPayload({
+    products,
+    editorial,
+    productsFailed: productsFailed || undefined,
+    editorialFailed: editorialFailed || Boolean(editorialSettled.status === "fulfilled" && editorialSettled.value.error),
+    productsError,
+    editorialError,
+  });
+
   return NextResponse.json(payload, {
     headers: { "Cache-Control": "private, max-age=30" },
   });

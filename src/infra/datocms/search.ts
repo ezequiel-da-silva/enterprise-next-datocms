@@ -130,6 +130,46 @@ async function enrichProductHits(hits: SearchHit[], locale: AppLocale): Promise<
 
 export type { SearchResultsPayload };
 
+/**
+ * Pages / posts / authors / legal only — no Dato catalog products/collections.
+ * Used by the header `/api/search` hybrid preview (Shopify owns product suggestions).
+ */
+export async function searchEditorialSite(
+  query: string,
+  locale: AppLocale = DEFAULT_APP_LOCALE,
+): Promise<SearchResultsPayload> {
+  const q = query.trim();
+  if (q.length < 2) {
+    return { hits: [] };
+  }
+
+  const result = await datocmsFetch<SearchSiteData>({
+    query: SEARCH_SITE,
+    variables: { q, locale: toDatoSiteLocale(locale) },
+    tags: [SEARCH_TAG, `search:${q.toLowerCase()}`],
+    revalidate: 120,
+  });
+
+  if ("errors" in result) {
+    return { hits: [], error: result.errors[0]?.message };
+  }
+
+  const legalResult = await datocmsFetch<{
+    allLegalPages: { id: string; title: string; slug: string | null }[];
+  }>({
+    query: SEARCH_LEGAL_PAGES,
+    variables: { q, locale: toDatoSiteLocale(locale) },
+    tags: [SEARCH_TAG, `search:${q.toLowerCase()}`],
+    revalidate: 120,
+  });
+
+  const legalPages = "errors" in legalResult ? [] : legalResult.data.allLegalPages;
+  const hits = mergeHits({ ...result.data, legalPages }, locale).filter(
+    (hit) => hit.kind !== "product" && hit.kind !== "collection",
+  );
+  return { hits };
+}
+
 export async function searchSite(
   query: string,
   locale: AppLocale = DEFAULT_APP_LOCALE,
