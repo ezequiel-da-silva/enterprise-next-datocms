@@ -68,7 +68,7 @@ Triggers típicos: `main`, `master` (legado) e `develop` — ver cada YAML.
 | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) | push / PR | `quality` |
 | [`.github/workflows/security.yml`](../.github/workflows/security.yml) | push / PR | `security` |
 | [`.github/workflows/secret-scan.yml`](../.github/workflows/secret-scan.yml) | PR → `main` / `develop` / `master` | `gitleaks` |
-| [`.github/dependabot.yml`](../.github/dependabot.yml) | weekly | npm + github-actions (minor/patch group) |
+| [`.github/dependabot.yml`](../.github/dependabot.yml) | weekly | npm + github-actions (**minor/patch only**; majors ignored — open those by hand when ready to migrate) |
 | [`.github/workflows/lighthouse.yml`](../.github/workflows/lighthouse.yml) | PR | `lighthouse` (desktop + mobile) |
 | [`.github/workflows/e2e.yml`](../.github/workflows/e2e.yml) | PR | `smoke` (`npm run test:e2e`) |
 | [`.github/workflows/release.yml`](../.github/workflows/release.yml) | push em `main` | `release-please` |
