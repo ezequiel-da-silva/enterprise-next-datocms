@@ -4,6 +4,7 @@ import { SkipLink } from "@/components/patterns/skip-link";
 import {
   getCartSnapshot,
   removeCartLineForDrawer,
+  stampGaClientIdOnExistingCart,
   updateCartLineForDrawer,
 } from "@/app/actions/cart";
 import { toCartDrawerCopy } from "@/lib/i18n/cart-drawer-copy";
@@ -283,6 +284,8 @@ export default async function RootLayout({
           shopifyPrivacy={readShopifyPrivacyConfig()}
           privacyPolicyUrl={privacyPolicyUrl}
           nonce={nonce ?? null}
+          locale={appLocale}
+          stampGaClientId={stampGaClientIdOnExistingCart}
         />
         {/*
           Única injeção: paletas depois do bundle Tailwind (`@theme` em globals.css).

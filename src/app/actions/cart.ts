@@ -61,6 +61,22 @@ async function ensureGaClientIdAttribute(cartId: string, locale: AppLocale): Pro
   }
 }
 
+/**
+ * Called when analytics consent is granted after a cart already exists.
+ * Reads `nd-ga-cid` + cart cookie; no-op when either is missing. Never throws to the client.
+ */
+export async function stampGaClientIdOnExistingCart(locale: AppLocale): Promise<void> {
+  if (!isCartEnabled()) return;
+  if (!isAppLocale(locale)) return;
+  try {
+    const cartId = await readCartId();
+    if (!cartId) return;
+    await ensureGaClientIdAttribute(cartId, locale);
+  } catch {
+    logError("action.cart", "GA client_id consent stamp failed", { context: { action: "ga_consent_stamp" } });
+  }
+}
+
 async function persist(
   result: CartMutationResult,
   action: string,
